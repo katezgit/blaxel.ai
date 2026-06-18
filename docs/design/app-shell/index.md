@@ -212,22 +212,30 @@ From least likely to disappear → most likely to disappear:
 
 ## 9. Avatar menu (Personal scope, focused)
 
-Five interactive items + theme sub-menu. Workspace settings NOT here.
+Six interactive items + theme sub-menu. Workspace settings NOT here.
 
 ```
-👤 katexuzy@gmail.com
-   Account · Tier 1
+👤 Kate
+   katexuzy@gmail.com
+   Tier 1
 ─────────────────────
 Profile
+Preferences                ← density, notification rules, locale
 Theme            ● Dark ▸   ← sub-menu: Light / Dark / System
 ─────────────────────
-Account settings    →       ← deep-link to /settings/account sub-app
+Account & billing   →       ← deep-link to /settings/account sub-app
 ─────────────────────
 Help & shortcuts   ?
 Log out
 ```
 
-Theme reachable in 2 clicks (avatar → theme option). Account settings opens a dedicated `/settings/account` sub-app with its own internal sub-sidebar (Personal / Account sections — Workspace's settings live in its own switcher dropdown).
+**Header — three lines:** name (`Kate`) · email (`katexuzy@gmail.com`) · tier badge (`Tier 1`). The name carries human identity; the email is the disambiguator; the tier sits with Account (where it belongs semantically).
+
+**Preferences vs Theme — distinct items.** Preferences holds density, notification rules, locale — settings that benefit from a dedicated page. Theme is its own row because theme-change is a high-affinity quick action and gets a sub-menu for ≤2-click toggling. Listing them as siblings matches Linear / GitHub patterns.
+
+**Account & billing** opens a dedicated `/settings/account` sub-app with its own internal sub-sidebar. The label sharpens "Account settings" to name what's actually inside — billing, quotas, members, identity & access. Workspace settings live in their own switcher dropdown (see § 1).
+
+Theme reachable in 2 clicks (avatar → theme option).
 
 ## 10. Sidebar nav items — icon vocabulary
 
