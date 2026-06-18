@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>App Shell — canonical mockup · Blaxel</title>
+<link rel="stylesheet" href="./_tokens.css" />
+<link rel="stylesheet" href="./_shell.css" />
+<style>
+  /* Canonical app-shell layout:
+       Top-left   → Brand + workspace
+       Top-center → Search in current workspace
+       Top-right  → Notifications + help + avatar/account
+       Left sidebar → Current workspace resources
+       Main content → Selected resource/page
+
+     Full spec: ../index.md (the wireframe co-located with this mockup). */
+
+  /* Three-zone topbar grid — true centering of search regardless of side widths */
+  .topbar {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--s-4);
+  }
+  .topbar-zone-left {
+    display: flex; align-items: center; gap: var(--s-3);
+    justify-self: start;
+    min-width: 0;
+  }
+  .topbar-zone-center {
+    display: flex; align-items: center;
+    justify-self: center;
+  }
+  .topbar-zone-right {
+    display: flex; align-items: center; gap: var(--s-2);
+    justify-self: end;
+  }
+
+  /* Right-side topbar utility cluster */
+  .topbar-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .icon-btn {
+    position: relative;
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-2);
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .icon-btn:hover { background: var(--surface-2); color: var(--text-1); border-color: var(--border-1); }
+  .icon-btn .badge {
+    position: absolute;
+    top: 2px; right: 2px;
+    min-width: 14px; height: 14px;
+    background: var(--state-errored);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+    border: 1.5px solid var(--surface-1);
+  }
+  .av-chip {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 4px;
+  }
+  .av-chip:hover { box-shadow: 0 0 0 2px var(--accent-quiet); }
+
+  /* Focused avatar menu (open for demo) */
+  .focused-menu {
+    position: absolute;
+    top: calc(var(--topbar-h) + 6px);
+    right: var(--s-4);
+    width: 240px;
+    background: var(--surface-1);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.65);
+    padding: 6px 0;
+    z-index: 20;
+    font-size: var(--type-small);
+  }
+  .focused-menu .fm-head {
+    padding: var(--s-3) var(--s-4);
+    border-bottom: 1px solid var(--border-1);
+  }
+  .focused-menu .fm-head .row {
+    display: flex; align-items: center; gap: var(--s-2);
+  }
+  .focused-menu .fm-head .av {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px;
+  }
+  .focused-menu .fm-head .email {
+    color: var(--text-1);
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .focused-menu .fm-head .tier {
+    color: var(--text-3);
+    font-size: var(--type-tiny);
+    margin-left: 36px; /* indent past avatar */
+    margin-top: 2px;
+  }
+  .focused-menu .fm-head .tier .badge {
+    background: var(--accent-quiet);
+    color: var(--accent-soft);
+    border: 1px solid var(--accent);
+    padding: 0 6px;
+    border-radius: 999px;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  .focused-menu .fm-section { padding: 4px 0; border-bottom: 1px solid var(--border-1); }
+  .focused-menu .fm-section:last-child { border-bottom: none; }
+  .focused-menu .fm-item {
+    display: flex; align-items: center; gap: var(--s-2);
+    padding: 6px var(--s-4);
+    color: var(--text-1);
+    cursor: pointer;
+  }
+  .focused-menu .fm-item:hover { background: var(--surface-2); }
+  .focused-menu .fm-item .meta { color: var(--text-3); font-size: var(--type-tiny); margin-left: auto; }
+  .focused-menu .fm-item .arrow { color: var(--text-3); margin-left: auto; font-size: var(--type-tiny); }
+  .focused-menu .fm-item.danger { color: var(--state-errored); }
+  .focused-menu .fm-item.danger:hover { background: rgba(239,68,68,0.06); }
+  .focused-menu .fm-item.has-sub { position: relative; }
+  .focused-menu .fm-item .sub-hint {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--type-tiny);
+    color: var(--text-3);
+  }
+  .focused-menu .fm-item .sub-hint .current { color: var(--text-1); }
+
+  /* Theme sub-menu (open to the left of the parent item; 2-click max) */
+  .theme-submenu {
+    position: absolute;
+    right: calc(100% + 6px);
+    top: -4px;
+    width: 160px;
+    background: var(--surface-1);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.65);
+    padding: 4px 0;
+    z-index: 21;
+  }
+  .theme-submenu .tm-item {
+    display: flex; align-items: center; gap: var(--s-2);
+    padding: 6px var(--s-3);
+    color: var(--text-1);
+    font-size: var(--type-small);
+    cursor: pointer;
+  }
+  .theme-submenu .tm-item:hover { background: var(--surface-2); }
+  .theme-submenu .tm-item .check { color: var(--accent-soft); margin-left: auto; }
+
+  /* Page-content breadcrumb (carried over from the earlier shell-proposal change) */
+  .page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--type-tiny);
+    color: var(--text-3);
+    margin-bottom: var(--s-2);
+    line-height: 1;
+  }
+  .page-breadcrumb a { color: var(--text-3); text-decoration: none; }
+  .page-breadcrumb a:hover { color: var(--accent-soft); }
+  .page-breadcrumb .sep { color: var(--text-4); }
+  .page-breadcrumb .current { color: var(--text-2); font-weight: 500; }
+
+  /* Annotation callouts */
+  .annot {
+    position: absolute;
+    background: var(--surface-1);
+    border: 1px solid var(--state-errored);
+    color: var(--text-1);
+    padding: 6px 10px;
+    font-size: var(--type-tiny);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    max-width: 280px;
+    z-index: 30;
+  }
+  .annot .pin { position: absolute; width: 10px; height: 10px; background: var(--state-errored); border-radius: 50%; }
+  .annot strong { color: var(--state-errored); }
+  .annot-notif { top: 64px; right: 200px; }
+  .annot-notif .pin { top: -5px; right: -5px; }
+  .annot-help  { top: 64px; right: 70px; }
+  .annot-help .pin  { top: -5px; right: -5px; }
+  .annot-av    { top: 220px; right: 280px; }
+  .annot-av .pin    { top: -5px; right: -5px; }
+
+  .legend {
+    background: var(--surface-2);
+    border: 1px solid var(--border-1);
+    border-radius: var(--radius-md);
+    padding: var(--s-4);
+    margin-top: var(--s-5);
+  }
+  .legend h3 { margin: 0 0 var(--s-3); font-size: var(--type-h3); }
+  .legend dl { margin: 0; display: grid; grid-template-columns: 220px 1fr; gap: var(--s-2) var(--s-4); font-size: var(--type-small); }
+  .legend dt { color: var(--state-errored); font-weight: 600; }
+  .legend dd { margin: 0; color: var(--text-2); }
+  .legend .delta {
+    margin-top: var(--s-4);
+    padding: var(--s-3) var(--s-4);
+    background: var(--surface-1);
+    border-left: 3px solid var(--accent);
+    color: var(--text-2);
+    font-size: var(--type-small);
+  }
+  .legend .delta strong { color: var(--text-1); }
+  .legend table { width: 100%; border-collapse: collapse; margin-top: var(--s-3); font-size: var(--type-small); }
+  .legend table th, .legend table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border-1); }
+  .legend table th { color: var(--text-3); font-size: var(--type-tiny); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+
+  /* ═════════════════ Responsive — 4 breakpoints ═════════════════ */
+
+  /* Default = Desktop wide (≥1280px). Overrides _tokens.css for canonical shell. */
+  :root {
+    --topbar-h: 64px;
+    --sidebar-w: 248px;
+  }
+
+  /* Nav items with icon + label (icon visible at every breakpoint) */
+  .sidebar .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 8px;
+  }
+  .sidebar .nav-item .nav-icon {
+    width: 26px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-3);
+    background: var(--surface-2);
+    border: 1px solid var(--border-1);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    letter-spacing: 0;
+    text-transform: lowercase;
+  }
+  .sidebar .nav-item:hover .nav-icon { color: var(--text-1); background: var(--surface-3); }
+  .sidebar .nav-item.active { background: transparent; }
+  .sidebar .nav-item.active .nav-icon {
+    color: var(--accent-soft);
+    background: var(--accent-quiet);
+    border-color: var(--accent);
+  }
+  .sidebar .nav-item.active .nav-label { color: var(--accent-soft); }
+  .sidebar .nav-item .nav-label { flex: 1; min-width: 0; }
+
+  /* Hamburger trigger — appears on tablet+ to open the labels drawer */
+  .mobile-nav-trigger {
+    width: 32px; height: 32px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-2);
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .mobile-nav-trigger:hover {
+    background: var(--surface-2);
+    color: var(--text-1);
+    border-color: var(--border-1);
+  }
+
+  /* Viewport indicator (demo helper) — one chip visible at a time */
+  .vp-indicator {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--accent-quiet);
+    border: 1px solid var(--accent);
+    color: var(--accent-soft);
+    border-radius: 999px;
+    font-size: var(--type-tiny);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .vp-compact, .vp-tablet, .vp-mobile { display: none; }
+
+  /* Page-actions cluster (right of title row on desktop; stacks on mobile) */
+  .page-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    flex-shrink: 0;
+  }
+
+  /* ─────────────── Desktop compact (1024–1279px) ─────────────── */
+  @media (max-width: 1279px) {
+    :root {
+      --sidebar-w: 220px;
+      --content-px: 28px;
+    }
+    .topbar-search { width: 320px; }
+    .vp-wide { display: none; }
+    .vp-compact { display: inline-block; }
+  }
+
+  /* ─────────────── Tablet (768–1023px) — icon rail ─────────────── */
+  @media (max-width: 1023px) {
+    :root {
+      --sidebar-w: 64px;
+      --content-px: 24px;
+    }
+    .mobile-nav-trigger { display: inline-flex; }
+    .sidebar { padding: var(--s-3) var(--s-2); }
+    .sidebar .group-label { display: none; }
+    .sidebar .nav-item .nav-label { display: none; }
+    .sidebar .nav-item {
+      justify-content: center;
+      padding: 6px;
+      gap: 0;
+    }
+    .sidebar .nav-item .nav-icon {
+      width: 32px;
+      height: 28px;
+      font-size: 11px;
+    }
+    .sidebar .group {
+      margin-bottom: var(--s-3);
+      padding-top: var(--s-2);
+      border-top: 1px solid var(--border-1);
+    }
+    .sidebar .group:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    .topbar-search { width: 240px; }
+    .topbar-search .ph {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .vp-compact { display: none; }
+    .vp-tablet { display: inline-block; }
+  }
+
+  /* ─────────────── Mobile (<768px) ─────────────── */
+  @media (max-width: 767px) {
+    :root {
+      --content-px: 16px;
+    }
+    .app {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+    .sidebar { display: none; }
+
+    .topbar {
+      display: grid !important;
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: auto auto auto;
+      grid-template-areas:
+        "nav      brand     actions"
+        "workspace workspace workspace"
+        "search    search    search";
+      height: auto;
+      padding: 10px var(--s-3);
+      gap: 8px;
+      align-items: center;
+    }
+    .topbar-zone-left { display: contents; }
+    .topbar-zone-center { grid-area: search; justify-self: stretch; }
+    .topbar-zone-right { grid-area: actions; justify-self: end; }
+
+    .topbar-zone-left .mobile-nav-trigger { grid-area: nav; }
+    .topbar-zone-left .logo { grid-area: brand; justify-self: start; }
+    .topbar-zone-left .ws-switcher {
+      grid-area: workspace;
+      justify-self: stretch;
+      width: 100%;
+    }
+
+    .topbar-search {
+      width: 100%;
+      max-width: none;
+    }
+
+    /* Page actions stack vertically; primary on top */
+    .page-actions {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      margin: var(--s-3) 0 0 0;
+    }
+    .page-actions > .btn,
+    .page-actions > .state {
+      width: 100%;
+      justify-content: center;
+    }
+    .page-actions > .state { order: -1; }
+
+    /* Demo popover + annotations would overlap badly on mobile — hide */
+    .focused-menu,
+    .theme-submenu,
+    .annot { display: none !important; }
+
+    .vp-tablet { display: none; }
+    .vp-mobile { display: inline-block; }
+  }
+</style>
+</head>
+<body>
+<div class="app" style="position: relative;">
+
+  <!-- TOPBAR — three zones per canonical app-shell pattern -->
+  <header class="topbar">
+
+    <!-- Top-left: Brand + workspace (hamburger appears at ≤1023px) -->
+    <div class="topbar-zone-left">
+      <button class="mobile-nav-trigger" title="Open navigation drawer">☰</button>
+      <span class="logo">⌂ Blaxel</span>
+      <span class="ws-switcher">webflow-prod ▾</span>
+    </div>
+
+    <!-- Top-center: Search in current workspace -->
+    <div class="topbar-zone-center">
+      <div class="topbar-search" title="Open command palette">
+        <span>🔍</span>
+        <span class="ph">Search Sandboxes, Models, Policies…</span>
+        <span class="kbd-hint">⌘K</span>
+      </div>
+    </div>
+
+    <!-- Top-right: Notifications + help + avatar/account -->
+    <div class="topbar-zone-right">
+      <button class="icon-btn" title="Notifications · 3 unread">
+        🔔
+        <span class="badge">3</span>
+      </button>
+      <button class="icon-btn" title="Help & shortcuts · ?">
+        ?
+      </button>
+      <span class="av-chip">k</span>
+    </div>
+
+  </header>
+
+  <!-- SIDEBAR — nav only; icons visible at every breakpoint, labels hidden in icon-rail mode -->
+  <aside class="sidebar">
+    <div class="group">
+      <div class="group-label">Sandboxes</div>
+      <a class="nav-item" title="Sandboxes"><span class="nav-icon">sb</span><span class="nav-label">Sandboxes</span></a>
+      <a class="nav-item" title="Volumes"><span class="nav-icon">vl</span><span class="nav-label">Volumes</span></a>
+      <a class="nav-item" title="Agent Drive"><span class="nav-icon">dr</span><span class="nav-label">Agent Drive</span></a>
+      <a class="nav-item" title="Images"><span class="nav-icon">im</span><span class="nav-label">Images</span></a>
+    </div>
+    <div class="group">
+      <div class="group-label">Hosting</div>
+      <a class="nav-item" title="Agents"><span class="nav-icon">ag</span><span class="nav-label">Agents</span></a>
+      <a class="nav-item" title="Jobs"><span class="nav-icon">jb</span><span class="nav-label">Jobs</span></a>
+      <a class="nav-item" title="MCP Servers"><span class="nav-icon">mc</span><span class="nav-label">MCP Servers</span></a>
+      <a class="nav-item active" title="Model APIs"><span class="nav-icon">md</span><span class="nav-label">Model APIs</span></a>
+      <a class="nav-item" title="Network"><span class="nav-icon">nt</span><span class="nav-label">Network</span></a>
+      <a class="nav-item" title="Custom Domains"><span class="nav-icon">cd</span><span class="nav-label">Custom Domains</span></a>
+    </div>
+    <div class="group">
+      <div class="group-label">Security</div>
+      <a class="nav-item" title="API Keys"><span class="nav-icon">ak</span><span class="nav-label">API Keys</span></a>
+      <a class="nav-item" title="Policies"><span class="nav-icon">po</span><span class="nav-label">Policies</span></a>
+    </div>
+  </aside>
+
+  <!-- Focused avatar menu (shown OPEN for demo) -->
+  <div class="focused-menu">
+    <div class="fm-head">
+      <div class="row">
+        <span class="av">k</span>
+        <span class="email" style="font-weight:600; color: var(--text-1);">Kate</span>
+      </div>
+      <div class="email" style="margin-left:36px; margin-top:2px;">katexuzy@gmail.com</div>
+      <div class="tier" style="margin-left:36px;"><span class="badge">Tier 1</span></div>
+    </div>
+
+    <div class="fm-section">
+      <div class="fm-item">Profile</div>
+      <div class="fm-item">Preferences <span class="meta">density, locale</span></div>
+      <div class="fm-item has-sub">
+        Theme
+        <span class="sub-hint">
+          <span class="current">● Dark</span>
+          <span>▸</span>
+        </span>
+        <!-- Sub-menu shown open for demo -->
+        <div class="theme-submenu">
+          <div class="tm-item">Light</div>
+          <div class="tm-item">Dark <span class="check">✓</span></div>
+          <div class="tm-item">System</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fm-section">
+      <div class="fm-item">Account &amp; billing <span class="arrow">→</span></div>
+    </div>
+
+    <div class="fm-section">
+      <div class="fm-item">Help &amp; shortcuts <span class="meta">?</span></div>
+      <div class="fm-item danger">Log out</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <main class="content tight">
+
+    <div class="page-header">
+      <nav class="page-breadcrumb" aria-label="Breadcrumb">
+        <a href="#">Model APIs</a>
+        <span class="sep">/</span>
+        <span class="current">prod-openai-chat</span>
+      </nav>
+
+      <div style="display:flex; align-items:flex-start; gap:var(--s-3);">
+        <div>
+          <h1 style="font-size:22px;">prod-openai-chat</h1>
+          <p class="sub mono"><code>mdl-7a3f</code> · OpenAI · gpt-4o · created 2026-06-14 11:23 UTC by kate</p>
+        </div>
+        <!-- Page actions: right-aligned in the title row on desktop; stack vertically on mobile -->
+        <div class="page-actions">
+          <span class="state active"><span class="dot"></span>active</span>
+          <a class="btn btn-primary">⌕ Open Playground</a>
+          <a class="btn">⟳ Rotate provider key</a>
+          <a class="btn btn-ghost">⋯ More</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="band">
+      <div class="band-header">
+        <span class="band-title">Operational</span>
+        <span class="muted" style="font-size:var(--type-tiny);">● streaming</span>
+      </div>
+      <div class="band-body">
+        <div class="endpoint">
+          <span class="muted" style="font-size:var(--type-tiny);">ENDPOINT</span>
+          <span class="url mono">https://run.blaxel.ai/webflow-prod/models/prod-openai-chat</span>
+          <button class="copy-btn">📋</button>
+        </div>
+        <div class="metric-cells">
+          <div class="metric-cell"><div class="l">Requests · 1h</div><div class="v">8,512</div></div>
+          <div class="metric-cell"><div class="l">Errors</div><div class="v">26</div></div>
+          <div class="metric-cell"><div class="l">Latency · avg</div><div class="v">412<span style="font-size:14px; font-weight:400; color:var(--text-3);">ms</span></div></div>
+        </div>
+        <div class="budget">
+          <div class="l"><span>Tokens · MTD</span><span><strong>18.0M</strong> / 30.0M · 60%</span></div>
+          <div class="bar"><span style="width:60%"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legend -->
+    <div class="legend">
+      <h3 style="display:flex; align-items:center; gap:var(--s-3); flex-wrap: wrap;">
+        Canonical app-shell pattern
+        <span class="vp-indicator vp-wide">Desktop wide · ≥1280px</span>
+        <span class="vp-indicator vp-compact">Desktop compact · 1024–1279px</span>
+        <span class="vp-indicator vp-tablet">Tablet · 768–1023px · icon rail</span>
+        <span class="vp-indicator vp-mobile">Mobile · &lt;768px · drawer nav</span>
+      </h3>
+      <p class="muted" style="font-size:var(--type-small); margin: 0 0 var(--s-3);">
+        Resize the browser to see the four breakpoints. Chip above updates live.
+        Full spec: <a href="../index.md"><code>../index.md</code></a>.
+      </p>
+
+      <table style="margin-bottom:var(--s-4);">
+        <thead>
+          <tr><th>Zone</th><th>Holds</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Top-left</strong></td><td>Brand + workspace switcher</td></tr>
+          <tr><td><strong>Top-center</strong></td><td>Search in current workspace (Cmd-K palette)</td></tr>
+          <tr><td><strong>Top-right</strong></td><td>Notifications + help + avatar/account</td></tr>
+          <tr><td><strong>Left sidebar</strong></td><td>Current workspace resources (Sandboxes / Hosting / Security)</td></tr>
+          <tr><td><strong>Main content</strong></td><td>Selected resource/page</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Design rationale</h3>
+
+      <dl>
+        <dt>① Notifications bell</dt>
+        <dd>NEW · async signal that affects Alex's flow — incident fired, batch job finished, quota threshold reached, key expiring. High value, low pixel cost. Count badge shows unread.</dd>
+
+        <dt>② Help / shortcuts (<code>?</code>)</dt>
+        <dd>NEW · keyboard shortcut sheet + docs jumps. Replaces an entire "where do I find docs" mental search with one affordance.</dd>
+
+        <dt>③ Avatar — focused menu (6 items + theme sub-menu)</dt>
+        <dd>Header (name + email + tier badge), <em>Profile</em>, <em>Preferences</em> (density, locale, notifications), <em>Theme ●Dark ▸</em> (with Light/Dark/System sub-menu — 2-click max to toggle), <em>Account &amp; billing →</em>, Help &amp; shortcuts, Log out. The Account deep-link opens <code>/settings/account</code> sub-app with its own internal sub-sidebar.</dd>
+
+        <dt>④ Page actions — right of title row</dt>
+        <dd><em>[Open Playground] [Rotate key] [⋯ More]</em> labeled buttons sit on the right edge of the title row, inline with the state pill. Visual separation from topbar chrome: labeled buttons (typographic) vs small icons (iconic). Different bands, no competition.</dd>
+
+        <dt>Workspace settings — single home</dt>
+        <dd>Lives ONLY in the top-left workspace switcher dropdown (Switch · Create · Workspace settings →). Not duplicated in the avatar menu — same destination shouldn't have two entries. Avatar menu is for Personal + Account scopes only.</dd>
+
+        <dt>Sidebar — nav only</dt>
+        <dd>Three groups (Sandboxes / Hosting / Security), nothing else. No Account zone, no footer settings link, no utility chrome. Per <a href="../../guidelines/app-shell-layout.md"><code>app-shell-layout.md</code></a> §2: sidebar is for navigation, topbar is for utility.</dd>
+
+        <dt>⑤ Responsive — 4 breakpoints</dt>
+        <dd>
+          <strong>Wide ≥1280px:</strong> sidebar 248px full labels · search ~360px · topbar 64px.<br />
+          <strong>Compact 1024–1279px:</strong> sidebar 220px · search 320px · still full shell.<br />
+          <strong>Tablet 768–1023px:</strong> sidebar 64px icon rail (labels hidden, group dividers replace section headers) · <code>☰</code> hamburger appears in topbar-left · drawer opens on click for full labels · workspace stays visible.<br />
+          <strong>Mobile &lt;768px:</strong> sidebar hidden · topbar wraps to 3 rows (brand+identity / workspace / search) · page actions stack vertically with primary first. Full spec in <a href="../wireframe/index.md"><code>wireframe/index.md</code></a>.
+        </dd>
+
+        <dt>Hard rule across breakpoints</dt>
+        <dd><strong>Workspace context is never hidden.</strong> The workspace switcher remains visible at every breakpoint — workspace is the operational boundary of Blaxel, not navigation decoration.</dd>
+      </dl>
+
+      <div class="delta">
+        <strong>Pattern:</strong> chrome stays lean and pays pixels for high-frequency signals (notifications, help, search). Low-frequency surfaces (settings catalogs, billing, compliance) live in a dedicated <code>/settings</code> sub-app accessible via deep-link.
+        Matches <strong>Datadog · Linear · W&amp;B · Grafana · Vercel · Stripe</strong>.
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Surface</th><th>Session % that touches it</th><th>Lives in</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Operational pages (Sandboxes, Models, Agents, Jobs)</td><td><strong>&gt;85%</strong></td><td>Sidebar groups · resource detail bands</td></tr>
+          <tr><td>Workspace settings (API keys, Policies, Custom domains, …)</td><td>~10%</td><td><code>/settings/workspace</code> sub-app · deep-link from menu</td></tr>
+          <tr><td>Account settings (Billing, Quotas, Members, SSO)</td><td>~5%</td><td><code>/settings/account</code> sub-app · deep-link from menu</td></tr>
+          <tr><td>Personal (Profile, Security, theme, log out)</td><td>&lt;1% beyond log-out</td><td>Avatar menu inline (Profile, Preferences) · rest in <code>/settings/personal</code></td></tr>
+        </tbody>
+      </table>
+
+      <p class="muted" style="font-size:var(--type-tiny); margin-top:var(--s-4); margin-bottom:0;">
+        Settings sub-app structure (not mocked in this file — fold into a later page mockup): own sub-sidebar with three sections (Personal / Account / Workspace), each section listing its specific pages. Same content as the old tri-section menu — relocated from chrome to a destination.
+      </p>
+    </div>
+
+    <p class="muted" style="margin-top:var(--s-6); font-size:var(--type-tiny); border-top:1px solid var(--border-1); padding-top:var(--s-3);">
+      App Shell · canonical mockup · co-located with <a href="../index.md"><code>../index.md</code></a> (the wireframe spec) · avatar menu shown open for demo
+    </p>
+
+  </main>
+
+  <!-- Annotation callouts -->
+  <div class="annot annot-notif">
+    <span class="pin"></span>
+    <strong>🔔 Notifications</strong><br />
+    Async signals — incidents,<br />
+    batch jobs, quota alerts.<br />
+    Count badge = unread.
+  </div>
+
+  <div class="annot annot-help">
+    <span class="pin"></span>
+    <strong>? Help &amp; shortcuts</strong><br />
+    Keyboard sheet + docs jumps.
+  </div>
+
+  <div class="annot annot-av">
+    <span class="pin"></span>
+    <strong>Focused avatar menu</strong><br />
+    5 items + theme sub-menu.<br />
+    Theme = 2-click max.<br />
+    Account → /settings sub-app.<br />
+    No Workspace entry here<br />
+    (single home in top-left).
+  </div>
+
+</div>
+</body>
+</html>

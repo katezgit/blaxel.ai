@@ -1,0 +1,88 @@
+/* Intermediate design tokens — will be replaced in design-tokens phase.
+   Pulled from the live Blaxel dashboard aesthetic for visual continuity.
+   Hue assignments for states are first-pass and need product-domain-reviewer pass. */
+
+:root {
+  /* Surface — dark theme baseline */
+  --surface-0:    #0a0a0a;   /* page background */
+  --surface-1:    #111111;   /* sidebar, sheet, sticky bars */
+  --surface-2:    #161616;   /* cards, table rows */
+  --surface-3:    #1d1d1d;   /* hover, focused row */
+  --surface-4:    #232323;   /* form inputs */
+
+  --border-1:     #232323;   /* hairline */
+  --border-2:     #2d2d2d;   /* card edges */
+  --border-3:     #3a3a3a;   /* input focus */
+
+  /* Text */
+  --text-1:       #f4f4f5;   /* primary */
+  --text-2:       #c3c3c5;   /* secondary */
+  --text-3:       #8a8a8e;   /* tertiary / labels */
+  --text-4:       #5a5a5e;   /* faint / dividers */
+  --text-on-accent: #ffffff;
+
+  /* Accent — Blaxel orange */
+  --accent:       #e95423;
+  --accent-soft:  #ff7a3d;
+  --accent-quiet: #3b1a0c;
+
+  /* State hues (first-pass, intermediate) */
+  --state-active:    #10b981;  /* green */
+  --state-active-bg: #052e23;
+  --state-degraded:  #f59e0b;  /* amber */
+  --state-degraded-bg:#3b2a08;
+  --state-errored:   #ef4444;  /* red */
+  --state-errored-bg:#3a1212;
+  --state-standby:   #71717a;  /* zinc neutral */
+  --state-standby-bg:#1f1f23;
+  --state-deploying: #3b82f6;  /* blue */
+
+  /* Typography */
+  --font-mono:    "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  --font-ui:      "JetBrains Mono", "SF Mono", "Menlo", monospace;
+
+  --type-h1:      24px;
+  --type-h2:      18px;
+  --type-h3:      14px;
+  --type-body:    13px;
+  --type-small:   12px;
+  --type-tiny:    11px;
+
+  --line-tight:   1.25;
+  --line-body:    1.5;
+
+  /* Spacing */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  --radius-sm:    4px;
+  --radius-md:    6px;
+  --radius-lg:    10px;
+
+  /* Layout */
+  --sidebar-w:    256px;   /* guideline modal value (Linear/Vercel/Stripe/Ant/shadcn) */
+  --content-px:   32px;
+  --topbar-h:     48px;    /* compact utility bar height per guideline §2 */
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--surface-0);
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: var(--type-body);
+  line-height: var(--line-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-soft); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; font-size: inherit; cursor: pointer; }
+hr { border: 0; border-top: 1px solid var(--border-1); margin: var(--s-4) 0; }
+code, .mono { font-family: var(--font-mono); }
