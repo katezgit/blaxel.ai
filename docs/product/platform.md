@@ -53,10 +53,14 @@ Blaxel is the **perpetual sandbox platform** — secure, infinite sandboxes kept
 
 Two distinct planes — **governance** (what runs where, and with what budget) and **access** (who is allowed to touch it). These are separate primitives in Blaxel; conflating them is a common misread.
 
-- **Account** — highest tenancy level. An Account can hold multiple **Workspaces** ("a common pattern when dealing with multiple environments — dev vs prod — business units, or end-clients").
-- **Workspace** — the container every resource (Sandbox, Agent, Batch Job, MCP Server, Model API, Custom domain, Policy, API key) lives inside. Access is scoped here.
-- **Role** — workspace-level access control. Two roles today: **admin** (full CRUD) and **member** (full CRUD on Agents, MCP Servers, Model APIs, Batch Jobs, Sandboxes; **read-only on Policies**).
-- **API key** — long-lived authentication credential. Identifies *which caller* a request is from; the caller's Role then determines what they can do.
+**Account vs Workspace — what lives where.** Two-layer tenancy. Account holds *billing-shape* concerns that span all workspaces under it: plan / tier, credits, payment methods, invoices, SSO/SAML, account admins (`Owner`), workspace entitlement, usage analytics. Workspace holds *operational* concerns scoped to one resource boundary: members, resources (Sandboxes, Volumes, Agent Drive, Images, Agents, Batch Jobs, MCP Servers, Model APIs), API keys, **service accounts**, integrations, Policies, Custom domains. Decision rule: **if a credential or identity acts on workspace resources, it belongs to the workspace.** This is the test for any new entity that surfaces in settings — a credential that floats above the workspace boundary creates a confusing, dangerous scope where one secret can touch resources across multiple tenants.
+
+- **Account** — highest tenancy level. An Account can hold multiple **Workspaces** ("a common pattern when dealing with multiple environments — dev vs prod — business units, or end-clients"). Identified by owner email + tier; has no editable name.
+- **Workspace** — the container every resource (Sandbox, Agent, Batch Job, MCP Server, Model API, Custom domain, Policy, API key, Service account) lives inside. Access is scoped here. URL-keyed by an immutable slug.
+- **Member** — a *human* identity invited to a Workspace, resolved by email. Members are invited to a workspace, not an account.
+- **Service account** — a *non-human* identity scoped to a single Workspace, used by integrations, CI/CD pipelines, and third-party services to act on workspace resources. Holds API keys; assigned a Role that governs what those keys can do. **Workspace-scoped, never account-scoped** — see the decision rule above.
+- **Role** — workspace-level access control assigned to a Member or Service account. Two roles today: **admin** (full CRUD) and **member** (full CRUD on Agents, MCP Servers, Model APIs, Batch Jobs, Sandboxes; **read-only on Policies**).
+- **API key** — long-lived authentication credential issued to a Member or Service account. Identifies *which caller* a request is from; the caller's Role then determines what they can do.
 - **Policy** — **governance**, not access. Policies "program how and where your workloads are deployed on Blaxel" — gating **location** (region), **flavor** (hardware tier), and **token usage** for Model APIs, hosted MCP Servers, and Agent deployments on the Global Agentics Network.
 
 ## Who it's for
@@ -81,7 +85,9 @@ The nouns that make up the product. Every UI label, every error message, every d
 | **MCP Server** *(Hosting)* | Serverless, autoscaling deployable program that exposes capabilities (DBs, APIs, files, etc.) through the Model Context Protocol. Maximum runtime per invocation: **15 minutes**. Has its own global endpoint. **In the API this primitive is called `function`.** This is *not* the same as the per-Sandbox built-in MCP server — see Connection methods. |
 | **Model API** | Hosted inference endpoint — customer-deployed model or platform-brokered access to frontier models. |
 | **Custom domains** *(docs group: Infrastructure)* | Customer-owned DNS pointed at a Blaxel resource with managed TLS. *Today only Sandbox previews are supported; Agents and MCP Servers marked "coming soon."* |
-| **API key** | Long-lived authentication credential. Scoped to a Workspace. Identifies the caller; Role determines what they can do. |
+| **API key** | Long-lived authentication credential. Scoped to a Workspace. Identifies the caller; Role determines what they can do. Issued to a Member or a Service account. |
+| **Service account** | **Non-human identity scoped to a single Workspace.** Used by integrations, CI/CD, and third-party services to act on workspace resources. Holds API keys; assigned a Role just like a human Member. Workspace-bound, not account-bound — see Tenancy and access model. |
+| **Member** | Human identity invited to a Workspace; resolved by email. Assigned a Role. Members are invited to a workspace, not to the account above it. |
 | **Policy** | **Deployment governance** — programs *how and where* your workloads run (location / flavor / token usage on Model APIs, MCP Servers, Agent deployments). **Not** runtime authorization (that's Roles + API keys). |
 | **Role** | Workspace-level access control. `admin` (full CRUD across the workspace) or `member` (CRUD on Sandboxes/Agents/Batch Jobs/MCP Servers/Model APIs; read-only on Policies). |
 | **Region** | Where a resource is physically pinned. Currently enumerated: `us-pdx-1` (Oregon), `us-was-1` (N. Virginia), `eu-lon-1` (London), `eu-fra-1` (Frankfurt), plus pseudo-region **`auto`** (routes to closest). Volumes attaching to a region-pinned Agent must match its region. |
@@ -195,6 +201,8 @@ The dominant journeys that combine the primitives above. Every screen exists to 
 | **Model API** | Hosted inference endpoint | `LLM endpoint`, `inference server`, `model server` |
 | **Custom domains** | Customer-owned DNS pointed at a Blaxel resource (today: Sandbox previews) | `domain`, `vanity URL`, `custom URL`, `Custom Domain` (use plural lowercase d) |
 | **API key** | Long-lived authentication credential | `token`, `secret`, `access key`, `API Key` (lowercase k after API) |
+| **Service account** | Non-human, workspace-scoped identity for integrations / CI / third-party services. Holds API keys; assigned a Role. | `bot user`, `system user`, `machine user`, `app identity`, `integration user`, `Service Account` (lowercase a) |
+| **Member** | Human identity invited to a Workspace by email; assigned a Role | `user`, `teammate`, `collaborator`, `seat` |
 | **Policy** | Deployment governance rule (location / flavor / token usage) | `permission`, `rule`, `ACL`. **Not a synonym for Role.** |
 | **Role** | Workspace access-control assignment (`admin` / `member`) | `permission`, `policy`, `group` |
 | **Workspace** | Tenancy container; resources live here, access is scoped here | `project`, `tenant`, `org` |
@@ -212,6 +220,7 @@ The dominant journeys that combine the primitives above. Every screen exists to 
 - **MCP Server vs built-in MCP server.** MCP Server (Hosting) is a separately deployed program with its own endpoint and 15-min runtime cap. built-in MCP server is a per-Sandbox protocol endpoint at `<SANDBOX_BASE_URL>/mcp`. Same protocol, different primitives. Never collapse to "MCP."
 - **MCP Server vs Model API.** MCP Server exposes tools/context over the MCP protocol. Model API exposes inference. Both are hosted, but the protocol and purpose differ.
 - **Policy vs Role vs API key.** Three distinct concerns: **API key** = authentication (who is calling), **Role** = workspace access control (what they can touch), **Policy** = deployment governance (where/how/how-much a workload runs). Confusing any two = FAIL. Especially: Policy is **not** authorization.
+- **Member vs Service account vs API key.** Three layers, easy to collapse. **Member** = a *human* identity (email-based, invited to a workspace). **Service account** = a *non-human* identity inside a workspace (used by integrations, CI/CD, third-party callers). **API key** = the long-lived credential issued to *either* a Member or a Service account — it's the secret, not the identity. Roles attach to Members and Service accounts; not to API keys directly. All three are workspace-scoped — credentials acting on workspace resources belong to the workspace, never to the account above it. Service account ≠ API key (the key is what the service account *holds*); Member ≠ Account (one human can be a Member of many workspaces under different accounts).
 - **Sandbox standby vs deleted.** Standby is a steady state (idle, no charge, resumes). Deleted is terminal — `expiresIn` reached zero or quota cap hit. UI must not blur "your Sandbox is asleep" into "your Sandbox is gone."
 
 **Voice / tone** lives in [`personality.md`](./personality.md) — this file is nouns only. Apologies, encouragement, hedges, and tone rules are guarded there.
