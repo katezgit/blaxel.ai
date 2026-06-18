@@ -78,7 +78,8 @@ Rules governing the interaction protocol between Operator and model — how sign
 | Unit tests anywhere in repo (`**/*.test.{ts,tsx}`, `**/*.spec.{ts,tsx}`) — see [unit-testing-guidelines](docs/testing/unit-testing-guidelines.md) | `unit-test-engineer`      |
 | `docs/design/**` personality, UX flows, wireframes, screens, component anatomy, non-motion tokens | `product-designer`        |
 | `docs/design/**` motion tokens, animations, transitions                                           | `motion-designer`         |
-| Domain review of UX flows + wireframes (`docs/design/flows/**`, `docs/design/screens/*.wireframe.md`) — persona / phase / product-vocab gate | `product-domain-reviewer` |
+| Pre-wireframe scenarios for detail/diagnostic screens (`.intermediate/discovery/{screen-slug}/scenarios.md`) — entry-path enumeration + 10-second audit questions | `scenario-strategist`     |
+| Domain review of scenarios + UX flows + wireframes (`.intermediate/discovery/**/scenarios.md`, `docs/design/flows/**`, `docs/design/screens/*.wireframe.md`) — persona / phase / product-vocab gate | `product-domain-reviewer` |
 | WCAG / a11y / keyboard / screen reader review (any component or screen)                           | `accessibility-expert`    |
 | Pre-merge review for `apps/**` frontend code                                                      | `frontend-reviewer`       |
 | Commits, conventional commit messages, git workflows                                              | `release-manager`         |

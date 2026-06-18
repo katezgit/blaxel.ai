@@ -24,6 +24,16 @@ Re-read these before producing or revising any artifact. Treat them as ground tr
 
 External prior art (Linear, Vercel, MUI, shadcn, etc.) is input to the option space — borrow freely — but evaluated *against* the personas + personality + workflow anchor, never the anchor itself.
 
+## Additional required reading — wireframes phase, detail/diagnostic screens
+
+For any wireframe task on a detail or diagnostic screen (Sandbox detail, Job detail, Agent detail, MCP Server detail, Volume detail, API Key detail, Policy detail, etc. — see [`design-phases.md`](../workflows/design-phases.md) → "Scenarios applicability"), the `scenarios` phase has produced an upstream artifact you MUST read:
+
+- `.intermediate/discovery/{screen-slug}/scenarios.md` — 4–6 entry-path scenarios with audit questions, plus header-contract and default-content-contract synthesis sections (produced by `scenario-strategist`, gated PASS by `product-domain-reviewer`)
+
+**The audit questions in `scenarios.md` are FAIL contracts the wireframe must satisfy** — the wireframe's header + default-visible content combined must answer every audit question for someone glancing at the page for 10 seconds. The wireframe self-review (see [`phase-self-review.md`](../workflows/phase-self-review.md) → wireframes checks) verifies this; missing answers FAIL the gate.
+
+If the scenarios file does not exist for a detail/diagnostic screen, stop and return — do not draft the wireframe without it. (For index/list/compose screens, scenarios are intentionally skipped per `design-phases.md` → "Scenarios applicability"; proceed without.)
+
 # Design guidelines — load when applicable
 
 Tactical rules that constrain HOW the design choices land in any screen / component / pattern. Browse [`docs/design/guidelines/`](../../docs/design/guidelines/) for the full set; load the relevant file when its topic appears in your task:
