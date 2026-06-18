@@ -5,8 +5,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import ManageTable from "@/app/(manage)/_components/manage-table";
 import type { Secret } from "@/lib/mock/types";
+import { secretQueries } from "@/lib/query/secrets";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 
 const columnHelper = createColumnHelper<Secret>();
 
@@ -36,11 +39,9 @@ const columns = [
   }),
 ];
 
-interface SecretsTableProps {
-  rows: ReadonlyArray<Secret>;
-}
-
-export function SecretsTable({ rows }: SecretsTableProps) {
+export function SecretsTable() {
+  const { accountId } = useCurrentTenancy();
+  const { data: rows } = useSuspenseQuery(secretQueries.list(accountId));
   const table = useReactTable({
     data: rows as Secret[],
     columns,

@@ -5,11 +5,13 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Badge } from "@repo/ui/components/badge";
 import { Card } from "@repo/ui/components/card";
 import ManageTable from "@/app/(manage)/_components/manage-table";
-import { billingHistory } from "@/lib/mock";
 import type { BillingHistoryEntry, BillingHistoryStatus } from "@/lib/mock/types";
+import { billingQueries } from "@/lib/query/billing";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", { dateStyle: "short" });
 const NUMBER = new Intl.NumberFormat("en-US");
@@ -82,6 +84,8 @@ const columns = [
 ];
 
 export function BillingHistoryPanel() {
+  const { accountId } = useCurrentTenancy();
+  const { data: billingHistory } = useSuspenseQuery(billingQueries.history(accountId));
   const table = useReactTable({
     data: billingHistory as BillingHistoryEntry[],
     columns,

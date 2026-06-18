@@ -5,8 +5,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import ManageTable from "@/app/(manage)/_components/manage-table";
 import type { LimitRow } from "@/lib/mock/types";
+import { limitQueries } from "@/lib/query/limits";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 
 const columnHelper = createColumnHelper<LimitRow>();
 
@@ -33,11 +36,9 @@ const columns = [
   }),
 ];
 
-interface LimitsTableProps {
-  rows: ReadonlyArray<LimitRow>;
-}
-
-export function LimitsTable({ rows }: LimitsTableProps) {
+export function LimitsTable() {
+  const { accountId } = useCurrentTenancy();
+  const { data: rows } = useSuspenseQuery(limitQueries.list(accountId));
   const table = useReactTable({
     data: rows as LimitRow[],
     columns,

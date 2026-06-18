@@ -1,13 +1,20 @@
+"use client";
+
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import { Input } from "@repo/ui/components/input";
 import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
-import { currentOrg, orgAddress } from "@/lib/mock";
+import { orgQueries } from "@/lib/query/org";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 
 /**
  * Read-only Organization details — used by the user-tier view.
  * Admin view inlines its own controlled fields to own dirty-state locally.
  */
 export function OrganizationFields() {
+  const { accountId } = useCurrentTenancy();
+  const { data: currentOrg } = useSuspenseQuery(orgQueries.account(accountId));
+  const { data: orgAddress } = useSuspenseQuery(orgQueries.address(accountId));
   return (
     <>
       <FieldRow>

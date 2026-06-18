@@ -11,15 +11,16 @@ import {
 } from "@repo/ui/components/drawer";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { cn } from "@repo/ui/lib/cn";
 import { RoleProvider } from "@/lib/mock/role-context";
+import { userQueries } from "@/lib/query/user";
 import { BrandMark } from "@/components/shell/brand-mark";
 import { DevRoleSwitcher } from "@/components/shell/dev-role-switcher";
 import { SidebarProvider } from "@/components/shell/sidebar-context";
 import { SkipToContent } from "@/components/shell/skip-to-content";
 import { useSidebarShortcut } from "@/components/shell/use-sidebar-shortcut";
 import { useSidebarState } from "@/components/shell/use-sidebar-state";
-import { currentUser } from "@/lib/mock";
 import { ManageSidebarBody } from "@/app/(manage)/_components/manage-sidebar";
 
 interface ManageShellProps {
@@ -50,6 +51,7 @@ export default function ManageShell({ email, name, children }: ManageShellProps)
   const { collapsed, toggle } = useSidebarState();
   useSidebarShortcut(toggle);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { data: currentUser } = useSuspenseQuery(userQueries.current());
   const user = { name: name || currentUser.name, email };
 
   useEffect(() => {

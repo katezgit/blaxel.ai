@@ -1,13 +1,18 @@
 "use client";
 
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Badge } from "@repo/ui/components/badge";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
-import { burnHistory, priorPeriodBurn } from "@/lib/mock";
+import { creditQueries } from "@/lib/query/credits";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 
 const NUMBER = new Intl.NumberFormat("en-US");
 
 export function BurndownPanel() {
+  const { accountId } = useCurrentTenancy();
+  const { data: burn } = useSuspenseQuery(creditQueries.burn(accountId));
+  const { history: burnHistory, priorPeriodBurn } = burn;
   const currentBurn = burnHistory[burnHistory.length - 1]?.spent ?? 0;
   const deltaPercent = Math.round(
     ((currentBurn - priorPeriodBurn) / priorPeriodBurn) * 100,

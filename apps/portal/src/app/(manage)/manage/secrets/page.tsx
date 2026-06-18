@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import AdminGate from "@/app/(manage)/_components/admin-gate";
 import { ManagePageAction } from "@/app/(manage)/_components/manage-page-action";
-import { secrets } from "@/lib/mock";
+import { getQueryClient } from "@/lib/query/get-query-client";
+import { secretQueries } from "@/lib/query/secrets";
+import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { SecretsTable } from "./_components";
 
 export const metadata: Metadata = {
   title: "Secrets",
 };
 
-export default function SecretsPage() {
+export default async function SecretsPage() {
+  const { accountId } = await getCurrentTenancy();
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(secretQueries.list(accountId));
   return (
     <AdminGate>
       <ManagePageAction>
@@ -19,7 +25,9 @@ export default function SecretsPage() {
           Add Secret
         </Button>
       </ManagePageAction>
-      <SecretsTable rows={secrets} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <SecretsTable />
+      </HydrationBoundary>
     </AdminGate>
   );
 }

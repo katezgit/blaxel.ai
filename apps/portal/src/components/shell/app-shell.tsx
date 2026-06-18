@@ -31,9 +31,12 @@ import { IconButton } from "@repo/ui/components/icon-button";
 import {
   TooltipProvider,
 } from "@repo/ui/components/tooltip";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { cn } from "@repo/ui/lib/cn";
 import { RoleProvider } from "@/lib/mock/role-context";
-import { currentOrg } from "@/lib/mock";
+import type { Org } from "@/lib/mock/types";
+import { orgQueries } from "@/lib/query/org";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { AvatarMenu, AvatarMenuCollapsed } from "@/components/shell/avatar-menu";
 import { BrandMark } from "@/components/shell/brand-mark";
 import { SidebarProvider } from "@/components/shell/sidebar-context";
@@ -117,6 +120,10 @@ export default function AppShell({ email, name, children }: AppShellProps) {
   useSidebarShortcut(toggle);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const user = { name: name || "User", email };
+  const { accountId } = useCurrentTenancy();
+  // Suspense-mode query: layout prefetched this exact key, so hydration
+  // resolves synchronously on first paint and no fallback ever shows.
+  const { data: currentOrg } = useSuspenseQuery(orgQueries.account(accountId));
 
   return (
     <RoleProvider>
@@ -129,7 +136,7 @@ export default function AppShell({ email, name, children }: AppShellProps) {
             className="hidden w-[52px] shrink-0 flex-col border-r border-border md:flex lg:hidden"
           >
             <SidebarProvider collapsed={true} toggle={toggle}>
-              <SidebarBody collapsed={true} user={user} />
+              <SidebarBody collapsed={true} user={user} currentOrg={currentOrg} />
             </SidebarProvider>
           </aside>
 
@@ -141,7 +148,7 @@ export default function AppShell({ email, name, children }: AppShellProps) {
             )}
           >
             <SidebarProvider collapsed={collapsed} toggle={toggle}>
-              <SidebarBody collapsed={collapsed} user={user} />
+              <SidebarBody collapsed={collapsed} user={user} currentOrg={currentOrg} />
             </SidebarProvider>
           </aside>
 
@@ -150,6 +157,7 @@ export default function AppShell({ email, name, children }: AppShellProps) {
               drawerOpen={drawerOpen}
               onOpenDrawer={() => setDrawerOpen(true)}
               user={user}
+              currentOrg={currentOrg}
             />
 
             <main
@@ -183,6 +191,7 @@ export default function AppShell({ email, name, children }: AppShellProps) {
                   <SidebarBody
                     collapsed={false}
                     user={user}
+                    currentOrg={currentOrg}
                     headerTrailing={
                       <DrawerClose asChild>
                         <IconButton
@@ -208,10 +217,11 @@ export default function AppShell({ email, name, children }: AppShellProps) {
 interface SidebarBodyProps {
   collapsed: boolean;
   user: { name: string; email: string };
+  currentOrg: Org;
   headerTrailing?: ReactNode;
 }
 
-function SidebarBody({ collapsed, user, headerTrailing }: SidebarBodyProps) {
+function SidebarBody({ collapsed, user, currentOrg, headerTrailing }: SidebarBodyProps) {
   return (
     <>
       {headerTrailing ? (
@@ -327,9 +337,10 @@ interface MobileTopBarProps {
   drawerOpen: boolean;
   onOpenDrawer: () => void;
   user: { name: string; email: string };
+  currentOrg: Org;
 }
 
-function MobileTopBar({ drawerOpen, onOpenDrawer, user }: MobileTopBarProps) {
+function MobileTopBar({ drawerOpen, onOpenDrawer, user, currentOrg }: MobileTopBarProps) {
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-muted-surface px-3 md:hidden">
       <div className="flex items-center gap-1">

@@ -3,10 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Input } from "@repo/ui/components/input";
 import DirtyActionBar from "@/app/(manage)/_components/dirty-action-bar";
 import { Field, FieldRow, Panel } from "@/app/(manage)/_components/page-primitives";
-import { currentUser } from "@/lib/mock";
+import { userQueries } from "@/lib/query/user";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required").max(80, "Name must be 80 characters or fewer"),
@@ -15,15 +16,14 @@ const profileSchema = z.object({
 
 type ProfileValues = z.infer<typeof profileSchema>;
 
-const DEFAULT_VALUES: ProfileValues = {
-  name: currentUser.name,
-  email: currentUser.email,
-};
-
 export function ProfileForm() {
+  const { data: currentUser } = useSuspenseQuery(userQueries.current());
   const form = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: {
+      name: currentUser.name,
+      email: currentUser.email,
+    },
     mode: "onChange",
   });
 

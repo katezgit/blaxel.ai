@@ -3,12 +3,16 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRightIcon } from "lucide-react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import { Progress } from "@repo/ui/components/progress";
 import { useRole } from "@/lib/mock/role-context";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
-import { creditState, limits, usageRows } from "@/lib/mock";
+import { creditQueries } from "@/lib/query/credits";
+import { limitQueries } from "@/lib/query/limits";
+import { usageQueries } from "@/lib/query/usage";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { BurndownPanel } from "./burndown-panel";
 import { UsageTable } from "./usage-table";
 
@@ -16,6 +20,10 @@ const NUMBER = new Intl.NumberFormat("en-US");
 
 export function UsageView() {
   const { isAdmin } = useRole();
+  const { accountId } = useCurrentTenancy();
+  const { data: creditState } = useSuspenseQuery(creditQueries.state(accountId));
+  const { data: limits } = useSuspenseQuery(limitQueries.list(accountId));
+  const { data: usageRows } = useSuspenseQuery(usageQueries.list(accountId));
   const percentRemaining = Math.round((creditState.balance / creditState.total) * 100);
 
   return (

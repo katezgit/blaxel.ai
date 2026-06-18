@@ -1,16 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PlusIcon } from "lucide-react";
 import {
   createColumnHelper,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@repo/ui/components/button";
 import ManageTable from "@/app/(manage)/_components/manage-table";
 import { ManagePageAction } from "@/app/(manage)/_components/manage-page-action";
 import type { ApiKey } from "@/lib/mock/types";
+import { orgApiKeyQueries } from "@/lib/query/org-api-keys";
+import { queryKeys } from "@/lib/query/keys";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { CreateApiKeyDialog, type ExpirationOption } from "./create-api-key-dialog";
 import { RevokeKeyButton } from "./revoke-key-button";
 import { SaveApiKeyDialog } from "./save-api-key-dialog";
@@ -56,19 +60,43 @@ function resolveExpiresAt(option: ExpirationOption, now: Date): string | null {
 
 const columnHelper = createColumnHelper<ApiKey>();
 
-interface ApiKeysClientProps {
-  initialKeys: ReadonlyArray<ApiKey>;
-}
+export function ApiKeysClient() {
+  const { accountId } = useCurrentTenancy();
+  const queryClient = useQueryClient();
+  const { data: keys } = useSuspenseQuery(orgApiKeyQueries.list(accountId));
 
-export function ApiKeysClient({ initialKeys }: ApiKeysClientProps) {
-  const [keys, setKeys] = useState<ReadonlyArray<ApiKey>>(initialKeys);
   const [createOpen, setCreateOpen] = useState(false);
   // `null` doubles as the closed signal for the Save dialog; non-null = open with that key.
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
 
-  const handleRevoke = (id: string) => {
-    setKeys((prev) => prev.filter((k) => k.id !== id));
-  };
+  // Mutations update the cache directly because there's no real backend yet —
+  // a real server would replace setQueryData with invalidateQueries.
+  const revokeMutation = useMutation({
+    mutationFn: async (id: string) => id,
+    onSuccess: (id) => {
+      queryClient.setQueryData<ReadonlyArray<ApiKey>>(
+        queryKeys.orgApiKeys(accountId),
+        (prev) => (prev ?? []).filter((k) => k.id !== id),
+      );
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (entry: ApiKey) => entry,
+    onSuccess: (entry) => {
+      queryClient.setQueryData<ReadonlyArray<ApiKey>>(
+        queryKeys.orgApiKeys(accountId),
+        (prev) => [entry, ...(prev ?? [])],
+      );
+    },
+  });
+
+  const handleRevoke = useCallback(
+    (id: string) => {
+      revokeMutation.mutate(id);
+    },
+    [revokeMutation],
+  );
 
   const columns = useMemo(
     () => [
@@ -114,7 +142,7 @@ export function ApiKeysClient({ initialKeys }: ApiKeysClientProps) {
         },
       }),
     ],
-    [],
+    [handleRevoke],
   );
 
   const table = useReactTable({
@@ -139,7 +167,7 @@ export function ApiKeysClient({ initialKeys }: ApiKeysClientProps) {
       createdAt: now.toISOString().slice(0, 10),
       expiresAt: resolveExpiresAt(expiration, now),
     };
-    setKeys((prev) => [newKey, ...prev]);
+    createMutation.mutate(newKey);
     setCreateOpen(false);
     setGeneratedKey(fullKey);
   };

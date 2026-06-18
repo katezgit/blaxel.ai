@@ -3,13 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Card } from "@repo/ui/components/card";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import { Input } from "@repo/ui/components/input";
 import { Switch } from "@repo/ui/components/switch";
 import DirtyActionBar from "@/app/(manage)/_components/dirty-action-bar";
 import { Field, FieldRow, Panel } from "@/app/(manage)/_components/page-primitives";
-import { currentOrg, orgAddress } from "@/lib/mock";
+import { orgQueries } from "@/lib/query/org";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 
 const orgSchema = z.object({
   name: z.string().min(1, "Organization name is required").max(120),
@@ -23,20 +25,22 @@ const orgSchema = z.object({
 
 type OrgValues = z.infer<typeof orgSchema>;
 
-const DEFAULT_VALUES: OrgValues = {
-  name: currentOrg.name,
-  line1: orgAddress.line1,
-  line2: orgAddress.line2,
-  country: orgAddress.country,
-  state: orgAddress.state,
-  city: orgAddress.city,
-  postalCode: orgAddress.postalCode,
-};
-
 export function OrganizationAdminView() {
+  const { accountId } = useCurrentTenancy();
+  const { data: currentOrg } = useSuspenseQuery(orgQueries.account(accountId));
+  const { data: orgAddress } = useSuspenseQuery(orgQueries.address(accountId));
+
   const form = useForm<OrgValues>({
     resolver: zodResolver(orgSchema),
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: {
+      name: currentOrg.name,
+      line1: orgAddress.line1,
+      line2: orgAddress.line2,
+      country: orgAddress.country,
+      state: orgAddress.state,
+      city: orgAddress.city,
+      postalCode: orgAddress.postalCode,
+    },
     mode: "onChange",
   });
 
