@@ -2,6 +2,7 @@
 
 import { Bell, CircleHelp } from "lucide-react";
 import { IconButton } from "@repo/ui/components/icon-button";
+import { cn } from "@repo/ui/lib/cn";
 import { AvatarMenu } from "@/components/shell/avatar-menu";
 
 interface IdentityClusterProps {
@@ -10,20 +11,26 @@ interface IdentityClusterProps {
 }
 
 export function IdentityCluster({ user, unreadCount }: IdentityClusterProps) {
+  const hasUnread = unreadCount > 0;
   return (
     <div className="flex items-center gap-0.5">
       <IconButton
         variant="ghost"
         size="md"
         aria-label={
-          unreadCount > 0
+          hasUnread
             ? `Notifications, ${unreadCount} unread`
             : "Notifications"
         }
         onClick={() => {
           /* TODO: notifications panel — see wireframe §15 */
         }}
-        className="relative [&_svg]:size-5"
+        className={cn(
+          "relative [&_svg]:size-5",
+          hasUnread
+            ? "[&_svg]:text-foreground"
+            : "[&_svg]:text-muted-foreground hover:[&_svg]:text-foreground",
+        )}
       >
         <Bell />
         {unreadCount > 0 ? (
@@ -42,7 +49,7 @@ export function IdentityCluster({ user, unreadCount }: IdentityClusterProps) {
         onClick={() => {
           /* TODO: help panel — see wireframe §15 */
         }}
-        className="[&_svg]:size-5"
+        className="[&_svg]:size-5 [&_svg]:text-muted-foreground hover:[&_svg]:text-foreground"
       >
         <CircleHelp />
       </IconButton>

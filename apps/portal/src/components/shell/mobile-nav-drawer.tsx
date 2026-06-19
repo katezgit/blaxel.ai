@@ -42,7 +42,7 @@ export function MobileNavDrawer({
       >
         <DrawerTitle className="sr-only">{ariaLabel}</DrawerTitle>
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between pl-2 pr-2 pt-1">
+          <div className="flex items-center justify-between px-2 pt-6">
             <BrandWordmark />
             <DrawerClose asChild>
               <IconButton variant="ghost" size="md" aria-label="Close navigation">

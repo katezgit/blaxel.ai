@@ -33,7 +33,7 @@ export function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps) {
         "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md px-2 text-label outline-hidden",
         "focus-visible:shadow-focus-ring",
         isActive
-          ? "text-primary"
+          ? "bg-primary/12 text-primary"
           : "text-muted-foreground hover:text-foreground",
       )}
     >

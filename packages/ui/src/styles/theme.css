@@ -83,10 +83,13 @@
   --color-code-muted:  var(--ink-100);             /* #B3BFCE — language label */
   --color-code-border: rgba(255 255 255 / .06);    /* hairline on dark surface */
   /* Highlight surface for select-kind components (Select, Command, DropdownMenu, Combobox).
+   * Light: 5% black mix on elevated-light → ~#F2F2F2, a soft neutral step BELOW the
+   *   white popover (--color-popover = --color-control-raised = --surface-panel-light).
+   *   Plain --surface-elevated-light would match the popover bg → invisible highlight.
    * Dark: white-mix lift because popover bg = --control-raised = --surface-elevated-dark —
-   * same primitive = invisible if using orange mix. Same pattern as --color-sidebar-hover-manage. */
+   *   same primitive = invisible if using orange mix. Same pattern as --color-sidebar-hover-manage. */
   --color-highlight-surface: light-dark(
-    var(--surface-elevated-light),
+    color-mix(in srgb, var(--surface-elevated-light) 95%, black 5%),
     color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
   );
 
@@ -132,21 +135,27 @@
   /* Hover surface — hovered rows and interactive backdrops.
    * Light: 8% orange-800 mix into white → warm-tinted lift above white.
    * Selected tier uses 16% orange mix for stronger commitment read.
-   * Dark: 8% orange-500 mix → warm-tinted lift matching orange brand accent. */
+   * Dark: 8% white mix → neutral lift; orange-500 at this alpha read as red/error
+   * on table rows where the hover repeats frequently. */
   --color-hover-surface:    light-dark(
     color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 92%, var(--orange-500) 8%)
+    color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
   );
   /* Sidebar hover — two variants for two shell surfaces.
    *
-   * App shell sidebar (sits on bg-muted-surface):
-   *   Dark: elevated-dark lifts above muted-dark (distinct tier).
+   * App shell sidebar (sits on bg-background):
+   *   Light: 8% black mix anchored on the sidebar's own --surface-bg-light base
+   *     (#F7F7F9) → ~#E2E2E5, a perceptible neutral DARKEN step. Anchoring on
+   *     elevated (white) would put hover at #F5F5F5, only 2 luminance units
+   *     below the sidebar — invisible. Lifting to white (highlight-surface) is
+   *     rejected as a chrome → content tier jump.
+   *   Dark: elevated-dark lifts above bg-dark (distinct tier).
    *
    * Manage shell sidebar (sits on bg-card / panel surface):
    *   Dark: 12% white mix → neutral lift; orange mix would clash on dark-navy elevated bg. */
   --color-sidebar-hover:        light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
-    var(--surface-elevated-dark)
+    color-mix(in srgb, var(--surface-bg-light) 92%, black 8%),
+    color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
   );
   --color-sidebar-hover-manage: light-dark(
     color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
@@ -154,7 +163,7 @@
   );
   --color-selected-surface: light-dark(
     color-mix(in srgb, var(--surface-bg-light) 84%, var(--orange-800) 16%),
-    var(--surface-secondary-dark)
+    color-mix(in srgb, var(--surface-secondary-dark) 90%, var(--orange-800) 10%)
   );
   --color-control-raised:   light-dark(var(--surface-panel-light),     var(--surface-elevated-dark));
 
