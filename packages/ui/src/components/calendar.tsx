@@ -166,12 +166,15 @@ function Calendar({ className, ...props }: CalendarProps) {
           // [&>button] targets the DayButton <button> child — rdp v10 does not add
           // rdp-* prefix classes to user-supplied className strings, so
           // [&>.rdp-day_button] would never match. Use the element selector instead.
-          "[&>button]:bg-selected-surface [&>button]:rounded-md",
+          // bg-primary-border (25% orange mix) keeps the endpoint in the same warm
+          // family as range_middle (bg-primary-soft, 10% orange mix) in both themes.
+          // bg-selected-surface was wrong: its dark value resolves to a cool neutral.
+          "[&>button]:bg-primary-border [&>button]:rounded-md",
         ].join(" "),
         range_end: [
           "rounded-r-md",
           "bg-primary-soft",
-          "[&>button]:bg-selected-surface [&>button]:rounded-md",
+          "[&>button]:bg-primary-border [&>button]:rounded-md",
         ].join(" "),
         range_middle: [
           "bg-primary-soft rounded-none",
