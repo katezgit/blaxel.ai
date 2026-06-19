@@ -49,12 +49,15 @@ export function TwoFactorVerifyStep({
           aria-label="6-digit verification code"
         />
       </Field>
-      <StepActionRow>
+      <StepActionRow
+        back={
+          <Button variant="secondary" onClick={onBack}>
+            Back
+          </Button>
+        }
+      >
         <Button variant="ghost" onClick={onCancel}>
           Cancel
-        </Button>
-        <Button variant="secondary" onClick={onBack}>
-          Back
         </Button>
         <Button variant="primary" onClick={onVerified} disabled={!canVerify}>
           Verify

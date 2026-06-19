@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MessageSquare, Smartphone } from "lucide-react";
+import { MessageSquare, Smartphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { cn } from "@repo/ui/lib/cn";
@@ -89,14 +89,6 @@ export function TwoFactorChooseMethodStep({
               <span className="text-caption text-muted-foreground">
                 {option.description}
               </span>
-              {isSelected ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground"
-                >
-                  <Check className="size-3" />
-                </span>
-              ) : null}
             </button>
           );
         })}

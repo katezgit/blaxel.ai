@@ -84,25 +84,18 @@ export function NotificationsClient() {
       </Panel>
 
       <Panel title="Privacy">
-        <a
-          href="https://blaxel.ai/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between gap-3 rounded-md border border-border bg-card p-4 transition-colors hover:border-border-strong focus-visible:shadow-focus-ring focus-visible:outline-none"
-        >
-          <div className="flex flex-col gap-0.5">
-            <span className="text-body font-medium text-foreground">
-              Manage privacy preferences
-            </span>
-            <span className="text-caption text-muted-foreground">
-              Data sharing, telemetry, and cookie choices live on the public site.
-            </span>
-          </div>
-          <ArrowUpRight
-            aria-hidden="true"
-            className="size-4 shrink-0 text-muted-foreground"
-          />
-        </a>
+        <p className="text-body text-muted-foreground">
+          Data sharing, telemetry, and cookie choices live on the public site.{" "}
+          <a
+            href="https://blaxel.ai/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-0.5 font-medium text-primary underline-offset-4 hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none"
+          >
+            Manage preferences
+            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          </a>
+        </p>
       </Panel>
     </>
   );

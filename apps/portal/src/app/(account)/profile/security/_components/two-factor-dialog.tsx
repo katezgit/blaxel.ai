@@ -64,7 +64,11 @@ export function TwoFactorDialog({
         <DialogHeader>
           <DialogTitle>Set up two-factor authentication</DialogTitle>
           <div className="mt-4">
-            <Stepper steps={STEPS} currentStep={step} />
+            <Stepper
+              steps={STEPS}
+              currentStep={step}
+              onStepClick={(target) => setStep(target as StepIndex)}
+            />
           </div>
         </DialogHeader>
         <DialogBody>

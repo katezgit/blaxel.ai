@@ -56,24 +56,28 @@ export function TwoFactorRecoveryStep({
           access to your authenticator or phone.
         </p>
       </div>
-      <ul className="grid grid-cols-1 gap-2 rounded-lg border border-border bg-muted-surface p-4 sm:grid-cols-2">
-        {codes.map((code) => (
-          <li
-            key={code}
-            className="font-mono text-body tracking-wider text-foreground"
-          >
-            {code}
-          </li>
-        ))}
-      </ul>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <div className="relative rounded-lg border border-border bg-muted-surface p-4">
+        <div className="absolute top-2 right-2">
+          <CopyButton value={joined} tooltipLabel="Copy codes" />
+        </div>
+        <ul className="grid grid-cols-1 gap-2 pr-10 sm:grid-cols-2">
+          {codes.map((code) => (
+            <li
+              key={code}
+              className="font-mono text-body tracking-wider text-foreground"
+            >
+              {code}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex">
         <Button asChild variant="secondary">
           <a href={downloadHref} download="blaxel-recovery-codes.txt">
             <Download aria-hidden="true" className="size-3.5" />
-            Download .txt
+            Download as .txt
           </a>
         </Button>
-        <CopyButton value={joined} tooltipLabel="Copy all codes" />
       </div>
       <label className="flex items-start gap-3">
         <Checkbox
@@ -85,12 +89,15 @@ export function TwoFactorRecoveryStep({
           I&rsquo;ve saved these recovery codes somewhere safe.
         </span>
       </label>
-      <StepActionRow>
+      <StepActionRow
+        back={
+          <Button variant="secondary" onClick={onBack}>
+            Back
+          </Button>
+        }
+      >
         <Button variant="ghost" onClick={onCancel}>
           Cancel
-        </Button>
-        <Button variant="secondary" onClick={onBack}>
-          Back
         </Button>
         <Button variant="primary" onClick={onDone} disabled={!acknowledged}>
           Turn on two-factor

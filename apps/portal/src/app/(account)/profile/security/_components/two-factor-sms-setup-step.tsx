@@ -40,12 +40,15 @@ export function TwoFactorSmsSetupStep({
           autoComplete="tel"
         />
       </Field>
-      <StepActionRow>
+      <StepActionRow
+        back={
+          <Button variant="secondary" onClick={onBack}>
+            Back
+          </Button>
+        }
+      >
         <Button variant="ghost" onClick={onCancel}>
           Cancel
-        </Button>
-        <Button variant="secondary" onClick={onBack}>
-          Back
         </Button>
         <Button variant="primary" onClick={onContinue} disabled={!canContinue}>
           Send code
