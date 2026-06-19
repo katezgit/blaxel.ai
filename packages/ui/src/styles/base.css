@@ -21,10 +21,9 @@ body {
 }
 
 /* outline: 2px solid transparent is the forced-colors fallback — Windows HC mode
- * ignores box-shadow but renders outline with the system color. Inner halo mirrors
- * the lightness extreme of each mode: pure #fff in dark gives the bright glowy lift;
- * --ink-900 in light gives the dark-rim mirror, since a white halo blends into the
- * white panel + off-white page and kills the gap. */
+ * ignores box-shadow but renders outline with the system color.
+ * Inner halo: pure #fff in dark gives bright glowy lift; orange-tinted white in light
+ * gives frosted brand glow (plain white blends into white panels and kills the gap). */
 *:focus-visible {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -45,9 +44,7 @@ body {
   box-shadow: 0 0 0 2px light-dark(color-mix(in srgb, var(--orange-800) 14%, white), #fff), 0 0 0 4px var(--color-state-errored);
 }
 
-/* 
- * @todo
- * Inset variant for elements inside overflow:hidden containers (popovers, dropdowns,
+/* Inset variant for elements inside overflow:hidden containers (popovers, dropdowns,
  * sidebar items flush against a rail) where the outer box-shadow would clip.
  * outline-offset: -4px pulls the HC-mode outline inside the 4px inset band. */
 .focus-inset:focus-visible,

@@ -16,30 +16,28 @@
  * Theme-agnostic raw values, named by hue + step. Consumed only by theme.css semantic roles.
  * --color-*: initial in @theme wipes Tailwind's default white utility, so use --white. */
 :root {
-  /* Neutral — theme-agnostic raw values.
-   * --color-*: initial in @theme wipes Tailwind's default white utility, so use --white. */
-  --neutral-950: #09090b;   /* Blaxel near-black — hsl(240,10%,4%) — replaces old #1c2024 */
+  --neutral-950: #09090b;   /* Blaxel near-black — replaces old #1c2024 */
   --neutral-50:  #F8FAFB;
   --white:       #FFFFFF;
 
-  /* Brand — gold retired (no usage on blaxel.ai; logo/mark uses orange).
+  /* Brand — gold retired (no usage; logo/mark uses orange).
    * Retained as a commented fallback in case a Storybook story references it. */
   /* --gold: #f7b717; */
 
   /* Ink — OKLCH gray ramp steps mapped to semantic text tiers.
    * Source: Blaxel v2 gray ramp (--v2-gray-*) + semantic assignments from .light / .dark.
    *
-   * Light assignments (v2-text-primary = gray-4, text-secondary = gray-40):
-   *   ink-900 → foreground       = v2-gray-4  (deepest, ~14% L)
-   *   ink-800 → muted-foreground = v2-gray-40 (medium, ~48% L, Blaxel text-secondary light)
-   *   ink-700 → meta-foreground  = v2-gray-52 (muted-regular, ~58% L, Blaxel gray-muted-regular)
-   *   ink-400 → text-disabled    = v2-gray-64 (~69% L, enough above meta but clearly off)
+   * Light assignments:
+   *   ink-900 → foreground       = v2-gray-4  (~14% L)
+   *   ink-800 → muted-foreground = v2-gray-40 (~48% L)
+   *   ink-700 → meta-foreground  = v2-gray-52 (~58% L)
+   *   ink-400 → text-disabled    = v2-gray-64 (~69% L)
    *
    * Dark assignments (reversed — light text on dark bg):
    *   ink-50  → foreground       = v2-gray-100 (white)
    *   ink-100 → muted-foreground = v2-gray-88  (~90% L)
-   *   ink-200 → meta-foreground  = v2-gray-76  (~80% L, Blaxel gray-muted-dark)
-   *   ink-500 → text-disabled    = v2-gray-30  (~39% L, dim on dark bg) */
+   *   ink-200 → meta-foreground  = v2-gray-76  (~80% L)
+   *   ink-500 → text-disabled    = v2-gray-30  (~39% L) */
   --ink-900: oklch(.141 .004 285.823);   /* v2-gray-4  — foreground light    ↔ ink-50 dark  */
   --ink-50:  oklch(1 0 0);               /* v2-gray-100 — foreground dark     ↔ ink-900 light */
   --ink-800: oklch(.480 .035 284.997);   /* v2-gray-40 — muted-fg light      ↔ ink-100 dark  */
@@ -52,15 +50,8 @@
   --ink-500: oklch(.393 .029 285.012);   /* v2-gray-30 — text-disabled dark  ↔ ink-400 light */
 
   /* Surfaces — light / dark pairs.
-   * Light: Blaxel ships #ffffff for ALL surface tiers and uses shadow stacks for elevation.
-   *   See --shadow-* tokens in this file for the progressive ring+shadow ladder.
-   * Dark: Blaxel .dark HSL surface tiers converted to hex.
-   *   background = hsl(240,10%,4%) = #09090b
-   *   card       = hsl(240,11%,8%) = #121217
-   *   accent     = hsl(238,16%,10%) = #15161e  (deepest recess)
-   *   elevated   = hsl(240,18%,12%) = #191924  (onboarding panel / hover lift)
-   *   muted      = hsl(240,14%,12%) = #1a1a23  (sidebar fill, inert chip)
-   *   secondary  = hsl(238,20%,18%) = #252537  (input/border fill, selected row) */
+   * Light: all surface tiers are #ffffff; elevation is conveyed via shadow stacks.
+   * Dark: Blaxel .dark HSL surface tiers converted to hex. */
   --surface-bg-light:        #FFFFFF;
   --surface-bg-dark:         #09090b;
   --surface-panel-light:     #FFFFFF;
@@ -74,11 +65,10 @@
   --surface-secondary-light: #FFFFFF;
   --surface-secondary-dark:  #252537;
 
-  /* Orange — brand action hue. Replaces teal everywhere.
-   * Source: Blaxel .dark --primary: hsl(21,79%,44%) + --blaxel-hover: hsl(17,87%,55%).
-   * Light: primary = hsl(21,79%,44%) = #c95618 (4.35:1 on white — passes AA for UI components).
-   * Dark:  primary = hsl(17,87%,55%) = #f06128 (6.11:1 on #09090b — strong fill on near-black).
-   * Naming kept as --orange-* to avoid collision with old --teal-* consumer code. */
+  /* Orange — brand action hue.
+   * Source: Blaxel .dark --primary hsl(21,79%,44%) + --blaxel-hover hsl(17,87%,55%).
+   * Light primary hsl(21,79%,44%) = #c95618: 4.35:1 on white (passes AA for UI components).
+   * Dark primary  hsl(17,87%,55%) = #f06128: 6.11:1 on #09090b. */
   --orange-900: #9b4212;   /* light pressed/active     hsl(21,79%,34%)  */
   --orange-800: #c95618;   /* light primary fill        hsl(21,79%,44%)  */
   --orange-700: #d96520;   /* light primary-hover       hsl(20,72%,49%)  */
@@ -86,43 +76,42 @@
   --orange-400: #f27a4a;   /* dark primary-hover        hsl(17,87%,62%)  */
 
   /* Scored (green) — success.
-   * Dark anchor: Source A — blaxel.ai .dark --info hsl(142,76%,46%) = #1ABE5F.
-   * Light anchor: Source B — twoslash annotate light #1ba673. */
-  --scored-600: #1ba673;   /* light dot/text  Source B twoslash annotate */
-  --scored-400: #1ABE5F;   /* dark dot/text   Source A .dark --info hsl(142,76%,46%) */
+   * Dark anchor: blaxel.ai .dark --info hsl(142,76%,46%) = #1ABE5F.
+   * Light anchor: twoslash annotate light #1ba673. */
+  --scored-600: #1ba673;   /* light  */
+  --scored-400: #1ABE5F;   /* dark   */
 
   /* Running (blue) — in-progress.
-   * Dark anchor: Source A — blaxel.ai .dark --debug hsl(210,100%,60%) = #33A1FF.
-   * Light anchor: Source B — twoslash tag light #3772cf. */
-  --running-600: #3772cf;   /* light  Source B twoslash tag */
-  --running-400: #33A1FF;   /* dark   Source A .dark --debug hsl(210,100%,60%) */
+   * Dark anchor: blaxel.ai .dark --debug hsl(210,100%,60%) = #33A1FF.
+   * Light anchor: twoslash tag light #3772cf. */
+  --running-600: #3772cf;   /* light  */
+  --running-400: #33A1FF;   /* dark   */
 
   /* Errored (red) — failure; shared with destructive.
-   * Dark anchor: Source A — blaxel.ai .dark --error hsl(0,84%,70%) = #F47474.
-   * Light anchor: Source B — twoslash error light #d45656. */
-  --errored-600: #d45656;   /* light  Source B twoslash error */
-  --errored-400: #F47474;   /* dark   Source A .dark --error hsl(0,84%,70%) */
+   * Dark anchor: blaxel.ai .dark --error hsl(0,84%,70%) = #F47474.
+   * Light anchor: twoslash error light #d45656. */
+  --errored-600: #d45656;   /* light  */
+  --errored-400: #F47474;   /* dark   */
 
   /* Warning (amber) — flagged non-fatal.
-   * Dark anchor: Source A — blaxel.ai .dark --warning hsl(38,92%,60%) = #F9B23B.
-   * Light anchor: Source B — twoslash warn light #c37d0d. */
-  --warning-600: #c37d0d;   /* light  Source B twoslash warn */
-  --warning-400: #F9B23B;   /* dark   Source A .dark --warning hsl(38,92%,60%) */
+   * Dark anchor: blaxel.ai .dark --warning hsl(38,92%,60%) = #F9B23B.
+   * Light anchor: twoslash warn light #c37d0d. */
+  --warning-600: #c37d0d;   /* light  */
+  --warning-400: #F9B23B;   /* dark   */
 
   /* Border — RGB channel seeds for alpha-based borders.
-   * Light: rgba(9,9,11,...) — Blaxel's shadow stack uses rgba(9,9,11,.06).
-   * Dark: white alpha — unchanged. */
+   * Light: rgba(9,9,11,...) — matches Blaxel's shadow stack base color.
+   * Dark: white alpha. */
   --border-seed-light: 9 9 11;
   --border-seed-dark:  255 255 255;
 
 /* ─── Elevation tiers ────────────────────────────────────────────────────────
- * Light: Blaxel's progressive ring+shadow ladder (rgba(9,9,11,...) base).
- *   --shadow-1 = v2-surface-2-shadow (card)
- *   --shadow-2 = v2-surface-4-shadow (popover)
- *   --shadow-3 = v2-surface-6-shadow (modal / command)
- *   --shadow-chip = v2-surface-1-shadow (chip / badge boundary)
- * Dark: black-base shadows unchanged in character; tuned to new navy surface.
- * Components should use semantic aliases (shadow-card, shadow-popover, etc.) from theme.css. */
+ * Progressive ring+shadow ladder.
+ *   --shadow-1 = card
+ *   --shadow-2 = popover
+ *   --shadow-3 = modal / command
+ *   --shadow-chip = chip / badge boundary
+ * Use semantic aliases (shadow-card, shadow-popover, etc.) from theme.css. */
   --shadow-1: light-dark(
                 0 0 0 1px rgba(9,9,11,.06),
                 0 0 0 1px rgba(255,255,255,.05)
@@ -177,18 +166,16 @@
                  );
 
 /* ─── Z-index ─────────────────────────────────────────────────────────────────
- * Z-overlay is shared by every portaled overlay; stacking is resolved by Radix
- * Portal mount order. Splitting backdrop/content tiers caused portaled dropdowns
- * to render behind drawers — do not split.
+ * Z-overlay is shared by every portaled overlay; stacking resolved by Radix Portal
+ * mount order. Splitting backdrop/content tiers caused portaled dropdowns to render
+ * behind drawers — do not split.
  * NOTE: Tailwind v4 doesn't auto-generate z-* utilities from --z-* tokens;
- * z index value provided by tailwind v4 will wiped out in the theme.css
  * utilities.css has explicit @utility z-sticky/overlay/toast bridges. */
   --z-sticky:  10;
   --z-overlay: 50;
   --z-toast:   60;
 
   /* ─── Opacity ─────────────────────────────────────────────────────────────────
- * Opacity primitives → opacity-* utilities. tailwind v4 opacity value will be wiped out in theme.css.
  * :root copy is kept so switch/disabled logic can read raw values at runtime. */
   --opacity-dim:  0.38;   /* heavily reduced — solid filled disabled shapes (preserves form) */
   --opacity-mid:  0.55;   /* default disabled — interactive elements that are off */
@@ -196,53 +183,48 @@
 }
 
 /* ─── Spacing ────────────────────────────────────────────────────────────────
- * Single-scale multiplier. All spacing utilities derive from this base.
  * --size-scrollbar is intentionally omitted from the scale (non-multiplier).  */
 :root {
   --spacing: 0.25rem;       /* Tailwind v4 does NOT ship a default --spacing; this is required */
   --size-scrollbar: 6px;    /* non-multiplier size used directly by base.css scrollbar styling */
 }
 
-/* ─── Blur ───────────────────────────────────────────────────────────────────
- * Named blur stops. --blur-xs is the Tailwind v4 default and matches
- * --blur-overlay-dialog in theme.css. */
+/* ─── Blur ───────────────────────────────────────────────────────────────────*/
 :root {
   --blur-2xs: 2px;
   --blur-xs:  4px;   /* Tailwind v4 default; matches --blur-overlay-dialog in theme.css */
 }
 
-/* ─── Duration ───────────────────────────────────────────────────────────────
- * Named duration stops for motion tokens. */
+/* ─── Duration ───────────────────────────────────────────────────────────────*/
 :root {
   --duration-instant: 80ms;    /* Hover bg, press overlay */
   --duration-fast:    120ms;   /* Focus ring, badge state change, icon swap */
   --duration-subtle:  180ms;   /* Button press scale, row select highlight */
-  --duration-base:    220ms;   /* Modal/popover enter, row reveal, skeleton shimmer period — 220ms ceiling for UI feedback; don't exceed for any state change (continuous loops use --motion-continuous) */
+  --duration-base:    220ms;   /* Modal/popover enter, row reveal — ceiling for state changes; continuous loops use --motion-continuous */
 }
 
-/* ─── Easing ─────────────────────────────────────────────────────────────────
- * Named easing curves. */
+/* ─── Easing ─────────────────────────────────────────────────────────────────*/
 :root {
   --ease-out-standard:   cubic-bezier(0.2, 0, 0, 1);       /* General state changes */
   --ease-out-emphasized:  cubic-bezier(0.05, 0.7, 0.1, 1); /* Enter transitions */
   --ease-in-accelerated:  cubic-bezier(0.3, 0, 1, 1);      /* Exit/dismissal — clears stage fast */
   --ease-linear:          linear;                           /* Shimmer, progress loops only */
-  --ease-natural:         cubic-bezier(0.25, 0.1, 0.25, 1); /* Drawer panel enter — drawer-only. Non-zero initial velocity (CSS `ease` keyword) so the panel moves from frame one; --ease-out-emphasized's near-flat start would introduce windup from the viewport edge */
+  --ease-natural:         cubic-bezier(0.25, 0.1, 0.25, 1); /* Drawer panel enter — non-zero initial velocity so the panel moves from frame one; --ease-out-emphasized's near-flat start would introduce windup from the viewport edge */
 }
 
 /* ─── Animations ─────────────────────────────────────────────────────────────
- * Composite animation shorthand values referencing duration + easing primitives
- * above. These resolve at runtime since --duration-* and --ease-* are on :root. */
+ * Composite shorthand values referencing duration + easing primitives above.
+ * Resolve at runtime since --duration-* and --ease-* are on :root. */
 :root {
   --animate-fade-in:        fade-in          var(--duration-base)   var(--ease-out-standard);
   --animate-fade-out:       fade-out         var(--duration-fast)   var(--ease-in-accelerated);
-  --animate-slide-up-in:    slide-up-in      var(--duration-base)   var(--ease-out-emphasized); /* dialog/popover panel enter — content-pop, 6px translate */
+  --animate-slide-up-in:    slide-up-in      var(--duration-base)   var(--ease-out-emphasized); /* dialog/popover enter — 6px translate */
   --animate-slide-down-out: slide-down-out   var(--duration-fast)   var(--ease-in-accelerated);
-  --animate-row-reveal:     row-reveal       var(--duration-subtle) var(--ease-out-standard) both; /* streaming table row arrival — ambient, not eventful; 4px translate, fill-mode both for staggered reveal */
+  --animate-row-reveal:     row-reveal       var(--duration-subtle) var(--ease-out-standard) both; /* streaming table row arrival — 4px translate, fill-mode both for staggered reveal */
   --animate-shimmer:        shimmer          1800ms                  var(--ease-linear) infinite;
   --animate-running-pulse:  running-pulse    1600ms                  var(--ease-linear) infinite;
-  --animate-slide-right-in: slide-right-in  var(--duration-base)   var(--ease-out-emphasized);     /* altitude switch: Trace panel enters from right */
-  --animate-slide-left-out: slide-left-out  var(--duration-fast)   var(--ease-in-accelerated);     /* altitude switch: Trace panel exits to right */
+  --animate-slide-right-in: slide-right-in  var(--duration-base)   var(--ease-out-emphasized);   /* Trace panel enters from right */
+  --animate-slide-left-out: slide-left-out  var(--duration-fast)   var(--ease-in-accelerated);   /* Trace panel exits to right */
 }
 
 @keyframes fade-in {
@@ -306,32 +288,21 @@
 
 
 /* ─── Motion composites ──────────────────────────────────────────────────────
- * These live in :root (not @theme) because they compose two primitives into a
- * shorthand value that doesn't map to a single Tailwind utility category.
- * Reference with prop-(--motion-*) syntax in Tailwind className strings. */
+ * Lives in :root (not @theme) because these compose two primitives into a
+ * shorthand value with no single Tailwind utility category.
+ * Reference with prop-(--motion-*) in Tailwind className strings. */
 :root {
-  /* hover bg, focus ring, badge state swap */
-  --motion-state-change: var(--duration-fast) var(--ease-out-standard);
-
-  /* button press scale, row select highlight */
-  --motion-micro:        var(--duration-subtle) var(--ease-out-standard);
-
-  /* modal/popover open, row reveal, tooltip appear */
-  --motion-enter:        var(--duration-base) var(--ease-out-emphasized);
-
-  /* modal/popover close, tooltip dismiss — clears stage fast */
-  --motion-exit:         var(--duration-fast) var(--ease-in-accelerated);
-
-  /* skeleton shimmer, indeterminate progress — loops only */
-  --motion-continuous:   1800ms var(--ease-linear) infinite;
+  --motion-state-change: var(--duration-fast) var(--ease-out-standard);    /* hover bg, focus ring, badge state swap */
+  --motion-micro:        var(--duration-subtle) var(--ease-out-standard);  /* button press scale, row select highlight */
+  --motion-enter:        var(--duration-base) var(--ease-out-emphasized);  /* modal/popover open, row reveal, tooltip appear */
+  --motion-exit:         var(--duration-fast) var(--ease-in-accelerated);  /* modal/popover close, tooltip dismiss */
+  --motion-continuous:   1800ms var(--ease-linear) infinite;               /* skeleton shimmer, indeterminate progress — loops only */
 }
 
 
 /* ─── Typography ─────────────────────────────────────────────────────────────
- * Typography primitives — font families, sizes, weights, and paired line-heights.
  * Generates: font-{sans,mono}, text-{code,caption,label,body,subtitle,display,meta},
  * font-{regular,medium,semibold,bold}, tracking-*, leading-*.
- * v4 paired-value: --text-X--line-height attaches to --text-X.
  *
  * USAGE NOTE: --text-meta (10px) is designed for mono + uppercase + ≥0.14em tracking.
  * The token enforces none of this — apply font-mono + uppercase + tracking in the component. */
@@ -355,7 +326,7 @@
   --text-body:    0.875rem;  /* 14px — primary reading size */
   --text-body--line-height: 1.375rem;
 
-  --text-subtitle: 1rem;      /* 16px — surface-anchor headers: dialog, drawer, sheet, section headings */
+  --text-subtitle: 1rem;      /* 16px — dialog, drawer, sheet, section headings */
   --text-subtitle--line-height: 1.375rem;
 
   --text-display: 1.5rem;    /* 24px — page / hero display */
@@ -382,12 +353,9 @@
 }
 
 /* ─── Radius ─────────────────────────────────────────────────────────────────
- * Named radius stops. Tailwind v4 ships xs/sm/md/lg/xl/2xl/3xl/4xl — this
- * project adds one semantic alias (surface) not in the Tailwind scale.
- * Components use rounded-{sm,md,lg,full} directly from Tailwind defaults;
- * --radius-surface is defined here so it can be referenced both as a Tailwind
- * utility (rounded-surface via theme.css) and as a CSS custom property in
- * component inline styles (var(--radius-surface)). */
+ * --radius-surface is a semantic alias not in the Tailwind scale. Defined here
+ * so it can be referenced both as a Tailwind utility (rounded-surface via theme.css)
+ * and as a CSS custom property (var(--radius-surface)) in component inline styles. */
 :root {
   --radius-surface: 0.5rem;   /* 8px — cards, dialogs, toasts, drawers; matches --radius-lg */
 }
