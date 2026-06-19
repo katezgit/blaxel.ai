@@ -13,7 +13,7 @@ interface InvitationRowProps {
   onDecline: () => void;
 }
 
-export function InvitationRow({
+export default function InvitationRow({
   invitation,
   onAccept,
   onDecline,

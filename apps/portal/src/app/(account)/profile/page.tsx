@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { ProfileForm } from "./_components/profile-form";
-import { OAuthConnectionsCard } from "./_components/oauth-connections-card";
+import ProfileForm from "./_components/profile-form";
+import OAuthConnectionsCard from "./_components/oauth-connections-card";
 import { oauthConnections, profileIdentity } from "@/lib/mock/profile";
 
 export const metadata: Metadata = {

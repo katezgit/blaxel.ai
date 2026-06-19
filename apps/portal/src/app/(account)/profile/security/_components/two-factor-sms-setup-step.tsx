@@ -3,7 +3,7 @@
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Field } from "@/app/(manage)/_components/page-primitives";
-import { StepActionRow } from "./step-action-row";
+import StepActionRow from "./step-action-row";
 
 interface TwoFactorSmsSetupStepProps {
   phoneNumber: string;
@@ -13,7 +13,7 @@ interface TwoFactorSmsSetupStepProps {
   onContinue: () => void;
 }
 
-export function TwoFactorSmsSetupStep({
+export default function TwoFactorSmsSetupStep({
   phoneNumber,
   onPhoneNumberChange,
   onBack,

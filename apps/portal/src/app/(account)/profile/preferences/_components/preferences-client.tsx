@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Switch } from "@repo/ui/components/switch";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
-import { PreferenceToggleRow } from "./preference-toggle-row";
+import PreferenceToggleRow from "./preference-toggle-row";
 import {
   PrivacyPreferencesDialog,
   type PrivacyChoices,
@@ -30,7 +30,7 @@ const DEFAULT_PRIVACY: PrivacyChoices = {
   targetedAds: false,
 };
 
-export function PreferencesClient() {
+export default function PreferencesClient() {
   const [prefs, setPrefs] = useState<EmailPrefs>(DEFAULT_EMAIL_PREFS);
   const [privacy, setPrivacy] = useState<PrivacyChoices>(DEFAULT_PRIVACY);
   const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);

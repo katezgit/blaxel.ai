@@ -4,7 +4,7 @@ import { MessageSquare, Smartphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { cn } from "@repo/ui/lib/cn";
-import { StepActionRow } from "./step-action-row";
+import StepActionRow from "./step-action-row";
 import type { TwoFactorMethod } from "./two-factor-dialog";
 
 interface MethodOption {
@@ -38,7 +38,7 @@ interface TwoFactorChooseMethodStepProps {
   onContinue: () => void;
 }
 
-export function TwoFactorChooseMethodStep({
+export default function TwoFactorChooseMethodStep({
   method,
   onMethodChange,
   onCancel,

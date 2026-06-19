@@ -5,7 +5,7 @@ import {
   TwoFactorDisabledCard,
   TwoFactorEnabledCard,
 } from "./two-factor-card";
-import { ActiveSessionsCard } from "./active-sessions-card";
+import ActiveSessionsCard from "./active-sessions-card";
 import { TwoFactorDialog } from "./two-factor-dialog";
 import type { ActiveSession } from "@/lib/mock/profile";
 
@@ -13,7 +13,7 @@ interface SecurityClientProps {
   sessions: ReadonlyArray<ActiveSession>;
 }
 
-export function SecurityClient({ sessions }: SecurityClientProps) {
+export default function SecurityClient({ sessions }: SecurityClientProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { TwoFactorAuthenticatorSetupStep } from "./two-factor-authenticator-setup-step";
-import { TwoFactorSmsSetupStep } from "./two-factor-sms-setup-step";
+import TwoFactorAuthenticatorSetupStep from "./two-factor-authenticator-setup-step";
+import TwoFactorSmsSetupStep from "./two-factor-sms-setup-step";
 import type { TwoFactorMethod } from "./two-factor-dialog";
 
 interface TwoFactorSetupStepProps {
@@ -13,7 +13,7 @@ interface TwoFactorSetupStepProps {
   onContinue: () => void;
 }
 
-export function TwoFactorSetupStep({
+export default function TwoFactorSetupStep({
   method,
   phoneNumber,
   onPhoneNumberChange,

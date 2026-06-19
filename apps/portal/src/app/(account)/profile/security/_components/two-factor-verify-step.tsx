@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Field } from "@/app/(manage)/_components/page-primitives";
-import { StepActionRow } from "./step-action-row";
+import StepActionRow from "./step-action-row";
 import type { TwoFactorMethod } from "./two-factor-dialog";
 
 interface TwoFactorVerifyStepProps {
@@ -23,7 +23,7 @@ const COPY: Record<TwoFactorMethod, { hint: string }> = {
   },
 };
 
-export function TwoFactorVerifyStep({
+export default function TwoFactorVerifyStep({
   method,
   onBack,
   onCancel,

@@ -19,7 +19,7 @@ interface PreferenceToggleRowProps {
   className?: string;
 }
 
-export function PreferenceToggleRow({
+export default function PreferenceToggleRow({
   label,
   description,
   children,

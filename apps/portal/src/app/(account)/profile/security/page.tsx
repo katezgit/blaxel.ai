@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SecurityClient } from "./_components/security-client";
+import SecurityClient from "./_components/security-client";
 import { activeSessions } from "@/lib/mock/profile";
 
 export const metadata: Metadata = {

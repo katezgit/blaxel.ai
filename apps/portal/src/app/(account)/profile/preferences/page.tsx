@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PreferencesClient } from "./_components/preferences-client";
+import PreferencesClient from "./_components/preferences-client";
 
 export const metadata: Metadata = {
   title: "Preferences",

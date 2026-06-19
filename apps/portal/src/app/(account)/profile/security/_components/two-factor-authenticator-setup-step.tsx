@@ -2,7 +2,7 @@
 
 import { Button } from "@repo/ui/components/button";
 import { CopyButton } from "@repo/ui/components/copy-button";
-import { StepActionRow } from "./step-action-row";
+import StepActionRow from "./step-action-row";
 
 const MOCK_SECRET = "JBSWY3DPEHPK3PXP";
 
@@ -19,7 +19,7 @@ interface TwoFactorAuthenticatorSetupStepProps {
   onContinue: () => void;
 }
 
-export function TwoFactorAuthenticatorSetupStep({
+export default function TwoFactorAuthenticatorSetupStep({
   onBack,
   onCancel,
   onContinue,

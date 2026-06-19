@@ -33,7 +33,7 @@ interface ActiveSessionsCardProps {
   sessions: ReadonlyArray<ActiveSession>;
 }
 
-export function ActiveSessionsCard({ sessions }: ActiveSessionsCardProps) {
+export default function ActiveSessionsCard({ sessions }: ActiveSessionsCardProps) {
   const nowMs = Date.now();
 
   return (

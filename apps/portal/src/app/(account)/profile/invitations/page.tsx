@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { InvitationsClient } from "./_components/invitations-client";
+import InvitationsClient from "./_components/invitations-client";
 import { workspaceInvitations } from "@/lib/mock/profile";
 
 export const metadata: Metadata = {

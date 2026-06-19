@@ -21,7 +21,7 @@ interface OAuthConnectionsCardProps {
 
 const columnHelper = createColumnHelper<OAuthConnection>();
 
-export function OAuthConnectionsCard({
+export default function OAuthConnectionsCard({
   connections,
   lastUsedProviderLabel,
 }: OAuthConnectionsCardProps) {

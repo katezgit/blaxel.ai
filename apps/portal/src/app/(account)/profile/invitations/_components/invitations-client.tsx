@@ -4,14 +4,14 @@ import { useState } from "react";
 import { Mail } from "lucide-react";
 import { Card } from "@repo/ui/components/card";
 import { EmptyState } from "@repo/ui/components/empty-state";
-import { InvitationRow } from "./invitation-row";
+import InvitationRow from "./invitation-row";
 import type { WorkspaceInvitation } from "@/lib/mock/profile";
 
 interface InvitationsClientProps {
   initialInvitations: ReadonlyArray<WorkspaceInvitation>;
 }
 
-export function InvitationsClient({ initialInvitations }: InvitationsClientProps) {
+export default function InvitationsClient({ initialInvitations }: InvitationsClientProps) {
   const [invitations, setInvitations] =
     useState<ReadonlyArray<WorkspaceInvitation>>(initialInvitations);
 

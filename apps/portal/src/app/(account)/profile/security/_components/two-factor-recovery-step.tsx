@@ -5,7 +5,7 @@ import { Download } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
 import { CopyButton } from "@repo/ui/components/copy-button";
-import { StepActionRow } from "./step-action-row";
+import StepActionRow from "./step-action-row";
 
 interface TwoFactorRecoveryStepProps {
   onBack: () => void;
@@ -30,7 +30,7 @@ function generateRecoveryCodes(count: number): ReadonlyArray<string> {
   return codes;
 }
 
-export function TwoFactorRecoveryStep({
+export default function TwoFactorRecoveryStep({
   onBack,
   onCancel,
   onDone,

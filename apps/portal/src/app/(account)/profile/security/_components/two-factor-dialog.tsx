@@ -9,10 +9,10 @@ import {
   DialogTitle,
 } from "@repo/ui/components/dialog";
 import { Stepper, type StepperStep } from "@repo/ui/components/stepper";
-import { TwoFactorChooseMethodStep } from "./two-factor-choose-method-step";
-import { TwoFactorSetupStep } from "./two-factor-setup-step";
-import { TwoFactorVerifyStep } from "./two-factor-verify-step";
-import { TwoFactorRecoveryStep } from "./two-factor-recovery-step";
+import TwoFactorChooseMethodStep from "./two-factor-choose-method-step";
+import TwoFactorSetupStep from "./two-factor-setup-step";
+import TwoFactorVerifyStep from "./two-factor-verify-step";
+import TwoFactorRecoveryStep from "./two-factor-recovery-step";
 
 export type TwoFactorMethod = "authenticator" | "sms";
 type StepIndex = 1 | 2 | 3 | 4;

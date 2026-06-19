@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@repo/ui/components/dialog";
 import { Switch } from "@repo/ui/components/switch";
-import { PreferenceToggleRow } from "./preference-toggle-row";
+import PreferenceToggleRow from "./preference-toggle-row";
 
 export interface PrivacyChoices {
   sale: boolean;

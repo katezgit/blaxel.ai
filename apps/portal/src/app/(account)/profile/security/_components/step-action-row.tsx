@@ -21,7 +21,7 @@ interface StepActionRowProps {
  * lives on the left; Cancel + primary action live on the right. On mobile the
  * row collapses to a column with the primary action on top.
  */
-export function StepActionRow({ back, children }: StepActionRowProps) {
+export default function StepActionRow({ back, children }: StepActionRowProps) {
   return (
     <div
       className={cn(

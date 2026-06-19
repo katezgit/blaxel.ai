@@ -25,7 +25,7 @@ interface ProfileFormProps {
   identity: ProfileIdentity;
 }
 
-export function ProfileForm({ identity }: ProfileFormProps) {
+export default function ProfileForm({ identity }: ProfileFormProps) {
   const form = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
