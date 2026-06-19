@@ -1,13 +1,13 @@
 import { queryOptions } from "@tanstack/react-query";
 import { queryKeys } from "./keys";
-import fetchWorkspaceApiKeys from "@/lib/mock/workspace-api-keys";
+import fetchWorkspaceTeam from "@/lib/mock/workspace-team";
 
-const TYPE = "api-keys";
+const TYPE = "team";
 
-export const workspaceApiKeyQueries = {
+export const workspaceTeamQueries = {
   list: (accountId: string, workspaceId: string) =>
     queryOptions({
       queryKey: queryKeys.resourceList(accountId, workspaceId, TYPE),
-      queryFn: () => fetchWorkspaceApiKeys(accountId, workspaceId),
+      queryFn: () => fetchWorkspaceTeam(accountId, workspaceId),
     }),
 };

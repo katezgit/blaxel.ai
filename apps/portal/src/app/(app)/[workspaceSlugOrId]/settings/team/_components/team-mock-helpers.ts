@@ -1,0 +1,54 @@
+import {
+  ArrowDownToLine,
+  Check,
+  Mail,
+  Monitor,
+  Shield,
+  User,
+  type LucideIcon,
+} from "lucide-react";
+import type {
+  MemberSource,
+  MemberStatus,
+  Role,
+} from "@/lib/mock/types";
+
+export const ROLE_META: Record<Role, { label: string; icon: LucideIcon }> = {
+  owner: { label: "Owner", icon: Shield },
+  admin: { label: "Admin", icon: Shield },
+  member: { label: "Member", icon: User },
+};
+
+export const SOURCE_META: Record<
+  MemberSource,
+  { label: string; icon: LucideIcon }
+> = {
+  "directory-sync": { label: "Directory sync", icon: ArrowDownToLine },
+  invitation: { label: "Invitation", icon: Mail },
+  "domain-capture": { label: "Domain capture", icon: Monitor },
+  local: { label: "Local", icon: User },
+};
+
+export const STATUS_META: Record<
+  MemberStatus,
+  { label: string; tone: "success" | "warning" | "muted" }
+> = {
+  accepted: { label: "Accepted", tone: "success" },
+  pending: { label: "Pending", tone: "warning" },
+  expired: { label: "Expired", tone: "muted" },
+};
+
+export const ROLE_VALUES: ReadonlyArray<Role> = ["owner", "admin", "member"];
+export const SOURCE_VALUES: ReadonlyArray<MemberSource> = [
+  "directory-sync",
+  "invitation",
+  "domain-capture",
+  "local",
+];
+export const STATUS_VALUES: ReadonlyArray<MemberStatus> = [
+  "accepted",
+  "pending",
+  "expired",
+];
+
+export const CHECK_ICON: LucideIcon = Check;

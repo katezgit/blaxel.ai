@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { requireSession } from "@/lib/auth/session";
-import { WorkspaceSettingsShell } from "@/components/shell/workspace-settings-shell";
+import WorkspaceSettingsShell from "@/components/shell/workspace-settings-shell";
 import { getQueryClient } from "@/lib/query/get-query-client";
 import { orgQueries } from "@/lib/query/org";
 import { resolveWorkspace } from "@/lib/mock/org";
@@ -32,6 +32,8 @@ export default async function WorkspaceSettingsLayout({
   ]);
 
   const currentOrg = resolveWorkspace(workspaceSlugOrId);
+  const memberships = await queryClient.ensureQueryData(orgQueries.accounts());
+  const workspaces = memberships.map((m) => m.org);
 
   const user = {
     name: session.name || "User",
@@ -44,6 +46,7 @@ export default async function WorkspaceSettingsLayout({
       <HydrationBoundary state={dehydrate(queryClient)}>
         <WorkspaceSettingsShell
           currentOrg={currentOrg}
+          workspaces={workspaces}
           user={user}
         >
           {children}

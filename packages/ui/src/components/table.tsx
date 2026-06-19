@@ -59,7 +59,7 @@ export const tableCellVariants = cva(
   ].join(" "),
   {
     variants: {
-      density: { default: "py-2 px-4", compact: "py-1.5 px-3" },
+      density: { default: "py-2 px-3", compact: "py-1.5 px-3" },
       variant: {
         default: "",
         mono: "font-mono text-code [font-feature-settings:'tnum'_1,'lnum'_1]",

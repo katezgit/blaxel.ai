@@ -5,15 +5,14 @@
  * one sidebar at a time — keeps the variants from colliding visually.
  */
 import {
-  AlertOctagon,
   ArrowLeft,
   Bot,
   BrainCircuit,
+  Building2,
   Container,
   CreditCard,
   Database,
   FolderOpen,
-  Gauge,
   Globe,
   KeyRound,
   Mail,
@@ -21,10 +20,10 @@ import {
   Package,
   Plug,
   Receipt,
-  Settings,
   ShieldCheck,
   SlidersHorizontal,
   User,
+  UserCog,
   Users,
   Workflow,
   type LucideIcon,
@@ -86,32 +85,36 @@ export function workspaceNavGroups(
     {
       label: "Security",
       items: [
-        { href: `${base}/api-keys`, label: "API Keys", icon: KeyRound },
+        {
+          href: `${base}/settings/api-keys`,
+          label: "API keys",
+          icon: KeyRound,
+        },
         { href: `${base}/policies`, label: "Policies", icon: ShieldCheck },
       ],
     },
   ];
 }
 
-/** Workspace-settings sub-sidebar — wireframe §13 (sub-shell table). */
+/**
+ * Workspace-settings sub-sidebar. API keys lives in this group because every
+ * workspace-scoped credential acts on workspace resources — see the tenancy
+ * decision rule in `docs/product/platform.md`.
+ */
 export function workspaceSettingsNavItems(
   workspaceSlug: string,
 ): ReadonlyArray<NavItem> {
   const base = `/${workspaceSlug}/settings`;
   return [
-    { href: `${base}/general`, label: "General", icon: Settings },
+    { href: `${base}/name`, label: "Name", icon: Building2 },
     { href: `${base}/team`, label: "Team", icon: Users },
     {
-      href: `${base}/sandbox-settings`,
-      label: "Sandbox settings",
-      icon: SlidersHorizontal,
+      href: `${base}/service-accounts`,
+      label: "Service accounts",
+      icon: UserCog,
     },
-    {
-      href: `${base}/usage-and-limits`,
-      label: "Usage & limits",
-      icon: Gauge,
-    },
-    { href: `${base}/danger-zone`, label: "Danger zone", icon: AlertOctagon },
+    { href: `${base}/integrations`, label: "Integrations", icon: Plug },
+    { href: `${base}/api-keys`, label: "API keys", icon: KeyRound },
   ];
 }
 

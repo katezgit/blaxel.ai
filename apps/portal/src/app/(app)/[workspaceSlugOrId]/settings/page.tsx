@@ -6,5 +6,5 @@ interface PageProps {
 
 export default async function WorkspaceSettingsRootPage({ params }: PageProps) {
   const { workspaceSlugOrId } = await params;
-  redirect(`/${workspaceSlugOrId}/settings/general`);
+  redirect(`/${workspaceSlugOrId}/settings/name`);
 }

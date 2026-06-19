@@ -25,6 +25,21 @@ export interface Org {
   hint: string;
   /** Total active members in the org (display-only on the Organization page). */
   members: number;
+  /** Parent account this workspace belongs to. Display label only. */
+  accountName: string;
+  /** ISO date string for the workspace's creation timestamp. */
+  createdAt: string;
+  /** Short opaque workspace identifier surfaced in the dashboard + CLI (e.g. `MPT7PS`). Distinct from `id` (internal) and `slug` (URL). */
+  workspaceId: string;
+  /** UUID of the parent account. Surfaced read-only for support / billing reference. */
+  accountId: string;
+  /** Email of the account owner. Surfaced read-only on workspace settings — escalation contact. */
+  accountOwner: string;
+  /** Workspace-scoped sandbox runtime defaults. */
+  sandboxSettings: {
+    /** When true, sandboxes do not capture per-process stdout/stderr. Mirrors live Blaxel toggle. */
+    disableProcessLogging: boolean;
+  };
 }
 
 export interface OrgMembership {
@@ -40,6 +55,54 @@ export interface Member {
   isYou?: boolean;
 }
 
+/** How a team member was added to the workspace. */
+export type MemberSource =
+  | "directory-sync"
+  | "invitation"
+  | "domain-capture"
+  | "local";
+
+/** Lifecycle state of a team member or invitation. */
+export type MemberStatus = "accepted" | "pending" | "expired";
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  source: MemberSource;
+  status: MemberStatus;
+  isYou?: boolean;
+}
+
+/** A non-human identity scoped to the workspace. */
+export interface ServiceAccount {
+  id: string;
+  name: string;
+  /** Public identifier the workspace shows to integrations. */
+  clientId: string;
+  role: Role;
+  /** ISO date string. */
+  createdAt: string;
+}
+
+/** Categories shown in the Integrations left rail. */
+export type IntegrationCategory = "model" | "mcp-server";
+
+export interface Integration {
+  id: string;
+  /** Human-readable provider name. */
+  name: string;
+  description: string;
+  category: IntegrationCategory;
+  /** Single-letter monogram for the card avatar fallback. */
+  logoInitial: string;
+  enabled: boolean;
+  comingSoon?: boolean;
+  /** Service accounts currently holding credentials for this integration. */
+  usedByCount?: number;
+}
+
 export interface ApiKey {
   id: string;
   name: string;
@@ -47,6 +110,15 @@ export interface ApiKey {
   masked: string;
   createdAt: string;
   expiresAt: string | null;
+  /** Who the key was issued to — member or service account. */
+  issuedTo?: ApiKeyHolder;
+}
+
+/** Identifies the entity an API key is bound to. */
+export interface ApiKeyHolder {
+  kind: "member" | "service-account";
+  id: string;
+  name: string;
 }
 
 export type BillingHistoryStatus = "completed" | "pending" | "failed";
