@@ -1,292 +1,340 @@
-import { render } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { jest } from "@jest/globals"
 import {
-  tableClass,
-  tableHeaderClass,
-  tableBodyClass,
-  tableFooterClass,
-  tableCaptionClass,
-  tableHeadVariants,
-  tableRowVariants,
-  tableCellVariants,
-  tableEmptyCellClass,
   Table,
   TableHeader,
+  TableHeaderCell,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableSelectionBar,
+  TableEmptyRow,
+  TableErrorBand,
 } from "./table"
 
 // ---------------------------------------------------------------------------
-// tableClass
+// Helpers
 // ---------------------------------------------------------------------------
 
-describe("tableClass", () => {
-  it("contains w-full border-collapse (no bg-background since PR #66)", () => {
-    expect(tableClass).toContain("w-full")
-    expect(tableClass).toContain("border-collapse")
-    expect(tableClass).not.toContain("bg-background")
-  })
-})
+type TestTableProps = Omit<React.ComponentPropsWithoutRef<typeof Table>, "totalCount" | "pageOffset"> & {
+  totalCount?: number
+  pageOffset?: number
+}
+
+/** Minimal table shell to satisfy HTML validity requirements. */
+function TestTable({
+  children,
+  totalCount = 0,
+  pageOffset = 0,
+  ...props
+}: TestTableProps) {
+  return (
+    <Table totalCount={totalCount} pageOffset={pageOffset} {...props}>
+      <TableHeader>
+        <tr><th>Col</th></tr>
+      </TableHeader>
+      <TableBody>{children}</TableBody>
+    </Table>
+  )
+}
 
 // ---------------------------------------------------------------------------
-// tableHeaderClass
+// Table — data contracts on the wrapper
 // ---------------------------------------------------------------------------
 
-describe("tableHeaderClass", () => {
-  it("contains bg-field-rest", () => {
-    expect(tableHeaderClass).toContain("bg-field-rest")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// tableBodyClass
-// ---------------------------------------------------------------------------
-
-describe("tableBodyClass", () => {
-  it("contains last-row no-border rule", () => {
-    expect(tableBodyClass).toContain("[&_tr:last-child]:border-b-0")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// tableFooterClass
-// ---------------------------------------------------------------------------
-
-describe("tableFooterClass", () => {
-  it("contains border-t bg-field-rest font-medium", () => {
-    expect(tableFooterClass).toContain("border-t")
-    expect(tableFooterClass).toContain("bg-field-rest")
-    expect(tableFooterClass).toContain("font-medium")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// tableCaptionClass
-// ---------------------------------------------------------------------------
-
-describe("tableCaptionClass", () => {
-  it("contains text-caption text-muted-foreground", () => {
-    expect(tableCaptionClass).toContain("text-caption")
-    expect(tableCaptionClass).toContain("text-muted-foreground")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// tableHeadVariants
-// ---------------------------------------------------------------------------
-
-describe("tableHeadVariants", () => {
-  it("returns a string", () => {
-    expect(typeof tableHeadVariants()).toBe("string")
-  })
-
-  it("default density includes px-3 and sticky (no per-cell bg — inherits from thead)", () => {
-    const cls = tableHeadVariants()
-    expect(cls).toContain("sticky")
-    expect(cls).not.toContain("bg-background")
-    expect(cls).toContain("text-muted-foreground")
-    expect(cls).toContain("border-b")
-    // <th> MUST render in natural case — product rule: no uppercase on table headers
-    expect(cls).not.toMatch(/\buppercase\b/)
-    expect(cls).toContain("font-medium")
-    expect(cls).toContain("px-3")
-  })
-
-  it("compact density includes min-h-8 py-2 px-3", () => {
-    const cls = tableHeadVariants({ density: "compact" })
-    expect(cls).toContain("min-h-8")
-    expect(cls).toContain("py-2")
-    expect(cls).toContain("px-3")
-  })
-
-  it("default density includes min-h-8 py-2 px-3 (density-invariant 32px header)", () => {
-    const cls = tableHeadVariants({ density: "default" })
-    expect(cls).toContain("min-h-8")
-    expect(cls).toContain("py-2")
-    expect(cls).toContain("px-3")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// tableRowVariants
-// ---------------------------------------------------------------------------
-
-describe("tableRowVariants", () => {
-  it("returns a string", () => {
-    expect(typeof tableRowVariants()).toBe("string")
-  })
-
-  it("includes hover bg-hover-surface and border-b border-border", () => {
-    const cls = tableRowVariants()
-    expect(cls).toContain("hover:bg-hover-surface")
-    expect(cls).toContain("border-b")
-    expect(cls).toContain("border-border")
-  })
-
-  it("includes selected-state rail classes", () => {
-    const cls = tableRowVariants()
-    expect(cls).toContain("data-[state=selected]:border-l-2")
-    expect(cls).toContain("data-[state=selected]:border-l-primary")
-  })
-
-  it("includes motion transition classes", () => {
-    const cls = tableRowVariants()
-    expect(cls).toContain("duration-fast")
-    expect(cls).toContain("ease-out-standard")
-  })
-
-  it("default density includes min-h-10", () => {
-    const cls = tableRowVariants({ density: "default" })
-    expect(cls).toContain("min-h-10")
-  })
-
-  it("compact density includes min-h-9", () => {
-    const cls = tableRowVariants({ density: "compact" })
-    expect(cls).toContain("min-h-9")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// tableCellVariants
-// ---------------------------------------------------------------------------
-
-describe("tableCellVariants", () => {
-  it("returns a string", () => {
-    expect(typeof tableCellVariants()).toBe("string")
-  })
-
-  it("default includes align-middle text-foreground font-normal", () => {
-    const cls = tableCellVariants()
-    expect(cls).toContain("align-middle")
-    expect(cls).toContain("text-foreground")
-    expect(cls).toContain("font-normal")
-  })
-
-  it("default density includes py-2 px-4", () => {
-    const cls = tableCellVariants()
-    expect(cls).toContain("py-2")
-    expect(cls).toContain("px-4")
-  })
-
-  it("compact density includes py-1.5 px-3", () => {
-    const cls = tableCellVariants({ density: "compact" })
-    expect(cls).toContain("py-1.5")
-    expect(cls).toContain("px-3")
-  })
-
-  it("mono variant includes font-mono text-code", () => {
-    const cls = tableCellVariants({ variant: "mono" })
-    expect(cls).toContain("font-mono")
-    expect(cls).toContain("text-code")
-  })
-
-  it("truncated variant includes overflow-hidden text-ellipsis", () => {
-    const cls = tableCellVariants({ variant: "truncated" })
-    expect(cls).toContain("overflow-hidden")
-    expect(cls).toContain("text-ellipsis")
-  })
-
-  it("row-action variant includes text-right w-12", () => {
-    const cls = tableCellVariants({ variant: "row-action" })
-    expect(cls).toContain("text-right")
-    expect(cls).toContain("w-12")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// tableEmptyCellClass
-// ---------------------------------------------------------------------------
-
-describe("tableEmptyCellClass", () => {
-  it("contains py-8 text-center text-muted-foreground", () => {
-    expect(tableEmptyCellClass).toContain("py-8")
-    expect(tableEmptyCellClass).toContain("text-center")
-    expect(tableEmptyCellClass).toContain("text-muted-foreground")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// First / last cell inset — pl-6 / pr-6
-// ---------------------------------------------------------------------------
-
-describe("tableHeadVariants — first:pl-6 last:pr-6 in base", () => {
-  it("includes first:pl-6 in base string (aligns first th with Card/section heading)", () => {
-    const cls = tableHeadVariants()
-    expect(cls).toContain("first:pl-6")
-  })
-
-  it("includes last:pr-6 in base string", () => {
-    const cls = tableHeadVariants()
-    expect(cls).toContain("last:pr-6")
-  })
-
-  it("first:pl-6 is present for both densities", () => {
-    expect(tableHeadVariants({ density: "default" })).toContain("first:pl-6")
-    expect(tableHeadVariants({ density: "compact" })).toContain("first:pl-6")
-  })
-})
-
-describe("tableCellVariants — first:pl-6 last:pr-6 in base", () => {
-  it("includes first:pl-6 in base string (aligns first td with Card/section heading)", () => {
-    const cls = tableCellVariants()
-    expect(cls).toContain("first:pl-6")
-  })
-
-  it("includes last:pr-6 in base string", () => {
-    const cls = tableCellVariants()
-    expect(cls).toContain("last:pr-6")
-  })
-
-  it("first:pl-6 is present for both densities", () => {
-    expect(tableCellVariants({ density: "default" })).toContain("first:pl-6")
-    expect(tableCellVariants({ density: "compact" })).toContain("first:pl-6")
-  })
-
-  it("first:pl-6 is present for all variants (mono, truncated, row-action)", () => {
-    expect(tableCellVariants({ variant: "mono" })).toContain("first:pl-6")
-    expect(tableCellVariants({ variant: "truncated" })).toContain("first:pl-6")
-    expect(tableCellVariants({ variant: "row-action" })).toContain("first:pl-6")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// Table — bordered prop
-// ---------------------------------------------------------------------------
-
-describe("Table bordered prop", () => {
-  it("adds border + bg-card to the wrapper when bordered=true", () => {
-    const { getByTestId } = render(
-      <Table totalCount={0} pageOffset={0} bordered data-testid="table-root" />
-    )
-    const wrapper = getByTestId("table-root")
-    expect(wrapper.className).toContain("border")
-    expect(wrapper.className).toContain("rounded-md")
-    expect(wrapper.className).toContain("overflow-hidden")
-    expect(wrapper.className).toContain("bg-card")
-  })
-
-  it("does NOT add border class when bordered is omitted", () => {
-    const { getByTestId } = render(
-      <Table totalCount={0} pageOffset={0} data-testid="table-root" />
-    )
-    const wrapper = getByTestId("table-root")
-    // Should have the base overflow-x-auto but not the bordered set
-    expect(wrapper.className).toContain("overflow-x-auto")
-    expect(wrapper.className).not.toContain("rounded-md")
-  })
-})
-
-// ---------------------------------------------------------------------------
-// TableHeader — bg-muted-surface structural band
-// ---------------------------------------------------------------------------
-
-describe("TableHeader", () => {
-  it("renders with bg-field-rest regardless of bordered context", () => {
+describe("Table", () => {
+  it("exposes density as data-density on the root element", () => {
     const { container } = render(
+      <Table density="compact" totalCount={5} pageOffset={0}>
+        <tbody />
+      </Table>
+    )
+    expect(container.querySelector("[data-slot='table-root']")).toHaveAttribute("data-density", "compact")
+  })
+
+  it("defaults data-density to 'default'", () => {
+    const { container } = render(
+      <Table totalCount={0} pageOffset={0}>
+        <tbody />
+      </Table>
+    )
+    expect(container.querySelector("[data-slot='table-root']")).toHaveAttribute("data-density", "default")
+  })
+
+  it("exposes totalCount as data-total-count", () => {
+    const { container } = render(
+      <Table totalCount={42} pageOffset={0}>
+        <tbody />
+      </Table>
+    )
+    expect(container.querySelector("[data-slot='table-root']")).toHaveAttribute("data-total-count", "42")
+  })
+
+  it("exposes pageOffset as data-page-offset", () => {
+    const { container } = render(
+      <Table totalCount={0} pageOffset={20}>
+        <tbody />
+      </Table>
+    )
+    expect(container.querySelector("[data-slot='table-root']")).toHaveAttribute("data-page-offset", "20")
+  })
+})
+
+// ---------------------------------------------------------------------------
+// TableHeaderCell — accessibility contract
+// ---------------------------------------------------------------------------
+
+describe("TableHeaderCell", () => {
+  it("renders with scope=col for column header semantics", () => {
+    render(
       <table>
-        <TableHeader data-testid="thead">
-          <tr><th>Col</th></tr>
-        </TableHeader>
+        <thead>
+          <tr>
+            <TableHeaderCell label="Name" />
+          </tr>
+        </thead>
       </table>
     )
-    const thead = container.querySelector("thead")
-    expect(thead?.className).toContain("bg-field-rest")
+    expect(screen.getByRole("columnheader", { name: "Name" })).toHaveAttribute("scope", "col")
+  })
+
+  it("renders label text for non-sortable header", () => {
+    render(
+      <table>
+        <thead>
+          <tr>
+            <TableHeaderCell label="Status" />
+          </tr>
+        </thead>
+      </table>
+    )
+    expect(screen.getByRole("columnheader", { name: "Status" })).toBeInTheDocument()
+  })
+
+  it("renders a button for sortable header so it is keyboard-activatable", () => {
+    render(
+      <table>
+        <thead>
+          <tr>
+            <TableHeaderCell label="Created" sortable />
+          </tr>
+        </thead>
+      </table>
+    )
+    expect(screen.getByRole("button", { name: "Created" })).toBeInTheDocument()
+  })
+
+  it("does NOT render a button for non-sortable header", () => {
+    render(
+      <table>
+        <thead>
+          <tr>
+            <TableHeaderCell label="Created" />
+          </tr>
+        </thead>
+      </table>
+    )
+    expect(screen.queryByRole("button", { name: "Created" })).not.toBeInTheDocument()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// TableRow — data contracts and interactions
+// ---------------------------------------------------------------------------
+
+describe("TableRow", () => {
+  it("sets data-state=selected when selected=true", () => {
+    render(
+      <table>
+        <tbody>
+          <TableRow selected data-testid="row">
+            <td>cell</td>
+          </TableRow>
+        </tbody>
+      </table>
+    )
+    expect(screen.getByTestId("row")).toHaveAttribute("data-state", "selected")
+  })
+
+  it("omits data-state when not selected", () => {
+    render(
+      <table>
+        <tbody>
+          <TableRow data-testid="row">
+            <td>cell</td>
+          </TableRow>
+        </tbody>
+      </table>
+    )
+    expect(screen.getByTestId("row")).not.toHaveAttribute("data-state")
+  })
+
+  it("calls onDrill when the row is clicked", async () => {
+    const user = userEvent.setup()
+    const onDrill = jest.fn()
+    render(
+      <table>
+        <tbody>
+          <TableRow onDrill={onDrill} data-testid="row">
+            <td>cell</td>
+          </TableRow>
+        </tbody>
+      </table>
+    )
+    await user.click(screen.getByTestId("row"))
+    expect(onDrill).toHaveBeenCalledTimes(1)
+  })
+
+  it("exposes data-density reflecting the Table context", () => {
+    render(
+      <TestTable density="compact">
+        <TableRow data-testid="row">
+          <TableCell>cell</TableCell>
+        </TableRow>
+      </TestTable>
+    )
+    expect(screen.getByTestId("row")).toHaveAttribute("data-density", "compact")
+  })
+
+  it("sets data-pinned=true when pinned", () => {
+    render(
+      <table>
+        <tbody>
+          <TableRow pinned data-testid="row">
+            <td>cell</td>
+          </TableRow>
+        </tbody>
+      </table>
+    )
+    expect(screen.getByTestId("row")).toHaveAttribute("data-pinned", "true")
+  })
+})
+
+// ---------------------------------------------------------------------------
+// TableSelectionBar — interaction contract
+// ---------------------------------------------------------------------------
+
+describe("TableSelectionBar", () => {
+  it("shows the selected count", () => {
+    render(
+      <table>
+        <tbody>
+          <TableSelectionBar count={3} onClear={jest.fn()} />
+        </tbody>
+      </table>
+    )
+    expect(screen.getByText("3 selected")).toBeInTheDocument()
+  })
+
+  it("calls onClear when Clear is clicked", async () => {
+    const user = userEvent.setup()
+    const onClear = jest.fn()
+    render(
+      <table>
+        <tbody>
+          <TableSelectionBar count={2} onClear={onClear} />
+        </tbody>
+      </table>
+    )
+    await user.click(screen.getByRole("button", { name: "Clear" }))
+    expect(onClear).toHaveBeenCalledTimes(1)
+  })
+
+  it("renders optional actions slot", () => {
+    render(
+      <table>
+        <tbody>
+          <TableSelectionBar
+            count={1}
+            onClear={jest.fn()}
+            actions={<button type="button">Delete</button>}
+          />
+        </tbody>
+      </table>
+    )
+    expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// TableEmptyRow — content contract
+// ---------------------------------------------------------------------------
+
+describe("TableEmptyRow", () => {
+  it("renders the CLI command text", () => {
+    render(
+      <table>
+        <tbody>
+          <TableEmptyRow cliCommand="blaxel create sandbox" />
+        </tbody>
+      </table>
+    )
+    expect(screen.getByText("blaxel create sandbox")).toBeInTheDocument()
+  })
+
+  it("renders a Docs link when docHref is provided", () => {
+    render(
+      <table>
+        <tbody>
+          <TableEmptyRow cliCommand="blaxel create sandbox" docHref="https://docs.blaxel.ai" />
+        </tbody>
+      </table>
+    )
+    const link = screen.getByRole("link", { name: "Docs" })
+    expect(link).toHaveAttribute("href", "https://docs.blaxel.ai")
+  })
+
+  it("omits the Docs link when docHref is not provided", () => {
+    render(
+      <table>
+        <tbody>
+          <TableEmptyRow cliCommand="blaxel create sandbox" />
+        </tbody>
+      </table>
+    )
+    expect(screen.queryByRole("link", { name: "Docs" })).not.toBeInTheDocument()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// TableErrorBand — content and interaction contract
+// ---------------------------------------------------------------------------
+
+describe("TableErrorBand", () => {
+  it("renders the error cause text", () => {
+    render(
+      <table>
+        <tbody>
+          <TableErrorBand cause="Failed to load sandboxes" />
+        </tbody>
+      </table>
+    )
+    expect(screen.getByText("Failed to load sandboxes")).toBeInTheDocument()
+  })
+
+  it("calls onRetry when Retry is clicked", async () => {
+    const user = userEvent.setup()
+    const onRetry = jest.fn()
+    render(
+      <table>
+        <tbody>
+          <TableErrorBand cause="Network error" onRetry={onRetry} />
+        </tbody>
+      </table>
+    )
+    await user.click(screen.getByRole("button", { name: "Retry" }))
+    expect(onRetry).toHaveBeenCalledTimes(1)
+  })
+
+  it("omits Retry button when onRetry is not provided", () => {
+    render(
+      <table>
+        <tbody>
+          <TableErrorBand cause="Network error" />
+        </tbody>
+      </table>
+    )
+    expect(screen.queryByRole("button", { name: "Retry" })).not.toBeInTheDocument()
   })
 })
