@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { ThemePreferenceField } from "./_components/theme-preference-field";
+import PreferencesClient from "./_components/preferences-client";
 
 export const metadata: Metadata = {
-  title: "Account · Preferences",
+  title: "Preferences",
 };
 
 export default function PreferencesPage() {
@@ -11,14 +11,11 @@ export default function PreferencesPage() {
       <header className="page-header">
         <h1 className="text-display font-semibold text-foreground">Preferences</h1>
         <p className="text-muted-foreground">
-          Density, locale, notification rules, default theme.
+          Email, marketing, and privacy choices. These apply to every workspace you belong to.
         </p>
       </header>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-subtitle font-semibold text-foreground">Theme</h2>
-        <ThemePreferenceField />
-      </section>
+      <PreferencesClient />
     </div>
   );
 }

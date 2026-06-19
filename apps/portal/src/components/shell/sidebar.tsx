@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
-import { SidebarNavItem } from "@/components/shell/sidebar-nav-item";
+import SidebarNavItem from "@/components/shell/sidebar-nav-item";
 import { useIsSidebarRail } from "@/components/shell/use-is-sidebar-rail";
 import type { NavGroup } from "@/components/shell/nav-groups";
 

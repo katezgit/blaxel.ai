@@ -15,12 +15,13 @@ import {
   FolderOpen,
   Globe,
   KeyRound,
+  Mail,
   Network,
   Package,
   Plug,
   Receipt,
-  Settings2,
   ShieldCheck,
+  SlidersHorizontal,
   User,
   UserCog,
   Users,
@@ -37,6 +38,13 @@ export interface NavItem {
   label: string;
   /** lucide-react component, rendered inline (16×16) and in the icon rail (20×20). */
   icon: LucideIcon;
+  /**
+   * When true, the item is active only on an exact pathname match. Default
+   * (prefix match) lights the item up on every nested route — wrong for
+   * container/index routes whose siblings also live in the same nav (e.g.
+   * `/profile` vs `/profile/security`).
+   */
+  exact?: boolean;
 }
 
 export interface NavGroup {
@@ -110,10 +118,26 @@ export function workspaceSettingsNavItems(
   ];
 }
 
-/** Account sub-sidebar — wireframe §13 (sub-shell table). */
-export const ACCOUNT_NAV_ITEMS: ReadonlyArray<NavItem> = [
-  { href: "/account/profile", label: "Profile", icon: User },
-  { href: "/account/preferences", label: "Preferences", icon: Settings2 },
-  { href: "/account/billing", label: "Billing", icon: CreditCard },
-  { href: "/account/invoices", label: "Invoices", icon: Receipt },
+/**
+ * Personal-area sub-sidebar — user-scoped identity, security, preferences.
+ * "Account" is a billing-bearing business entity (multi-admin); this menu is
+ * personal-only. Routes live under `/profile/...` to reflect that distinction.
+ */
+export const PROFILE_NAV_GROUPS: ReadonlyArray<NavGroup> = [
+  {
+    label: "Personal",
+    items: [
+      { href: "/profile", label: "Profile", icon: User, exact: true },
+      { href: "/profile/security", label: "Security", icon: ShieldCheck },
+      { href: "/profile/preferences", label: "Preferences", icon: SlidersHorizontal },
+      { href: "/profile/invitations", label: "Invitations", icon: Mail },
+    ],
+  },
+  {
+    label: "Billing",
+    items: [
+      { href: "/profile/billing", label: "Billing", icon: CreditCard },
+      { href: "/profile/invoices", label: "Invoices", icon: Receipt },
+    ],
+  },
 ];

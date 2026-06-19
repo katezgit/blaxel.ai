@@ -7,7 +7,6 @@ import { IdentityCluster } from "@/components/shell/identity-cluster";
 
 interface AccountTopbarProps {
   user: { name: string; email: string; tier: string };
-  unreadNotifications: number;
   mobileNavId: string;
   mobileNavOpen: boolean;
   onOpenMobileNav: () => void;
@@ -15,7 +14,6 @@ interface AccountTopbarProps {
 
 export function AccountTopbar({
   user,
-  unreadNotifications,
   mobileNavId,
   mobileNavOpen,
   onOpenMobileNav,
@@ -39,7 +37,7 @@ export function AccountTopbar({
         </span>
       </div>
       <div data-zone="right">
-        <IdentityCluster user={user} unreadCount={unreadNotifications} />
+        <IdentityCluster user={user} />
       </div>
     </header>
   );

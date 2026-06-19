@@ -18,7 +18,6 @@ interface WorkspaceShellProps {
   currentOrg: Org;
   workspaces: ReadonlyArray<Org>;
   user: { name: string; email: string; tier: string };
-  unreadNotifications: number;
   children: ReactNode;
 }
 
@@ -29,7 +28,6 @@ export function WorkspaceShell({
   currentOrg,
   workspaces,
   user,
-  unreadNotifications,
   children,
 }: WorkspaceShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -52,7 +50,6 @@ export function WorkspaceShell({
               currentOrg={currentOrg}
               workspaces={workspaces}
               user={user}
-              unreadNotifications={unreadNotifications}
               mobileNavId={MOBILE_DRAWER_ID}
               mobileNavOpen={drawerOpen}
               onOpenMobileNav={() => setDrawerOpen(true)}

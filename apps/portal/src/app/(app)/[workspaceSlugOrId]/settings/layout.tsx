@@ -8,7 +8,6 @@ import { resolveWorkspace } from "@/lib/mock/org";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { TenancyProvider } from "@/lib/query/tenancy-context";
 
-const NOTIFICATIONS_UNREAD = 3;
 const ACCOUNT_TIER = "Tier 1";
 
 interface LayoutProps {
@@ -49,7 +48,6 @@ export default async function WorkspaceSettingsLayout({
           currentOrg={currentOrg}
           workspaces={workspaces}
           user={user}
-          unreadNotifications={NOTIFICATIONS_UNREAD}
         >
           {children}
         </WorkspaceSettingsShell>

@@ -203,10 +203,10 @@ function Calendar({ className, ...props }: CalendarProps) {
         Chevron: CalendarChevron,
         MonthCaption: CalendarMonthCaption,
         // Nav: suppressed — CalendarMonthCaption renders prev/next inline.
-        // Returning null removes it from the DOM entirely (CSS-hidden nav
-        // still appears in the a11y tree in JSDOM because class-based
-        // display:none is not computed).
-        Nav: () => null,
+        // Empty Fragment mounts no DOM (same effective behavior as null) and
+        // satisfies the slot's Element return type — DayPicker's component
+        // signature rejects null under strict-null checks.
+        Nav: () => <></>,
       }}
       {...props}
     />
