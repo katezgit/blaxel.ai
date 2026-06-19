@@ -18,83 +18,163 @@
 :root {
   /* Neutral — theme-agnostic raw values.
    * --color-*: initial in @theme wipes Tailwind's default white utility, so use --white. */
-  --neutral-950: #1c2024;
+  --neutral-950: #09090b;   /* Blaxel near-black — hsl(240,10%,4%) — replaces old #1c2024 */
   --neutral-50:  #F8FAFB;
   --white:       #FFFFFF;
 
-  /* Brand */
-  --gold: #f7b717;
+  /* Brand — gold retired (no usage on blaxel.ai; logo/mark uses orange).
+   * Retained as a commented fallback in case a Storybook story references it. */
+  /* --gold: #f7b717; */
 
-  /* Ink — text scale at low saturation. Light/dark step pairs.
-   *   ink-900 → foreground
-   *   ink-800 → muted-foreground — secondary text (~25pp contrast gap to primary)
-   *   ink-700 → meta-foreground  — tertiary text / scaffolding (~42pp contrast gap to primary)
-   *   ink-400 → text-disabled
-   *   ink-600 / ink-300: reserved, no current mapping. */
-  --ink-900: #18212E;   /* ↔ --ink-50 dark */
-  --ink-50:  #E8EEF5;
-  --ink-800: #3D5269;   /* ~7.0:1 vs #FFF, ~6.7:1 vs bg  ↔  --ink-100 dark */
-  --ink-100: #B3BFCE;   /* ~7.6:1 vs panel, ~8.5:1 vs bg  ↔  --ink-800 light */
-  --ink-700: #6C7A8C;   /* ↔ --ink-200 dark */
-  --ink-200: #7A8494;
-  --ink-600: #7C8087;   /* reserved  ↔  --ink-300 dark */
-  --ink-300: #718190;
-  --ink-400: #A4ADB9;   /* ↔ --ink-500 dark */
-  --ink-500: #475260;
+  /* Ink — OKLCH gray ramp steps mapped to semantic text tiers.
+   * Source: Blaxel v2 gray ramp (--v2-gray-*) + semantic assignments from .light / .dark.
+   *
+   * Light assignments (v2-text-primary = gray-4, text-secondary = gray-40):
+   *   ink-900 → foreground       = v2-gray-4  (deepest, ~14% L)
+   *   ink-800 → muted-foreground = v2-gray-40 (medium, ~48% L, Blaxel text-secondary light)
+   *   ink-700 → meta-foreground  = v2-gray-52 (muted-regular, ~58% L, Blaxel gray-muted-regular)
+   *   ink-400 → text-disabled    = v2-gray-64 (~69% L, enough above meta but clearly off)
+   *
+   * Dark assignments (reversed — light text on dark bg):
+   *   ink-50  → foreground       = v2-gray-100 (white)
+   *   ink-100 → muted-foreground = v2-gray-88  (~90% L)
+   *   ink-200 → meta-foreground  = v2-gray-76  (~80% L, Blaxel gray-muted-dark)
+   *   ink-500 → text-disabled    = v2-gray-30  (~39% L, dim on dark bg) */
+  --ink-900: oklch(.141 .004 285.823);   /* v2-gray-4  — foreground light    ↔ ink-50 dark  */
+  --ink-50:  oklch(1 0 0);               /* v2-gray-100 — foreground dark     ↔ ink-900 light */
+  --ink-800: oklch(.480 .035 284.997);   /* v2-gray-40 — muted-fg light      ↔ ink-100 dark  */
+  --ink-100: oklch(.900 .009 286.208);   /* v2-gray-88 — muted-fg dark       ↔ ink-800 light */
+  --ink-700: oklch(.579 .041 285.042);   /* v2-gray-52 — meta-fg light       ↔ ink-200 dark  */
+  --ink-200: oklch(.796 .020 285.946);   /* v2-gray-76 — meta-fg dark        ↔ ink-700 light */
+  --ink-600: oklch(.654 .032 285.468);   /* v2-gray-60 — reserved            ↔ ink-300 dark  */
+  --ink-300: oklch(.709 .027 285.679);   /* v2-gray-66 — reserved            ↔ ink-600 light */
+  --ink-400: oklch(.690 .029 285.612);   /* v2-gray-64 — text-disabled light ↔ ink-500 dark  */
+  --ink-500: oklch(.393 .029 285.012);   /* v2-gray-30 — text-disabled dark  ↔ ink-400 light */
 
-  /* Surfaces — light / dark pairs */
-  --surface-bg-light:        #F6F8FA;
-  --surface-bg-dark:         #0C1016;
+  /* Surfaces — light / dark pairs.
+   * Light: Blaxel ships #ffffff for ALL surface tiers and uses shadow stacks for elevation.
+   *   See --shadow-* tokens in this file for the progressive ring+shadow ladder.
+   * Dark: Blaxel .dark HSL surface tiers converted to hex.
+   *   background = hsl(240,10%,4%) = #09090b
+   *   card       = hsl(240,11%,8%) = #121217
+   *   accent     = hsl(238,16%,10%) = #15161e  (deepest recess)
+   *   elevated   = hsl(240,18%,12%) = #191924  (onboarding panel / hover lift)
+   *   muted      = hsl(240,14%,12%) = #1a1a23  (sidebar fill, inert chip)
+   *   secondary  = hsl(238,20%,18%) = #252537  (input/border fill, selected row) */
+  --surface-bg-light:        #FFFFFF;
+  --surface-bg-dark:         #09090b;
   --surface-panel-light:     #FFFFFF;
-  --surface-panel-dark:      #11161F;
-  --surface-page-light:      #EBEEF2;
-  --surface-page-dark:       #07090D;
-  --surface-elevated-light:  #F0F2F6;
-  --surface-elevated-dark:   #1B2433;
-  --surface-muted-light:     #F0F2F6;
-  --surface-muted-dark:      #1B2433;
-  --surface-secondary-light: #E2E7ED;
-  --surface-secondary-dark:  #1E2733;
+  --surface-panel-dark:      #121217;
+  --surface-page-light:      #FFFFFF;
+  --surface-page-dark:       #15161e;
+  --surface-elevated-light:  #FFFFFF;
+  --surface-elevated-dark:   #191924;
+  --surface-muted-light:     #FFFFFF;
+  --surface-muted-dark:      #1a1a23;
+  --surface-secondary-light: #FFFFFF;
+  --surface-secondary-dark:  #252537;
 
-  /* Teal — action / brand hue */
-  --teal-800: #055E55;   /* primary-hover light */
-  --teal-700: #087A6C;   /* primary light, ring light */
-  --teal-600: #0E9888;   /* primary-glow seed, chart-1 light */
-  --teal-500: #1A9183;   /* primary-hover dark, ring dark */
-  --teal-400: #2BE0C8;   /* primary dark, chart-1 dark */
+  /* Orange — brand action hue. Replaces teal everywhere.
+   * Source: Blaxel .dark --primary: hsl(21,79%,44%) + --blaxel-hover: hsl(17,87%,55%).
+   * Light: primary = hsl(21,79%,44%) = #c95618 (4.35:1 on white — passes AA for UI components).
+   * Dark:  primary = hsl(17,87%,55%) = #f06128 (6.11:1 on #09090b — strong fill on near-black).
+   * Naming kept as --orange-* to avoid collision with old --teal-* consumer code. */
+  --orange-900: #9b4212;   /* light pressed/active     hsl(21,79%,34%)  */
+  --orange-800: #c95618;   /* light primary fill        hsl(21,79%,44%)  */
+  --orange-700: #d96520;   /* light primary-hover       hsl(20,72%,49%)  */
+  --orange-500: #f06128;   /* dark primary fill         hsl(17,87%,55%)  */
+  --orange-400: #f27a4a;   /* dark primary-hover        hsl(17,87%,62%)  */
 
-  /* Scored (green) — success */
-  --scored-600: #2E9E43;
-  --scored-400: #35C46B;
+  /* Scored (green) — success.
+   * Dark anchor: Source A — blaxel.ai .dark --info hsl(142,76%,46%) = #1ABE5F.
+   * Light anchor: Source B — twoslash annotate light #1ba673. */
+  --scored-600: #1ba673;   /* light dot/text  Source B twoslash annotate */
+  --scored-400: #1ABE5F;   /* dark dot/text   Source A .dark --info hsl(142,76%,46%) */
 
-  /* Running (blue) — in-progress */
-  --running-600: #2462C5;
-  --running-400: #4FA8FF;
+  /* Running (blue) — in-progress.
+   * Dark anchor: Source A — blaxel.ai .dark --debug hsl(210,100%,60%) = #33A1FF.
+   * Light anchor: Source B — twoslash tag light #3772cf. */
+  --running-600: #3772cf;   /* light  Source B twoslash tag */
+  --running-400: #33A1FF;   /* dark   Source A .dark --debug hsl(210,100%,60%) */
 
-  /* Errored (red) — failure; shared with destructive */
-  --errored-600: #D23B2C;
-  --errored-400: #FF5B52;
+  /* Errored (red) — failure; shared with destructive.
+   * Dark anchor: Source A — blaxel.ai .dark --error hsl(0,84%,70%) = #F47474.
+   * Light anchor: Source B — twoslash error light #d45656. */
+  --errored-600: #d45656;   /* light  Source B twoslash error */
+  --errored-400: #F47474;   /* dark   Source A .dark --error hsl(0,84%,70%) */
 
-  /* Warning (amber) */
-  --warning-600: #C47A0A;
-  --warning-400: #E5A52E;
+  /* Warning (amber) — flagged non-fatal.
+   * Dark anchor: Source A — blaxel.ai .dark --warning hsl(38,92%,60%) = #F9B23B.
+   * Light anchor: Source B — twoslash warn light #c37d0d. */
+  --warning-600: #c37d0d;   /* light  Source B twoslash warn */
+  --warning-400: #F9B23B;   /* dark   Source A .dark --warning hsl(38,92%,60%) */
 
-  /* Border — RGB channel seeds for alpha-based borders. */
-  --border-seed-light: 20 30 25;
+  /* Border — RGB channel seeds for alpha-based borders.
+   * Light: rgba(9,9,11,...) — Blaxel's shadow stack uses rgba(9,9,11,.06).
+   * Dark: white alpha — unchanged. */
+  --border-seed-light: 9 9 11;
   --border-seed-dark:  255 255 255;
 
 /* ─── Elevation tiers ────────────────────────────────────────────────────────
- * Components should use semantic aliases (shadow-card, shadow-popover, etc.) from theme.css.
- * See design docs for shadow rationale and dark-mode color base. */
-  --shadow-1: 0 1px 1px light-dark(rgba(28,32,36,.05), rgba(0,0,0,.18)),
-              0 2px 3px light-dark(rgba(28,32,36,.07), rgba(0,0,0,.24));
-  --shadow-2: 0 1px 2px light-dark(rgba(28,32,36,.05), rgba(0,0,0,.19)),
-              0 3px 5px light-dark(rgba(28,32,36,.06), rgba(0,0,0,.26));
-  --shadow-3: 0 2px 4px light-dark(rgba(28,32,36,.05), rgba(0,0,0,.25)),
-              0 4px 9px light-dark(rgba(28,32,36,.08), rgba(0,0,0,.31)),
-              inset 0 1px 0 light-dark(rgba(255,255,255,.00), rgba(255,255,255,.07));
-  --shadow-chip: 0 1px 1px light-dark(rgba(28,32,36,.04), rgba(0,0,0,.16)),
-                 0 1px 2px light-dark(rgba(28,32,36,.05), rgba(0,0,0,.19));
+ * Light: Blaxel's progressive ring+shadow ladder (rgba(9,9,11,...) base).
+ *   --shadow-1 = v2-surface-2-shadow (card)
+ *   --shadow-2 = v2-surface-4-shadow (popover)
+ *   --shadow-3 = v2-surface-6-shadow (modal / command)
+ *   --shadow-chip = v2-surface-1-shadow (chip / badge boundary)
+ * Dark: black-base shadows unchanged in character; tuned to new navy surface.
+ * Components should use semantic aliases (shadow-card, shadow-popover, etc.) from theme.css. */
+  --shadow-1: light-dark(
+                0 0 0 1px rgba(9,9,11,.06),
+                0 0 0 1px rgba(255,255,255,.05)
+              ),
+              light-dark(
+                0 1px 1px -.5px rgba(9,9,11,.06),
+                0 1px 1px -.5px rgba(0,0,0,.24)
+              );
+  --shadow-2: light-dark(
+                0 0 0 1px rgba(9,9,11,.06),
+                0 0 0 1px rgba(255,255,255,.05)
+              ),
+              light-dark(
+                0 1px 1px -.5px rgba(9,9,11,.06),
+                0 1px 2px rgba(0,0,0,.20)
+              ),
+              light-dark(
+                0 3px 3px -1.5px rgba(9,9,11,.06),
+                0 3px 6px rgba(0,0,0,.26)
+              ),
+              light-dark(
+                0 6px 6px -3px rgba(9,9,11,.06),
+                0 6px 12px rgba(0,0,0,.22)
+              );
+  --shadow-3: light-dark(
+                0 0 0 1px rgba(9,9,11,.06),
+                0 0 0 1px rgba(255,255,255,.06)
+              ),
+              light-dark(
+                0 1px 1px -.5px rgba(9,9,11,.06),
+                0 1px 2px rgba(0,0,0,.22)
+              ),
+              light-dark(
+                0 3px 3px -1.5px rgba(9,9,11,.06),
+                0 3px 6px rgba(0,0,0,.26)
+              ),
+              light-dark(
+                0 6px 6px -3px rgba(9,9,11,.06),
+                0 8px 16px rgba(0,0,0,.28)
+              ),
+              light-dark(
+                0 12px 12px -6px rgba(9,9,11,.06),
+                0 16px 32px rgba(0,0,0,.24)
+              ),
+              light-dark(
+                0 24px 24px -12px rgba(9,9,11,.06),
+                inset 0 1px 0 rgba(255,255,255,.07)
+              );
+  --shadow-chip: light-dark(
+                   0 0 0 1px rgba(9,9,11,.06),
+                   0 1px 1px rgba(0,0,0,.16)
+                 );
 
 /* ─── Z-index ─────────────────────────────────────────────────────────────────
  * Z-overlay is shared by every portaled overlay; stacking is resolved by Radix

@@ -176,7 +176,7 @@ function ResultsTable({ rows }: { rows: ReadonlyArray<TasksetResult> }) {
               }}
               className={cn(
                 tableRowVariants(),
-                "cursor-pointer transition-colors hover:bg-accent",
+                "cursor-pointer",
               )}
             >
               {row.getVisibleCells().map((cell) => (

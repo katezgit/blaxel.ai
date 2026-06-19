@@ -23,6 +23,10 @@
 @import 'tailwindcss';
 
 @source "..";
+/* Safelist — utilities used by shadcn internals or consumed via className strings
+ * that don't appear in statically-scanned source. Without this, Tailwind v4 drops
+ * the corresponding @theme var from :root (tree-shaking). */
+@source inline("bg-accent text-accent-foreground");
 
 /* ── DESIGN TOKENS — theme layer ─────────────────────────────────────────── */
 @import './primitive.css';
