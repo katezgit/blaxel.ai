@@ -55,7 +55,7 @@
   padding-left: 0;
   padding-right: 1rem;
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-muted-surface);
+  background: var(--color-background);
 }
 .shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: start; min-width: 0; max-width: var(--sidebar-w); display: flex; align-items: center; gap: 0.5rem; }
 .shell-topbar [data-slot="ws"]       { min-width: 0; flex: 1 1 auto; display: flex; }
