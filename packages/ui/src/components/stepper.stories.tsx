@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
+import { fn } from "storybook/test"
 import { Stepper } from "./stepper"
 
 /* ─── Meta ─────────────────────────────────────────────────────────────────── */
@@ -48,5 +49,17 @@ export const WithoutDescriptions: Story = {
       { label: "Review" },
     ],
     currentStep: 2,
+  },
+}
+
+/* ─── WithBackwardNav ──────────────────────────────────────────────────────── */
+// Wizard at step 3 — steps 1 and 2 are completed and clickable.
+// Click "Model" or "Taskset" to see onStepClick fire in the Actions panel.
+// Active step ("Tasks") and pending step ("Review") produce no callback.
+
+export const WithBackwardNav: Story = {
+  args: {
+    currentStep: 3,
+    onStepClick: fn(),
   },
 }
