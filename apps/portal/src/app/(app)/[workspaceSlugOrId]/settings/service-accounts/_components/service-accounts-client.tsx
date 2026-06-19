@@ -27,8 +27,8 @@ import type { Org, ServiceAccount } from "@/lib/mock/types";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import { ConfirmByNameDialog } from "../../_components/confirm-by-name-dialog";
-import { CreateServiceAccountDialog } from "./create-service-account-dialog";
+import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import CreateServiceAccountDialog from "./create-service-account-dialog";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -58,7 +58,7 @@ interface ServiceAccountsClientProps {
   workspace: Org;
 }
 
-export function ServiceAccountsClient({ workspace }: ServiceAccountsClientProps) {
+export default function ServiceAccountsClient({ workspace }: ServiceAccountsClientProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { data: serverAccounts } = useSuspenseQuery(
     workspaceServiceAccountQueries.list(accountId, workspaceId),

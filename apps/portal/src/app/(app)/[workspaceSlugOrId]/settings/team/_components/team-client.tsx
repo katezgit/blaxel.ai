@@ -45,8 +45,8 @@ import type {
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import { ConfirmByNameDialog } from "../../_components/confirm-by-name-dialog";
-import { FilterPopover } from "./filter-popover";
+import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import FilterPopover from "./filter-popover";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
 import {
   ROLE_META,
@@ -75,7 +75,7 @@ interface TeamClientProps {
 
 const columnHelper = createColumnHelper<TeamMember>();
 
-export function TeamClient({ workspace }: TeamClientProps) {
+export default function TeamClient({ workspace }: TeamClientProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { data: serverMembers } = useSuspenseQuery(
     workspaceTeamQueries.list(accountId, workspaceId),

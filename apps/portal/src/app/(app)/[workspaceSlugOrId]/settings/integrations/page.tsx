@@ -3,7 +3,7 @@ import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/query/get-query-client";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
-import { IntegrationsClient } from "./_components/integrations-client";
+import IntegrationsClient from "./_components/integrations-client";
 
 export const metadata: Metadata = {
   title: "Workspace settings · Integrations",

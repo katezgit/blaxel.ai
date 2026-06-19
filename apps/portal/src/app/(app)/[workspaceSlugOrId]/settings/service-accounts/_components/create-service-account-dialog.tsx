@@ -56,7 +56,7 @@ interface CreateServiceAccountDialogProps {
 
 const ROLES: ReadonlyArray<InviteRole> = ["admin", "member"];
 
-export function CreateServiceAccountDialog({
+export default function CreateServiceAccountDialog({
   open,
   onOpenChange,
   onCreated,

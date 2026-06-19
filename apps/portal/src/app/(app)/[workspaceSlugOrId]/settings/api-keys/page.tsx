@@ -6,7 +6,7 @@ import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { resolveWorkspace } from "@/lib/mock/org";
-import { ApiKeysClient } from "./_components/api-keys-client";
+import ApiKeysClient from "./_components/api-keys-client";
 
 export const metadata: Metadata = {
   title: "Workspace settings · API keys",

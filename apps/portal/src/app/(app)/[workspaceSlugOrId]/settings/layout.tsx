@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { requireSession } from "@/lib/auth/session";
-import { WorkspaceSettingsShell } from "@/components/shell/workspace-settings-shell";
+import WorkspaceSettingsShell from "@/components/shell/workspace-settings-shell";
 import { getQueryClient } from "@/lib/query/get-query-client";
 import { orgQueries } from "@/lib/query/org";
 import { resolveWorkspace } from "@/lib/mock/org";

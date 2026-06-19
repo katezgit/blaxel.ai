@@ -28,7 +28,7 @@ interface ConfirmByNameDialogProps {
 // Name-confirm pattern for destructive workspace actions — typing the
 // workspace name fails when the user is on the wrong workspace, which is
 // what makes the "wrong env wipeout" incident structurally impossible.
-export function ConfirmByNameDialog({
+export default function ConfirmByNameDialog({
   open,
   onOpenChange,
   actionLabel,

@@ -31,7 +31,7 @@ const FIXTURES: ReadonlyArray<ServiceAccount> = [
   },
 ];
 
-export async function fetchWorkspaceServiceAccounts(
+export default async function fetchWorkspaceServiceAccounts(
   _accountId: string,
   _workspaceId: string,
 ): Promise<ReadonlyArray<ServiceAccount>> {

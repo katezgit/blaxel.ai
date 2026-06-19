@@ -4,7 +4,7 @@ import { getQueryClient } from "@/lib/query/get-query-client";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { resolveWorkspace } from "@/lib/mock/org";
-import { ServiceAccountsClient } from "./_components/service-accounts-client";
+import ServiceAccountsClient from "./_components/service-accounts-client";
 
 export const metadata: Metadata = {
   title: "Workspace settings · Service accounts",

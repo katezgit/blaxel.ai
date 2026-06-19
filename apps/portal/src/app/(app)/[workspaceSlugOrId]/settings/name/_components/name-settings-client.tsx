@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from "@repo/ui/components/tooltip";
 import type { Org } from "@/lib/mock/types";
-import { ConfirmByNameDialog } from "../../_components/confirm-by-name-dialog";
+import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -61,7 +61,7 @@ interface NameSettingsClientProps {
   workspace: Org;
 }
 
-export function NameSettingsClient({ workspace }: NameSettingsClientProps) {
+export default function NameSettingsClient({ workspace }: NameSettingsClientProps) {
   const router = useRouter();
   const [savedName, setSavedName] = useState(workspace.name);
   const [confirmOpen, setConfirmOpen] = useState(false);

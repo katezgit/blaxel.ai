@@ -22,7 +22,7 @@ interface WorkspaceSwitcherProps {
   workspaces: ReadonlyArray<Org>;
 }
 
-export function WorkspaceSwitcher({
+export default function WorkspaceSwitcher({
   currentOrg,
   workspaces,
 }: WorkspaceSwitcherProps) {

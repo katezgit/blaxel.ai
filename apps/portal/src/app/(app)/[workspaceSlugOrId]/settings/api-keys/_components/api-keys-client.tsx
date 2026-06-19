@@ -27,8 +27,8 @@ import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-ac
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import { ConfirmByNameDialog } from "../../_components/confirm-by-name-dialog";
-import { CreateApiKeyDialog } from "./create-api-key-dialog";
+import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import CreateApiKeyDialog from "./create-api-key-dialog";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -46,7 +46,7 @@ interface ApiKeysClientProps {
   workspace: Org;
 }
 
-export function ApiKeysClient({ workspace }: ApiKeysClientProps) {
+export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { data: serverKeys } = useSuspenseQuery(
     workspaceApiKeyQueries.list(accountId, workspaceId),

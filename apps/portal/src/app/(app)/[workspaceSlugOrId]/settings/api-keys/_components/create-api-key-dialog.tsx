@@ -68,7 +68,7 @@ interface CreateApiKeyDialogProps {
   onCreated: (key: ApiKey) => void;
 }
 
-export function CreateApiKeyDialog({
+export default function CreateApiKeyDialog({
   open,
   onOpenChange,
   members,

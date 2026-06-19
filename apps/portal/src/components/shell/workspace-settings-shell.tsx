@@ -12,7 +12,7 @@ import { useLastWorkspaceTracker } from "@/components/shell/use-last-workspace-t
 import { useSidebarShortcut } from "@/components/shell/use-sidebar-shortcut";
 import { useSidebarState } from "@/components/shell/use-sidebar-state";
 import { workspaceSettingsNavItems } from "@/components/shell/nav-groups";
-import { WorkspaceSettingsTopbar } from "@/components/shell/workspace-settings-topbar";
+import WorkspaceSettingsTopbar from "@/components/shell/workspace-settings-topbar";
 import type { Org } from "@/lib/mock/types";
 
 interface WorkspaceSettingsShellProps {
@@ -25,7 +25,7 @@ interface WorkspaceSettingsShellProps {
 const MOBILE_DRAWER_ID = "workspace-settings-mobile-drawer";
 const SIDEBAR_LABEL = "Workspace settings";
 
-export function WorkspaceSettingsShell({
+export default function WorkspaceSettingsShell({
   currentOrg,
   workspaces,
   user,

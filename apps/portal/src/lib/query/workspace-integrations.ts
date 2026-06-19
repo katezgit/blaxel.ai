@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { queryKeys } from "./keys";
-import { fetchWorkspaceIntegrations } from "@/lib/mock/workspace-integrations";
+import fetchWorkspaceIntegrations from "@/lib/mock/workspace-integrations";
 
 const TYPE = "integrations";
 

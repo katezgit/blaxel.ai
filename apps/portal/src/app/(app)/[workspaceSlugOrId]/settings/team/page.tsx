@@ -4,7 +4,7 @@ import { getQueryClient } from "@/lib/query/get-query-client";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { resolveWorkspace } from "@/lib/mock/org";
-import { TeamClient } from "./_components/team-client";
+import TeamClient from "./_components/team-client";
 
 export const metadata: Metadata = {
   title: "Workspace settings · Team",

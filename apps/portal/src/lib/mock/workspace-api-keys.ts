@@ -24,12 +24,12 @@ const FIXTURES: ReadonlyArray<ApiKey> = [
     issuedTo: { kind: "service-account", id: "svc_ci_deploy", name: "ci-deploy" },
   },
   {
-    id: "wsk_kate",
-    name: "kate-local-dev",
+    id: "wsk_maya",
+    name: "maya-local-dev",
     masked: "bxl_xxxx…Qa",
     createdAt: "2026-05-20",
     expiresAt: null,
-    issuedTo: { kind: "member", id: "u_kate", name: "Kate Zhang" },
+    issuedTo: { kind: "member", id: "u_maya", name: "Maya Reyes" },
   },
   {
     id: "wsk_eval",
@@ -49,7 +49,7 @@ const FIXTURES: ReadonlyArray<ApiKey> = [
   },
 ];
 
-export async function fetchWorkspaceApiKeys(
+export default async function fetchWorkspaceApiKeys(
   _accountId: string,
   _workspaceId: string,
 ): Promise<ReadonlyArray<ApiKey>> {

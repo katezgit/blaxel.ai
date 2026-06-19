@@ -11,7 +11,7 @@ import { useLastWorkspaceTracker } from "@/components/shell/use-last-workspace-t
 import { useSidebarShortcut } from "@/components/shell/use-sidebar-shortcut";
 import { useSidebarState } from "@/components/shell/use-sidebar-state";
 import { workspaceNavGroups } from "@/components/shell/nav-groups";
-import { WorkspaceTopbar } from "@/components/shell/workspace-topbar";
+import WorkspaceTopbar from "@/components/shell/workspace-topbar";
 import type { Org } from "@/lib/mock/types";
 
 interface WorkspaceShellProps {

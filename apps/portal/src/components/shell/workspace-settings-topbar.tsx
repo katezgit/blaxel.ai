@@ -6,7 +6,7 @@ import { BrandMark } from "@/components/shell/brand-mark";
 import { useCommandPaletteContext } from "@/components/shell/command-palette-provider";
 import { IdentityCluster } from "@/components/shell/identity-cluster";
 import { SearchTrigger } from "@/components/shell/search-trigger";
-import { WorkspaceSwitcher } from "@/components/shell/workspace-switcher";
+import WorkspaceSwitcher from "@/components/shell/workspace-switcher";
 import type { Org } from "@/lib/mock/types";
 
 interface WorkspaceSettingsTopbarProps {
@@ -18,7 +18,7 @@ interface WorkspaceSettingsTopbarProps {
   onOpenMobileNav: () => void;
 }
 
-export function WorkspaceSettingsTopbar({
+export default function WorkspaceSettingsTopbar({
   currentOrg,
   workspaces,
   user,

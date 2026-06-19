@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { queryKeys } from "./keys";
-import { fetchWorkspaceApiKeys } from "@/lib/mock/workspace-api-keys";
+import fetchWorkspaceApiKeys from "@/lib/mock/workspace-api-keys";
 
 const TYPE = "api-keys";
 

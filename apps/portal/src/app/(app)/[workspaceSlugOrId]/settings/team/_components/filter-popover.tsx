@@ -24,7 +24,7 @@ interface FilterPopoverProps<T extends string> {
  * Wraps `Popover` + `Checkbox` rather than `MultiSelect` because the trigger
  * here is a labeled filter chip, not a value-display input.
  */
-export function FilterPopover<T extends string>({
+export default function FilterPopover<T extends string>({
   label,
   options,
   optionLabel,

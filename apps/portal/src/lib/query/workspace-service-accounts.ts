@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { queryKeys } from "./keys";
-import { fetchWorkspaceServiceAccounts } from "@/lib/mock/workspace-service-accounts";
+import fetchWorkspaceServiceAccounts from "@/lib/mock/workspace-service-accounts";
 
 const TYPE = "service-accounts";
 

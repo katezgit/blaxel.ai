@@ -7,18 +7,18 @@ import type { TeamMember } from "@/lib/mock/types";
  */
 const FIXTURES: ReadonlyArray<TeamMember> = [
   {
-    id: "u_kate",
-    name: "Kate Zhang",
-    email: "katezuzy@gmail.com",
+    id: "u_avery",
+    name: "Avery Lin",
+    email: "avery@acme.dev",
     role: "owner",
     source: "local",
     status: "accepted",
     isYou: true,
   },
   {
-    id: "u_avery",
-    name: "Avery Lin",
-    email: "avery@acme.dev",
+    id: "u_maya",
+    name: "Maya Reyes",
+    email: "maya@acme.dev",
     role: "admin",
     source: "invitation",
     status: "accepted",
@@ -89,7 +89,7 @@ const FIXTURES: ReadonlyArray<TeamMember> = [
   },
 ];
 
-export async function fetchWorkspaceTeam(
+export default async function fetchWorkspaceTeam(
   _accountId: string,
   _workspaceId: string,
 ): Promise<ReadonlyArray<TeamMember>> {

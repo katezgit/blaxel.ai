@@ -54,7 +54,7 @@ const TYPE_OPTIONS: ReadonlyArray<{ value: TypeFilter; label: string }> = [
   { value: "mcp-server", label: "MCP server" },
 ];
 
-export function IntegrationsClient() {
+export default function IntegrationsClient() {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { data: integrations } = useSuspenseQuery(
     workspaceIntegrationQueries.list(accountId, workspaceId),

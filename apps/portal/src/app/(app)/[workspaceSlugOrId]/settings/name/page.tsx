@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { resolveWorkspace } from "@/lib/mock/org";
-import { NameSettingsClient } from "./_components/name-settings-client";
+import NameSettingsClient from "./_components/name-settings-client";
 
 export const metadata: Metadata = {
   title: "Workspace settings · Name",

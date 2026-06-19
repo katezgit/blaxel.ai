@@ -196,7 +196,7 @@ export const catalogModels: ReadonlyArray<CatalogModel> = [
     avgScore: 81.3,
     tasksetCount: 8,
     lastEvaluatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    ownerName: "Kate",
+    ownerName: "Avery",
     evaluatedTasksetIds: [
       "hud-browser",
       "osworld-verified",

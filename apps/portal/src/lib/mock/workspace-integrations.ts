@@ -31,7 +31,7 @@ const FIXTURES: ReadonlyArray<Integration> = [
   { id: "slack", name: "Slack", description: "Read channels, send messages, respond to mentions.", category: "mcp-server", logoInitial: "S", enabled: false },
 ];
 
-export async function fetchWorkspaceIntegrations(
+export default async function fetchWorkspaceIntegrations(
   _accountId: string,
   _workspaceId: string,
 ): Promise<ReadonlyArray<Integration>> {
