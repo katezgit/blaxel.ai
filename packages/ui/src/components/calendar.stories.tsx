@@ -57,22 +57,6 @@ export const Playground: Story = {
 
 // ── Mode stories ──────────────────────────────────────────────────────────────
 
-function SingleDemo() {
-  const [selected, setSelected] = useState<Date | undefined>(TODAY)
-  return (
-    <Calendar
-      mode="single"
-      selected={selected}
-      onSelect={setSelected}
-      defaultMonth={TODAY}
-    />
-  )
-}
-
-export const SingleSelection: Story = {
-  render: () => <SingleDemo />,
-}
-
 function RangeDemo() {
   const [range, setRange] = useState<DateRange | undefined>({
     from: new Date(2026, 5, 15),
@@ -104,26 +88,6 @@ export const RangeMidDraw: Story = {
       defaultMonth={TODAY}
     />
   ),
-}
-
-function MultipleDemo() {
-  const [days, setDays] = useState<Date[] | undefined>([
-    new Date(2026, 5, 10),
-    new Date(2026, 5, 15),
-    new Date(2026, 5, 19),
-  ])
-  return (
-    <Calendar
-      mode="multiple"
-      selected={days}
-      onSelect={setDays}
-      defaultMonth={TODAY}
-    />
-  )
-}
-
-export const MultipleSelection: Story = {
-  render: () => <MultipleDemo />,
 }
 
 // Two-month layout: demonstrates the multi-month grid and the chevron placement

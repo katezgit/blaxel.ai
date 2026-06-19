@@ -102,11 +102,6 @@ export const PresetSelected: Story = {
   render: () => <DateTimeDemo />,
 }
 
-/** "Last 6 hours" preset — verifies hour-level precision in time inputs. */
-export const LastSixHours: Story = {
-  render: () => <DateTimeDemo initialPresetLabel="Last 6 hours" />,
-}
-
 /**
  * Timezone displayed as plain text (no timezoneOptions) — the timezone Select is
  * replaced with a read-only label and the "Remove time" button is absent.
