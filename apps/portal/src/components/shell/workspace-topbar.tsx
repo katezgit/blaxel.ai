@@ -13,7 +13,6 @@ interface WorkspaceTopbarProps {
   currentOrg: Org;
   workspaces: ReadonlyArray<Org>;
   user: { name: string; email: string; tier: string };
-  unreadNotifications: number;
   mobileNavId: string;
   mobileNavOpen: boolean;
   onOpenMobileNav: () => void;
@@ -23,7 +22,6 @@ export function WorkspaceTopbar({
   currentOrg,
   workspaces,
   user,
-  unreadNotifications,
   mobileNavId,
   mobileNavOpen,
   onOpenMobileNav,
@@ -55,7 +53,7 @@ export function WorkspaceTopbar({
         <SearchTrigger onClick={() => setPaletteOpen(true)} />
       </div>
       <div data-zone="right">
-        <IdentityCluster user={user} unreadCount={unreadNotifications} />
+        <IdentityCluster user={user} />
       </div>
     </header>
   );

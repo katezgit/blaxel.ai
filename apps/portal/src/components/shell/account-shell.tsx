@@ -19,7 +19,6 @@ interface AccountShellProps {
   fallbackWorkspace: Org;
   workspaces: ReadonlyArray<Org>;
   user: { name: string; email: string; tier: string };
-  unreadNotifications: number;
   children: ReactNode;
 }
 
@@ -31,7 +30,6 @@ export function AccountShell({
   fallbackWorkspace,
   workspaces,
   user,
-  unreadNotifications,
   children,
 }: AccountShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -60,7 +58,6 @@ export function AccountShell({
           <CollapsibleSidebarMarker value={{ inCollapsible: true, userCollapsed: collapsed }}>
             <AccountTopbar
               user={user}
-              unreadNotifications={unreadNotifications}
               mobileNavId={MOBILE_DRAWER_ID}
               mobileNavOpen={drawerOpen}
               onOpenMobileNav={() => setDrawerOpen(true)}
