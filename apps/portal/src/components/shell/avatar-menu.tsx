@@ -1,223 +1,173 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
-import { forwardRef, useState, type ReactNode } from "react";
-import { LogOutIcon, SettingsIcon } from "lucide-react";
+import { KeyboardIcon, LogOutIcon, SlidersHorizontal, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
-import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
-import { SegmentedControl } from "@repo/ui/components/segmented-control";
+import { Badge } from "@repo/ui/components/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@repo/ui/components/dropdown-menu";
 import { cn } from "@repo/ui/lib/cn";
-import { useRole } from "@/lib/mock/role-context";
-import { AvatarPill } from "@/components/shell/avatar-pill";
 import { signOut } from "@/lib/auth/actions";
-import type { Org } from "@/lib/mock/types";
 
-type ThemeChoice = "system" | "light" | "dark";
+const THEME_SEGMENTS = ["system", "light", "dark"] as const;
+type ThemeChoice = (typeof THEME_SEGMENTS)[number];
 
 interface AvatarMenuProps {
-  user: { name: string; email: string };
-  currentOrg: Org;
+  user: { name: string; email: string; tier: string };
 }
 
-export function AvatarMenu(props: AvatarMenuProps) {
-  const { role } = useRole();
+export function AvatarMenu({ user }: AvatarMenuProps) {
   return (
-    <AvatarMenuShell
-      {...props}
-      renderTrigger={({ open, toggle, name }) => (
-        <AvatarPill
-          name={name}
-          org={props.currentOrg}
-          roleLabel={role}
-          open={open}
-          onClick={toggle}
-        />
-      )}
-    />
-  );
-}
-
-// Collapsed-sidebar trigger: avatar circle only, same popover body. Identical
-// menu content — only the trigger shape changes.
-export function AvatarMenuCollapsed(props: AvatarMenuProps) {
-  return (
-    <AvatarMenuShell
-      {...props}
-      renderTrigger={({ open, toggle, name }) => (
-        <AvatarTriggerCollapsed name={name} open={open} onClick={toggle} />
-      )}
-    />
-  );
-}
-
-interface AvatarMenuShellProps extends AvatarMenuProps {
-  renderTrigger: (args: {
-    open: boolean;
-    toggle: () => void;
-    name: string;
-  }) => ReactNode;
-}
-
-function AvatarMenuShell({ user, currentOrg, renderTrigger }: AvatarMenuShellProps) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        {renderTrigger({
-          open,
-          toggle: () => setOpen((prev) => !prev),
-          name: user.name,
-        })}
-      </PopoverTrigger>
-      <PopoverContent
-        side="top"
-        align="start"
-        sideOffset={8}
-        variant="action"
-        className="w-[272px] p-0 focus-inset"
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        aria-label="Open account menu"
+        className={cn(
+          "flex size-8 items-center justify-center rounded-full focus-visible:shadow-focus-ring",
+          "hover:ring-2 hover:ring-primary-border",
+        )}
       >
-        <div className="border-b border-border px-3.5 py-3">
+        <Avatar size="sm">
+          <AvatarFallback>{user.name.charAt(0) || "?"}</AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-72">
+        <div className="px-2 pt-2 pb-2.5 border-b border-border">
           <div className="text-label font-semibold text-foreground">{user.name}</div>
-          <div className="mt-0.5 font-mono text-caption text-meta-foreground">
+          <div className="mt-0.5 font-mono text-caption text-meta-foreground truncate">
             {user.email}
           </div>
-
-          <div className="mt-2.5 flex items-center gap-2.5">
-            <Avatar size="xs" shape="square">
-              <AvatarFallback>{currentOrg.avatarInitial}</AvatarFallback>
-            </Avatar>
-            <div className="flex min-w-0 flex-col leading-tight">
-              <span className="truncate text-label font-medium text-foreground">
-                {currentOrg.name}
-              </span>
-              <span className="truncate font-mono text-caption text-meta-foreground">
-                {currentOrg.hint}
-              </span>
-            </div>
+          <div className="mt-2">
+            <Badge variant="brand-soft">{user.tier}</Badge>
           </div>
         </div>
 
-        <MenuLink
-          href="/manage"
-          icon={<SettingsIcon className="size-3.5" />}
-          onSelect={() => setOpen(false)}
-        >
-          Manage settings
-        </MenuLink>
+        <DropdownMenuItem asChild>
+          <Link href="/account/profile">
+            <User aria-hidden="true" />
+            <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link href="/account/preferences">
+            <SlidersHorizontal aria-hidden="true" />
+            <span>Preferences</span>
+          </Link>
+        </DropdownMenuItem>
 
         <ThemeRow />
 
-        <MenuItem
-          icon={<LogOutIcon className="size-3.5" />}
-          onClick={() => {
-            setOpen(false);
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link href="/account/billing">
+            <span className="size-4" aria-hidden="true" />
+            <span className="flex-1">Account &amp; billing</span>
+            <span aria-hidden="true" className="text-meta-foreground">
+              &rarr;
+            </span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onSelect={() => {
+            /* TODO: help & shortcuts panel — see wireframe §15 */
+          }}
+        >
+          <KeyboardIcon aria-hidden="true" />
+          <span>Help &amp; shortcuts</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          variant="destructive"
+          onSelect={() => {
             void signOut();
           }}
         >
-          Log out
-        </MenuItem>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-interface AvatarTriggerCollapsedProps {
-  name: string;
-  open: boolean;
-  onClick: () => void;
-}
-
-const AvatarTriggerCollapsed = forwardRef<HTMLButtonElement, AvatarTriggerCollapsedProps>(
-  function AvatarTriggerCollapsed({ name, open, onClick }, ref) {
-    return (
-      <button
-        ref={ref}
-        type="button"
-        aria-label="Open account menu"
-        aria-expanded={open}
-        onClick={onClick}
-        className={cn(
-          "sidebar-row-hover flex h-7 w-full items-center justify-center rounded-md",
-          open && "bg-secondary-surface",
-        )}
-      >
-        <Avatar size="xs">
-          <AvatarFallback>{name.charAt(0)}</AvatarFallback>
-        </Avatar>
-      </button>
-    );
-  },
-);
-
-interface MenuItemProps {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  onClick: () => void;
-}
-
-function MenuItem({ icon, children, onClick }: MenuItemProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex w-full items-center gap-2.5 px-3.5 py-2 text-label text-muted-foreground hover:bg-sidebar-hover-manage hover:text-foreground"
-    >
-      <span aria-hidden="true" className="text-meta-foreground">
-        {icon}
-      </span>
-      <span className="flex-1 text-left">{children}</span>
-    </button>
-  );
-}
-
-interface MenuLinkProps {
-  href: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  onSelect: () => void;
-}
-
-function MenuLink({ href, icon, children, onSelect }: MenuLinkProps) {
-  return (
-    <Link
-      href={href}
-      onClick={onSelect}
-      className="flex w-full items-center gap-2.5 px-3.5 py-2 text-label text-muted-foreground hover:bg-sidebar-hover-manage hover:text-foreground"
-    >
-      <span aria-hidden="true" className="text-meta-foreground">
-        {icon}
-      </span>
-      <span className="flex-1 text-left">{children}</span>
-    </Link>
+          <LogOutIcon aria-hidden="true" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 function ThemeRow() {
   const { theme, setTheme } = useTheme();
-  // `theme` is undefined before next-themes hydrates from storage; fall back to
-  // "system" so the active segment renders sensibly on first paint.
-  const value = (theme ?? "system") as ThemeChoice;
+  const current = (theme ?? "system") as ThemeChoice;
+  const segmentRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const focusSegment = (index: number) => {
+    const target = segmentRefs.current[(index + THEME_SEGMENTS.length) % THEME_SEGMENTS.length];
+    target?.focus();
+  };
+
   return (
-    <div className="flex items-center justify-between gap-2.5 px-3.5 py-2 text-label text-muted-foreground">
-      <span>Theme</span>
-      <SegmentedControl
+    <DropdownMenuItem
+      onSelect={(event) => event.preventDefault()}
+      className="gap-3 data-[highlighted]:bg-transparent"
+    >
+      <Sun aria-hidden="true" />
+      <span className="flex-1">Theme</span>
+      <div
+        role="group"
         aria-label="Theme"
-        value={value}
-        onValueChange={(next) => setTheme(next as ThemeChoice)}
-        className="h-7"
+        className="flex items-center rounded-md border border-border bg-background p-0.5"
+        onKeyDown={(event) => {
+          const focusedIndex = segmentRefs.current.findIndex(
+            (node) => node === document.activeElement,
+          );
+          if (focusedIndex < 0) return;
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            focusSegment(focusedIndex + 1);
+          } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            focusSegment(focusedIndex - 1);
+          } else if (event.key === "Enter" || event.key === " ") {
+            // Radix Menu.Item swallows Enter/Space to "select" the row; activate
+            // the focused segment manually so the keyboard path matches click.
+            const focusedValue = THEME_SEGMENTS[focusedIndex];
+            if (!focusedValue) return;
+            event.preventDefault();
+            event.stopPropagation();
+            setTheme(focusedValue);
+          }
+        }}
       >
-        <SegmentedControl.Item value="system" className="px-2 text-caption">
-          System
-        </SegmentedControl.Item>
-        <SegmentedControl.Item value="light" className="px-2 text-caption">
-          Light
-        </SegmentedControl.Item>
-        <SegmentedControl.Item value="dark" className="px-2 text-caption">
-          Dark
-        </SegmentedControl.Item>
-      </SegmentedControl>
-    </div>
+        {THEME_SEGMENTS.map((value, index) => {
+          const isActive = current === value;
+          return (
+            <button
+              key={value}
+              ref={(node) => {
+                segmentRefs.current[index] = node;
+              }}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => setTheme(value)}
+              className={cn(
+                "rounded-sm px-2 py-0.5 text-caption capitalize transition-colors",
+                "focus-visible:shadow-focus-ring focus-visible:outline-none",
+                isActive
+                  ? "bg-secondary-surface text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {value}
+            </button>
+          );
+        })}
+      </div>
+    </DropdownMenuItem>
   );
 }

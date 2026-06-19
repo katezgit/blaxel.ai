@@ -27,8 +27,9 @@ export const currentUser: User = {
 
 export const currentOrg: Org = {
   id: "00000000-0000-4000-8000-000000000001",
-  name: "Acme Robotics",
-  avatarInitial: "A",
+  slug: "webflow-prod",
+  name: "webflow-prod",
+  avatarInitial: "w",
   hint: "12 members · you own this",
   members: 12,
 };
@@ -38,8 +39,9 @@ export const orgList: ReadonlyArray<OrgMembership> = [
   {
     org: {
       id: "org_atlas",
-      name: "Atlas RL",
-      avatarInitial: "A",
+      slug: "atlas-rl",
+      name: "atlas-rl",
+      avatarInitial: "a",
       hint: "12 members · admin",
       members: 12,
     },
@@ -48,8 +50,9 @@ export const orgList: ReadonlyArray<OrgMembership> = [
   {
     org: {
       id: "org_sandbox",
-      name: "Sandbox",
-      avatarInitial: "S",
+      slug: "sandbox-dev",
+      name: "sandbox-dev",
+      avatarInitial: "s",
       hint: "3 members · member",
       members: 3,
     },

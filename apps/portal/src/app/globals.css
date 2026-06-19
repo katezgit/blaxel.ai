@@ -8,6 +8,129 @@
  * Without this binding, dark: utilities never match in this codebase. */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* App-shell zone dimensions — wireframe contract (docs/design/app-shell/wireframe/index.md §7).
+ * Consumed via Tailwind prop-(--topbar-h) / prop-(--sidebar-w) / prop-(--content-px)
+ * on the shell's <header> / <aside> / <main>. Breakpoints follow the wireframe
+ * §3–6 ramp: 248 → 220 → 64 → 0.
+ *
+ * --shell-left-gutter: x-position (from viewport-left) where the topbar brand
+ * orange-ball center and the sidebar nav-icon centers share a column. Sidebar
+ * arithmetic: nav px-2 (8) + link px-2 (8) + half-icon (8) = 24. Brand
+ * arithmetic: ball-center is offset 12px inside the SVG, so the brand wrapper
+ * gets padding-left = --shell-left-gutter - 12px = 12px (see brand-mark.tsx).
+ * Topbar's left padding is dropped at md+ so the brand fully owns the column. */
+:root {
+  --topbar-h: 56px;
+  --sidebar-w: 248px;
+  --sidebar-rail-w: 64px;
+  --mobile-drawer-w: 280px;
+  --cmdk-modal-w: 640px;
+  --brand-text-size: 24px;
+  --content-px: 32px;
+  --shell-left-gutter: 24px;
+  --brand-svg-ball-offset: 12px;
+}
+@media (max-width: 1279px) {
+  :root { --sidebar-w: 220px; --content-px: 28px; }
+}
+@media (max-width: 1023px) {
+  :root { --sidebar-w: 64px; --content-px: 24px; }
+}
+@media (max-width: 767px) {
+  :root { --topbar-h: auto; --content-px: 16px; }
+}
+
+/* App-shell topbar grid — wireframe contract (docs/design/wireframe/app-shell.md §6–9).
+ * Desktop/tablet: left zone (brand + workspace) anchored start; right zone
+ * (identity cluster) anchored end. No center zone — search collapsed into the
+ * identity cluster as an icon (§3 rule 2). Mobile: workspace shell wraps to
+ * 2 rows (nav+brand+identity / workspace); sub-shells stay 1-row. */
+@utility shell-topbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "left center right";
+  align-items: center;
+  height: var(--topbar-h);
+  gap: 0.75rem;
+  padding-left: 0;
+  padding-right: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-muted-surface);
+}
+.shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: start; min-width: 0; max-width: var(--sidebar-w); display: flex; align-items: center; gap: 0.5rem; }
+.shell-topbar [data-slot="ws"]       { min-width: 0; flex: 1 1 auto; display: flex; }
+.shell-topbar > [data-zone="center"] { grid-area: center; justify-self: end; display: flex; justify-content: flex-end; min-width: 0; }
+.shell-topbar > [data-zone="right"]  { grid-area: right;  justify-self: end;   display: flex; align-items: center; }
+.shell-topbar [data-slot="brand"]    > a { padding-inline: calc(var(--shell-left-gutter) - var(--brand-svg-ball-offset)) 0; }
+.shell-topbar [data-slot="nav-trigger"] { display: none; }
+@media (max-width: 767px) {
+  .shell-topbar [data-slot="nav-trigger"] { display: inline-flex; }
+}
+
+@media (max-width: 767px) {
+  .shell-topbar {
+    grid-template-columns: auto auto auto 1fr auto auto;
+    grid-template-rows: auto;
+    grid-template-areas: "nav brand ws stretch search actions";
+    column-gap: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  .shell-topbar > [data-zone="left"]   { display: contents; max-width: none; }
+  .shell-topbar > [data-zone="center"] { grid-area: search; justify-self: end; justify-content: flex-end; width: auto; }
+  .shell-topbar > [data-zone="center"] [data-slot="search"] { max-width: none; width: auto; }
+  .shell-topbar > [data-zone="right"]  { grid-area: actions; }
+  .shell-topbar [data-slot="brand"]       { grid-area: brand; justify-self: start; }
+  .shell-topbar [data-slot="brand"] > a   { padding-inline: 0; }
+  .shell-topbar [data-slot="ws"]          { grid-area: ws;    justify-self: start; width: auto; min-width: 0; }
+  .shell-topbar [data-slot="nav-trigger"] { grid-area: nav;   justify-self: start; }
+
+  .shell-topbar-sub {
+    grid-template-columns: auto auto 1fr auto auto;
+    grid-template-rows: auto;
+    grid-template-areas: "nav brand stretch search actions";
+  }
+}
+
+/* Sidebar nav icon-rail behaviour. Single selector — Sidebar sets
+ * data-rail="true" on the <nav> whenever EITHER (a) the viewport is below
+ * lg, OR (b) the user has collapsed via ⌘B. Both paths produce the same
+ * end state, so a single CSS block covers both. The mobile drawer never
+ * gets data-rail and stays in full-label mode.
+ *
+ * Rules wrapped in @media (min-width: 0) to defeat a Tailwind v4 build
+ * quirk that drops bare top-level rules placed before @theme. */
+@media (min-width: 0) {
+  [data-rail="true"] [data-group-label] { display: none; }
+  [data-rail="true"] [data-nav-label],
+  [data-rail="true"] [data-sub-shell-return-label] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  [data-rail="true"] [data-nav-item],
+  [data-rail="true"] [data-sub-shell-return] {
+    justify-content: center;
+    gap: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  [data-rail="true"] [data-nav-icon] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  [data-rail="true"] [data-nav-group] + [data-nav-group] {
+    border-top: 1px solid var(--color-border);
+    padding-top: 0.5rem;
+    margin-top: 0.25rem;
+  }
+}
+
 @theme {
   /* 1536px caps content so a 1920px monitor minus the 248px sidebar lands
    * cleanly; 1280 (max-w-7xl) clips dense tables on 1440 laptops. */

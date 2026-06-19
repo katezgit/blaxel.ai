@@ -17,6 +17,8 @@ export interface User {
 
 export interface Org {
   id: string;
+  /** URL slug used in routes (`/:workspaceSlugOrId/...`). Stable, lowercase, kebab. */
+  slug: string;
   name: string;
   avatarInitial: string;
   /** Short hint shown under the org name in the avatar menu. */
