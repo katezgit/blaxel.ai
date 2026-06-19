@@ -4,6 +4,12 @@ import type { ReactNode } from "react";
 
 interface PanelProps {
   title?: string;
+  /**
+   * Optional one-line description sitting tight under the title. Use for
+   * editorial "what does this section do" copy, where the children below are
+   * the actionable controls. Renders as muted body text.
+   */
+  subtitle?: string;
   children: ReactNode;
   className?: string;
   /** Optional right-aligned slot rendered next to the panel title. */
@@ -14,15 +20,21 @@ interface PanelProps {
  * Settings panel — wraps content in a `Card` with a structural title row.
  * Title is optional so panels can omit headers when the page already has one.
  */
-export function Panel({ title, action, children, className }: PanelProps) {
+export function Panel({ title, subtitle, action, children, className }: PanelProps) {
+  const hasHeader = title || action;
   return (
     <Card className={cn("mb-4 px-6 py-6", className)}>
-      {title || action ? (
-        <div className="mb-6 flex items-center justify-between gap-3">
-          {title ? (
-            <h2 className="text-subtitle font-semibold text-foreground">{title}</h2>
-          ) : <span />}
-          {action}
+      {hasHeader ? (
+        <div className="mb-6 flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-3">
+            {title ? (
+              <h2 className="text-subtitle font-semibold text-foreground">{title}</h2>
+            ) : <span />}
+            {action}
+          </div>
+          {subtitle ? (
+            <p className="text-body text-muted-foreground">{subtitle}</p>
+          ) : null}
         </div>
       ) : null}
       {children}

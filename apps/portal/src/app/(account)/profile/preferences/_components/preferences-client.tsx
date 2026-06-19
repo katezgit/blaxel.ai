@@ -97,19 +97,17 @@ export function PreferencesClient() {
         </ul>
       </Panel>
 
-      <Panel title="Privacy">
-        <div className="flex flex-col items-start gap-4">
-          <p className="text-body text-muted-foreground">
-            Control how your data is shared, sold, or used for advertising.
-          </p>
-          <Button
-            variant="secondary"
-            onClick={() => setPrivacyDialogOpen(true)}
-            className="w-full sm:w-auto"
-          >
-            Manage privacy preferences
-          </Button>
-        </div>
+      <Panel
+        title="Privacy"
+        subtitle="Control how your data is shared, sold, or used for advertising."
+      >
+        <Button
+          variant="secondary"
+          onClick={() => setPrivacyDialogOpen(true)}
+          className="w-full self-start sm:w-auto"
+        >
+          Manage privacy preferences
+        </Button>
       </Panel>
 
       <PrivacyPreferencesDialog
