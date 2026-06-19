@@ -30,11 +30,11 @@ export function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps) {
       aria-current={isActive ? "page" : undefined}
       onClick={onNavigate}
       className={cn(
-        "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md border px-2 text-label outline-hidden",
+        "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md px-2 text-label outline-hidden",
         "focus-visible:shadow-focus-ring",
         isActive
-          ? "border-primary-border bg-selected-surface text-primary"
-          : "border-transparent text-muted-foreground hover:text-foreground",
+          ? "bg-primary/10 text-primary"
+          : "text-muted-foreground hover:text-foreground",
       )}
     >
       <Icon

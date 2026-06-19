@@ -146,8 +146,8 @@
    * Manage shell sidebar (sits on bg-card / panel surface):
    *   Dark: 12% white mix → neutral lift; orange mix would clash on dark-navy elevated bg. */
   --color-sidebar-hover:        light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 94%, var(--orange-800) 6%)
+    color-mix(in srgb, var(--surface-elevated-light) 96%, black 4%),
+    color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
   );
   --color-sidebar-hover-manage: light-dark(
     color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
