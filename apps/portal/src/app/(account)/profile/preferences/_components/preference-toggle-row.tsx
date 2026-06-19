@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Badge } from "@repo/ui/components/badge";
 import { cn } from "@repo/ui/lib/cn";
 
-interface NotificationToggleRowProps {
+interface PreferenceToggleRowProps {
   label: string;
   description: string;
   /**
@@ -19,13 +19,13 @@ interface NotificationToggleRowProps {
   className?: string;
 }
 
-export function NotificationToggleRow({
+export function PreferenceToggleRow({
   label,
   description,
   children,
   forced,
   className,
-}: NotificationToggleRowProps) {
+}: PreferenceToggleRowProps) {
   return (
     <li
       className={cn(

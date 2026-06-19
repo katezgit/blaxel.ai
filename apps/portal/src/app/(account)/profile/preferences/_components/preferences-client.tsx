@@ -1,25 +1,39 @@
 "use client";
 
 import { useId, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
 import { Switch } from "@repo/ui/components/switch";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
-import { NotificationToggleRow } from "./notification-toggle-row";
+import { PreferenceToggleRow } from "./preference-toggle-row";
+import {
+  PrivacyPreferencesDialog,
+  type PrivacyChoices,
+} from "./privacy-preferences-dialog";
 
-interface NotificationPrefs {
+interface EmailPrefs {
   productUpdates: boolean;
   weeklyDigest: boolean;
   marketing: boolean;
 }
 
-const DEFAULT_PREFS: NotificationPrefs = {
+const DEFAULT_EMAIL_PREFS: EmailPrefs = {
   productUpdates: true,
   weeklyDigest: false,
   marketing: false,
 };
 
-export function NotificationsClient() {
-  const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
+// Privacy-respecting default: every consent toggle starts OFF until the user
+// actively opts in. Mirrors CCPA / "do not sell" expectations.
+const DEFAULT_PRIVACY: PrivacyChoices = {
+  sale: false,
+  sharing: false,
+  targetedAds: false,
+};
+
+export function PreferencesClient() {
+  const [prefs, setPrefs] = useState<EmailPrefs>(DEFAULT_EMAIL_PREFS);
+  const [privacy, setPrivacy] = useState<PrivacyChoices>(DEFAULT_PRIVACY);
+  const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
 
   const securityId = useId();
 
@@ -27,7 +41,7 @@ export function NotificationsClient() {
     <>
       <Panel title="Email preferences">
         <ul className="flex flex-col gap-0">
-          <NotificationToggleRow
+          <PreferenceToggleRow
             label="Product updates"
             description="New features, breaking changes, deprecations. About once a month."
           >
@@ -38,8 +52,8 @@ export function NotificationsClient() {
               }
               aria-label="Product updates"
             />
-          </NotificationToggleRow>
-          <NotificationToggleRow
+          </PreferenceToggleRow>
+          <PreferenceToggleRow
             label="Security alerts"
             description="Sign-ins from new devices, recovery code use, MFA changes."
             forced
@@ -50,8 +64,8 @@ export function NotificationsClient() {
               disabled
               aria-label="Security alerts (required)"
             />
-          </NotificationToggleRow>
-          <NotificationToggleRow
+          </PreferenceToggleRow>
+          <PreferenceToggleRow
             label="Weekly digest"
             description="Sandbox activity and usage summary every Monday."
           >
@@ -62,13 +76,13 @@ export function NotificationsClient() {
               }
               aria-label="Weekly digest"
             />
-          </NotificationToggleRow>
+          </PreferenceToggleRow>
         </ul>
       </Panel>
 
       <Panel title="Marketing">
         <ul className="flex flex-col gap-0">
-          <NotificationToggleRow
+          <PreferenceToggleRow
             label="Marketing emails"
             description="Occasional product news, customer stories, and event invites."
           >
@@ -79,24 +93,31 @@ export function NotificationsClient() {
               }
               aria-label="Marketing emails"
             />
-          </NotificationToggleRow>
+          </PreferenceToggleRow>
         </ul>
       </Panel>
 
       <Panel title="Privacy">
-        <p className="text-body text-muted-foreground">
-          Data sharing, telemetry, and cookie choices live on the public site.{" "}
-          <a
-            href="https://blaxel.ai/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-0.5 font-medium text-primary underline-offset-4 hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none"
+        <div className="flex flex-col items-start gap-4">
+          <p className="text-body text-muted-foreground">
+            Control how your data is shared, sold, or used for advertising.
+          </p>
+          <Button
+            variant="secondary"
+            onClick={() => setPrivacyDialogOpen(true)}
+            className="w-full sm:w-auto"
           >
-            Manage preferences
-            <ArrowUpRight aria-hidden="true" className="size-3.5" />
-          </a>
-        </p>
+            Manage privacy preferences
+          </Button>
+        </div>
       </Panel>
+
+      <PrivacyPreferencesDialog
+        open={privacyDialogOpen}
+        onOpenChange={setPrivacyDialogOpen}
+        value={privacy}
+        onSave={setPrivacy}
+      />
     </>
   );
 }

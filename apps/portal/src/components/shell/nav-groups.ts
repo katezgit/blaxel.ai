@@ -7,7 +7,6 @@
 import {
   AlertOctagon,
   ArrowLeft,
-  Bell,
   Bot,
   BrainCircuit,
   Container,
@@ -117,7 +116,7 @@ export function workspaceSettingsNavItems(
 }
 
 /**
- * Personal-area sub-sidebar — user-scoped identity, security, notifications.
+ * Personal-area sub-sidebar — user-scoped identity, security, preferences.
  * "Account" is a billing-bearing business entity (multi-admin); this menu is
  * personal-only. Routes live under `/profile/...` to reflect that distinction.
  */
@@ -127,7 +126,7 @@ export const PROFILE_NAV_GROUPS: ReadonlyArray<NavGroup> = [
     items: [
       { href: "/profile", label: "Profile", icon: User, exact: true },
       { href: "/profile/security", label: "Security", icon: ShieldCheck },
-      { href: "/profile/notifications", label: "Notifications", icon: Bell },
+      { href: "/profile/preferences", label: "Preferences", icon: SlidersHorizontal },
       { href: "/profile/invitations", label: "Invitations", icon: Mail },
     ],
   },
