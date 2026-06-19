@@ -7,7 +7,6 @@ import { orgQueries } from "@/lib/query/org";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { TenancyProvider } from "@/lib/query/tenancy-context";
 
-const NOTIFICATIONS_UNREAD = 3;
 const ACCOUNT_TIER = "Tier 1";
 
 export default async function AccountLayout({ children }: { children: ReactNode }) {
@@ -39,7 +38,6 @@ export default async function AccountLayout({ children }: { children: ReactNode 
           fallbackWorkspace={fallbackWorkspace}
           workspaces={workspaces}
           user={user}
-          unreadNotifications={NOTIFICATIONS_UNREAD}
         >
           {children}
         </AccountShell>

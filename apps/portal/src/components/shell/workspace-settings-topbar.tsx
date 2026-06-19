@@ -9,7 +9,6 @@ import { SearchTrigger } from "@/components/shell/search-trigger";
 
 interface WorkspaceSettingsTopbarProps {
   user: { name: string; email: string; tier: string };
-  unreadNotifications: number;
   mobileNavId: string;
   mobileNavOpen: boolean;
   onOpenMobileNav: () => void;
@@ -17,7 +16,6 @@ interface WorkspaceSettingsTopbarProps {
 
 export function WorkspaceSettingsTopbar({
   user,
-  unreadNotifications,
   mobileNavId,
   mobileNavOpen,
   onOpenMobileNav,
@@ -46,7 +44,7 @@ export function WorkspaceSettingsTopbar({
         <SearchTrigger onClick={() => setPaletteOpen(true)} />
       </div>
       <div data-zone="right">
-        <IdentityCluster user={user} unreadCount={unreadNotifications} />
+        <IdentityCluster user={user} />
       </div>
     </header>
   );
