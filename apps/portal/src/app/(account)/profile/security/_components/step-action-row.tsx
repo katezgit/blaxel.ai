@@ -29,8 +29,10 @@ export function StepActionRow({ back, children }: StepActionRowProps) {
         back ? "sm:justify-between" : "sm:justify-end",
       )}
     >
-      {back ? <div className="flex">{back}</div> : null}
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
+      {back ? (
+        <div className="flex *:w-full sm:*:w-auto">{back}</div>
+      ) : null}
+      <div className="flex flex-col-reverse gap-2 *:w-full sm:flex-row sm:items-center sm:*:w-auto">
         {children}
       </div>
     </div>
