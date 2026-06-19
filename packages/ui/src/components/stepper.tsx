@@ -22,6 +22,12 @@ export interface StepperProps {
    * steps after are 'pending'. Matches the visible numeral ("Step 1 of 4").
    */
   currentStep: number
+  /**
+   * Called with the 1-indexed step number when the user clicks a completed step.
+   * When omitted the component is purely presentational (no interactive affordance).
+   * Active and pending steps are never clickable regardless of this prop.
+   */
+  onStepClick?: (stepIndex: number) => void
   /** Accessible label for the wizard progress list. Defaults to "Wizard progress". */
   "aria-label"?: string
   className?: string
@@ -32,6 +38,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
     {
       steps,
       currentStep,
+      onStepClick,
       "aria-label": ariaLabel = "Wizard progress",
       className,
     },
@@ -73,6 +80,21 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
             const isActive = idx === activeIndex
             const isCompleted = idx < activeIndex
             const isLast = idx === steps.length - 1
+            const isClickable = isCompleted && !!onStepClick
+
+            // Completed step row is a <button> when onStepClick is provided;
+            // active and pending steps remain non-interactive <div>s.
+            const RowEl = isClickable ? "button" : "div"
+            const rowProps = isClickable
+              ? {
+                  type: "button" as const,
+                  onClick: () => onStepClick(idx + 1),
+                  className: cn(
+                    "flex items-center gap-2 rounded cursor-pointer",
+                    "hover:bg-hover-surface",
+                  ),
+                }
+              : { className: "flex items-center gap-2" }
 
             return (
               <li
@@ -80,7 +102,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
                 aria-current={isActive ? "step" : undefined}
                 className="flex flex-1 flex-col last:flex-none"
               >
-                <div className="flex items-center gap-2">
+                <RowEl {...rowProps}>
                   {/* numeral/icon is decorative — accessible name comes from <li> text */}
                   <span
                     aria-hidden="true"
@@ -119,7 +141,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
                       )}
                     />
                   )}
-                </div>
+                </RowEl>
 
                 {/* ml-10 = size-8 (32px) + gap-2 (8px) — aligns left edge under step label */}
                 {step.description && (

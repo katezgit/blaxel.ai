@@ -1,5 +1,6 @@
 import * as React from "react"
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, within, fireEvent } from "@testing-library/react"
+import { jest } from "@jest/globals"
 import { Stepper } from "./stepper"
 
 // Helper: grab each <li> from the desktop <ol role="list">.
@@ -155,6 +156,71 @@ describe("Stepper", () => {
     items.forEach((item) => {
       expect(item).not.toHaveAttribute("aria-current")
       expect(item.querySelector("svg")).not.toBeNull()
+    })
+  })
+
+  // ── onStepClick — backward navigation ──────────────────────────────────────
+
+  describe("onStepClick", () => {
+    it("renders completed step rows as buttons when onStepClick is provided", () => {
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
+      const [alpha, beta] = getStepItems()
+      // Steps 1 and 2 are completed → should contain a <button>
+      expect(within(alpha!).getByRole("button")).toBeInTheDocument()
+      expect(within(beta!).getByRole("button")).toBeInTheDocument()
+    })
+
+    it("does not render active step as a button when onStepClick is provided", () => {
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
+      const [, , gamma] = getStepItems()
+      // Step 3 is active → no button
+      expect(within(gamma!).queryByRole("button")).toBeNull()
+    })
+
+    it("does not render pending step as a button when onStepClick is provided", () => {
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={2} onStepClick={handler} />)
+      const [, , gamma] = getStepItems()
+      // Step 3 is pending → no button
+      expect(within(gamma!).queryByRole("button")).toBeNull()
+    })
+
+    it("calls onStepClick with the 1-indexed step number when clicking a completed step", () => {
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
+      const [alpha] = getStepItems()
+      const btn = within(alpha!).getByRole("button")
+      fireEvent.click(btn)
+      expect(handler).toHaveBeenCalledTimes(1)
+      expect(handler).toHaveBeenCalledWith(1)
+    })
+
+    it("calls onStepClick with the correct 1-indexed step for step 2", () => {
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
+      const [, beta] = getStepItems()
+      const btn = within(beta!).getByRole("button")
+      fireEvent.click(btn)
+      expect(handler).toHaveBeenCalledWith(2)
+    })
+
+    it("does not render any buttons when onStepClick is omitted (presentational mode)", () => {
+      render(<Stepper steps={THREE_STEPS} currentStep={2} />)
+      const list = screen.getByRole("list")
+      expect(within(list).queryAllByRole("button")).toHaveLength(0)
+    })
+
+    // ── Mobile mode — no clickability ──────────────────────────────────────────
+    // The mobile section is a <div role="group"> showing only the active step
+    // summary. It renders no buttons regardless of onStepClick.
+
+    it("renders no buttons inside the mobile summary section even when onStepClick is provided", () => {
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={2} onStepClick={handler} />)
+      const mobileGroup = screen.getByRole("group", { name: "Wizard progress" })
+      expect(within(mobileGroup).queryAllByRole("button")).toHaveLength(0)
     })
   })
 })
