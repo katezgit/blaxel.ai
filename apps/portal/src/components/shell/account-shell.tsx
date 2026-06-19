@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
 import { SubShellSidebarReturnHeader } from "@/components/shell/sub-shell-sidebar-return-header";
 import { AccountTopbar } from "@/components/shell/account-topbar";
@@ -12,7 +12,7 @@ import { CollapsibleSidebarMarker } from "@/components/shell/use-is-sidebar-rail
 import { readLastWorkspaceSlug } from "@/components/shell/use-last-workspace-tracker";
 import { useSidebarShortcut } from "@/components/shell/use-sidebar-shortcut";
 import { useSidebarState } from "@/components/shell/use-sidebar-state";
-import { ACCOUNT_NAV_ITEMS } from "@/components/shell/nav-groups";
+import { PROFILE_NAV_GROUPS } from "@/components/shell/nav-groups";
 import type { Org } from "@/lib/mock/types";
 
 interface AccountShellProps {
@@ -22,11 +22,10 @@ interface AccountShellProps {
   children: ReactNode;
 }
 
-const MOBILE_DRAWER_ID = "account-mobile-drawer";
-const SIDEBAR_LABEL = "Account settings";
-const GROUP_LABEL = "Account settings";
+const MOBILE_DRAWER_ID = "profile-mobile-drawer";
+const SIDEBAR_LABEL = "Profile";
 
-export function AccountShell({
+export default function AccountShell({
   fallbackWorkspace,
   workspaces,
   user,
@@ -43,11 +42,6 @@ export function AccountShell({
     const match = workspaces.find((w) => w.slug === slug);
     if (match) setReturnWorkspace(match);
   }, [workspaces]);
-
-  const groups = useMemo(
-    () => [{ label: GROUP_LABEL, items: ACCOUNT_NAV_ITEMS }],
-    [],
-  );
 
   return (
     <TooltipProvider>
@@ -66,7 +60,7 @@ export function AccountShell({
             <div className="flex min-h-0 flex-1">
               <Sidebar
                 ariaLabel={SIDEBAR_LABEL}
-                groups={groups}
+                groups={PROFILE_NAV_GROUPS}
                 collapsed={collapsed}
                 onToggle={toggle}
                 transitionEnabled={mounted}
@@ -84,7 +78,7 @@ export function AccountShell({
           <MobileNavDrawer
             id={MOBILE_DRAWER_ID}
             ariaLabel={SIDEBAR_LABEL}
-            groups={groups}
+            groups={PROFILE_NAV_GROUPS}
             open={drawerOpen}
             onOpenChange={setDrawerOpen}
             header={(close) => (

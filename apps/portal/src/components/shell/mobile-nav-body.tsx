@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { SidebarNavItem } from "@/components/shell/sidebar-nav-item";
+import SidebarNavItem from "@/components/shell/sidebar-nav-item";
 import type { NavGroup } from "@/components/shell/nav-groups";
 
 interface MobileNavBodyProps {

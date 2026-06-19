@@ -19,6 +19,12 @@ interface ManageTableProps<TData> {
    * Mirrors the `bordered` prop on the DS `<Table />` primitive.
    */
   bordered?: boolean;
+  /**
+   * Suppress row-hover affordance. Use when no row carries an interactive
+   * action (e.g. a single-row info table with no disconnect/edit). Hover
+   * background otherwise teases an action that isn't there.
+   */
+  noRowHover?: boolean;
 }
 
 /**
@@ -35,7 +41,7 @@ interface ManageTableProps<TData> {
  * (e.g. `text-right`, `w-10`). Font / padding / muted-color defaults come from
  * `tableHeadVariants` / `tableCellVariants` and should not be re-stated.
  */
-export default function ManageTable<TData>({ table, bordered }: ManageTableProps<TData>) {
+export default function ManageTable<TData>({ table, bordered, noRowHover }: ManageTableProps<TData>) {
   return (
     <div
       className={cn(
@@ -67,7 +73,10 @@ export default function ManageTable<TData>({ table, bordered }: ManageTableProps
         </thead>
         <tbody className={tableBodyClass}>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className={tableRowVariants()}>
+            <tr
+              key={row.id}
+              className={cn(tableRowVariants(), noRowHover && "[tbody_&]:hover:bg-transparent")}
+            >
               {row.getVisibleCells().map((cell) => {
                 const meta = cell.column.columnDef.meta as
                   | { cellClassName?: string }

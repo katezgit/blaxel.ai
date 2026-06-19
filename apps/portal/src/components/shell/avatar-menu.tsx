@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { KeyboardIcon, LogOutIcon, SlidersHorizontal, Sun, User } from "lucide-react";
+import { KeyboardIcon, LogOutIcon, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Badge } from "@repo/ui/components/badge";
@@ -23,7 +23,7 @@ interface AvatarMenuProps {
   user: { name: string; email: string; tier: string };
 }
 
-export function AvatarMenu({ user }: AvatarMenuProps) {
+export default function AvatarMenu({ user }: AvatarMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -49,16 +49,9 @@ export function AvatarMenu({ user }: AvatarMenuProps) {
         </div>
 
         <DropdownMenuItem asChild>
-          <Link href="/account/profile">
+          <Link href="/profile">
             <User aria-hidden="true" />
             <span>Profile</span>
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link href="/account/preferences">
-            <SlidersHorizontal aria-hidden="true" />
-            <span>Preferences</span>
           </Link>
         </DropdownMenuItem>
 
@@ -67,9 +60,9 @@ export function AvatarMenu({ user }: AvatarMenuProps) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href="/account/billing">
+          <Link href="/profile/billing">
             <span className="size-4" aria-hidden="true" />
-            <span className="flex-1">Account &amp; billing</span>
+            <span className="flex-1">Billing &amp; invoices</span>
             <span aria-hidden="true" className="text-meta-foreground">
               &rarr;
             </span>

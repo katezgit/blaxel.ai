@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { requireSession } from "@/lib/auth/session";
-import { AccountShell } from "@/components/shell/account-shell";
+import AccountShell from "@/components/shell/account-shell";
 import { getQueryClient } from "@/lib/query/get-query-client";
 import { orgQueries } from "@/lib/query/org";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
