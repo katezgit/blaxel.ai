@@ -2,7 +2,7 @@
 
 import { CircleHelp } from "lucide-react";
 import { IconButton } from "@repo/ui/components/icon-button";
-import { AvatarMenu } from "@/components/shell/avatar-menu";
+import AvatarMenu from "@/components/shell/avatar-menu";
 import { NotificationPanel } from "@/components/shell/notification-panel";
 
 interface IdentityClusterProps {

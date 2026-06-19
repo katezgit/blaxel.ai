@@ -25,7 +25,7 @@ interface AccountShellProps {
 const MOBILE_DRAWER_ID = "profile-mobile-drawer";
 const SIDEBAR_LABEL = "Profile";
 
-export function AccountShell({
+export default function AccountShell({
   fallbackWorkspace,
   workspaces,
   user,

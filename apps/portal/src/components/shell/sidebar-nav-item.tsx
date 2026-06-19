@@ -16,7 +16,7 @@ interface SidebarNavItemProps {
   onNavigate?: () => void;
 }
 
-export function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps) {
+export default function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps) {
   const pathname = usePathname();
   const isRail = useIsSidebarRail();
   const isActive = item.exact

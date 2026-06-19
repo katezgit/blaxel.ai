@@ -23,7 +23,7 @@ interface AvatarMenuProps {
   user: { name: string; email: string; tier: string };
 }
 
-export function AvatarMenu({ user }: AvatarMenuProps) {
+export default function AvatarMenu({ user }: AvatarMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
