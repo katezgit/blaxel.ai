@@ -14,10 +14,12 @@ export const SIDEBAR_STORAGE_KEY = "portal:sidebar-collapsed";
  */
 export function useSidebarState() {
   const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
     if (stored === "true") setCollapsed(true);
+    requestAnimationFrame(() => setMounted(true));
 
     const onStorage = (e: StorageEvent) => {
       if (e.key !== SIDEBAR_STORAGE_KEY) return;
@@ -35,5 +37,5 @@ export function useSidebarState() {
     });
   }, []);
 
-  return { collapsed, toggle };
+  return { collapsed, toggle, mounted };
 }
