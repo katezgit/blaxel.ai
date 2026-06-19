@@ -11,7 +11,7 @@ interface IdentityClusterProps {
 
 export function IdentityCluster({ user }: IdentityClusterProps) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-2">
       <NotificationPanel />
       <IconButton
         variant="ghost"
