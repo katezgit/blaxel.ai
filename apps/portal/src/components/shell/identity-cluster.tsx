@@ -17,9 +17,7 @@ export function IdentityCluster({ user }: IdentityClusterProps) {
         variant="ghost"
         size="md"
         aria-label="Help and shortcuts"
-        onClick={() => {
-          /* TODO: help panel — see wireframe §15 */
-        }}
+        onClick={() => {}}
         className="[&_svg]:size-5 [&_svg]:text-muted-foreground hover:[&_svg]:text-foreground"
       >
         <CircleHelp />

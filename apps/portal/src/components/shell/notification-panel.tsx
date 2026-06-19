@@ -146,7 +146,7 @@ export function NotificationPanel() {
         className="w-96 p-0"
         aria-labelledby="notification-panel-heading"
       >
-        <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <h2
             id="notification-panel-heading"
             className="text-label font-medium text-foreground"
@@ -163,6 +163,7 @@ export function NotificationPanel() {
             No notifications.
           </p>
         ) : (
+          // max-h-[28rem]: caps the scroll region at ~viewport-half on a 13" laptop so the popover never pushes past the topbar's reach; rows past this scroll.
           <ul role="list" className="max-h-[28rem] overflow-y-auto p-1">
             {notifications.map((n) => (
               <li key={n.id}>
@@ -187,7 +188,7 @@ interface NotificationRowProps {
 function NotificationRow({ notification, onSelect }: NotificationRowProps) {
   const categoryLabel = CATEGORY_LABEL[notification.category];
   const relative = formatRelativeTime(notification.timestamp);
-  const ariaLabel = `${categoryLabel}: ${notification.title}. ${relative}.${notification.read ? "" : " Unread."}`;
+  const ariaLabel = `${categoryLabel}: ${notification.title}. ${notification.body}. ${relative}.${notification.read ? "" : " Unread."}`;
   const rowClass = cn(
     "group flex w-full items-start gap-3 rounded-md px-2 py-2 text-left",
     "hover:bg-highlight-surface focus-visible:bg-highlight-surface focus-visible:outline-none",
