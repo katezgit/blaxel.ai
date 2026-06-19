@@ -13,7 +13,7 @@ interface IdentityClusterProps {
 export function IdentityCluster({ user, unreadCount }: IdentityClusterProps) {
   const hasUnread = unreadCount > 0;
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-2">
       <IconButton
         variant="ghost"
         size="md"
