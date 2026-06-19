@@ -191,7 +191,7 @@ function NotificationRow({ notification, onSelect }: NotificationRowProps) {
   const ariaLabel = `${categoryLabel}: ${notification.title}. ${notification.body}. ${relative}.${notification.read ? "" : " Unread."}`;
   const rowClass = cn(
     "group flex w-full items-start gap-3 rounded-md px-2 py-2 text-left",
-    "hover:bg-highlight-surface focus-visible:bg-highlight-surface focus-visible:outline-none",
+    "hover:bg-highlight-surface focus-visible:bg-highlight-surface",
     "transition-colors",
   );
 
