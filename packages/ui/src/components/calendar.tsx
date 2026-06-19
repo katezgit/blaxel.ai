@@ -168,13 +168,21 @@ function Calendar({ className, ...props }: CalendarProps) {
           // [&>.rdp-day_button] would never match. Use the element selector instead.
           // bg-primary-border (25% orange mix) keeps the endpoint in the same warm
           // family as range_middle (bg-primary-soft, 10% orange mix) in both themes.
-          // bg-selected-surface was wrong: its dark value resolves to a cool neutral.
-          "[&>button]:bg-primary-border [&>button]:rounded-md",
+          // ! (important) is intentional: rdp applies both `range_start` and
+          // `selected` classNames to endpoint days. `selected` sets
+          // [&>button]:bg-selected-surface; since Tailwind resolves same-specificity
+          // utilities by stylesheet order, bg-selected-surface can win in dark mode
+          // (its dark mapping resolves to a cool neutral). The ! prefix pins the
+          // endpoint bg to the warm primary family in every theme, without touching
+          // the `selected` className which must stay for single-mode days.
+          "[&>button]:!bg-primary-border [&>button]:rounded-md",
         ].join(" "),
         range_end: [
           "rounded-r-md",
           "bg-primary-soft",
-          "[&>button]:bg-primary-border [&>button]:rounded-md",
+          // Same rationale as range_start above — ! pins the warm bg against
+          // the `selected` override in dark mode.
+          "[&>button]:!bg-primary-border [&>button]:rounded-md",
         ].join(" "),
         range_middle: [
           "bg-primary-soft rounded-none",
