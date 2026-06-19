@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
+import { fn } from "storybook/test"
 import { Stepper } from "./stepper"
 
 /* ─── Meta ─────────────────────────────────────────────────────────────────── */
@@ -59,8 +60,6 @@ export const WithoutDescriptions: Story = {
 export const WithBackwardNav: Story = {
   args: {
     currentStep: 3,
-    onStepClick: (stepIndex: number) => {
-      console.log(`onStepClick called with stepIndex=${stepIndex}`)
-    },
+    onStepClick: fn(),
   },
 }

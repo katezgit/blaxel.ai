@@ -22,11 +22,6 @@ export interface StepperProps {
    * steps after are 'pending'. Matches the visible numeral ("Step 1 of 4").
    */
   currentStep: number
-  /**
-   * Called with the 1-indexed step number when the user clicks a completed step.
-   * When omitted the component is purely presentational (no interactive affordance).
-   * Active and pending steps are never clickable regardless of this prop.
-   */
   onStepClick?: (stepIndex: number) => void
   /** Accessible label for the wizard progress list. Defaults to "Wizard progress". */
   "aria-label"?: string
@@ -84,17 +79,20 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
 
             // Completed step row is a <button> when onStepClick is provided;
             // active and pending steps remain non-interactive <div>s.
+            // Both branches share identical shape classes — only the element tag
+            // and interactive attrs differ, keeping the structural trees identical.
             const RowEl = isClickable ? "button" : "div"
             const rowProps = isClickable
               ? {
                   type: "button" as const,
                   onClick: () => onStepClick(idx + 1),
+                  "aria-label": `Go back to step ${idx + 1}: ${step.label}`,
                   className: cn(
                     "flex items-center gap-2 rounded cursor-pointer",
                     "hover:bg-hover-surface",
                   ),
                 }
-              : { className: "flex items-center gap-2" }
+              : { className: "flex items-center gap-2 rounded" }
 
             return (
               <li
