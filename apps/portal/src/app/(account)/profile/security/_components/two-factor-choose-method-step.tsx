@@ -66,7 +66,7 @@ export function TwoFactorChooseMethodStep({
               onClick={() => onMethodChange(option.value)}
               className={cn(
                 "group relative flex flex-col items-start gap-2 rounded-lg border p-4 text-left transition-colors",
-                "focus-visible:shadow-focus-ring focus-visible:outline-none",
+                "outline-hidden focus-visible:shadow-focus-ring",
                 isSelected
                   ? "border-primary bg-primary-soft"
                   : "border-border bg-card hover:border-border-strong",

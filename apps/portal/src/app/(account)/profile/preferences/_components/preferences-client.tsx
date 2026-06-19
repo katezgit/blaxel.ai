@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Switch } from "@repo/ui/components/switch";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
@@ -35,8 +35,6 @@ export function PreferencesClient() {
   const [privacy, setPrivacy] = useState<PrivacyChoices>(DEFAULT_PRIVACY);
   const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
 
-  const securityId = useId();
-
   return (
     <>
       <Panel title="Email preferences">
@@ -59,7 +57,6 @@ export function PreferencesClient() {
             forced
           >
             <Switch
-              id={securityId}
               checked
               disabled
               aria-label="Security alerts (required)"

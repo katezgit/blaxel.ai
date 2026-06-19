@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { TwoFactorCard } from "./two-factor-card";
+import {
+  TwoFactorDisabledCard,
+  TwoFactorEnabledCard,
+} from "./two-factor-card";
 import { ActiveSessionsCard } from "./active-sessions-card";
 import { TwoFactorDialog } from "./two-factor-dialog";
 import type { ActiveSession } from "@/lib/mock/profile";
@@ -16,11 +19,11 @@ export function SecurityClient({ sessions }: SecurityClientProps) {
 
   return (
     <>
-      <TwoFactorCard
-        enabled={twoFactorEnabled}
-        onSetup={() => setDialogOpen(true)}
-        onDisable={() => setTwoFactorEnabled(false)}
-      />
+      {twoFactorEnabled ? (
+        <TwoFactorEnabledCard onDisable={() => setTwoFactorEnabled(false)} />
+      ) : (
+        <TwoFactorDisabledCard onSetup={() => setDialogOpen(true)} />
+      )}
       <ActiveSessionsCard sessions={sessions} />
       <TwoFactorDialog
         open={dialogOpen}

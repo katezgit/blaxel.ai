@@ -59,7 +59,11 @@ export function PrivacyPreferencesDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="lg"
-        className="max-w-[calc(100vw-2rem)] max-h-[90vh] sm:max-h-[80vh]"
+        // size="lg" pins a fixed 720px; cap to viewport on phones so the
+        // dialog stays inside the gutter. max-h-[90vh] gives narrow-viewport
+        // dialogs more vertical room than the DS default 80vh — three rows +
+        // footer otherwise crowd against the 80vh cap on short phones.
+        className="max-h-[90vh] max-w-[calc(100vw-2rem)]"
       >
         <DialogHeader>
           <DialogTitle>Your privacy choices</DialogTitle>
@@ -107,7 +111,7 @@ export function PrivacyPreferencesDialog({
             href="https://blaxel.ai/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-0.5 self-start text-caption text-muted-foreground hover:text-foreground focus-visible:shadow-focus-ring focus-visible:outline-none rounded-sm sm:mr-auto"
+            className="inline-flex items-center gap-0.5 self-start rounded-sm text-caption text-muted-foreground outline-hidden hover:text-foreground focus-visible:shadow-focus-ring sm:mr-auto"
           >
             View full privacy policy
             <ArrowUpRight aria-hidden="true" className="size-3.5" />

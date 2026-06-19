@@ -21,7 +21,7 @@ interface PanelProps {
  * Title is optional so panels can omit headers when the page already has one.
  */
 export function Panel({ title, subtitle, action, children, className }: PanelProps) {
-  const hasHeader = title || action;
+  const hasHeader = title || action || subtitle;
   return (
     <Card className={cn("mb-4 px-6 py-6", className)}>
       {hasHeader ? (
