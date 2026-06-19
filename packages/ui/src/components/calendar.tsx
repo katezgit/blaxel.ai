@@ -158,29 +158,30 @@ function Calendar({ className, ...props }: CalendarProps) {
         day: [
           "relative flex items-center justify-center",
           "w-8",
-          // range_middle bg extends to full cell width; rounded-none prevents gaps.
-          "[&.rdp-range_middle]:rounded-none",
         ].join(" "),
         day_button: cn(dayButtonBase, "hover:bg-hover-surface"),
         range_start: [
           "rounded-l-md",
           "bg-primary-soft",
-          "[&>.rdp-day_button]:bg-selected-surface [&>.rdp-day_button]:rounded-md",
+          // [&>button] targets the DayButton <button> child — rdp v10 does not add
+          // rdp-* prefix classes to user-supplied className strings, so
+          // [&>.rdp-day_button] would never match. Use the element selector instead.
+          "[&>button]:bg-selected-surface [&>button]:rounded-md",
         ].join(" "),
         range_end: [
           "rounded-r-md",
           "bg-primary-soft",
-          "[&>.rdp-day_button]:bg-selected-surface [&>.rdp-day_button]:rounded-md",
+          "[&>button]:bg-selected-surface [&>button]:rounded-md",
         ].join(" "),
         range_middle: [
           "bg-primary-soft rounded-none",
           // hover-surface overlaid on primary-soft gives a distinct in-range hover signal.
-          "[&>.rdp-day_button]:bg-transparent [&>.rdp-day_button]:rounded-none [&>.rdp-day_button]:hover:bg-hover-surface",
+          "[&>button]:bg-transparent [&>button]:rounded-none [&>button]:hover:bg-hover-surface",
         ].join(" "),
-        selected: "[&>.rdp-day_button]:bg-selected-surface",
-        today: "[&>.rdp-day_button]:font-semibold [&>.rdp-day_button]:text-primary",
-        outside: "[&>.rdp-day_button]:text-meta-foreground [&>.rdp-day_button]:opacity-mid",
-        disabled: "[&>.rdp-day_button]:text-text-disabled [&>.rdp-day_button]:pointer-events-none",
+        selected: "[&>button]:bg-selected-surface",
+        today: "[&>button]:font-semibold [&>button]:text-primary",
+        outside: "[&>button]:text-meta-foreground [&>button]:opacity-mid",
+        disabled: "[&>button]:text-text-disabled [&>button]:pointer-events-none",
         // focused: DayPicker adds this class to the .day wrapper on keyboard focus.
         // The focus ring is painted by base.css *:focus-visible on the child day_button.
         // No override needed — this entry is a no-op kept for API documentation clarity.

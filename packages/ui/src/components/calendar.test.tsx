@@ -152,3 +152,39 @@ describe("Calendar — multiple mode", () => {
     expect(onSelect).toHaveBeenCalledTimes(1)
   })
 })
+
+// ── Today indicator ───────────────────────────────────────────────────────────
+
+describe("Calendar — today indicator", () => {
+  // Pin: the td for today must carry the [&>button]:text-primary and
+  // [&>button]:font-semibold classes so Tailwind's child-selector rule fires.
+  // rdp v10 does NOT add rdp-* prefix classes to user-supplied classNames, so
+  // [&>.rdp-day_button] would silently match nothing. [&>button] is the correct
+  // selector for the DayButton <button> child element.
+  it("applies today emphasis classes to the today grid cell", () => {
+    // Use a fixed date so the test is not timezone-sensitive.
+    const today = new Date(2025, 0, 15) // Jan 15, 2025
+    render(
+      <Calendar
+        mode="single"
+        today={today}
+        defaultMonth={today}
+      />
+    )
+    const todayCell = getDayCell("2025-01-15")
+    expect(todayCell.className).toContain("[&>button]:text-primary")
+    expect(todayCell.className).toContain("[&>button]:font-semibold")
+  })
+
+  it("today cell carries data-today attribute", () => {
+    const today = new Date(2025, 0, 15)
+    render(
+      <Calendar
+        mode="single"
+        today={today}
+        defaultMonth={today}
+      />
+    )
+    expect(getDayCell("2025-01-15")).toHaveAttribute("data-today", "true")
+  })
+})
