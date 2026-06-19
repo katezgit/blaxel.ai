@@ -1,5 +1,6 @@
 import * as React from "react"
-import { render, screen, within, fireEvent } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { jest } from "@jest/globals"
 import { Stepper } from "./stepper"
 
@@ -187,23 +188,43 @@ describe("Stepper", () => {
       expect(within(gamma!).queryByRole("button")).toBeNull()
     })
 
-    it("calls onStepClick with the 1-indexed step number when clicking a completed step", () => {
+    it("calls onStepClick with the correct 1-indexed step number for each completed step", async () => {
+      const user = userEvent.setup()
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
+      const [alpha, beta] = getStepItems()
+      await user.click(within(alpha!).getByRole("button", { name: /Go back to step 1: Alpha/i }))
+      expect(handler).toHaveBeenCalledWith(1)
+      await user.click(within(beta!).getByRole("button", { name: /Go back to step 2: Beta/i }))
+      expect(handler).toHaveBeenCalledWith(2)
+      expect(handler).toHaveBeenCalledTimes(2)
+    })
+
+    it("activates onStepClick via Enter on a completed step", async () => {
+      const user = userEvent.setup()
       const handler = jest.fn()
       render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
       const [alpha] = getStepItems()
-      const btn = within(alpha!).getByRole("button")
-      fireEvent.click(btn)
-      expect(handler).toHaveBeenCalledTimes(1)
+      within(alpha!).getByRole("button", { name: /Go back to step 1: Alpha/i }).focus()
+      await user.keyboard("{Enter}")
       expect(handler).toHaveBeenCalledWith(1)
     })
 
-    it("calls onStepClick with the correct 1-indexed step for step 2", () => {
+    it("activates onStepClick via Space on a completed step", async () => {
+      const user = userEvent.setup()
       const handler = jest.fn()
       render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
-      const [, beta] = getStepItems()
-      const btn = within(beta!).getByRole("button")
-      fireEvent.click(btn)
-      expect(handler).toHaveBeenCalledWith(2)
+      const [alpha] = getStepItems()
+      within(alpha!).getByRole("button", { name: /Go back to step 1: Alpha/i }).focus()
+      await user.keyboard(" ")
+      expect(handler).toHaveBeenCalledWith(1)
+    })
+
+    it("exposes the accessible name on completed step buttons", () => {
+      const handler = jest.fn()
+      render(<Stepper steps={THREE_STEPS} currentStep={3} onStepClick={handler} />)
+      expect(screen.getByRole("button", { name: /Go back to step 1: Alpha/i })).toBeInTheDocument()
+      expect(screen.getByRole("button", { name: /Go back to step 2: Beta/i })).toBeInTheDocument()
     })
 
     it("does not render any buttons when onStepClick is omitted (presentational mode)", () => {
