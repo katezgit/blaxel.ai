@@ -33,6 +33,8 @@ export default async function WorkspaceSettingsLayout({
   ]);
 
   const currentOrg = resolveWorkspace(workspaceSlugOrId);
+  const memberships = await queryClient.ensureQueryData(orgQueries.accounts());
+  const workspaces = memberships.map((m) => m.org);
 
   const user = {
     name: session.name || "User",
@@ -45,6 +47,7 @@ export default async function WorkspaceSettingsLayout({
       <HydrationBoundary state={dehydrate(queryClient)}>
         <WorkspaceSettingsShell
           currentOrg={currentOrg}
+          workspaces={workspaces}
           user={user}
           unreadNotifications={NOTIFICATIONS_UNREAD}
         >

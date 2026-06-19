@@ -1,18 +1,10 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Workspace settings · Danger zone",
-};
+interface PageProps {
+  params: Promise<{ workspaceSlugOrId: string }>;
+}
 
-export default function DangerZonePage() {
-  return (
-    <div className="page-shell">
-      <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Danger zone</h1>
-        <p className="text-muted-foreground">
-          Archive workspace, transfer ownership, delete workspace. Page coming soon.
-        </p>
-      </header>
-    </div>
-  );
+export default async function LegacyDangerZoneRedirect({ params }: PageProps) {
+  const { workspaceSlugOrId } = await params;
+  redirect(`/${workspaceSlugOrId}/settings/name`);
 }

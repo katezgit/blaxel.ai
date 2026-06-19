@@ -1,18 +1,10 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Workspace settings · General",
-};
+interface PageProps {
+  params: Promise<{ workspaceSlugOrId: string }>;
+}
 
-export default function GeneralPage() {
-  return (
-    <div className="page-shell">
-      <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">General</h1>
-        <p className="text-muted-foreground">
-          Workspace name, slug, default region, default time zone. Page coming soon.
-        </p>
-      </header>
-    </div>
-  );
+export default async function LegacyGeneralRedirect({ params }: PageProps) {
+  const { workspaceSlugOrId } = await params;
+  redirect(`/${workspaceSlugOrId}/settings/name`);
 }

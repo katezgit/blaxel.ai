@@ -6,8 +6,12 @@ import { BrandMark } from "@/components/shell/brand-mark";
 import { useCommandPaletteContext } from "@/components/shell/command-palette-provider";
 import { IdentityCluster } from "@/components/shell/identity-cluster";
 import { SearchTrigger } from "@/components/shell/search-trigger";
+import { WorkspaceSwitcher } from "@/components/shell/workspace-switcher";
+import type { Org } from "@/lib/mock/types";
 
 interface WorkspaceSettingsTopbarProps {
+  currentOrg: Org;
+  workspaces: ReadonlyArray<Org>;
   user: { name: string; email: string; tier: string };
   unreadNotifications: number;
   mobileNavId: string;
@@ -16,6 +20,8 @@ interface WorkspaceSettingsTopbarProps {
 }
 
 export function WorkspaceSettingsTopbar({
+  currentOrg,
+  workspaces,
   user,
   unreadNotifications,
   mobileNavId,
@@ -40,6 +46,9 @@ export function WorkspaceSettingsTopbar({
         </IconButton>
         <span data-slot="brand">
           <BrandMark />
+        </span>
+        <span data-slot="ws">
+          <WorkspaceSwitcher currentOrg={currentOrg} workspaces={workspaces} />
         </span>
       </div>
       <div data-zone="center">

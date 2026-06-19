@@ -17,6 +17,7 @@ import type { Org } from "@/lib/mock/types";
 
 interface WorkspaceSettingsShellProps {
   currentOrg: Org;
+  workspaces: ReadonlyArray<Org>;
   user: { name: string; email: string; tier: string };
   unreadNotifications: number;
   children: ReactNode;
@@ -27,6 +28,7 @@ const SIDEBAR_LABEL = "Workspace settings";
 
 export function WorkspaceSettingsShell({
   currentOrg,
+  workspaces,
   user,
   unreadNotifications,
   children,
@@ -53,6 +55,8 @@ export function WorkspaceSettingsShell({
 
           <CollapsibleSidebarMarker value={{ inCollapsible: true, userCollapsed: collapsed }}>
             <WorkspaceSettingsTopbar
+              currentOrg={currentOrg}
+              workspaces={workspaces}
               user={user}
               unreadNotifications={unreadNotifications}
               mobileNavId={MOBILE_DRAWER_ID}

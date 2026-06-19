@@ -1,31 +1,51 @@
 import type { ApiKey } from "@/lib/mock/types";
 
 /**
- * Workspace-scoped API keys — what the `(app)/api-keys` page surfaces. These
- * live on the workspace branch of the cache cascade, distinct from the
- * org-level keys at `/manage/api-keys`.
+ * Workspace-scoped API keys — issued to either a workspace member or a
+ * service account. Per `docs/product/platform.md`, every key acts within
+ * the workspace using the holder's role. The table surfaces who holds the
+ * key so a reviewer can audit blast radius at a glance.
  */
 const FIXTURES: ReadonlyArray<ApiKey> = [
   {
     id: "wsk_runtime",
     name: "runtime-default",
-    masked: "sk-ws-…-7t",
+    masked: "bxl_xxxx…7t",
     createdAt: "2026-06-01",
     expiresAt: null,
+    issuedTo: { kind: "service-account", id: "svc_runtime", name: "runtime-orchestrator" },
+  },
+  {
+    id: "wsk_ci",
+    name: "ci-deploy-key",
+    masked: "bxl_xxxx…Hm",
+    createdAt: "2026-05-29",
+    expiresAt: "2026-08-29",
+    issuedTo: { kind: "service-account", id: "svc_ci_deploy", name: "ci-deploy" },
+  },
+  {
+    id: "wsk_kate",
+    name: "kate-local-dev",
+    masked: "bxl_xxxx…Qa",
+    createdAt: "2026-05-20",
+    expiresAt: null,
+    issuedTo: { kind: "member", id: "u_kate", name: "Kate Zhang" },
   },
   {
     id: "wsk_eval",
-    name: "eval-job",
-    masked: "sk-ws-…-Hm",
-    createdAt: "2026-05-29",
-    expiresAt: "2026-08-29",
+    name: "eval-harness-key",
+    masked: "bxl_xxxx…ZF",
+    createdAt: "2026-05-12",
+    expiresAt: "2026-09-12",
+    issuedTo: { kind: "service-account", id: "svc_eval", name: "eval-harness" },
   },
   {
-    id: "wsk_local",
-    name: "local-dev",
-    masked: "sk-ws-…-Qa",
-    createdAt: "2026-05-20",
-    expiresAt: null,
+    id: "wsk_avery",
+    name: "avery-laptop",
+    masked: "bxl_xxxx…3B",
+    createdAt: "2026-04-26",
+    expiresAt: "2026-07-26",
+    issuedTo: { kind: "member", id: "u_avery", name: "Avery Lin" },
   },
 ];
 
@@ -35,5 +55,6 @@ export async function fetchWorkspaceApiKeys(
 ): Promise<ReadonlyArray<ApiKey>> {
   void _accountId;
   void _workspaceId;
+  await new Promise((r) => setTimeout(r, 60));
   return [...FIXTURES];
 }
