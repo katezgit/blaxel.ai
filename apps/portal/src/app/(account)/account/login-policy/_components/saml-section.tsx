@@ -11,7 +11,7 @@ import { Button } from "@repo/ui/components/button";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import { Input } from "@repo/ui/components/input";
 import { Textarea } from "@repo/ui/components/textarea";
-import { InlineGate } from "@/app/(account)/account/_components/inline-gate";
+import InlineGate from "@/app/(account)/account/_components/inline-gate";
 import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 

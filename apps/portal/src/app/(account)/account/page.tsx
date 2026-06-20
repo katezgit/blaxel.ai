@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AccountIdentitySection } from "./_components/account-identity";
-import { WorkspacesSummarySection } from "./_components/workspaces-summary";
+import AccountIdentitySection from "./_components/account-identity";
+import WorkspacesSummarySection from "./_components/workspaces-summary";
 
 export const metadata: Metadata = {
   title: "Account overview",

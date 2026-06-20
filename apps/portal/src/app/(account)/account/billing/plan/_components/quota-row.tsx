@@ -1,7 +1,7 @@
 import { TriangleAlert } from "lucide-react";
 import { Progress } from "@repo/ui/components/progress";
 import { cn } from "@repo/ui/lib/cn";
-import { InlineGate } from "@/app/(account)/account/_components/inline-gate";
+import InlineGate from "@/app/(account)/account/_components/inline-gate";
 
 interface UtilizedRowProps {
   label: string;

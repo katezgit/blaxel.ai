@@ -12,7 +12,7 @@ function abbreviateAccountId(id: string): string {
   return `${id.slice(0, 8)}-...${id.slice(-4)}`;
 }
 
-export function AccountIdentitySection() {
+export default function AccountIdentitySection() {
   const { state } = useAccountState();
   const accountId = state.identity.accountId;
 

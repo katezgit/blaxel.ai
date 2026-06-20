@@ -33,7 +33,7 @@ import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
 import { cn } from "@repo/ui/lib/cn";
 import ManageTable from "@/app/(manage)/_components/manage-table";
-import { InlineGate } from "@/app/(account)/account/_components/inline-gate";
+import InlineGate from "@/app/(account)/account/_components/inline-gate";
 import { TIER_LIMITS } from "@/lib/mock/account";
 import { useAccountState } from "@/lib/mock/account-context";
 import type { Org } from "@/lib/mock/types";

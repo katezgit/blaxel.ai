@@ -16,7 +16,7 @@ interface InlineGateProps {
 
 // Locked copy stem: "Tier {N} required — add payment method to {verb}."
 // CTA must be a text link, never a button or modal — enforced by design policy.
-export function InlineGate({
+export default function InlineGate({
   tier,
   verb,
   ctaLabel = "Add payment method",

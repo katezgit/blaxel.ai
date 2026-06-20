@@ -9,7 +9,7 @@ import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Switch } from "@repo/ui/components/switch";
-import { InlineGate } from "@/app/(account)/account/_components/inline-gate";
+import InlineGate from "@/app/(account)/account/_components/inline-gate";
 import { Field, FieldRow, Panel } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 

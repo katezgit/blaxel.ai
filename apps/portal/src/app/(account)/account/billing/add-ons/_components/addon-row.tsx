@@ -1,5 +1,3 @@
-"use client";
-
 import { Check, Gem, Headphones, ShieldCheck, type LucideIcon } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { cn } from "@repo/ui/lib/cn";

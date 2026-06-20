@@ -6,7 +6,7 @@ import { Button } from "@repo/ui/components/button";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 
-export function WorkspacesSummarySection() {
+export default function WorkspacesSummarySection() {
   const { state } = useAccountState();
   const count = state.workspaces.length;
 
