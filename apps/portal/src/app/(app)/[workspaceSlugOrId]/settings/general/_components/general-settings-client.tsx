@@ -71,67 +71,79 @@ export default function GeneralSettingsClient({
   });
 
   return (
-    <div className="flex flex-col gap-6">
-      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <div className="flex w-full max-w-3xl flex-col gap-6">
+      <section className="flex flex-col gap-4">
         <h2 className="text-subtitle font-semibold text-foreground">
           Workspace identity
         </h2>
-        <FormField
-          id="workspace-display-name"
-          label="Display name"
-          error={errors.name?.message}
-        >
-          <Input {...register("name")} autoComplete="off" maxLength={48} />
-        </FormField>
-        <FormField id="workspace-slug" label="Name">
-          <Input
-            value={workspace.slug}
-            readOnly
-            className="font-mono"
-            trailing={
-              <CopyButton
-                value={workspace.slug}
-                ariaLabel="Copy workspace name"
-              />
-            }
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <FormField
+            id="workspace-display-name"
+            label="Display name"
+            error={errors.name?.message}
+          >
+            <Input {...register("name")} autoComplete="off" maxLength={48} />
+          </FormField>
+          <FormField id="workspace-slug" label="Name">
+            <Input
+              value={workspace.slug}
+              readOnly
+              className="font-mono"
+              trailing={
+                <CopyButton
+                  value={workspace.slug}
+                  ariaLabel="Copy workspace name"
+                />
+              }
+            />
+          </FormField>
+          <FormField id="workspace-id" label="Workspace ID">
+            <Input
+              value={workspace.workspaceId}
+              readOnly
+              className="font-mono"
+              trailing={
+                <CopyButton
+                  value={workspace.workspaceId}
+                  ariaLabel="Copy workspace ID"
+                />
+              }
+            />
+          </FormField>
+          <DirtyActionBar
+            isDirty={isDirty}
+            onCancel={() => reset()}
+            onSave={onSubmit}
+            saveLabel="Update workspace"
+            saving={isSubmitting}
           />
-        </FormField>
-        <FormField id="workspace-id" label="Workspace ID">
-          <Input
-            value={workspace.workspaceId}
-            readOnly
-            className="font-mono"
-            trailing={
-              <CopyButton
-                value={workspace.workspaceId}
-                ariaLabel="Copy workspace ID"
-              />
-            }
-          />
-        </FormField>
-        <DirtyActionBar
-          isDirty={isDirty}
-          onCancel={() => reset()}
-          onSave={onSubmit}
-          saveLabel="Update workspace"
-          saving={isSubmitting}
-        />
-      </form>
+        </form>
+      </section>
 
-      <dl className="grid grid-cols-[max-content_1fr] items-center gap-x-6 gap-y-2 text-caption">
-        <dt className="text-meta-foreground">Account ID</dt>
-        <dd className="flex items-center gap-2 font-mono text-foreground">
-          <span className="truncate">{workspace.accountId}</span>
-          <CopyButton
-            value={workspace.accountId}
-            ariaLabel="Copy account ID"
-          />
-        </dd>
-        <dt className="text-meta-foreground">Account owner</dt>
-        <dd className="truncate text-foreground">{workspace.accountOwner}</dd>
-      </dl>
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-subtitle font-semibold text-foreground">
+            Account context
+          </h2>
+          <p className="text-muted-foreground">
+            This workspace belongs to the following billing account.
+          </p>
+        </div>
+        <dl className="grid grid-cols-[max-content_1fr] items-center gap-x-6 gap-y-2 text-caption">
+          <dt className="text-meta-foreground">Account ID</dt>
+          <dd className="flex items-center gap-2 font-mono text-foreground">
+            <span className="truncate">{workspace.accountId}</span>
+            <CopyButton
+              value={workspace.accountId}
+              ariaLabel="Copy account ID"
+            />
+          </dd>
+          <dt className="text-meta-foreground">Account owner</dt>
+          <dd className="truncate text-foreground">{workspace.accountOwner}</dd>
+        </dl>
+      </section>
 
-      <section id="danger" className="flex flex-col gap-4 border-t border-destructive pt-6">
+      <section id="danger" className="flex flex-col gap-4 border-t border-border pt-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-subtitle font-semibold text-destructive">
             Danger zone
