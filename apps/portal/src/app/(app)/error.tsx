@@ -188,12 +188,12 @@ export default function AppError({ error, reset }: AppErrorProps) {
         <p className="text-caption text-muted-foreground">
           Platform status:{" "}
           <a
-            href="https://status.hud.ai"
+            href="https://status.blaxel.ai"
             target="_blank"
             rel="noopener noreferrer"
             className="underline underline-offset-2 hover:text-foreground"
           >
-            status.hud.ai
+            status.blaxel.ai
           </a>
         </p>
       </div>
