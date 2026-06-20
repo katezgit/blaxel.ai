@@ -17,8 +17,8 @@ export default async function IntegrationsPage() {
   );
 
   return (
-    <div className="page-shell">
-      <header className="page-header">
+    <div className="mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 px-4 pb-16 pt-6 md:px-6 lg:px-8 xl:px-20">
+      <header className="page-header shrink-0">
         <h1 className="text-display font-semibold text-foreground">
           Integrations
         </h1>
