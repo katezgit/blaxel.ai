@@ -45,7 +45,8 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "bg-popover text-popover-foreground border border-border shadow-popover rounded-lg",
+          // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+          "bg-popover text-popover-foreground shadow-popover rounded-lg",
           "z-overlay min-w-32 p-1",
           "max-h-(--radix-dropdown-menu-content-available-height)",
           "origin-(--radix-dropdown-menu-content-transform-origin)",
@@ -290,7 +291,8 @@ function DropdownMenuSubContent({
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-        "bg-popover text-popover-foreground border border-border shadow-popover rounded-lg",
+        // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+        "bg-popover text-popover-foreground shadow-popover rounded-lg",
         "z-overlay min-w-32 p-1 overflow-hidden",
         "origin-(--radix-dropdown-menu-content-transform-origin)",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",

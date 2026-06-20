@@ -404,7 +404,8 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
             sideOffset={8}
             style={{ width: "var(--radix-popover-trigger-width)" }}
             className={cn(
-              "z-overlay overflow-hidden rounded-lg border border-border",
+              // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+              "z-overlay overflow-hidden rounded-lg",
               "bg-popover text-foreground shadow-popover outline-none p-1",
               "data-[state=open]:animate-in data-[state=open]:fade-in-0",
               "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",

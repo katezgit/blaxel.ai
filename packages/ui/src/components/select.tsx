@@ -84,7 +84,7 @@ function SelectContent({
         className={cn(
           "relative z-overlay overflow-hidden",
           "bg-popover text-foreground",
-          "border border-border",
+          // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
           "rounded-lg",
           "shadow-popover",
           "min-w-[8rem]",
