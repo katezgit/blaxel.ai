@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ChevronDown, Plus, Settings } from "lucide-react";
+import { Boxes, ChevronDown, Plus, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +31,7 @@ export default function WorkspaceSwitcher({
   const isRail = useIsSidebarRail();
   const inSettings = pathname.startsWith(`/${currentOrg.slug}/settings`);
   const settingsHref = `/${currentOrg.slug}/settings/name`;
-  const triggerAriaLabel = `Switch workspace (current: ${currentOrg.name} · ${currentOrg.accountName})`;
+  const triggerAriaLabel = `Switch workspace (current: ${currentOrg.name})`;
 
   // Path tail after the workspace-slug segment — preserved verbatim on switch
   // so the user lands on the same surface in the new workspace (operator
@@ -59,21 +59,14 @@ export default function WorkspaceSwitcher({
           "hover:bg-secondary-surface focus-visible:shadow-focus-ring",
           isRail
             ? "border-transparent p-1"
-            : "gap-2 border-border px-2 py-1 max-md:gap-1.5 max-md:px-1.5 max-md:py-0.5",
+            : "gap-1.5 border-border px-2 py-1 max-md:gap-1 max-md:px-1.5 max-md:py-0.5",
         )}
       >
-        <Avatar size="xs" shape="square" aria-hidden="true">
-          <AvatarFallback>{currentOrg.avatarInitial}</AvatarFallback>
-        </Avatar>
+        <Boxes aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />
         {!isRail && (
           <>
-            <span className="flex min-w-0 flex-1 flex-col items-start leading-tight">
-              <span className="min-w-0 truncate max-md:text-sm">
-                {currentOrg.name}
-              </span>
-              <span className="hidden min-w-0 truncate text-meta font-normal text-meta-foreground md:block">
-                {currentOrg.accountName} account
-              </span>
+            <span className="min-w-0 flex-1 truncate max-md:text-sm">
+              {currentOrg.name}
             </span>
             <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />
           </>
