@@ -1,7 +1,6 @@
 // https://nextjs.org/docs/app/api-reference/file-conventions/not-found#global-not-found
 // Renders outside the root layout — must define its own <html> and <body>.
 
-import Link from "next/link";
 import {
   ArrowRightIcon,
   ArrowUpRightIcon,
@@ -9,7 +8,16 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { Button } from "@repo/ui";
+import { DEFAULT_WORKSPACE_SLUG } from "@/lib/mock/org";
 import "./globals.css";
+
+// Workspace-prefixed targets — the real routes live under /{workspace}/...,
+// so unprefixed paths like /sandboxes themselves 404. All anchors use plain
+// <a> because global-not-found renders its own <html>/<body> outside the root
+// layout, and client-side <Link> navigation from here gets stuck on the 404 UI.
+const workspaceHref = (segment: string) =>
+  `/${DEFAULT_WORKSPACE_SLUG}/${segment}`;
+const HOME_HREF = workspaceHref("sandboxes");
 
 export default function GlobalNotFound() {
   return (
@@ -37,18 +45,16 @@ export default function GlobalNotFound() {
                 Page not found
               </h1>
               <p className="max-w-[480px] text-body text-muted-foreground">
-                Sorry, we couldn&apos;t find the page you&apos;re looking for.
-                The page might have been moved, deleted, or you entered the
-                wrong URL.
+                We couldn&apos;t find that page.
               </p>
             </div>
 
             <div className="flex flex-row items-center gap-3">
               <Button asChild variant="secondary">
-                <Link href="/">
+                <a href={HOME_HREF}>
                   <Home />
                   Go back home
-                </Link>
+                </a>
               </Button>
               <Button asChild variant="ghost">
                 <a href="mailto:support@example.com?subject=Page%20not%20found">
@@ -68,24 +74,24 @@ export default function GlobalNotFound() {
                 aria-label="Recovery navigation"
                 className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
               >
-                <Link
-                  href="/sandboxes"
+                <a
+                  href={workspaceHref("sandboxes")}
                   className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
                 >
                   Sandboxes
-                </Link>
-                <Link
-                  href="/agents"
+                </a>
+                <a
+                  href={workspaceHref("agents")}
                   className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
                 >
                   Agents
-                </Link>
-                <Link
-                  href="/api-keys"
+                </a>
+                <a
+                  href={workspaceHref("settings/api-keys")}
                   className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
                 >
                   API Keys
-                </Link>
+                </a>
                 <a
                   href="https://docs.blaxel.ai"
                   target="_blank"
