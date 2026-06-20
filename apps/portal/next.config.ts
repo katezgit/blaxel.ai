@@ -11,21 +11,6 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname, "../.."),
   },
-  // Pre-render redirect emits a real HTTP 307. Doing the same redirect from a
-  // Server Component via redirect() in a streaming context only writes a
-  // <meta http-equiv="refresh"> with a 1-second delay (per Next.js docs), which
-  // surfaces as a flicker — especially when navigating back from global-not-found.
-  // When real auth lands the destination must come from the session, at which
-  // point this moves to a proxy. Hardcoded slug mirrors mock/data.ts → currentOrg.
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/webflow-prod/sandboxes",
-        permanent: false,
-      },
-    ];
-  },
   experimental: {
     // Wraps client-side route changes in document.startViewTransition() so the
     // app↔manage sidebar swap can choreograph via ::view-transition-* CSS.

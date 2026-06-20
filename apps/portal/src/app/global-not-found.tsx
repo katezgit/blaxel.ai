@@ -1,6 +1,7 @@
 // https://nextjs.org/docs/app/api-reference/file-conventions/not-found#global-not-found
 // Renders outside the root layout — must define its own <html> and <body>.
 
+import { cookies } from "next/headers";
 import {
   ArrowRightIcon,
   ArrowUpRightIcon,
@@ -8,20 +9,25 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { Button } from "@repo/ui";
-import { DEFAULT_WORKSPACE_SLUG } from "@/lib/mock/org";
+import { DEFAULT_WORKSPACE_SLUG, findWorkspaceMembership } from "@/lib/mock/org";
+import { LAST_WORKSPACE_COOKIE } from "@/lib/workspace/last-visited";
 import "./globals.css";
 
 // All anchors are plain <a> on purpose. Per Next.js docs, global-not-found
 // "skips rendering and directly returns this global page" — it sits outside the
 // client router tree, so <Link> soft navigation from inside leaves the 404 DOM
-// mounted even though the URL flips. The redirect at / is a real HTTP 307 (see
-// next.config.ts), so a hard navigation completes cleanly with no meta-refresh.
-// Popular pages target /{workspace}/... directly because /sandboxes etc. don't
-// exist as standalone routes.
-const workspaceHref = (segment: string) =>
-  `/${DEFAULT_WORKSPACE_SLUG}/${segment}`;
+// mounted even though the URL flips. Hard navigation hits proxy.ts which emits
+// a real HTTP 307 to the user's last-visited workspace, so no meta-refresh.
+async function resolveTargetWorkspaceSlug(): Promise<string> {
+  const store = await cookies();
+  const raw = store.get(LAST_WORKSPACE_COOKIE)?.value;
+  if (raw && findWorkspaceMembership(raw)) return raw;
+  return DEFAULT_WORKSPACE_SLUG;
+}
 
-export default function GlobalNotFound() {
+export default async function GlobalNotFound() {
+  const workspaceSlug = await resolveTargetWorkspaceSlug();
+  const workspaceHref = (segment: string) => `/${workspaceSlug}/${segment}`;
   return (
     // `data-theme="light"` pins the light palette without ThemeProvider.
     // The `<style>` below opts users with prefers-color-scheme: dark into the dark palette.
