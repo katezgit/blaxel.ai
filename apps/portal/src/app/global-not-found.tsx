@@ -11,13 +11,15 @@ import { Button } from "@repo/ui";
 import { DEFAULT_WORKSPACE_SLUG } from "@/lib/mock/org";
 import "./globals.css";
 
-// Workspace-prefixed targets — the real routes live under /{workspace}/...,
-// so unprefixed paths like /sandboxes themselves 404. All anchors use plain
-// <a> because global-not-found renders its own <html>/<body> outside the root
-// layout, and client-side <Link> navigation from here gets stuck on the 404 UI.
+// All anchors are plain <a> on purpose. Per Next.js docs, global-not-found
+// "skips rendering and directly returns this global page" — it sits outside the
+// client router tree, so <Link> soft navigation from inside leaves the 404 DOM
+// mounted even though the URL flips. The redirect at / is a real HTTP 307 (see
+// next.config.ts), so a hard navigation completes cleanly with no meta-refresh.
+// Popular pages target /{workspace}/... directly because /sandboxes etc. don't
+// exist as standalone routes.
 const workspaceHref = (segment: string) =>
   `/${DEFAULT_WORKSPACE_SLUG}/${segment}`;
-const HOME_HREF = workspaceHref("sandboxes");
 
 export default function GlobalNotFound() {
   return (
@@ -51,7 +53,7 @@ export default function GlobalNotFound() {
 
             <div className="flex flex-row items-center gap-3">
               <Button asChild variant="secondary">
-                <a href={HOME_HREF}>
+                <a href="/">
                   <Home />
                   Go back home
                 </a>
