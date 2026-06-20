@@ -11,7 +11,8 @@ import { cn } from "@repo/ui/lib/cn"
 const popoverContentVariants = cva(
   [
     "z-overlay min-w-40 max-w-80 overflow-hidden",
-    "rounded-lg border border-border",
+    // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+    "rounded-lg",
     "bg-popover text-popover-foreground",
     "shadow-popover",
     "outline-none",
