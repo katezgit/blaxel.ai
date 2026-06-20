@@ -30,7 +30,7 @@ const schema = z.object({
 
 type Values = z.infer<typeof schema>;
 
-export function SamlSection() {
+export default function SamlSection() {
   const { state, saveSaml } = useAccountState();
   const [expanded, setExpanded] = useState(false);
   const isTierZero = state.tier === 0;

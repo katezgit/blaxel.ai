@@ -18,7 +18,7 @@ interface AddOnRowProps {
   addon: AddOn;
 }
 
-export function AddOnRow({ addon }: AddOnRowProps) {
+export default function AddOnRow({ addon }: AddOnRowProps) {
   const Icon = ICONS[addon.id];
 
   return (

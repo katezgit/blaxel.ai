@@ -40,7 +40,7 @@ const formatExpiration = (iso: string | null): string => {
   }).format(date);
 };
 
-export function WalletTable({ wallet }: WalletTableProps) {
+export default function WalletTable({ wallet }: WalletTableProps) {
   if (wallet.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-border bg-card px-4 py-6 text-body text-muted-foreground">

@@ -12,7 +12,7 @@ const TIERS: ReadonlyArray<Tier> = [0, 1, 2, 3];
  * account tier so the demo audience can see gated rows render with and
  * without the gate. Production builds drop this entirely.
  */
-export function DevTierSwitcher() {
+export default function DevTierSwitcher() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);

@@ -4,7 +4,7 @@ import { Badge } from "@repo/ui/components/badge";
 import { useAccountState } from "@/lib/mock/account-context";
 import { TIER_LIMITS } from "@/lib/mock/account";
 import { TierSummaryStrip } from "./tier-summary-strip";
-import { TierComparison } from "./tier-comparison";
+import TierComparison from "./tier-comparison";
 import {
   CeilingQuotaRow,
   GatedQuotaRow,

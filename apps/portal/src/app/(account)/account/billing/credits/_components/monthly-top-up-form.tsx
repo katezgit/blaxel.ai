@@ -23,7 +23,7 @@ const schema = z.object({
 
 type Values = z.infer<typeof schema>;
 
-export function MonthlyTopUpForm() {
+export default function MonthlyTopUpForm() {
   const { state, setMonthlyTopUp } = useAccountState();
   const hasPaymentMethod = state.paymentMethod.brand !== null;
 

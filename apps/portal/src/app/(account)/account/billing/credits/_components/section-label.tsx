@@ -12,7 +12,7 @@ interface SectionLabelProps {
 }
 
 /** Subdued uppercase track label for structural section orientation. */
-export function SectionLabel({ letter, label, id, className }: SectionLabelProps) {
+export default function SectionLabel({ letter, label, id, className }: SectionLabelProps) {
   return (
     <div
       className={cn(

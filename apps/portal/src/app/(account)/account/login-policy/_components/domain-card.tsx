@@ -22,7 +22,7 @@ interface DomainCardProps {
   domain: DomainPolicy;
 }
 
-export function DomainCard({ domain }: DomainCardProps) {
+export default function DomainCard({ domain }: DomainCardProps) {
   const { verifyDomain, removeDomain, setDomainMethod } = useAccountState();
   const [savedMethod, setSavedMethod] = useState(domain.enforcedMethod);
   const [pendingMethod, setPendingMethod] = useState(domain.enforcedMethod);

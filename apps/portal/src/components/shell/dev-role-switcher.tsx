@@ -15,7 +15,7 @@ import type { Role } from "@/lib/mock/types";
 // one entry to toggle the admin-gated UI.
 const ROLES: ReadonlyArray<Role> = ["owner", "member"];
 
-export function DevRoleSwitcher() {
+export default function DevRoleSwitcher() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);

@@ -1,16 +1,16 @@
 "use client";
 
 import { useAccountState } from "@/lib/mock/account-context";
-import { AutoTopUpForm } from "./auto-top-up-form";
-import { BalanceAlerts } from "./balance-alerts";
-import { BalanceTile } from "./balance-tile";
-import { CreditHistoryTable } from "./credit-history-table";
-import { InvoicesTable } from "./invoices-table";
-import { MonthlyTopUpForm } from "./monthly-top-up-form";
+import AutoTopUpForm from "./auto-top-up-form";
+import BalanceAlerts from "./balance-alerts";
+import BalanceTile from "./balance-tile";
+import CreditHistoryTable from "./credit-history-table";
+import InvoicesTable from "./invoices-table";
+import MonthlyTopUpForm from "./monthly-top-up-form";
 import { MtdSpend } from "./mtd-spend";
 import { PaymentMethodSection } from "./payment-method";
-import { SectionLabel } from "./section-label";
-import { WalletTable } from "./wallet-table";
+import SectionLabel from "./section-label";
+import WalletTable from "./wallet-table";
 
 const currentMonthLabel = (): string =>
   new Intl.DateTimeFormat("en-US", {

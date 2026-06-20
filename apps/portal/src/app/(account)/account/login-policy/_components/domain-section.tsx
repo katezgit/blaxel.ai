@@ -8,7 +8,7 @@ import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { useAccountState } from "@/lib/mock/account-context";
-import { DomainCard } from "./domain-card";
+import DomainCard from "./domain-card";
 
 const schema = z.object({
   domain: z
@@ -29,7 +29,7 @@ interface DomainSectionProps {
   emailDomain: string | null;
 }
 
-export function DomainSection({ emailDomain }: DomainSectionProps) {
+export default function DomainSection({ emailDomain }: DomainSectionProps) {
   const { state, addDomain } = useAccountState();
   const placeholder = emailDomain ?? FALLBACK_PLACEHOLDER;
 

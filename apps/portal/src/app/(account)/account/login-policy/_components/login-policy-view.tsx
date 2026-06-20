@@ -1,5 +1,5 @@
-import { DomainSection } from "./domain-section";
-import { SamlSection } from "./saml-section";
+import DomainSection from "./domain-section";
+import SamlSection from "./saml-section";
 
 interface LoginPolicyViewProps {
   /** User's email domain (derived from session email), used as a placeholder

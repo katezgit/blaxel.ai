@@ -3,7 +3,7 @@ import { Panel } from "@/app/(manage)/_components/page-primitives";
 
 const THRESHOLDS = [5, 10, 20, 50, 100, 500, 1000];
 
-export function BalanceAlerts() {
+export default function BalanceAlerts() {
   return (
     <Panel
       title="Balance alerts"

@@ -27,7 +27,7 @@ const schema = z.object({
 
 type Values = z.infer<typeof schema>;
 
-export function AutoTopUpForm() {
+export default function AutoTopUpForm() {
   const { state, setAutoTopUp } = useAccountState();
   const hasPaymentMethod = state.paymentMethod.brand !== null;
 

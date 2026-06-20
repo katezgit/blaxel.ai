@@ -3,7 +3,7 @@
 import { CircleHelp } from "lucide-react";
 import { IconButton } from "@repo/ui/components/icon-button";
 import AvatarMenu from "@/components/shell/avatar-menu";
-import { BillingPill } from "@/components/shell/billing-pill";
+import BillingPill from "@/components/shell/billing-pill";
 import { NotificationPanel } from "@/components/shell/notification-panel";
 
 interface IdentityClusterProps {

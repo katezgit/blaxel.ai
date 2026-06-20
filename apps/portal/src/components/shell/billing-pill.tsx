@@ -13,7 +13,7 @@ import { useAccountState } from "@/lib/mock/account-context";
  * outlined pill linking to /account/billing/credits (not /account/billing/plan
  * — the pill is a billing shortcut, not a tier badge).
  */
-export function BillingPill() {
+export default function BillingPill() {
   const { state } = useAccountState();
   const hasBalance = Number.isFinite(state.balanceUsd);
   const balanceLabel = hasBalance ? `$${state.balanceUsd.toFixed(2)}` : "$—";

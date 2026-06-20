@@ -79,7 +79,7 @@ interface TierComparisonProps {
   currentTier: Tier;
 }
 
-export function TierComparison({ currentTier }: TierComparisonProps) {
+export default function TierComparison({ currentTier }: TierComparisonProps) {
   const [open, setOpen] = useState(false);
   const panelId = "tier-comparison-panel";
 

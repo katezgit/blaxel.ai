@@ -13,7 +13,7 @@ interface BalanceTileProps {
   state: AccountState;
 }
 
-export function BalanceTile({ state }: BalanceTileProps) {
+export default function BalanceTile({ state }: BalanceTileProps) {
   const autoTopUpStatus = state.autoTopUp.enabled
     ? `Auto top-up: ON — tops up at $${state.autoTopUp.thresholdUsd}`
     : "Auto top-up: OFF";

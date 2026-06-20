@@ -40,7 +40,7 @@ import type { Org } from "@/lib/mock/types";
 
 const columnHelper = createColumnHelper<Org>();
 
-export function WorkspacesClient() {
+export default function WorkspacesClient() {
   const router = useRouter();
   const { state } = useAccountState();
   const limits = TIER_LIMITS[state.tier];

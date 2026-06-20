@@ -29,7 +29,7 @@ const formatUsd = (value: number): string =>
     currency: "USD",
   }).format(value);
 
-export function InvoicesTable({ invoices }: InvoicesTableProps) {
+export default function InvoicesTable({ invoices }: InvoicesTableProps) {
   if (invoices.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-card px-4 py-6">

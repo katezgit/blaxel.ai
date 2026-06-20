@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccountState } from "@/lib/mock/account-context";
-import { AddOnRow } from "./addon-row";
+import AddOnRow from "./addon-row";
 
 export function AddOnsView() {
   const { state } = useAccountState();

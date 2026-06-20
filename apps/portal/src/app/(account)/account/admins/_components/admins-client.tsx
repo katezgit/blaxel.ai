@@ -10,9 +10,9 @@ import {
   TooltipTrigger,
 } from "@repo/ui/components/tooltip";
 import { useAccountState } from "@/lib/mock/account-context";
-import { AddAdminDialog } from "./add-admin-dialog";
+import AddAdminDialog from "./add-admin-dialog";
 
-export function AdminsClient() {
+export default function AdminsClient() {
   const { state, removeAdmin } = useAccountState();
   const [dialogOpen, setDialogOpen] = useState(false);
 

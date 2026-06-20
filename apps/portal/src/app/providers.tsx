@@ -11,7 +11,7 @@ import { AccountStateProvider } from "@/lib/mock/account-context";
 // [data-theme="dark"]. The provider lives in a client component so the
 // FOUC-prevention <script> next-themes injects is owned by a client boundary
 // (React 19 + Next 16 warn when server components render it).
-export function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({ children }: { children: React.ReactNode }) {
   // getQueryClient() owns the browser-singleton guard via `isServer`; no
   // useState wrapper needed — wrapping it would defeat the dedupe.
   const queryClient = getQueryClient();

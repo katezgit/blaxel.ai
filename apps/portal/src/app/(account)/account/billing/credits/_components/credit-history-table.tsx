@@ -21,7 +21,7 @@ const formatAmount = (amount: number): string => {
   return `${sign}${amount.toFixed(2)}`;
 };
 
-export function CreditHistoryTable({ history }: CreditHistoryTableProps) {
+export default function CreditHistoryTable({ history }: CreditHistoryTableProps) {
   if (history.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-border bg-card px-4 py-6 text-body text-muted-foreground">

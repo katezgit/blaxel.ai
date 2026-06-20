@@ -16,7 +16,7 @@ import { cn } from "@repo/ui/lib/cn";
 import { RoleProvider } from "@/lib/mock/role-context";
 import { userQueries } from "@/lib/query/user";
 import { BrandMark } from "@/components/shell/brand-mark";
-import { DevRoleSwitcher } from "@/components/shell/dev-role-switcher";
+import DevRoleSwitcher from "@/components/shell/dev-role-switcher";
 import { SidebarProvider } from "@/components/shell/sidebar-context";
 import { SkipToContent } from "@/components/shell/skip-to-content";
 import { useSidebarShortcut } from "@/components/shell/use-sidebar-shortcut";

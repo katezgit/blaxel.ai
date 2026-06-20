@@ -31,7 +31,7 @@ interface AddAdminDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function AddAdminDialog({ open, onOpenChange }: AddAdminDialogProps) {
+export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogProps) {
   const { addAdmin } = useAccountState();
   const form = useForm<InviteValues>({
     resolver: zodResolver(inviteSchema),
