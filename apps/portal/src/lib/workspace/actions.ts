@@ -3,11 +3,10 @@
 import { findWorkspaceMembership } from "@/lib/mock/org";
 import { setLastVisitedWorkspace } from "@/lib/workspace/last-visited";
 
-// Server Action wrapper around setLastVisitedWorkspace. Exists because Server
-// Components can't write cookies during render (Next.js limitation) — the
-// workspace layout renders <LastVisitedWorkspaceWriter> which calls this on
-// mount. Re-audits the slug against the session's memberships so a tampered
-// client can't poison the cookie with a slug the user doesn't actually own.
+// Re-audits the slug against the user's memberships before writing — a Server
+// Action's transport is reachable by any authenticated client, so trusting the
+// incoming string would let a rogue caller poison the cookie with a workspace
+// they don't actually own.
 export async function recordLastVisitedWorkspace(slug: string): Promise<void> {
   const membership = findWorkspaceMembership(slug);
   if (!membership) return;

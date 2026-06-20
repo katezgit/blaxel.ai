@@ -9,7 +9,8 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { Button } from "@repo/ui";
-import { DEFAULT_WORKSPACE_SLUG, findWorkspaceMembership } from "@/lib/mock/org";
+import { getSession } from "@/lib/auth/session";
+import { findWorkspaceMembership } from "@/lib/mock/org";
 import { LAST_WORKSPACE_COOKIE } from "@/lib/workspace/last-visited";
 import "./globals.css";
 
@@ -18,16 +19,24 @@ import "./globals.css";
 // client router tree, so <Link> soft navigation from inside leaves the 404 DOM
 // mounted even though the URL flips. Hard navigation hits proxy.ts which emits
 // a real HTTP 307 to the user's last-visited workspace, so no meta-refresh.
-async function resolveTargetWorkspaceSlug(): Promise<string> {
+//
+// Resolution is gated on an authenticated session: an unauthenticated visitor
+// must not be able to probe workspace existence by reading the recovery links.
+// Without a session, popular-page links are suppressed entirely.
+async function resolveTargetWorkspaceSlug(): Promise<string | null> {
+  const session = await getSession();
+  if (!session) return null;
   const store = await cookies();
   const raw = store.get(LAST_WORKSPACE_COOKIE)?.value;
   if (raw && findWorkspaceMembership(raw)) return raw;
-  return DEFAULT_WORKSPACE_SLUG;
+  return null;
 }
 
 export default async function GlobalNotFound() {
   const workspaceSlug = await resolveTargetWorkspaceSlug();
-  const workspaceHref = (segment: string) => `/${workspaceSlug}/${segment}`;
+  const workspaceHref = workspaceSlug
+    ? (segment: string) => `/${workspaceSlug}/${segment}`
+    : null;
   return (
     // `data-theme="light"` pins the light palette without ThemeProvider.
     // The `<style>` below opts users with prefers-color-scheme: dark into the dark palette.
@@ -76,30 +85,36 @@ export default async function GlobalNotFound() {
 
             <div className="flex flex-col items-center gap-4">
               <p className="text-body text-muted-foreground">
-                Or explore these popular pages:
+                {workspaceHref
+                  ? "Or explore these popular pages:"
+                  : "Or read the docs:"}
               </p>
               <nav
                 aria-label="Recovery navigation"
                 className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
               >
-                <a
-                  href={workspaceHref("sandboxes")}
-                  className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
-                >
-                  Sandboxes
-                </a>
-                <a
-                  href={workspaceHref("agents")}
-                  className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
-                >
-                  Agents
-                </a>
-                <a
-                  href={workspaceHref("settings/api-keys")}
-                  className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
-                >
-                  API Keys
-                </a>
+                {workspaceHref ? (
+                  <>
+                    <a
+                      href={workspaceHref("sandboxes")}
+                      className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                    >
+                      Sandboxes
+                    </a>
+                    <a
+                      href={workspaceHref("agents")}
+                      className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                    >
+                      Agents
+                    </a>
+                    <a
+                      href={workspaceHref("settings/api-keys")}
+                      className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                    >
+                      API Keys
+                    </a>
+                  </>
+                ) : null}
                 <a
                   href="https://docs.blaxel.ai"
                   target="_blank"

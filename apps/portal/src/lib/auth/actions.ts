@@ -6,9 +6,9 @@ import { upsertUser } from "@/lib/auth/mock-users";
 import { currentOrg } from "@/lib/mock/data";
 import { setLastVisitedWorkspace } from "@/lib/workspace/last-visited";
 
-// Mock-only seed: in production this would be the user's default workspace
-// from their membership list. Pinning to currentOrg.slug keeps the demo's
-// fresh-signup flow landing somewhere sensible until real auth lands.
+// Mock-only seed: the demo has a single tenant, so the post-login redirect
+// always lands on currentOrg. A production auth path would derive this from
+// the signed-in user's default membership.
 const SEED_WORKSPACE_SLUG = currentOrg.slug;
 
 export type MagicLinkState =

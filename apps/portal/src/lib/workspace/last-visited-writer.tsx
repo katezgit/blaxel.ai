@@ -3,9 +3,8 @@
 import { useEffect } from "react";
 import { recordLastVisitedWorkspace } from "@/lib/workspace/actions";
 
-// Fires once per slug change. The workspace layout renders this with the
-// audited slug so that the proxy at / can route to the user's last-visited
-// workspace on the next visit.
+// Fires once per slug change so the proxy at / can route returning visits to
+// the correct workspace.
 interface LastVisitedWorkspaceWriterProps {
   slug: string;
 }
