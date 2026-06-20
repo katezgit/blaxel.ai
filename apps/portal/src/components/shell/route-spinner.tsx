@@ -8,7 +8,7 @@ export default function RouteSpinner() {
     <div
       role="status"
       aria-label="Loading"
-      className="flex min-h-full w-full items-center justify-center py-12"
+      className="flex min-h-full w-full items-center justify-center py-8"
     >
       <style>{`
         @keyframes spinner-appear {
