@@ -56,6 +56,7 @@ If the token the engineer needs doesn't exist as a utility, that's a token-polic
 ### 2. Code Style
 
 - **No nested ternaries.** `a ? b : c ? d : e` is always a FAIL. Use `if`/`else`, early returns, or extract to a variable/function.
+- **No IIFE for inline value construction (FAIL).** `const x = (() => { ... })()` used to scope branching that assigns to a single `const` adds a closure with no readability win. FAIL with the rewrite: ternary when both branches are expressions / object literals; named helper above the component when branches are genuinely complex (multiple statements, side effects, shared locals). Acceptable IIFE: genuine self-invocation (module-init with side effects, IIFE-then-export) — not block-scoping a branching assignment.
 - **No negative margin (FAIL).** Negative-margin utilities (`-m-*`, `-mt-*`, `-mb-*`, `-ml-*`, `-mr-*`, `-mx-*`, `-my-*`, `-ms-*`, `-me-*`) couple a child to its parent's layout and are an escape hatch for problems that should be solved at the parent. Fix the parent's padding (conditionally if needed) or restructure the markup. Exception (narrow): documented compensation for a specific external CSS quirk, with a one-line WHY comment naming the quirk.
 - **`cn()` for classNames.** Must import from `@repo/ui/lib/cn`. No template literals (`` className={`foo ${bar}`} ``), no string concatenation (`className={"foo " + bar}`).
 - **Export default for components.** Component files use `export default function ComponentName`. Named exports for utilities, hooks, types, constants.
