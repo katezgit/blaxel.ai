@@ -59,7 +59,7 @@ export default function WorkspaceSwitcher({
           "hover:bg-secondary-surface focus-visible:shadow-focus-ring",
           isRail
             ? "border-transparent p-1"
-            : "gap-1.5 border-border px-2 py-1 max-md:gap-1 max-md:px-1.5 max-md:py-0.5",
+            : "w-full gap-1.5 border-border px-2 py-1 max-md:gap-1 max-md:px-1.5 max-md:py-0.5",
         )}
       >
         <Boxes aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { cn } from "@repo/ui/lib/cn";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
 import { CommandPaletteProvider } from "@/components/shell/command-palette-provider";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
@@ -48,7 +49,12 @@ export default function WorkspaceSettingsShell({
   return (
     <TooltipProvider>
       <CommandPaletteProvider>
-        <div className="flex h-screen flex-col overflow-hidden text-foreground">
+        <div
+          className={cn(
+            "flex h-screen flex-col overflow-hidden text-foreground",
+            collapsed && "[--shell-left-w:var(--sidebar-rail-w)]",
+          )}
+        >
           <SkipToContent />
 
           <CollapsibleSidebarMarker value={{ inCollapsible: true, userCollapsed: collapsed }}>

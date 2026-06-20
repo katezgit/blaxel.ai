@@ -47,7 +47,7 @@
  * 2 rows (nav+brand+identity / workspace); sub-shells stay 1-row. */
 @utility shell-topbar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: var(--shell-left-w, var(--sidebar-w)) 1fr auto;
   grid-template-areas: "left center right";
   align-items: center;
   height: var(--topbar-h);
@@ -57,7 +57,7 @@
   border-bottom: 1px solid var(--color-border);
   background: var(--color-background);
 }
-.shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: start; min-width: 0; max-width: var(--sidebar-w); display: flex; align-items: center; gap: 0.5rem; }
+.shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: stretch; min-width: 0; display: flex; align-items: center; gap: 0.5rem; }
 .shell-topbar [data-slot="ws"]       { min-width: 0; flex: 1 1 auto; display: flex; }
 .shell-topbar > [data-zone="center"] { grid-area: center; justify-self: end; display: flex; justify-content: flex-end; min-width: 0; }
 .shell-topbar > [data-zone="right"]  { grid-area: right;  justify-self: end;   display: flex; align-items: center; }
