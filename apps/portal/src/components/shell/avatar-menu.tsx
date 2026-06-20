@@ -2,10 +2,16 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { KeyboardIcon, LogOutIcon, Sun, User } from "lucide-react";
+import {
+  Building2,
+  CreditCard,
+  KeyboardIcon,
+  LogOutIcon,
+  Sun,
+  User,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
-import { Badge } from "@repo/ui/components/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +21,7 @@ import {
 } from "@repo/ui/components/dropdown-menu";
 import { cn } from "@repo/ui/lib/cn";
 import { signOut } from "@/lib/auth/actions";
+import { useAccountState } from "@/lib/mock/account-context";
 
 const THEME_SEGMENTS = ["system", "light", "dark"] as const;
 type ThemeChoice = (typeof THEME_SEGMENTS)[number];
@@ -24,6 +31,10 @@ interface AvatarMenuProps {
 }
 
 export default function AvatarMenu({ user }: AvatarMenuProps) {
+  const { state } = useAccountState();
+  const hasBalance = Number.isFinite(state.balanceUsd);
+  const balanceLabel = hasBalance ? `$${state.balanceUsd.toFixed(2)}` : "$—";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -38,44 +49,56 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
-        <div className="px-2 pt-2 pb-2.5 border-b border-border">
+        <div className="px-2 pt-2 pb-3 border-b border-border">
           <div className="text-label font-semibold text-foreground">{user.name}</div>
           <div className="mt-0.5 font-mono text-caption text-meta-foreground truncate">
             {user.email}
           </div>
-          <div className="mt-2">
-            <Badge variant="brand-soft">{user.tier}</Badge>
-          </div>
         </div>
 
         <DropdownMenuItem asChild>
-          <Link href="/profile">
-            <User aria-hidden="true" />
-            <span>Profile</span>
+          <Link href="/profile" className="items-start">
+            <User aria-hidden="true" className="mt-0.5 shrink-0" />
+            <span className="flex flex-1 flex-col gap-0.5 leading-tight">
+              <span>Profile</span>
+              <span className="text-caption text-meta-foreground">
+                Personal settings
+              </span>
+            </span>
           </Link>
         </DropdownMenuItem>
 
-        <ThemeRow />
-
-        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/account" className="items-start">
+            <Building2 aria-hidden="true" className="mt-0.5 shrink-0" />
+            <span className="flex flex-1 flex-col gap-0.5 leading-tight">
+              <span>Account</span>
+              <span className="text-caption text-meta-foreground">
+                Company account settings
+              </span>
+            </span>
+          </Link>
+        </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/profile/billing">
-            <span className="size-4" aria-hidden="true" />
-            <span className="flex-1">Billing &amp; invoices</span>
-            <span aria-hidden="true" className="text-meta-foreground">
-              &rarr;
+          <Link href="/account/billing/credits" className="items-start">
+            <CreditCard aria-hidden="true" className="mt-0.5 shrink-0" />
+            <span className="flex flex-1 flex-col gap-0.5 leading-tight">
+              <span>Billing &amp; credits</span>
+              <span className="text-caption text-meta-foreground tabular-nums">
+                Tier {state.tier} &middot; {balanceLabel} credits
+              </span>
             </span>
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onSelect={() => {
-            /* TODO: help & shortcuts panel — see wireframe §15 */
-          }}
-        >
+        <ThemeRow />
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem onSelect={() => undefined}>
           <KeyboardIcon aria-hidden="true" />
           <span>Help &amp; shortcuts</span>
         </DropdownMenuItem>

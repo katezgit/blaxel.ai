@@ -1,4 +1,4 @@
-import { flexRender, type Table } from "@tanstack/react-table";
+import { flexRender, type Row, type Table } from "@tanstack/react-table";
 import {
   tableClass,
   tableHeaderClass,
@@ -25,7 +25,25 @@ interface ManageTableProps<TData> {
    * background otherwise teases an action that isn't there.
    */
   noRowHover?: boolean;
+  /**
+   * Optional row-level click handler. When set, the row becomes a mouse
+   * affordance for the row's primary action. The cell's own interactive
+   * elements (copy buttons, menu triggers) MUST stopPropagation so they
+   * don't double-fire. Keyboard navigation stays on the cell-level focusable
+   * (e.g. a Link inside the name cell); the row click is a mouse convenience.
+   */
+  onRowClick?: (row: Row<TData>) => void;
+  /**
+   * Visually-hidden table caption announced by screen readers. Required for
+   * AT users to identify the table; omit only on the rare aria-hidden tables.
+   */
+  caption?: string;
 }
+
+const SORT_ARIA: Record<"asc" | "desc", "ascending" | "descending"> = {
+  asc: "ascending",
+  desc: "descending",
+};
 
 /**
  * Thin presentational wrapper for manage-area TanStack tables.
@@ -41,7 +59,13 @@ interface ManageTableProps<TData> {
  * (e.g. `text-right`, `w-10`). Font / padding / muted-color defaults come from
  * `tableHeadVariants` / `tableCellVariants` and should not be re-stated.
  */
-export default function ManageTable<TData>({ table, bordered, noRowHover }: ManageTableProps<TData>) {
+export default function ManageTable<TData>({
+  table,
+  bordered,
+  noRowHover,
+  onRowClick,
+  caption,
+}: ManageTableProps<TData>) {
   return (
     <div
       className={cn(
@@ -50,6 +74,7 @@ export default function ManageTable<TData>({ table, bordered, noRowHover }: Mana
       )}
     >
       <table className={tableClass}>
+        {caption ? <caption className="sr-only">{caption}</caption> : null}
         <thead className={tableHeaderClass}>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -57,9 +82,17 @@ export default function ManageTable<TData>({ table, bordered, noRowHover }: Mana
                 const meta = header.column.columnDef.meta as
                   | { headerClassName?: string }
                   | undefined;
+                const sorted = header.column.getIsSorted();
+                const ariaSort = header.column.getCanSort()
+                  ? sorted === false
+                    ? "none"
+                    : SORT_ARIA[sorted]
+                  : undefined;
                 return (
                   <th
                     key={header.id}
+                    scope="col"
+                    aria-sort={ariaSort}
                     className={cn(tableHeadVariants(), meta?.headerClassName)}
                     aria-label={header.column.columnDef.id === "actions" ? "Actions" : undefined}
                   >
@@ -75,7 +108,12 @@ export default function ManageTable<TData>({ table, bordered, noRowHover }: Mana
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={cn(tableRowVariants(), noRowHover && "[tbody_&]:hover:bg-transparent")}
+              className={cn(
+                tableRowVariants(),
+                noRowHover && "[tbody_&]:hover:bg-transparent",
+                onRowClick && "cursor-pointer",
+              )}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
             >
               {row.getVisibleCells().map((cell) => {
                 const meta = cell.column.columnDef.meta as

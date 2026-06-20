@@ -7,7 +7,11 @@ import { orgQueries } from "@/lib/query/org";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { TenancyProvider } from "@/lib/query/tenancy-context";
 
-const ACCOUNT_TIER = "Tier 1";
+// Single auth/tenancy gate for both /profile/* and /account/*. AccountShell
+// is a client component and discriminates its sidebar (Profile vs Account)
+// from `usePathname()` — keeps the React-component icon refs out of the
+// server-to-client serialization boundary.
+const FALLBACK_USER_TIER = "Tier 0";
 
 export default async function AccountLayout({ children }: { children: ReactNode }) {
   const [session, tenancy] = await Promise.all([
@@ -28,7 +32,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const user = {
     name: session.name || "User",
     email: session.email,
-    tier: ACCOUNT_TIER,
+    tier: FALLBACK_USER_TIER,
   };
 
   return (
