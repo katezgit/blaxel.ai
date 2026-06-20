@@ -366,7 +366,7 @@ const DrawerCloseButton = React.forwardRef<
       "text-muted-foreground",
       "transition-colors prop-(--motion-state-change)",
       "hover:bg-hover-surface",
-      "disabled:pointer-events-none",
+      "disabled:pointer-events-none cursor-pointer",
       "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
       className
     )}
