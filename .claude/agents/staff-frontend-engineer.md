@@ -150,20 +150,8 @@ Import `cn` from `@repo/ui/lib/cn` to compose classNames. No template literals (
 - Branches are genuinely complex (multiple statements, side effects, shared locals) → extract a named helper function above the component.
 
 ```tsx
-// ✗ IIFE-as-scoped-block
-const holder = (() => {
-  if (kind === "member") {
-    const m = members.find((x) => x.id === id);
-    return { kind: "member" as const, id, name: m?.name ?? "Unknown" };
-  }
-  const s = services.find((x) => x.id === id);
-  return { kind: "service-account" as const, id, name: s?.name ?? "Unknown" };
-})();
-
-// ✓ ternary, lookups inlined
-const holder = kind === "member"
-  ? { kind: "member", id, name: members.find((m) => m.id === id)?.name ?? "Unknown" }
-  : { kind: "service-account", id, name: services.find((s) => s.id === id)?.name ?? "Unknown" };
+// ✗  const x = (() => { if (a) return foo; return bar; })()
+// ✓  const x = a ? foo : bar
 ```
 
 Acceptable IIFE: genuine self-invocation patterns (module-init with side effects, IIFE-then-export). Not block-scoping a branching assignment.
