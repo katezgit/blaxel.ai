@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Check } from "lucide-react";
@@ -79,10 +79,11 @@ export default function CreateApiKeyDialog({
 
   const {
     register,
+    control,
     handleSubmit,
-    setValue,
     watch,
     reset,
+    resetField,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(FORM_SCHEMA),
@@ -95,8 +96,6 @@ export default function CreateApiKeyDialog({
   });
 
   const holderKind = watch("holderKind");
-  const holderId = watch("holderId");
-  const expiresIn = watch("expiresIn");
 
   const holderOptions =
     holderKind === "member"
@@ -113,22 +112,21 @@ export default function CreateApiKeyDialog({
 
   const onSubmit = async (values: FormValues) => {
     await new Promise((r) => setTimeout(r, 150));
-    const holder: ApiKeyHolder = (() => {
-      if (values.holderKind === "member") {
-        const m = members.find((m) => m.id === values.holderId);
-        return {
-          kind: "member" as const,
-          id: values.holderId,
-          name: m?.name ?? "Unknown",
-        };
-      }
-      const svc = serviceAccounts.find((s) => s.id === values.holderId);
-      return {
-        kind: "service-account" as const,
-        id: values.holderId,
-        name: svc?.name ?? "Unknown",
-      };
-    })();
+    const holder: ApiKeyHolder =
+      values.holderKind === "member"
+        ? {
+            kind: "member",
+            id: values.holderId,
+            name:
+              members.find((m) => m.id === values.holderId)?.name ?? "Unknown",
+          }
+        : {
+            kind: "service-account",
+            id: values.holderId,
+            name:
+              serviceAccounts.find((s) => s.id === values.holderId)?.name ??
+              "Unknown",
+          };
     const fullKey = `bxl_live_${randomHex(40)}`;
     const masked = `bxl_xxxx…${fullKey.slice(-4)}`;
     const now = new Date();
@@ -208,6 +206,7 @@ export default function CreateApiKeyDialog({
               label="Name"
               helper="A short identifier — shown in logs and the dashboard."
               error={errors.name?.message}
+              required
             >
               <Input
                 {...register("name")}
@@ -216,66 +215,73 @@ export default function CreateApiKeyDialog({
               />
             </FormField>
             <FormField id="api-key-holder-kind" label="Holder">
-              <SegmentedControl
-                value={holderKind}
-                onValueChange={(v) => {
-                  if (!v) return;
-                  setValue("holderKind", v as FormValues["holderKind"], {
-                    shouldDirty: true,
-                  });
-                  setValue("holderId", "", { shouldDirty: true });
-                }}
-                aria-label="Holder type"
-              >
-                <SegmentedControl.Item value="service-account">
-                  Service account
-                </SegmentedControl.Item>
-                <SegmentedControl.Item value="member">
-                  Member
-                </SegmentedControl.Item>
-              </SegmentedControl>
+              <Controller
+                control={control}
+                name="holderKind"
+                render={({ field }) => (
+                  <SegmentedControl
+                    className="self-start"
+                    value={field.value}
+                    onValueChange={(v) => {
+                      field.onChange(v);
+                      resetField("holderId", { defaultValue: "" });
+                    }}
+                    aria-label="Holder type"
+                  >
+                    <SegmentedControl.Item value="service-account">
+                      Service account
+                    </SegmentedControl.Item>
+                    <SegmentedControl.Item value="member">
+                      Member
+                    </SegmentedControl.Item>
+                  </SegmentedControl>
+                )}
+              />
             </FormField>
             <FormField
               id="api-key-holder"
               label={holderKind === "member" ? "Member" : "Service account"}
               error={errors.holderId?.message}
+              required
             >
-              <Select
-                value={holderId}
-                onValueChange={(v) => setValue("holderId", v, { shouldDirty: true })}
-              >
-                <SelectTrigger id="api-key-holder">
-                  <SelectValue placeholder="Select…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {holderOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="holderId"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="api-key-holder" aria-invalid={!!errors.holderId}>
+                      <SelectValue placeholder="Select…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {holderOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </FormField>
             <FormField id="api-key-expires" label="Expires in">
-              <Select
-                value={expiresIn}
-                onValueChange={(v) =>
-                  setValue("expiresIn", v as FormValues["expiresIn"], {
-                    shouldDirty: true,
-                  })
-                }
-              >
-                <SelectTrigger id="api-key-expires">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {EXPIRY_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="expiresIn"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="api-key-expires">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EXPIRY_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </FormField>
           </DialogBody>
           <DialogFooter>
