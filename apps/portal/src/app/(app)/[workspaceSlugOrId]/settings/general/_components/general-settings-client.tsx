@@ -71,7 +71,7 @@ export default function GeneralSettingsClient({
   });
 
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-6">
+    <div className="flex w-full max-w-3xl flex-col gap-6 lg:gap-8">
       <section className="flex flex-col gap-4">
         <h2 className="text-subtitle font-semibold text-foreground">
           Workspace identity
@@ -116,6 +116,7 @@ export default function GeneralSettingsClient({
             onSave={onSubmit}
             saveLabel="Update workspace"
             saving={isSubmitting}
+            className="mt-2 border-t-0 pt-0"
           />
         </form>
       </section>
@@ -143,7 +144,7 @@ export default function GeneralSettingsClient({
         </dl>
       </section>
 
-      <section id="danger" className="flex flex-col gap-4 border-t border-border pt-6">
+      <section id="danger" className="flex flex-col gap-4 border-t-2 border-destructive pt-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-subtitle font-semibold text-destructive">
             Danger zone

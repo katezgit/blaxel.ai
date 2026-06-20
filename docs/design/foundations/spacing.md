@@ -41,7 +41,7 @@ Tailwind ships `spacing-5` (20px), `spacing-7` (28px), `spacing-9` (36px), `spac
 
 **Page**
 - Major regions (e.g. header → content, content → sidebar): 32px / `gap-8`
-- Sections within a region: 24px / `gap-6`
+- Sections within a region: 24px / `gap-6` — responsive variant `gap-6 lg:gap-8` (24px → 32px from `lg`) when section concerns are heterogeneous enough to deserve more breathing room on desktop (e.g. workspace identity / account context / danger zone on a single settings page)
 - Blocks within a section: 16px / `gap-4`
 
 **Inline**
