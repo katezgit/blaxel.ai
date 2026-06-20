@@ -112,22 +112,21 @@ export default function CreateApiKeyDialog({
 
   const onSubmit = async (values: FormValues) => {
     await new Promise((r) => setTimeout(r, 150));
-    const holder: ApiKeyHolder = (() => {
-      if (values.holderKind === "member") {
-        const m = members.find((m) => m.id === values.holderId);
-        return {
-          kind: "member" as const,
-          id: values.holderId,
-          name: m?.name ?? "Unknown",
-        };
-      }
-      const svc = serviceAccounts.find((s) => s.id === values.holderId);
-      return {
-        kind: "service-account" as const,
-        id: values.holderId,
-        name: svc?.name ?? "Unknown",
-      };
-    })();
+    const holder: ApiKeyHolder =
+      values.holderKind === "member"
+        ? {
+            kind: "member",
+            id: values.holderId,
+            name:
+              members.find((m) => m.id === values.holderId)?.name ?? "Unknown",
+          }
+        : {
+            kind: "service-account",
+            id: values.holderId,
+            name:
+              serviceAccounts.find((s) => s.id === values.holderId)?.name ??
+              "Unknown",
+          };
     const fullKey = `bxl_live_${randomHex(40)}`;
     const masked = `bxl_xxxx…${fullKey.slice(-4)}`;
     const now = new Date();
