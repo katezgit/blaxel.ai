@@ -133,6 +133,18 @@ Use the `/add-component` skill. Each component lives in `src/components/<name>/`
 
 After adding, export from `src/index.ts` and update this file.
 
+## Conventions
+
+### No border on elevated surfaces
+
+Elevated surfaces — `Dialog`, `Drawer`, `Popover`, `DropdownMenu` Content + SubContent, `Select` Content, `Command` + `CommandDialog`, `Combobox` listbox, `Tooltip`, `Toast` — define their perimeter via the elevation shadow token only. Do not add `border border-border` (or any variant) to the panel element itself.
+
+**Why.** Each of `--shadow-1`, `--shadow-2`, `--shadow-3` starts with a `0 0 0 1px` ring layer. That ring is the canonical hairline. Stacking a CSS border on the same element places a darker (~11 % alpha) 1 px line immediately against the lighter (~6 % alpha) shadow ring — perceived double edge.
+
+**Still fine.** Internal row/item separators, directional seam borders (`border-r` on a right-side drawer), sticky-scroll cue borders, focus rings, inline form-field borders. The violation is only a full-perimeter border on the elevated panel itself.
+
+**Precedent.** `dialog.tsx` documents this rule inline (search for `"double edge"`). The same comment string is mirrored on every elevated-surface primitive that needs it. This section is the canonical source; the inline comment is the proximate guardrail.
+
 ## TODO
 
 - [ ] **Visual regression testing** — Unit tests catch behavior but not layout regressions (e.g.,
