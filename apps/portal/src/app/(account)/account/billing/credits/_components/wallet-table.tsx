@@ -1,8 +1,8 @@
-import { Gift, ShoppingCart, TrendingUp } from "lucide-react";
+import { Gift, ShoppingCart, TrendingUp, type LucideIcon } from "lucide-react";
 import { Progress } from "@repo/ui/components/progress";
 import type { WalletEntry, WalletEntryType } from "@/lib/mock/account";
 
-const ICONS: Record<WalletEntryType, React.ComponentType<{ className?: string }>> = {
+const ICONS: Record<WalletEntryType, LucideIcon> = {
   promo: Gift,
   topup: TrendingUp,
   purchase: ShoppingCart,
@@ -53,21 +53,37 @@ export function WalletTable({ wallet }: WalletTableProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
       <table className="w-full border-collapse text-body">
+        <caption className="sr-only">Wallet composition</caption>
         <thead>
           <tr className="border-b border-border bg-muted-surface text-left">
-            <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
               Wallet composition
             </th>
-            <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
               Added on
             </th>
-            <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
               Usage
             </th>
-            <th className="px-4 py-2 text-right font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 text-right font-mono text-meta uppercase text-meta-foreground"
+            >
               Amount
             </th>
-            <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
               Expiration
             </th>
           </tr>
@@ -85,7 +101,7 @@ export function WalletTable({ wallet }: WalletTableProps) {
               <tr key={entry.id} className="border-b border-border last:border-b-0">
                 <td className="px-4 py-3">
                   <span className="inline-flex items-center gap-2 text-foreground">
-                    <Icon className="size-4 text-muted-foreground" />
+                    <Icon className="size-4 text-muted-foreground" aria-hidden="true" />
                     {entry.label}
                   </span>
                 </td>

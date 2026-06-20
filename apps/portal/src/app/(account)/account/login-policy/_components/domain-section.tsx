@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
@@ -46,8 +47,10 @@ export function DomainSection({ emailDomain }: DomainSectionProps) {
 
   const onAdd = handleSubmit(async ({ domain }) => {
     await new Promise((resolve) => setTimeout(resolve, 200));
-    addDomain(domain.toLowerCase().trim());
+    const normalized = domain.toLowerCase().trim();
+    addDomain(normalized);
     reset({ domain: "" });
+    toast.success(`Domain ${normalized} added — pending verification`);
   });
 
   const errorId = "domain-input-error";

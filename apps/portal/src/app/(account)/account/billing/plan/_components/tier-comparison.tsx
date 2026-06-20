@@ -107,18 +107,31 @@ export function TierComparison({ currentTier }: TierComparisonProps) {
       {open ? (
         <div id={panelId} className="border-t border-border">
           <table className="w-full border-collapse text-body">
+            <caption className="sr-only">Tier comparison</caption>
             <thead>
               <tr className="border-b border-border bg-muted-surface">
-                <th className="px-4 py-2 text-left font-mono text-meta uppercase tracking-wider text-meta-foreground">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left font-mono text-meta uppercase text-meta-foreground"
+                >
                   Tier
                 </th>
-                <th className="px-4 py-2 text-left font-mono text-meta uppercase tracking-wider text-meta-foreground">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left font-mono text-meta uppercase text-meta-foreground"
+                >
                   Requirement
                 </th>
-                <th className="px-4 py-2 text-left font-mono text-meta uppercase tracking-wider text-meta-foreground">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left font-mono text-meta uppercase text-meta-foreground"
+                >
                   Key Quotas
                 </th>
-                <th className="px-4 py-2 text-left font-mono text-meta uppercase tracking-wider text-meta-foreground">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left font-mono text-meta uppercase text-meta-foreground"
+                >
                   Features
                 </th>
               </tr>

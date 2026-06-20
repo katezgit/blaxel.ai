@@ -25,12 +25,6 @@ import {
 
 const TIER_STORAGE_KEY = "portal:mock-tier";
 
-/**
- * Demo-only balance stream cadence. Matches personality.md interaction
- * principle #3 ("status streams, never polls"): a small drift simulates
- * ambient updates without a real WebSocket. Cadence tuned for the chip:
- * fast enough to read as live, slow enough not to distract.
- */
 const STREAM_INTERVAL_MS = 4500;
 const STREAM_MAX_DRIFT = 0.04;
 
@@ -69,7 +63,6 @@ function parseStoredTier(raw: string | null): Tier | null {
 }
 
 export function AccountStateProvider({ children }: AccountProviderProps) {
-  const [tier, setTierState] = useState<Tier>(0);
   const [state, setState] = useState<AccountState>(() => seedForTier(0));
 
   const hydrated = useRef(false);
@@ -83,7 +76,6 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
     const parsedQuery = parseStoredTier(query);
     const initial = parsedQuery ?? stored ?? 0;
     if (initial !== 0) {
-      setTierState(initial);
       setState(seedForTier(initial));
     }
     if (parsedQuery !== null) {
@@ -92,11 +84,6 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
   }, []);
 
   useEffect(() => {
-    // Status streams: tiny random drift around the seeded balance keeps the
-    // Billing page's balance tile reading as live, matching personality.md
-    // interaction principle #3 ("status streams, never polls"). No timestamp
-    // is exposed — the dropped topbar BalanceChip was the only surface that
-    // showed an "Updated Ns ago" label.
     const interval = window.setInterval(() => {
       setState((prev) => {
         const drift = (Math.random() - 0.5) * 2 * STREAM_MAX_DRIFT;
@@ -108,7 +95,6 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
   }, []);
 
   const setTier = useCallback((next: Tier) => {
-    setTierState(next);
     setState(seedForTier(next));
     window.localStorage.setItem(TIER_STORAGE_KEY, String(next));
   }, []);
@@ -223,8 +209,6 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
       saveSaml,
     ],
   );
-
-  void tier;
 
   return (
     <AccountContext.Provider value={value}>{children}</AccountContext.Provider>

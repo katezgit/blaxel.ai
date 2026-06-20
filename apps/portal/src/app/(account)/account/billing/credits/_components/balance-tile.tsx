@@ -24,9 +24,13 @@ export function BalanceTile({ state }: BalanceTileProps) {
       className="flex flex-col gap-3 rounded-lg border border-border bg-card p-6"
     >
       <h2 className="text-caption text-muted-foreground">Credit balance</h2>
-      <p className="font-mono text-display font-semibold tabular-nums text-foreground">
+      <output
+        aria-live="polite"
+        aria-atomic="true"
+        className="font-mono text-display font-semibold tabular-nums text-foreground"
+      >
         {formatBalance(state.balanceUsd)}
-      </p>
+      </output>
       <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex h-7 items-center gap-1 rounded-md border border-border bg-secondary-surface px-2 text-caption text-foreground">
           {autoTopUpStatus}

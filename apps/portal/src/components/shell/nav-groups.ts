@@ -1,8 +1,7 @@
 /**
- * Wireframe contract: docs/design/wireframe/app-shell.md §13.
- * Each nav item carries the lucide-react component to render both inline
- * next to the label and (centered) in the tablet icon rail. Hard rule §3.9 —
- * one sidebar at a time — keeps the variants from colliding visually.
+ * Each nav item carries the lucide-react component to render both inline next
+ * to the label and (centered) in the tablet icon rail. Only one sidebar
+ * variant renders at a time so they never visually collide.
  */
 import {
   ArrowLeft,
@@ -139,10 +138,9 @@ export const PERSONAL_NAV_GROUPS: ReadonlyArray<NavGroup> = [
 ];
 
 /**
- * Account sub-shell — billing + administration for the account (a multi-
- * admin business entity, not a personal surface). Split into two groups
- * along the natural seam: BILLING is Alex's dollars-and-quotas surfaces,
- * ADMINISTRATION is Sam's org-control surfaces.
+ * Account sub-shell — the account is a multi-admin business entity, not a
+ * personal surface. Account holds identity + admins + workspaces + login
+ * policy; Billing holds plan/credits/add-ons.
  */
 export const ACCOUNT_NAV_GROUPS: ReadonlyArray<NavGroup> = [
   {

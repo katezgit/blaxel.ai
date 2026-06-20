@@ -36,7 +36,7 @@ function RoleSwitcherChrome() {
       aria-label="Demo role switcher (dev only)"
       className="fixed right-3 bottom-3 z-sticky flex items-center gap-1 rounded-md border border-border-strong bg-card p-1 shadow-popover"
     >
-      <span className="px-1.5 font-mono text-caption text-meta-foreground uppercase tracking-widest">
+      <span className="px-1.5 font-mono text-caption text-meta-foreground uppercase">
         role
       </span>
       {ROLES.map((value) => {

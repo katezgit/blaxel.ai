@@ -49,7 +49,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
-        <div className="px-2 pt-2 pb-2.5 border-b border-border">
+        <div className="px-2 pt-2 pb-3 border-b border-border">
           <div className="text-label font-semibold text-foreground">{user.name}</div>
           <div className="mt-0.5 font-mono text-caption text-meta-foreground truncate">
             {user.email}
@@ -98,11 +98,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onSelect={() => {
-            /* TODO: help & shortcuts panel — see wireframe §15 */
-          }}
-        >
+        <DropdownMenuItem onSelect={() => undefined}>
           <KeyboardIcon aria-hidden="true" />
           <span>Help &amp; shortcuts</span>
         </DropdownMenuItem>

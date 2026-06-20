@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Info } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
@@ -54,6 +55,7 @@ export function AutoTopUpForm() {
     await new Promise((resolve) => setTimeout(resolve, 250));
     setAutoTopUp(values);
     reset(values);
+    toast.success("Auto top-up saved");
   });
 
   return (
@@ -62,7 +64,7 @@ export function AutoTopUpForm() {
       subtitle="Automatically top up when your balance drops below a threshold."
     >
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4" id="auto-top-up">
-        <label className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3">
+        <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3">
           <span className="flex flex-col gap-0.5">
             <span className="text-body text-foreground">Enable auto top-up</span>
             <span className="text-caption text-muted-foreground">
@@ -74,7 +76,7 @@ export function AutoTopUpForm() {
             onCheckedChange={(next) => setValue("enabled", next, { shouldDirty: true })}
             aria-label="Enable auto top-up"
           />
-        </label>
+        </div>
 
         <FieldRow cols={2}>
           <Field

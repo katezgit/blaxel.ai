@@ -33,18 +33,31 @@ export function CreditHistoryTable({ history }: CreditHistoryTableProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
       <table className="w-full border-collapse text-body">
+        <caption className="sr-only">Credit history</caption>
         <thead>
           <tr className="border-b border-border bg-muted-surface text-left">
-            <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
               Date
             </th>
-            <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
               Type
             </th>
-            <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
               Description
             </th>
-            <th className="px-4 py-2 text-right font-mono text-meta uppercase tracking-wider text-meta-foreground">
+            <th
+              scope="col"
+              className="px-4 py-2 text-right font-mono text-meta uppercase text-meta-foreground"
+            >
               Amount
             </th>
           </tr>

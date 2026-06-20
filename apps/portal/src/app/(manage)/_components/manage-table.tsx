@@ -33,7 +33,17 @@ interface ManageTableProps<TData> {
    * (e.g. a Link inside the name cell); the row click is a mouse convenience.
    */
   onRowClick?: (row: Row<TData>) => void;
+  /**
+   * Visually-hidden table caption announced by screen readers. Required for
+   * AT users to identify the table; omit only on the rare aria-hidden tables.
+   */
+  caption?: string;
 }
+
+const SORT_ARIA: Record<"asc" | "desc", "ascending" | "descending"> = {
+  asc: "ascending",
+  desc: "descending",
+};
 
 /**
  * Thin presentational wrapper for manage-area TanStack tables.
@@ -54,6 +64,7 @@ export default function ManageTable<TData>({
   bordered,
   noRowHover,
   onRowClick,
+  caption,
 }: ManageTableProps<TData>) {
   return (
     <div
@@ -63,6 +74,7 @@ export default function ManageTable<TData>({
       )}
     >
       <table className={tableClass}>
+        {caption ? <caption className="sr-only">{caption}</caption> : null}
         <thead className={tableHeaderClass}>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -70,9 +82,17 @@ export default function ManageTable<TData>({
                 const meta = header.column.columnDef.meta as
                   | { headerClassName?: string }
                   | undefined;
+                const sorted = header.column.getIsSorted();
+                const ariaSort = header.column.getCanSort()
+                  ? sorted === false
+                    ? "none"
+                    : SORT_ARIA[sorted]
+                  : undefined;
                 return (
                   <th
                     key={header.id}
+                    scope="col"
+                    aria-sort={ariaSort}
                     className={cn(tableHeadVariants(), meta?.headerClassName)}
                     aria-label={header.column.columnDef.id === "actions" ? "Actions" : undefined}
                   >

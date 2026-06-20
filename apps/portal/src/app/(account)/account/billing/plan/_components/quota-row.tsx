@@ -34,10 +34,13 @@ export function UtilizedQuotaRow({ label, used, limit, unit }: UtilizedRowProps)
         <span className="text-body text-foreground">{label}</span>
         <div className="flex items-center gap-2 font-mono text-meta tabular-nums text-foreground">
           {atLimit ? (
-            <TriangleAlert
-              className="size-3.5 text-state-errored"
-              aria-label="At limit"
-            />
+            <>
+              <TriangleAlert
+                className="size-3.5 text-state-errored"
+                aria-hidden="true"
+              />
+              <span className="sr-only">At limit. </span>
+            </>
           ) : null}
           <span>
             {used} / {limit}
@@ -112,7 +115,7 @@ export function QuotaGroup({ label, children, className }: QuotaGroupProps) {
       )}
     >
       <header className="border-b border-border px-4 py-2">
-        <h2 className="font-mono text-meta uppercase tracking-wider text-meta-foreground">
+        <h2 className="font-mono text-meta uppercase text-meta-foreground">
           {label}
         </h2>
       </header>

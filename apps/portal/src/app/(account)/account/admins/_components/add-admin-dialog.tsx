@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -60,6 +61,7 @@ export function AddAdminDialog({ open, onOpenChange }: AddAdminDialogProps) {
       joinedAt: new Date().toISOString().slice(0, 10),
     };
     addAdmin(admin);
+    toast.success(`Invitation sent to ${email}`);
     onOpenChange(false);
   });
 

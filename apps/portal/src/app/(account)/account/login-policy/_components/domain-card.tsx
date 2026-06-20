@@ -56,7 +56,7 @@ export function DomainCard({ domain }: DomainCardProps) {
             .
           </p>
           <div className="flex flex-wrap items-end gap-3">
-            <label className="flex flex-col gap-1.5 text-label">
+            <div className="flex flex-col gap-1.5 text-label">
               <span className="text-muted-foreground">Enforce login method</span>
               <Select
                 value={pendingMethod ?? "Any"}
@@ -66,7 +66,7 @@ export function DomainCard({ domain }: DomainCardProps) {
                   )
                 }
               >
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-48" aria-label="Enforce login method">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -77,7 +77,7 @@ export function DomainCard({ domain }: DomainCardProps) {
                   ))}
                 </SelectContent>
               </Select>
-            </label>
+            </div>
             <Button
               variant="primary"
               disabled={!isDirty}

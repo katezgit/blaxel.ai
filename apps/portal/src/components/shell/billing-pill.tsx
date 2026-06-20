@@ -9,26 +9,21 @@ import {
 import { useAccountState } from "@/lib/mock/account-context";
 
 /**
- * Topbar billing shortcut. Carries the tier label and live credit balance in
- * one outlined pill — re-introducing the balance to chrome after the standalone
- * BalanceChip was dropped. Click target jumps to /account/billing/credits
- * (not /account/billing/plan — the pill is a billing shortcut, not a tier
- * badge).
+ * Topbar billing shortcut. Renders tier label + live credit balance in one
+ * outlined pill linking to /account/billing/credits (not /account/billing/plan
+ * — the pill is a billing shortcut, not a tier badge).
  */
 export function BillingPill() {
   const { state } = useAccountState();
   const hasBalance = Number.isFinite(state.balanceUsd);
   const balanceLabel = hasBalance ? `$${state.balanceUsd.toFixed(2)}` : "$—";
-  const ariaLabel = hasBalance
-    ? `Tier ${state.tier}, $${state.balanceUsd.toFixed(2)} credits. Open Billing.`
-    : `Tier ${state.tier}, credits loading. Open Billing.`;
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Link
           href="/account/billing/credits"
-          aria-label={ariaLabel}
+          aria-label={`Tier ${state.tier} · Open Billing`}
           className="inline-flex h-7 cursor-pointer items-center rounded-md border border-border bg-transparent px-2.5 text-label font-medium text-foreground transition-colors duration-fast ease-out-standard hover:bg-hover-surface focus-visible:shadow-focus-ring"
         >
           Tier {state.tier}

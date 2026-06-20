@@ -20,7 +20,7 @@ export function BalanceAlerts() {
         <div className="flex items-start gap-2 rounded-md border border-state-warning-subtle bg-state-warning-subtle px-3 py-2 text-state-warning-text">
           <TriangleAlert
             className="mt-0.5 size-4"
-            aria-label="Note"
+            aria-hidden="true"
           />
           <p className="text-caption">
             Alert configuration is coming soon. You will currently receive

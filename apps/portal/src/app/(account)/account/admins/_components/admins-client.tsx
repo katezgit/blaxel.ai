@@ -36,18 +36,31 @@ export function AdminsClient() {
 
       <div className="overflow-hidden rounded-lg border border-border">
         <table className="w-full border-collapse text-body">
+          <caption className="sr-only">Admins</caption>
           <thead>
             <tr className="border-b border-border bg-muted-surface text-left">
-              <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+              <th
+                scope="col"
+                className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+              >
                 Full name
               </th>
-              <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+              <th
+                scope="col"
+                className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+              >
                 Email
               </th>
-              <th className="px-4 py-2 font-mono text-meta uppercase tracking-wider text-meta-foreground">
+              <th
+                scope="col"
+                className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+              >
                 Role
               </th>
-              <th className="px-4 py-2 text-right font-mono text-meta uppercase tracking-wider text-meta-foreground">
+              <th
+                scope="col"
+                className="px-4 py-2 text-right font-mono text-meta uppercase text-meta-foreground"
+              >
                 Action
               </th>
             </tr>
@@ -69,13 +82,13 @@ export function AdminsClient() {
                     {isOwner ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button
-                            type="button"
+                          <span
+                            tabIndex={0}
                             aria-label="Owner — account creator. Cannot be removed."
-                            className="rounded-sm focus-visible:shadow-focus-ring"
+                            className="inline-flex rounded-sm focus-visible:shadow-focus-ring"
                           >
                             <Badge variant="brand-soft">Owner</Badge>
-                          </button>
+                          </span>
                         </TooltipTrigger>
                         <TooltipContent>
                           Account creator. Cannot be removed.

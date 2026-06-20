@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Info } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
@@ -50,6 +51,7 @@ export function MonthlyTopUpForm() {
     await new Promise((resolve) => setTimeout(resolve, 250));
     setMonthlyTopUp(values);
     reset(values);
+    toast.success("Monthly top-up saved");
   });
 
   return (
@@ -58,7 +60,7 @@ export function MonthlyTopUpForm() {
       subtitle="Schedule a fixed credit top-up every month."
     >
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
-        <label className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3">
+        <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3">
           <span className="flex flex-col gap-0.5">
             <span className="text-body text-foreground">Enable monthly top-up</span>
             <span className="text-caption text-muted-foreground">
@@ -70,7 +72,7 @@ export function MonthlyTopUpForm() {
             onCheckedChange={(next) => setValue("enabled", next, { shouldDirty: true })}
             aria-label="Enable monthly top-up"
           />
-        </label>
+        </div>
 
         <FieldRow cols={1}>
           <Field

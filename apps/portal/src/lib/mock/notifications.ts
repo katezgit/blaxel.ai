@@ -102,7 +102,7 @@ const FIXTURES: ReadonlyArray<Notification> = [
     body: "Hana Park invited you as admin.",
     timestamp: hoursAgo(7),
     read: true,
-    href: "/account/profile",
+    href: "/profile",
   },
   {
     id: "ntf_image_build_succeeded",

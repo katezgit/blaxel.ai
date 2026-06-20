@@ -189,6 +189,7 @@ export function WorkspacesClient() {
         <ManageTable
           table={table}
           bordered
+          caption="Workspaces"
           onRowClick={(row) => router.push(`/${row.original.slug}`)}
         />
       )}

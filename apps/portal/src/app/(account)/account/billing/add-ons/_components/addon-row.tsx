@@ -1,11 +1,11 @@
 "use client";
 
-import { Check, Gem, Headphones, ShieldCheck } from "lucide-react";
+import { Check, Gem, Headphones, ShieldCheck, type LucideIcon } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { cn } from "@repo/ui/lib/cn";
 import type { AddOn, AddOnId } from "@/lib/mock/account";
 
-const ICONS: Record<AddOnId, React.ComponentType<{ className?: string }>> = {
+const ICONS: Record<AddOnId, LucideIcon> = {
   "premium-support": Headphones,
   "dedicated-support": Gem,
   hipaa: ShieldCheck,
@@ -29,7 +29,7 @@ export function AddOnRow({ addon }: AddOnRowProps) {
     >
       <div className="flex flex-1 items-start gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-foreground">
-          <Icon className="size-5" />
+          <Icon className="size-5" aria-hidden="true" />
         </span>
         <div className="flex flex-col gap-1">
           <h2 className="text-body font-semibold text-foreground">

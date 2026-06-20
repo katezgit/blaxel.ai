@@ -11,11 +11,7 @@ interface SectionLabelProps {
   className?: string;
 }
 
-/**
- * Used twice on the Billing page (one for Section A, one for Section B).
- * Renders as a subdued uppercase track label per wireframe §SECTION A /
- * §SECTION B — structural orientation, not a content heading.
- */
+/** Subdued uppercase track label for structural section orientation. */
 export function SectionLabel({ letter, label, id, className }: SectionLabelProps) {
   return (
     <div
@@ -24,7 +20,10 @@ export function SectionLabel({ letter, label, id, className }: SectionLabelProps
         className,
       )}
     >
-      <span className="flex size-5 items-center justify-center rounded-sm border border-border bg-secondary-surface text-foreground">
+      <span
+        aria-hidden="true"
+        className="flex size-5 items-center justify-center rounded-sm border border-border bg-secondary-surface text-foreground"
+      >
         {letter}
       </span>
       <span id={id}>{label}</span>
