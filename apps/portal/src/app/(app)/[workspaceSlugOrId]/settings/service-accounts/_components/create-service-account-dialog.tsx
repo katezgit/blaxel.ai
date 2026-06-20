@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Check } from "lucide-react";
@@ -66,17 +66,14 @@ export default function CreateServiceAccountDialog({
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue,
-    watch,
   } = useForm<FormValues>({
     resolver: zodResolver(NAME_SCHEMA),
     defaultValues: { name: "", role: "member" },
   });
-
-  const role = watch("role");
 
   const handleClose = (open: boolean) => {
     if (!open && created) {
@@ -167,27 +164,29 @@ export default function CreateServiceAccountDialog({
               label="Name"
               helper="A short identifier — used in logs and the API."
               error={errors.name?.message}
+              required
             >
               <Input {...register("name")} placeholder="ci-deploy" autoComplete="off" />
             </FormField>
             <FormField id="svc-role" label="Role">
-              <Select
-                value={role}
-                onValueChange={(v) =>
-                  setValue("role", v as InviteRole, { shouldDirty: true })
-                }
-              >
-                <SelectTrigger id="svc-role">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ROLES.map((r) => (
-                    <SelectItem key={r} value={r}>
-                      {r === "admin" ? "Admin" : "Member"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="svc-role">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ROLES.map((r) => (
+                        <SelectItem key={r} value={r}>
+                          {r === "admin" ? "Admin" : "Member"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </FormField>
           </DialogBody>
           <DialogFooter>

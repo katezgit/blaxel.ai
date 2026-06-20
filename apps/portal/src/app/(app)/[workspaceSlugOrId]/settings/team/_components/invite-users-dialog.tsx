@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { Controller, useForm, useWatch, type Control } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { X } from "lucide-react";
 import {
   Dialog,
@@ -31,6 +34,17 @@ interface EmailChip {
   valid: boolean;
 }
 
+const FORM_SCHEMA = z.object({
+  chips: z
+    .array(z.object({ value: z.string(), valid: z.boolean() }))
+    .refine((c) => c.some((x) => x.valid), {
+      message: "Add at least one valid email.",
+    }),
+  role: z.enum(["admin", "member"]),
+});
+
+type FormValues = z.infer<typeof FORM_SCHEMA>;
+
 export interface InviteResult {
   emails: ReadonlyArray<string>;
   role: Role;
@@ -47,19 +61,28 @@ const INVITE_ROLES: ReadonlyArray<Role> = ["admin", "member"];
 export function InviteUsersDialog({
   open,
   onOpenChange,
-  onSubmit,
+  onSubmit: onInvite,
 }: InviteUsersDialogProps) {
-  const [chips, setChips] = useState<EmailChip[]>([]);
   const [draft, setDraft] = useState("");
-  const [role, setRole] = useState<Role>("member");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(FORM_SCHEMA),
+    defaultValues: { chips: [], role: "member" },
+  });
 
   useEffect(() => {
     if (open) return;
-    setChips([]);
+    reset({ chips: [], role: "member" });
     setDraft("");
-    setRole("member");
-  }, [open]);
+  }, [open, reset]);
 
   const commitDraft = (raw: string) => {
     const parts = raw
@@ -67,137 +90,186 @@ export function InviteUsersDialog({
       .map((p) => p.trim())
       .filter(Boolean);
     if (parts.length === 0) return;
-    setChips((prev) => {
-      const seen = new Set(prev.map((c) => c.value.toLowerCase()));
-      const next = [...prev];
-      for (const value of parts) {
-        if (seen.has(value.toLowerCase())) continue;
-        seen.add(value.toLowerCase());
-        next.push({ value, valid: EMAIL_REGEX.test(value) });
-      }
-      return next;
-    });
+    const prev = getValues("chips");
+    const seen = new Set(prev.map((c) => c.value.toLowerCase()));
+    const next: EmailChip[] = [...prev];
+    for (const value of parts) {
+      if (seen.has(value.toLowerCase())) continue;
+      seen.add(value.toLowerCase());
+      next.push({ value, valid: EMAIL_REGEX.test(value) });
+    }
+    setValue("chips", next, { shouldDirty: true, shouldValidate: true });
     setDraft("");
   };
 
-  const removeChip = (value: string) => {
-    setChips((prev) => prev.filter((c) => c.value !== value));
+  const onValid = ({ chips, role }: FormValues) => {
+    const finalChips: EmailChip[] = draft.trim()
+      ? [...chips, { value: draft.trim(), valid: EMAIL_REGEX.test(draft.trim()) }]
+      : chips;
+    const emails = finalChips.filter((c) => c.valid).map((c) => c.value);
+    if (emails.length === 0) return;
+    onInvite({ emails, role });
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" || event.key === ",") {
-      event.preventDefault();
-      commitDraft(draft);
-      return;
-    }
-    if (event.key === "Backspace" && draft === "" && chips.length > 0) {
-      event.preventDefault();
-      const last = chips[chips.length - 1];
-      if (!last) return;
-      setChips((prev) => prev.slice(0, -1));
-      setDraft(last.value);
-      return;
-    }
-    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-      event.preventDefault();
-      handleSubmit();
-    }
-  };
-
-  const validEmails = [...chips, ...(draft.trim() ? [{ value: draft.trim(), valid: EMAIL_REGEX.test(draft.trim()) }] : [])]
-    .filter((c) => c.valid)
-    .map((c) => c.value);
-
-  const handleSubmit = () => {
-    commitDraft(draft);
-    if (validEmails.length === 0) return;
-    onSubmit({ emails: validEmails, role });
-  };
+  const onSubmitForm = handleSubmit(onValid);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="md">
-        <DialogHeader>
-          <DialogTitle>Invite users</DialogTitle>
-          <DialogDescription>
-            Invite multiple emails with the same role. They will receive a sign-up
-            link.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogBody className="flex flex-col gap-4">
-          <FormField
-            id="invite-emails-group"
-            label="Emails"
-            helper="Press Enter or comma to add. Paste a CSV to add many at once."
-          >
-            <div
-              role="group"
-              className={cn(
-                "flex min-h-9 w-full flex-wrap items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5",
-                "focus-within:border-primary focus-within:shadow-focus-ring",
-              )}
-              onClick={() => inputRef.current?.focus()}
+        <form onSubmit={onSubmitForm}>
+          <DialogHeader>
+            <DialogTitle>Invite users</DialogTitle>
+            <DialogDescription>
+              Invite multiple emails with the same role. They will receive a sign-up
+              link.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-4">
+            <FormField
+              id="invite-emails-group"
+              label="Emails"
+              helper="Press Enter or comma to add. Paste a CSV to add many at once."
+              error={errors.chips?.message}
+              required
             >
-              {chips.map((chip) => (
-                <EmailChipView
-                  key={chip.value}
-                  chip={chip}
-                  onRemove={() => removeChip(chip.value)}
-                />
-              ))}
-              <input
-                ref={inputRef}
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={() => commitDraft(draft)}
-                onPaste={(event) => {
-                  const text = event.clipboardData.getData("text");
-                  if (/[\s,;]/.test(text)) {
-                    event.preventDefault();
-                    commitDraft(text);
-                  }
+              <Controller
+                control={control}
+                name="chips"
+                render={({ field }) => {
+                  const chips = field.value;
+                  const removeChip = (value: string) => {
+                    field.onChange(chips.filter((c) => c.value !== value));
+                  };
+                  const handleKeyDown = (
+                    event: KeyboardEvent<HTMLInputElement>,
+                  ) => {
+                    if (event.key === "Enter" || event.key === ",") {
+                      event.preventDefault();
+                      commitDraft(draft);
+                      return;
+                    }
+                    if (
+                      event.key === "Backspace" &&
+                      draft === "" &&
+                      chips.length > 0
+                    ) {
+                      event.preventDefault();
+                      const last = chips[chips.length - 1];
+                      if (!last) return;
+                      field.onChange(chips.slice(0, -1));
+                      setDraft(last.value);
+                      return;
+                    }
+                    if (
+                      (event.metaKey || event.ctrlKey) &&
+                      event.key === "Enter"
+                    ) {
+                      event.preventDefault();
+                      onSubmitForm();
+                    }
+                  };
+                  return (
+                    <div
+                      role="group"
+                      className={cn(
+                        "flex min-h-9 w-full flex-wrap items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5",
+                        "focus-within:border-primary focus-within:shadow-focus-ring",
+                      )}
+                      onClick={() => inputRef.current?.focus()}
+                    >
+                      {chips.map((chip) => (
+                        <EmailChipView
+                          key={chip.value}
+                          chip={chip}
+                          onRemove={() => removeChip(chip.value)}
+                        />
+                      ))}
+                      <input
+                        ref={inputRef}
+                        value={draft}
+                        onChange={(event) => setDraft(event.target.value)}
+                        onKeyDown={handleKeyDown}
+                        onBlur={() => commitDraft(draft)}
+                        onPaste={(event) => {
+                          const text = event.clipboardData.getData("text");
+                          if (/[\s,;]/.test(text)) {
+                            event.preventDefault();
+                            commitDraft(text);
+                          }
+                        }}
+                        placeholder={chips.length === 0 ? "name@company.com" : ""}
+                        className="min-w-[10ch] flex-1 bg-transparent text-label text-foreground outline-none placeholder:text-meta-foreground"
+                        autoComplete="off"
+                        aria-label="Add invite email"
+                      />
+                    </div>
+                  );
                 }}
-                placeholder={chips.length === 0 ? "name@company.com" : ""}
-                className="min-w-[10ch] flex-1 bg-transparent text-label text-foreground outline-none placeholder:text-meta-foreground"
-                autoComplete="off"
-                aria-label="Add invite email"
               />
-            </div>
-          </FormField>
-          <FormField id="invite-role" label="Role">
-            <Select value={role} onValueChange={(v) => setRole(v as Role)}>
-              <SelectTrigger id="invite-role">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {INVITE_ROLES.map((r) => (
-                  <SelectItem key={r} value={r}>
-                    {ROLE_META[r].label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FormField>
-          <p className="text-caption text-muted-foreground">
-            Press <kbd className="font-mono">{"⌘"}</kbd> +{" "}
-            <kbd className="font-mono">Enter</kbd> to send invites.
-          </p>
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="secondary" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            disabled={validEmails.length === 0}
-            onClick={handleSubmit}
-          >
-            Invite {validEmails.length > 0 ? `(${validEmails.length})` : ""}
-          </Button>
-        </DialogFooter>
+            </FormField>
+            <FormField id="invite-role" label="Role">
+              <Controller
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => field.onChange(v as Role)}
+                  >
+                    <SelectTrigger id="invite-role">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INVITE_ROLES.map((r) => (
+                        <SelectItem key={r} value={r}>
+                          {ROLE_META[r].label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormField>
+            <p className="text-caption text-muted-foreground">
+              Press <kbd className="font-mono">{"⌘"}</kbd> +{" "}
+              <kbd className="font-mono">Enter</kbd> to send invites.
+            </p>
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <ValidCountSubmit
+              control={control}
+              draft={draft}
+            />
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ValidCountSubmit({
+  control,
+  draft,
+}: {
+  control: Control<FormValues>;
+  draft: string;
+}) {
+  const chips = useWatch({ control, name: "chips" });
+  const validFromChips = chips.filter((c) => c.valid).length;
+  const trimmedDraft = draft.trim();
+  const draftValid = trimmedDraft.length > 0 && EMAIL_REGEX.test(trimmedDraft);
+  const total = validFromChips + (draftValid ? 1 : 0);
+  return (
+    <Button type="submit" variant="primary" disabled={total === 0}>
+      Invite {total > 0 ? `(${total})` : ""}
+    </Button>
   );
 }
 

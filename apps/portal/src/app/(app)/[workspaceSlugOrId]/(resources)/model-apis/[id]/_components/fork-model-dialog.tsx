@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -16,6 +19,16 @@ import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
 import type { Model } from "../_data/types";
 
+const FORK_SCHEMA = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required.")
+    .max(64, "Max 64 characters."),
+});
+
+type FormValues = z.infer<typeof FORK_SCHEMA>;
+
 type ForkModelDialogProps = {
   model: Pick<
     Model,
@@ -30,34 +43,34 @@ export function ForkModelDialog({ model, open, onOpenChange }: ForkModelDialogPr
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   const defaultName = `${model.apiName}-fork`;
-  const [name, setName] = useState(defaultName);
-  const [submitting, setSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    resolver: zodResolver(FORK_SCHEMA),
+    defaultValues: { name: defaultName },
+  });
+
+  const { ref: nameRegisterRef, ...nameRegister } = register("name");
 
   // Radix keeps the panel mounted across open/close — without this the next open
   // would show the previous attempt's typed value.
   useEffect(() => {
-    if (!open) {
-      setName(defaultName);
-      setSubmitting(false);
-    }
-  }, [open, defaultName]);
-
-  const trimmedName = name.trim();
-  const canSubmit = trimmedName.length > 0 && !submitting;
+    if (!open) reset({ name: defaultName });
+  }, [open, defaultName, reset]);
 
   const subtitle =
     model.activeCheckpointStep !== null
       ? `Create a new model from ${model.displayName} · step ${model.activeCheckpointStep}.`
       : `Create a new model from ${model.displayName}'s current checkpoint.`;
 
-  const handleFork = () => {
-    if (!canSubmit) return;
-    setSubmitting(true);
-    // Mock the create round-trip — no backend, no persistence this turn.
-    setTimeout(() => {
-      toast.success(`Forked as "${trimmedName}"`);
-      onOpenChange(false);
-    }, 250);
+  const onSubmit = async ({ name }: FormValues) => {
+    await new Promise((r) => setTimeout(r, 250));
+    toast.success(`Forked as "${name}"`);
+    onOpenChange(false);
   };
 
   return (
@@ -71,45 +84,39 @@ export function ForkModelDialog({ model, open, onOpenChange }: ForkModelDialogPr
           nameInputRef.current?.select();
         }}
       >
-        <DialogHeader>
-          <DialogTitle>Fork {model.displayName}</DialogTitle>
-        </DialogHeader>
-        <DialogBody>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              handleFork();
-            }}
-          >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogHeader>
+            <DialogTitle>Fork {model.displayName}</DialogTitle>
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-4">
             <p className="text-body text-foreground">{subtitle}</p>
 
-            <FormField id={nameId} label="Name" required>
+            <FormField
+              id={nameId}
+              label="Name"
+              error={errors.name?.message}
+              required
+            >
               <Input
-                ref={nameInputRef}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
+                {...nameRegister}
+                ref={(node) => {
+                  nameRegisterRef(node);
+                  nameInputRef.current = node;
+                }}
                 autoComplete="off"
                 spellCheck={false}
-                disabled={submitting}
+                disabled={isSubmitting}
                 className="font-mono"
               />
             </FormField>
-
-            <button type="submit" className="hidden" aria-hidden="true" />
-          </form>
-        </DialogBody>
-        <DialogFooter>
-          <DialogCancelButton disabled={submitting} />
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleFork}
-            disabled={!canSubmit}
-          >
-            {submitting ? "Forking…" : "Fork"}
-          </Button>
-        </DialogFooter>
+          </DialogBody>
+          <DialogFooter>
+            <DialogCancelButton disabled={isSubmitting} />
+            <Button type="submit" variant="primary" disabled={isSubmitting}>
+              {isSubmitting ? "Forking…" : "Fork"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
