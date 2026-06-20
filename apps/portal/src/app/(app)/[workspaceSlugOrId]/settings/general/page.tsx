@@ -1,10 +1,28 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { resolveWorkspace } from "@/lib/mock/org";
+import GeneralSettingsClient from "./_components/general-settings-client";
+
+export const metadata: Metadata = {
+  title: "Workspace settings · General",
+};
 
 interface PageProps {
   params: Promise<{ workspaceSlugOrId: string }>;
 }
 
-export default async function LegacyGeneralRedirect({ params }: PageProps) {
+export default async function WorkspaceGeneralPage({ params }: PageProps) {
   const { workspaceSlugOrId } = await params;
-  redirect(`/${workspaceSlugOrId}/settings/name`);
+  const workspace = resolveWorkspace(workspaceSlugOrId);
+
+  return (
+    <div className="page-shell">
+      <header className="page-header">
+        <h1 className="text-display font-semibold text-foreground">General</h1>
+        <p className="text-muted-foreground">
+          Manage this workspace&rsquo;s identity and basic identifiers.
+        </p>
+      </header>
+      <GeneralSettingsClient workspace={workspace} />
+    </div>
+  );
 }

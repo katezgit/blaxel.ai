@@ -6,5 +6,5 @@ interface PageProps {
 
 export default async function LegacyDangerZoneRedirect({ params }: PageProps) {
   const { workspaceSlugOrId } = await params;
-  redirect(`/${workspaceSlugOrId}/settings/name`);
+  redirect(`/${workspaceSlugOrId}/settings/general`);
 }

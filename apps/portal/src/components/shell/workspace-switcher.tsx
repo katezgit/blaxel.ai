@@ -30,7 +30,7 @@ export default function WorkspaceSwitcher({
   const searchParams = useSearchParams();
   const isRail = useIsSidebarRail();
   const inSettings = pathname.startsWith(`/${currentOrg.slug}/settings`);
-  const settingsHref = `/${currentOrg.slug}/settings/name`;
+  const settingsHref = `/${currentOrg.slug}/settings/general`;
   const triggerAriaLabel = `Switch workspace (current: ${currentOrg.name})`;
 
   // Path tail after the workspace-slug segment — preserved verbatim on switch
