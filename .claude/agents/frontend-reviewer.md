@@ -56,6 +56,7 @@ If the token the engineer needs doesn't exist as a utility, that's a token-polic
 ### 2. Code Style
 
 - **No nested ternaries.** `a ? b : c ? d : e` is always a FAIL. Use `if`/`else`, early returns, or extract to a variable/function.
+- **No negative margin (FAIL).** Negative-margin utilities (`-m-*`, `-mt-*`, `-mb-*`, `-ml-*`, `-mr-*`, `-mx-*`, `-my-*`, `-ms-*`, `-me-*`) couple a child to its parent's layout and are an escape hatch for problems that should be solved at the parent. Fix the parent's padding (conditionally if needed) or restructure the markup. Exception (narrow): documented compensation for a specific external CSS quirk, with a one-line WHY comment naming the quirk.
 - **`cn()` for classNames.** Must import from `@repo/ui/lib/cn`. No template literals (`` className={`foo ${bar}`} ``), no string concatenation (`className={"foo " + bar}`).
 - **Export default for components.** Component files use `export default function ComponentName`. Named exports for utilities, hooks, types, constants.
 - **Self-contained interactive widgets.** If a component has its own trigger (button, toggle) and popover/dropdown/dialog, they must live in the same file. The parent should render `<MyDropdown />`, not own the trigger markup.
