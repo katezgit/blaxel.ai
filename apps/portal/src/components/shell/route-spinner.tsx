@@ -1,8 +1,9 @@
 import { LoaderIcon } from "lucide-react";
 
-// 200ms opacity gate suppresses flash on sub-200ms loads.
+// 200ms opacity gate suppresses flash on sub-200ms loads — used as the
+// Suspense fallback inside workspace shells (resources + settings).
 // motion-safe: needed because Tailwind's animate-spin ignores prefers-reduced-motion.
-export default function Loading() {
+export default function RouteSpinner() {
   return (
     <div
       role="status"
