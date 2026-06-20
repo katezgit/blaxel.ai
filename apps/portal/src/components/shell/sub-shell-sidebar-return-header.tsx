@@ -29,7 +29,7 @@ export function SubShellSidebarReturnHeader({
       data-sub-shell-return
       onClick={onNavigate}
       className={cn(
-        "sidebar-row-hover group flex h-8 items-center gap-2 rounded-md px-2",
+        "sidebar-row-hover group flex items-center gap-2 border-b border-border px-2 pt-3 pb-1.5",
         "text-label font-medium text-muted-foreground outline-hidden",
         "hover:text-foreground",
         "focus-visible:shadow-focus-ring",

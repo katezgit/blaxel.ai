@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { cn } from "@repo/ui/lib/cn";
 import SidebarNavItem from "@/components/shell/sidebar-nav-item";
 import type { NavGroup } from "@/components/shell/nav-groups";
 
@@ -20,13 +21,12 @@ export function MobileNavBody({
   return (
     <nav
       aria-label={ariaLabel}
-      className="flex flex-col gap-4 overflow-y-auto px-2 py-3"
+      className={cn(
+        "flex flex-col gap-4 overflow-y-auto px-2 pb-3",
+        header ? "pt-0" : "pt-3",
+      )}
     >
-      {header ? (
-        <div className="flex flex-col gap-2 border-b border-border pb-3">
-          {header}
-        </div>
-      ) : null}
+      {header}
       {groups.map((group) => (
         <div key={group.label} className="flex flex-col gap-0.5">
           <div className="px-2 pb-1 font-mono text-meta uppercase text-meta-foreground">
