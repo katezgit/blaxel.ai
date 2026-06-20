@@ -1,8 +1,8 @@
 # Project State
 
-**Current design phase:** `discovery`
+**Current design phase:** `implementation`
 **Current lifecycle phase:** `greenfield`
-**Last transition:** 2026-06-17
+**Last transition:** 2026-06-19
 
 > **Orchestrator only:** when a phase is about to exit (all planned outputs exist) or before dispatching the first agent of the next phase, load `.claude/workflows/phase-self-review.md` and run the gate. (Human readers: skip — workflow is agent-only.)
 >
@@ -16,16 +16,7 @@ One of: `discovery → (personality ‖ ux-flows) → design-tokens → wirefram
 
 ## Sub-status
 
-`discovery` in flight.
-
-| Artifact | Path | Status |
-| --- | --- | --- |
-| Platform brief | `docs/product/platform.md` | draft |
-| Personas | `docs/product/personas.md` | draft |
-| Primary persona workflow | `docs/product/alex-workflow.md` | pending |
-| Primary persona user stories | `docs/product/alex-user-stories.md` | pending |
-| Product brief | `docs/product/product.md` | draft |
-| Personality | `docs/product/personality.md` | draft |
+`implementation` in flight — building shipped components in `packages/ui/` and integrated app screens in `apps/portal/`.
 
 ## Artifacts (canonical paths reference)
 
