@@ -2,6 +2,7 @@
 // Renders outside the root layout — must define its own <html> and <body>.
 
 import { cookies } from "next/headers";
+import Link from "next/link";
 import {
   ArrowRightIcon,
   ArrowUpRightIcon,
@@ -14,11 +15,13 @@ import { findWorkspaceMembership } from "@/lib/mock/org";
 import { LAST_WORKSPACE_COOKIE } from "@/lib/workspace/last-visited";
 import "./globals.css";
 
-// All anchors are plain <a> on purpose. Per Next.js docs, global-not-found
+// Recovery anchors are plain <a> on purpose. Per Next.js docs, global-not-found
 // "skips rendering and directly returns this global page" — it sits outside the
 // client router tree, so <Link> soft navigation from inside leaves the 404 DOM
 // mounted even though the URL flips. Hard navigation hits proxy.ts which emits
-// a real HTTP 307 to the user's last-visited workspace, so no meta-refresh.
+// a real HTTP 307 to the user's last-visited workspace, so no meta-refresh. The
+// "Go back home" button uses <Link> because proxy.ts intercepts `/` at the
+// matcher level regardless of soft vs hard navigation.
 //
 // Resolution is gated on an authenticated session: an unauthenticated visitor
 // must not be able to probe workspace existence by reading the recovery links.
@@ -68,10 +71,10 @@ export default async function GlobalNotFound() {
 
             <div className="flex flex-row items-center gap-3">
               <Button asChild variant="secondary">
-                <a href="/">
+                <Link href="/">
                   <Home />
                   Go back home
-                </a>
+                </Link>
               </Button>
               <Button asChild variant="ghost">
                 <a href="mailto:support@example.com?subject=Page%20not%20found">
