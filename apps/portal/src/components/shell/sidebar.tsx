@@ -35,13 +35,12 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
       <nav
         aria-label={ariaLabel}
         data-rail={isRail || undefined}
-        className="flex h-full flex-col gap-4 overflow-y-auto overflow-x-hidden px-2 py-3"
+        className={cn(
+          "flex h-full flex-col gap-4 overflow-y-auto overflow-x-hidden px-2 pb-3",
+          header ? "pt-0" : "pt-3",
+        )}
       >
-        {header ? (
-          <div data-sidebar-header className="flex flex-col gap-2 border-b border-border pb-3">
-            {header}
-          </div>
-        ) : null}
+        {header}
         {groups.map((group) => (
           <div key={group.label} data-nav-group className="flex flex-col gap-0.5">
             <div

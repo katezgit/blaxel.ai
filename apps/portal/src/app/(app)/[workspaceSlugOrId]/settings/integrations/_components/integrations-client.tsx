@@ -20,6 +20,7 @@ import {
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
+import { ScrollArea } from "@repo/ui/components/scroll-area";
 import {
   Select,
   SelectContent,
@@ -91,8 +92,8 @@ export default function IntegrationsClient() {
   }, [integrations, category, typeFilter, search]);
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
+    <section className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex shrink-0 items-center gap-2">
         <Input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
@@ -176,20 +177,22 @@ export default function IntegrationsClient() {
           }
         />
       ) : (
-        <ul
-          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-          aria-label="Available integrations"
-        >
-          {filtered.map((integration) => (
-            <li key={integration.id}>
-              <IntegrationCard
-                integration={integration}
-                isActive={active?.id === integration.id}
-                onConfigure={() => setActive(integration)}
-              />
-            </li>
-          ))}
-        </ul>
+        <ScrollArea className="-mx-1 min-h-0 flex-1">
+          <ul
+            className="grid grid-cols-1 gap-3 px-1 pb-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            aria-label="Available integrations"
+          >
+            {filtered.map((integration) => (
+              <li key={integration.id}>
+                <IntegrationCard
+                  integration={integration}
+                  isActive={active?.id === integration.id}
+                  onConfigure={() => setActive(integration)}
+                />
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
       )}
 
       <ConfigureIntegrationDrawer

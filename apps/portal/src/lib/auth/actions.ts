@@ -3,6 +3,13 @@
 import { redirect } from "next/navigation";
 import { clearSession, setSession } from "@/lib/auth/session";
 import { upsertUser } from "@/lib/auth/mock-users";
+import { currentOrg } from "@/lib/mock/data";
+import { setLastVisitedWorkspace } from "@/lib/workspace/last-visited";
+
+// Mock-only seed: the demo has a single tenant, so the post-login redirect
+// always lands on currentOrg. A production auth path would derive this from
+// the signed-in user's default membership.
+const SEED_WORKSPACE_SLUG = currentOrg.slug;
 
 export type MagicLinkState =
   | { status: "idle" }
@@ -42,6 +49,7 @@ export async function signInWithGithub(
     ...user,
     signedInAt: new Date().toISOString(),
   });
+  await setLastVisitedWorkspace(SEED_WORKSPACE_SLUG);
   redirect("/");
 }
 
@@ -56,6 +64,7 @@ export async function signInWithGoogle(
     ...user,
     signedInAt: new Date().toISOString(),
   });
+  await setLastVisitedWorkspace(SEED_WORKSPACE_SLUG);
   redirect("/");
 }
 

@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { resolveWorkspace } from "@/lib/mock/org";
-import NameSettingsClient from "./_components/name-settings-client";
+import SandboxSettingsClient from "./_components/sandbox-settings-client";
 
 export const metadata: Metadata = {
-  title: "Workspace settings · Name",
+  title: "Workspace settings · Sandboxes",
 };
 
 interface PageProps {
   params: Promise<{ workspaceSlugOrId: string }>;
 }
 
-export default async function WorkspaceNamePage({ params }: PageProps) {
+export default async function WorkspaceSandboxSettingsPage({
+  params,
+}: PageProps) {
   const { workspaceSlugOrId } = await params;
   const workspace = resolveWorkspace(workspaceSlugOrId);
 
@@ -18,10 +20,15 @@ export default async function WorkspaceNamePage({ params }: PageProps) {
     <div className="page-shell">
       <header className="page-header">
         <h1 className="text-display font-semibold text-foreground">
-          Workspace name
+          Sandbox settings
         </h1>
+        <p className="text-muted-foreground">
+          Defaults applied to every sandbox launched in this workspace.
+        </p>
       </header>
-      <NameSettingsClient workspace={workspace} />
+      <SandboxSettingsClient
+        initial={workspace.sandboxSettings.disableProcessLogging}
+      />
     </div>
   );
 }

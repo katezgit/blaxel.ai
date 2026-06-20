@@ -108,7 +108,8 @@ export function workspaceSettingsNavItems(
 ): ReadonlyArray<NavItem> {
   const base = `/${workspaceSlug}/settings`;
   return [
-    { href: `${base}/name`, label: "Name", icon: Building2 },
+    { href: `${base}/general`, label: "General", icon: Building2 },
+    { href: `${base}/sandboxes`, label: "Sandbox settings", icon: Container },
     { href: `${base}/team`, label: "Team", icon: Users },
     {
       href: `${base}/service-accounts`,

@@ -142,6 +142,20 @@ Import `cn` from `@repo/ui/lib/cn` to compose classNames. No template literals (
 
 `a ? b : c ? d : e` is always wrong. Use `if`/`else`, early returns, or extract to a variable. The pre-flight grep in Workflow step 7 enforces this.
 
+### No IIFE for inline value construction
+
+`const x = (() => { ... })()` used to scope branching that assigns a single value adds a closure with no readability win. When you need branching to assign to one `const`:
+
+- Both branches are expressions or object literals → ternary; inline `.find(...)?.field ?? fallback` lookups into each branch.
+- Branches are genuinely complex (multiple statements, side effects, shared locals) → extract a named helper function above the component.
+
+```tsx
+// ✗  const x = (() => { if (a) return foo; return bar; })()
+// ✓  const x = a ? foo : bar
+```
+
+Acceptable IIFE: genuine self-invocation patterns (module-init with side effects, IIFE-then-export). Not block-scoping a branching assignment.
+
 ### Comment only the WHY
 
 Default: no comments. Only write one when it captures something the code cannot say — a hidden invariant, a non-local constraint, a workaround for a specific bug, or behavior that would surprise a reader. Restating what the code obviously does is a violation, not a kindness.
