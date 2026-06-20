@@ -13,13 +13,16 @@ import {
   CreditCard,
   Database,
   FolderOpen,
+  Gauge,
+  Gem,
   Globe,
   KeyRound,
+  LayoutGrid,
+  Lock,
   Mail,
   Network,
   Package,
   Plug,
-  Receipt,
   ShieldCheck,
   SlidersHorizontal,
   User,
@@ -119,11 +122,11 @@ export function workspaceSettingsNavItems(
 }
 
 /**
- * Personal-area sub-sidebar — user-scoped identity, security, preferences.
- * "Account" is a billing-bearing business entity (multi-admin); this menu is
- * personal-only. Routes live under `/profile/...` to reflect that distinction.
+ * Profile sub-shell — user-scoped identity, security, preferences. Profile
+ * belongs to one person; the sidebar carries only personal items so the
+ * surface reads as "your stuff" not "stuff this account holds."
  */
-export const PROFILE_NAV_GROUPS: ReadonlyArray<NavGroup> = [
+export const PERSONAL_NAV_GROUPS: ReadonlyArray<NavGroup> = [
   {
     label: "Personal",
     items: [
@@ -133,11 +136,30 @@ export const PROFILE_NAV_GROUPS: ReadonlyArray<NavGroup> = [
       { href: "/profile/invitations", label: "Invitations", icon: Mail },
     ],
   },
+];
+
+/**
+ * Account sub-shell — billing + administration for the account (a multi-
+ * admin business entity, not a personal surface). Split into two groups
+ * along the natural seam: BILLING is Alex's dollars-and-quotas surfaces,
+ * ADMINISTRATION is Sam's org-control surfaces.
+ */
+export const ACCOUNT_NAV_GROUPS: ReadonlyArray<NavGroup> = [
+  {
+    label: "Account",
+    items: [
+      { href: "/account", label: "Overview", icon: Building2, exact: true },
+      { href: "/account/admins", label: "Admins", icon: Users },
+      { href: "/account/workspaces", label: "Workspaces", icon: LayoutGrid },
+      { href: "/account/login-policy", label: "Login policy", icon: Lock },
+    ],
+  },
   {
     label: "Billing",
     items: [
-      { href: "/profile/billing", label: "Billing", icon: CreditCard },
-      { href: "/profile/invoices", label: "Invoices", icon: Receipt },
+      { href: "/account/billing/plan", label: "Plan & quotas", icon: Gauge },
+      { href: "/account/billing/credits", label: "Billing & credits", icon: CreditCard },
+      { href: "/account/billing/add-ons", label: "Add-ons", icon: Gem },
     ],
   },
 ];

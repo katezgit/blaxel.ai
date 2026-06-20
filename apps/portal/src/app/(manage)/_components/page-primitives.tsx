@@ -1,6 +1,14 @@
 import { Card } from "@repo/ui/components/card";
 import { cn } from "@repo/ui/lib/cn";
-import type { ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useId,
+  type AriaAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 
 interface PanelProps {
   title?: string;
@@ -68,26 +76,76 @@ interface FieldProps {
 }
 
 export function Field({ label, children, hint, error }: FieldProps) {
-  const footer = renderFieldFooter({ error, hint });
+  const baseId = useId();
+  const hintId = hint ? `${baseId}-hint` : undefined;
+  const errorId = error ? `${baseId}-error` : undefined;
+  const describedBy = error ? errorId : hintId;
+  const footer = renderFieldFooter({ error, hint, hintId, errorId });
+
+  // Forward aria-describedby and aria-invalid onto the single form control
+  // child so SR users hear the hint/error when the input is focused.
+  const enriched = enrichControlChild(children, { describedBy, hasError: Boolean(error) });
+
   return (
     <label className="flex flex-col gap-1.5 text-label">
       <span className="text-muted-foreground">{label}</span>
-      {children}
+      {enriched}
       {footer}
     </label>
   );
 }
 
-function renderFieldFooter({ error, hint }: { error?: string; hint?: string }) {
+interface FormControlProps extends AriaAttributes {
+  "aria-describedby"?: string;
+  "aria-invalid"?: AriaAttributes["aria-invalid"];
+}
+
+function enrichControlChild(
+  children: ReactNode,
+  { describedBy, hasError }: { describedBy?: string; hasError: boolean },
+): ReactNode {
+  return Children.map(children, (child) => {
+    if (!isValidElement(child)) return child;
+    const existing = (child.props as FormControlProps) ?? {};
+    const mergedDescribedBy =
+      [existing["aria-describedby"], describedBy].filter(Boolean).join(" ") || undefined;
+    const next: FormControlProps = {};
+    if (mergedDescribedBy) next["aria-describedby"] = mergedDescribedBy;
+    if (hasError && existing["aria-invalid"] === undefined) {
+      next["aria-invalid"] = true;
+    }
+    return cloneElement(child as ReactElement<FormControlProps>, next);
+  });
+}
+
+function renderFieldFooter({
+  error,
+  hint,
+  hintId,
+  errorId,
+}: {
+  error?: string;
+  hint?: string;
+  hintId?: string;
+  errorId?: string;
+}) {
   if (error) {
     return (
-      <span role="alert" className="text-caption font-medium text-state-errored-text">
+      <span
+        id={errorId}
+        role="alert"
+        className="text-caption font-medium text-state-errored-text"
+      >
         {error}
       </span>
     );
   }
   if (hint) {
-    return <span className="text-caption text-meta-foreground">{hint}</span>;
+    return (
+      <span id={hintId} className="text-caption text-meta-foreground">
+        {hint}
+      </span>
+    );
   }
   return null;
 }

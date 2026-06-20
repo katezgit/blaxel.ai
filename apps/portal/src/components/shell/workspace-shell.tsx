@@ -3,6 +3,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
 import { CommandPaletteProvider } from "@/components/shell/command-palette-provider";
+import { DevTierSwitcher } from "@/components/shell/dev-tier-switcher";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { Sidebar } from "@/components/shell/sidebar";
 import { SkipToContent } from "@/components/shell/skip-to-content";
@@ -79,6 +80,7 @@ export function WorkspaceShell({
             open={drawerOpen}
             onOpenChange={setDrawerOpen}
           />
+          <DevTierSwitcher />
         </div>
       </CommandPaletteProvider>
     </TooltipProvider>

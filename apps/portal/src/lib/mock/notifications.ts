@@ -129,7 +129,7 @@ const FIXTURES: ReadonlyArray<Notification> = [
     body: "Top up to avoid Sandbox throttling at $0.",
     timestamp: daysAgo(1),
     read: true,
-    href: "/account/billing",
+    href: "/account/billing/credits",
   },
   {
     id: "ntf_mcp_deploy_failed",

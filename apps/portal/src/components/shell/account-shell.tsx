@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
 import { SubShellSidebarReturnHeader } from "@/components/shell/sub-shell-sidebar-return-header";
 import { AccountTopbar } from "@/components/shell/account-topbar";
 import { CommandPaletteProvider } from "@/components/shell/command-palette-provider";
+import { DevTierSwitcher } from "@/components/shell/dev-tier-switcher";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { Sidebar } from "@/components/shell/sidebar";
 import { SkipToContent } from "@/components/shell/skip-to-content";
@@ -12,7 +14,10 @@ import { CollapsibleSidebarMarker } from "@/components/shell/use-is-sidebar-rail
 import { readLastWorkspaceSlug } from "@/components/shell/use-last-workspace-tracker";
 import { useSidebarShortcut } from "@/components/shell/use-sidebar-shortcut";
 import { useSidebarState } from "@/components/shell/use-sidebar-state";
-import { PROFILE_NAV_GROUPS } from "@/components/shell/nav-groups";
+import {
+  ACCOUNT_NAV_GROUPS,
+  PERSONAL_NAV_GROUPS,
+} from "@/components/shell/nav-groups";
 import type { Org } from "@/lib/mock/types";
 
 interface AccountShellProps {
@@ -22,8 +27,21 @@ interface AccountShellProps {
   children: ReactNode;
 }
 
-const MOBILE_DRAWER_ID = "profile-mobile-drawer";
-const SIDEBAR_LABEL = "Profile";
+// Sub-shell discrimination is route-local: /profile/* is the per-user
+// surface (personal nav only); everything else under (account) is the
+// per-company Account surface (billing + administration nav). Reading
+// the pathname here avoids passing React-component icon refs across the
+// server-to-client prop boundary.
+function navForPath(pathname: string) {
+  const isProfile = pathname.startsWith("/profile");
+  return {
+    groups: isProfile ? PERSONAL_NAV_GROUPS : ACCOUNT_NAV_GROUPS,
+    sidebarLabel: isProfile ? "Profile" : "Account",
+    mobileDrawerId: isProfile
+      ? "profile-mobile-drawer"
+      : "account-mobile-drawer",
+  };
+}
 
 export default function AccountShell({
   fallbackWorkspace,
@@ -31,6 +49,8 @@ export default function AccountShell({
   user,
   children,
 }: AccountShellProps) {
+  const pathname = usePathname();
+  const { groups, sidebarLabel, mobileDrawerId } = navForPath(pathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { collapsed, toggle, mounted } = useSidebarState();
   useSidebarShortcut(toggle);
@@ -52,15 +72,15 @@ export default function AccountShell({
           <CollapsibleSidebarMarker value={{ inCollapsible: true, userCollapsed: collapsed }}>
             <AccountTopbar
               user={user}
-              mobileNavId={MOBILE_DRAWER_ID}
+              mobileNavId={mobileDrawerId}
               mobileNavOpen={drawerOpen}
               onOpenMobileNav={() => setDrawerOpen(true)}
             />
 
             <div className="flex min-h-0 flex-1">
               <Sidebar
-                ariaLabel={SIDEBAR_LABEL}
-                groups={PROFILE_NAV_GROUPS}
+                ariaLabel={sidebarLabel}
+                groups={groups}
                 collapsed={collapsed}
                 onToggle={toggle}
                 transitionEnabled={mounted}
@@ -76,9 +96,9 @@ export default function AccountShell({
           </CollapsibleSidebarMarker>
 
           <MobileNavDrawer
-            id={MOBILE_DRAWER_ID}
-            ariaLabel={SIDEBAR_LABEL}
-            groups={PROFILE_NAV_GROUPS}
+            id={mobileDrawerId}
+            ariaLabel={sidebarLabel}
+            groups={groups}
             open={drawerOpen}
             onOpenChange={setDrawerOpen}
             header={(close) => (
@@ -88,6 +108,7 @@ export default function AccountShell({
               />
             )}
           />
+          <DevTierSwitcher />
         </div>
       </CommandPaletteProvider>
     </TooltipProvider>

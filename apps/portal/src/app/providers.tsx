@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@repo/ui/components/toast";
 import { RouteDirectionTagger } from "@/components/shell/route-direction-tagger";
 import { getQueryClient } from "@/lib/query/get-query-client";
+import { AccountStateProvider } from "@/lib/mock/account-context";
 
 // next-themes is wired with `attribute="data-theme"` because token themes key off
 // [data-theme="dark"] in packages/ui/src/styles/color.css. The provider lives in a
@@ -17,9 +18,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
-        <RouteDirectionTagger />
-        {children}
-        <Toaster />
+        <AccountStateProvider>
+          <RouteDirectionTagger />
+          {children}
+          <Toaster />
+        </AccountStateProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

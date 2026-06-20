@@ -1,4 +1,4 @@
-import { flexRender, type Table } from "@tanstack/react-table";
+import { flexRender, type Row, type Table } from "@tanstack/react-table";
 import {
   tableClass,
   tableHeaderClass,
@@ -25,6 +25,14 @@ interface ManageTableProps<TData> {
    * background otherwise teases an action that isn't there.
    */
   noRowHover?: boolean;
+  /**
+   * Optional row-level click handler. When set, the row becomes a mouse
+   * affordance for the row's primary action. The cell's own interactive
+   * elements (copy buttons, menu triggers) MUST stopPropagation so they
+   * don't double-fire. Keyboard navigation stays on the cell-level focusable
+   * (e.g. a Link inside the name cell); the row click is a mouse convenience.
+   */
+  onRowClick?: (row: Row<TData>) => void;
 }
 
 /**
@@ -41,7 +49,12 @@ interface ManageTableProps<TData> {
  * (e.g. `text-right`, `w-10`). Font / padding / muted-color defaults come from
  * `tableHeadVariants` / `tableCellVariants` and should not be re-stated.
  */
-export default function ManageTable<TData>({ table, bordered, noRowHover }: ManageTableProps<TData>) {
+export default function ManageTable<TData>({
+  table,
+  bordered,
+  noRowHover,
+  onRowClick,
+}: ManageTableProps<TData>) {
   return (
     <div
       className={cn(
@@ -75,7 +88,12 @@ export default function ManageTable<TData>({ table, bordered, noRowHover }: Mana
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={cn(tableRowVariants(), noRowHover && "[tbody_&]:hover:bg-transparent")}
+              className={cn(
+                tableRowVariants(),
+                noRowHover && "[tbody_&]:hover:bg-transparent",
+                onRowClick && "cursor-pointer",
+              )}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
             >
               {row.getVisibleCells().map((cell) => {
                 const meta = cell.column.columnDef.meta as
