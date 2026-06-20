@@ -143,7 +143,7 @@ function DialogContent({
               "rounded-md",
               "transition-colors prop-(--motion-state-change)",
               // Focus ring — *:focus-visible in base.css (WCAG 2.4.11). outline-none removed; base layer owns it.
-              "disabled:pointer-events-none",
+              "disabled:pointer-events-none cursor-pointer",
               "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
             )}
           >
