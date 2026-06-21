@@ -66,6 +66,7 @@ function CommandDialog({
         contentClassName,
       )}
       overlayClassName={cn(
+        // isolate pins a stacking context on the overlay so any child z-index can't escape and reorder against siblings outside it. backdrop-filter already creates one implicitly; this just makes the intent explicit, matching DialogOverlay.
         "fixed inset-0 isolate z-overlay",
         "bg-overlay-dialog",
         "supports-[backdrop-filter]:backdrop-blur-overlay-dialog",
