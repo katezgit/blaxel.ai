@@ -66,7 +66,7 @@ export const SizeMatrix: Story = {
     <div className="flex flex-col gap-6">
       {(["md", "sm"] as const).map((size) => (
         <div key={size} className="flex flex-col gap-2">
-          <p className="font-mono text-xs text-muted-foreground">size="{size}"</p>
+          <p className="font-mono text-xs text-muted-foreground">size=&quot;{size}&quot;</p>
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="neutral" size={size}>Neutral</Badge>
             <Badge variant="info" size={size}>Info</Badge>
