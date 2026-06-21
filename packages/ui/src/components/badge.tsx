@@ -18,7 +18,7 @@ const badgeVariants = cva(
         beta:
           "border-state-running bg-transparent text-state-running-text",
         warning:
-          "border-state-warning bg-state-warning-subtle text-state-warning-text",
+          "border-state-warning-subtle bg-state-warning-subtle text-state-warning-text",
         destructive:
           "border-state-errored-subtle bg-state-errored-subtle text-state-errored-text",
         neutral:

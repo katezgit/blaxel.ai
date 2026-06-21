@@ -220,7 +220,7 @@
 
   --color-state-warning:        light-dark(var(--warning-600), var(--warning-400));
   --color-state-warning-subtle: light-dark(
-    color-mix(in srgb, var(--warning-600) 12%, transparent),
+    color-mix(in srgb, var(--warning-400) 12%, transparent),
     color-mix(in srgb, var(--warning-400) 12%, transparent)
   );
   --color-state-warning-text:   light-dark(var(--warning-600), var(--warning-400));
