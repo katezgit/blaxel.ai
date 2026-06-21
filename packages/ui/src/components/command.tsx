@@ -43,20 +43,37 @@ function Command({
 
 function CommandDialog({
   children,
+  contentClassName,
+  overlayClassName,
   ...props
 }: React.ComponentProps<typeof CommandDialogPrimitive>) {
   return (
     <CommandDialogPrimitive
       data-slot="command-dialog"
       contentClassName={cn(
+        // fixed + z-overlay matches DialogContent — without z-overlay the panel sits below the overlay's stacking context and gets blurred by its own backdrop-filter.
+        "fixed top-[10vh] left-1/2 z-overlay -translate-x-1/2",
+        "w-full max-w-[640px]",
         "overflow-hidden",
         // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
         "rounded-xl",
         "bg-popover text-foreground",
         "shadow-command",
         "p-0",
+        "outline-none",
+        "data-[state=open]:animate-slide-up-in",
+        "data-[state=closed]:animate-slide-down-out",
+        contentClassName,
       )}
-      overlayClassName="fixed inset-0 z-overlay bg-(--overlay-backdrop)"
+      overlayClassName={cn(
+        // isolate pins a stacking context on the overlay so any child z-index can't escape and reorder against siblings outside it. backdrop-filter already creates one implicitly; this just makes the intent explicit, matching DialogOverlay.
+        "fixed inset-0 isolate z-overlay",
+        "bg-overlay-dialog",
+        "supports-[backdrop-filter]:backdrop-blur-overlay-dialog",
+        "data-[state=open]:animate-fade-in",
+        "data-[state=closed]:animate-fade-out",
+        overlayClassName,
+      )}
       {...props}
     >
       {children}
