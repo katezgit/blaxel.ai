@@ -5,11 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@repo/ui/lib/cn"
 
 const cardVariants = cva(
-  // Base: text, radius, border, flex layout — bg intentionally omitted here;
-  // each variant sets it explicitly so `selected` override is never ambiguous.
+  // Base: text, radius, flex layout — bg and border intentionally omitted here;
+  // each variant sets them explicitly so elevated can rely on shadow-card's ring
+  // as its sole boundary (avoids double-edge in dark mode where the 1px ring
+  // shadow and border-border sit adjacent and read as a doubled outline).
   [
     "relative flex flex-col",
-    "rounded-surface border border-border",
+    "rounded-surface",
     "text-foreground",
   ],
   {
@@ -19,10 +21,13 @@ const cardVariants = cva(
          * Default: flat card, canonical panel surface, border only.
          * No shadow — border provides separation.
          */
-        default: ["bg-panel"],
+        default: ["bg-panel", "border border-border"],
 
         /**
-         * Elevated: same panel surface, border + shadow for float effect.
+         * Elevated: panel surface with shadow-card providing both the 1px ring
+         * boundary AND the soft drop. No explicit border — the ring layer of
+         * --shadow-1 (0 0 0 1px rgba) is the single edge, which avoids the
+         * double-outline artifact in dark mode where border + ring sit adjacent.
          */
         elevated: ["bg-panel", "shadow-card"],
 
@@ -32,6 +37,7 @@ const cardVariants = cva(
          */
         interactive: [
           "bg-panel",
+          "border border-border",
           "cursor-pointer",
           "transition-colors duration-fast",
           "hover:border-border-strong hover:bg-hover-surface",
@@ -44,7 +50,8 @@ const cardVariants = cva(
          * bg-panel is NOT in base — ensures bg-selected-surface wins without merge fights.
          */
         selected: [
-          "bg-selected-surface border-border-strong",
+          "bg-selected-surface",
+          "border border-border-strong",
         ],
       },
     },
