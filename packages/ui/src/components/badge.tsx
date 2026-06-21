@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@repo/ui/lib/cn"
 
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center gap-1 overflow-hidden rounded-badge border px-1 py-px text-meta font-medium font-mono whitespace-nowrap",
+  "inline-flex w-fit shrink-0 items-center gap-1 overflow-hidden rounded-badge border px-1 text-meta font-medium font-mono whitespace-nowrap",
   {
     variants: {
       variant: {
@@ -26,9 +26,14 @@ const badgeVariants = cva(
         "brand-soft":
           "border-primary-border bg-primary-soft text-primary",
       },
+      size: {
+        md: "py-px",
+        sm: "py-0 leading-none",
+      },
     },
     defaultVariants: {
       variant: "neutral",
+      size: "md",
     },
   }
 )
@@ -58,10 +63,12 @@ export interface BadgeProps
   showDot?: boolean
   /** Strip chip chrome (bg, border, padding). Keeps tone's text + dot color. */
   bare?: boolean
+  /** Chip height. `md` = default (py-px); `sm` = compact (no vertical padding, leading-none). */
+  size?: "md" | "sm"
 }
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = "neutral", showDot = false, bare = false, children, ...props }, ref) => {
+  ({ className, variant = "neutral", size = "md", showDot = false, bare = false, children, ...props }, ref) => {
     const noDotVariants = new Set(["info", "beta", "neutral", "brand-soft"])
     const hasDot = showDot && !noDotVariants.has(variant ?? "neutral")
 
@@ -72,7 +79,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         data-variant={variant}
         data-bare={bare || undefined}
         className={cn(
-          badgeVariants({ variant }),
+          badgeVariants({ variant, size }),
           bare && "border-transparent bg-transparent px-0",
           className,
         )}
