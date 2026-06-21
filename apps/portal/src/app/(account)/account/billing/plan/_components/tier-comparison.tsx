@@ -108,6 +108,12 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
         <div id={panelId} className="border-t border-border">
           <table className="w-full border-collapse text-body">
             <caption className="sr-only">Tier comparison</caption>
+            <colgroup>
+              <col className="w-[120px]" />
+              <col className="w-[200px]" />
+              <col />
+              <col />
+            </colgroup>
             <thead>
               <tr className="border-b border-border bg-muted-surface">
                 <th
@@ -158,7 +164,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
                         </span>
                       ) : null}
                     </td>
-                    <td className="px-4 py-2 align-top text-foreground">
+                    <td className="px-4 py-2 align-top text-caption text-muted-foreground">
                       {row.requirement}
                     </td>
                     <td className="px-4 py-2 align-top text-foreground">
