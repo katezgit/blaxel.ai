@@ -43,7 +43,7 @@ export async function signInWithGithub(
   _prevState: OAuthState,
 ): Promise<OAuthState> {
   await delay(600);
-  const user = { email: "demo-gh@hud.app", name: "Demo Researcher" };
+  const user = { email: "demo-gh@acme.dev", name: "Demo Researcher" };
   upsertUser(user);
   await setSession({
     ...user,
@@ -58,7 +58,7 @@ export async function signInWithGoogle(
   _prevState: OAuthState,
 ): Promise<OAuthState> {
   await delay(600);
-  const user = { email: "demo@hud.app", name: "Demo User" };
+  const user = { email: "demo@acme.dev", name: "Demo User" };
   upsertUser(user);
   await setSession({
     ...user,

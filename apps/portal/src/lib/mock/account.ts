@@ -285,7 +285,7 @@ const DAY_ONE_OWNER: AccountIdentity = {
   // UUID-style ID; the trailing `0010` distinguishes the demo account from
   // a real one. Stable across sessions because seeded statically.
   accountId: "00000000-0000-4000-8000-000000000010",
-  ownerEmail: "demo@hud.app",
+  ownerEmail: "demo@acme.dev",
   ownerName: "Demo User",
 };
 
