@@ -13,10 +13,10 @@
 
 **Customer profile.** Marketing wall reads *"Trusted by AI builders from high-growth companies"* — current roster: Cubic, Mendral, Shortwave, Polsia, Vybe, Casco, Bloom, Cartage, hirethomas.ai, Sapiom, Webflow, Strapi, Ploy, Human Behavior. Two sub-shapes: (a) AI-native growth-stage startups whose entire product is an agent (Cubic code review, Shortwave email, hirethomas.ai hiring agent, Vybe voice, etc.) and (b) established product companies (Webflow, Strapi) bolting AI agents onto mature platforms. Both ship production agents that need to run untrusted code, browse, and call tools — Blaxel sells them the secure runtime instead of building it.
 
-**Dashboard users:** see [`docs/product/personas.md`](./docs/product/personas.md) — initial Alex (primary) + Sam (secondary) derivation from customer profile, to be validated.
+**Dashboard users:** see [`docs/product/personas.md`](./docs/product/personas.md) — Alex (primary, runtime surfaces) + Sam (secondary, runtime sanity gate) + Maya (primary for Account → Plan & billing surfaces, derived 2026-06-21).
 
 Load when more context is needed from product design related agents:
-* [./docs/product/personas.md](./docs/product/personas.md) — primary + secondary persona profiles and anti-patterns
+* [./docs/product/personas.md](./docs/product/personas.md) — Alex (primary), Sam (secondary), and Maya (billing-surface primary) persona profiles and anti-patterns. **For any work on Account → Plan & billing (Overview, Usage & costs, Credits, Invoices & payment, Addons), Maya is the primary persona — read her section first.**
 * [./docs/product/alex-workflow.md](./docs/product/alex-workflow.md) — primary persona's phased journey through the product
 * [./docs/product/alex-user-stories.md](./docs/product/alex-user-stories.md) — concrete jobs the primary persona executes per phase
 * [./docs/product/personality.md](./docs/product/personality.md) — adjectives, voice, anti-personality drift map

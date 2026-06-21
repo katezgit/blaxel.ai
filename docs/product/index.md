@@ -11,7 +11,7 @@ The bare one-paragraph brief at [`product.md`](./product.md) seeds this folder; 
 | File | Role | Filled by | Type |
 | --- | --- | --- | --- |
 | [`platform.md`](platform.md) | Platform overview — what the product is, surfaces, primitives, domain vocabulary | Operator + product-designer at project start | Template |
-| [`personas.md`](personas.md) | Primary + secondary personas; persona anti-patterns (the misreads to guard against) | Operator + product-designer at project start | Template |
+| [`personas.md`](personas.md) | Primary (Alex) + secondary (Sam) personas for runtime surfaces; Maya for billing/finance surfaces; persona anti-patterns (the misreads to guard against) | Operator + product-designer at project start | Template |
 | [`alex-workflow.md`](alex-workflow.md) | Primary persona's phased journey through the product, with design implications per phase | product-designer, from operator interviews | Template |
 | [`alex-user-stories.md`](alex-user-stories.md) | Concrete user stories for the primary persona, organized by workflow phase | product-designer | Template |
 | [`personality.md`](personality.md) | Product personality — adjectives, anti, statement, primary surface, sacrificial choices, voice, interactions, moodboard | product-designer, **derived** from the four files above | Template |
@@ -43,8 +43,9 @@ Each step feeds the next. Skipping or reversing the order produces design decisi
 > **What does NOT live here.** Top-level nav / IA structure is *not* a discovery output — it emerges from `wireframes`/`screens` once the jobs are clear. Pre-committing nav labels in `platform.md` would force IA decisions before the workflow that justifies them.
 
 ### `personas.md`
-- Primary persona: **What** (role, context, technical surface they live in), **When** (cadence, triggers, daypart), **Why** (the metric they're judged on), **In scope** / **Out of scope** (which surfaces serve them, which don't).
-- Secondary persona: same structure. Treated as sanity gate, not target.
+- Primary persona (Alex): **What** (role, context, technical surface they live in), **When** (cadence, triggers, daypart), **Why** (the metric they're judged on), **In scope** / **Out of scope** (which surfaces serve them, which don't).
+- Secondary persona (Sam): same structure. Treated as sanity gate for runtime surfaces, not target.
+- Billing-surface primary (Maya): same structure. Maya is the primary for Account → Plan & billing surfaces; Alex and Sam are out of scope for those surfaces in Maya's context.
 - Anti-patterns: misreads of each persona that have been caught in review, with the design implication for each.
 
 ### `alex-workflow.md`
