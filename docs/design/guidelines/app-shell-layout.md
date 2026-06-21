@@ -185,20 +185,9 @@ Do not narrow the sidebar to gain content width — users perceive narrower nav 
 
 ## 7. Page header vertical rhythm
 
-**Rule:** All `(app)` page top padding is `pt-10` (40px), measured from the top bar border to the page title. One value. No role-based variation.
+**Rule:** All `(app)` page top padding is `pt-8` (32px), measured from the top bar border to the page title. One value. No role-based variation.
 
-**Rationale:** A single value means the eye learns one resting position for page titles across every route in the shell. Landing/summary and catalog/data-table surfaces use the same value — this is stronger than role-derived nuance for a dense data product where the user is already context-aware.
-
-**Peer benchmarks** (page-header top padding in peer enterprise dashboards):
-
-| Product | Surface | Top padding |
-|---|---|---|
-| Linear | Inbox / Home | ~40–48px |
-| Vercel | Projects dashboard | ~40px |
-| GitHub | Dashboard | ~40px |
-| Atlassian Jira | Your Work / Home | ~32–40px |
-
-40px is the median value across the peer set. 24px appears in their *secondary list* pages (issue index, file browser) where the title is a way-finder, not a session anchor. HUD uses one value across both roles because a dense data product benefits from a consistent resting position more than from role-derived nuance.
+**Rationale:** A single value means the eye learns one resting position for page titles across every route in the shell. Landing/summary and catalog/data-table surfaces use the same value — this is stronger than role-derived nuance for a dense data product where the user is already context-aware. 32px is the on-canon maximum per `docs/design/foundations/spacing.md`; it clears the topbar's visual band cleanly without introducing an off-scale value. Peer benchmarks (Linear, Vercel, GitHub) cluster at 40–48px, but those products do not enforce the same off-scale ban — the spacing canon takes precedence here.
 
 **Other values on the header block** (do not change these):
 
