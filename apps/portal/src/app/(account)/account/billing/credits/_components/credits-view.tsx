@@ -1,12 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { Info } from "lucide-react";
 import { useAccountState } from "@/lib/mock/account-context";
-import AutoTopUpForm from "./auto-top-up-form";
 import CreditBalanceCard from "./credit-balance-card";
-import MonthlyTopUpForm from "./monthly-top-up-form";
 import TopUpHistoryTable from "./top-up-history-table";
+import TopUpSettingsCard from "./top-up-settings-card";
 
 export default function CreditsView() {
   const { state } = useAccountState();
@@ -26,25 +23,7 @@ export default function CreditsView() {
       </header>
 
       <CreditBalanceCard />
-      <AutoTopUpForm />
-      <MonthlyTopUpForm />
-
-      <div className="flex items-start gap-2 rounded-md border border-border bg-secondary-surface px-4 py-3">
-        <Info
-          aria-hidden="true"
-          className="mt-0.5 size-4 text-muted-foreground"
-        />
-        <p className="text-body text-foreground">
-          Top-ups are charged to your default payment method.{" "}
-          <Link
-            href="/account/billing/invoices#payment-method"
-            className="font-medium text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
-          >
-            Manage payment method
-          </Link>
-          .
-        </p>
-      </div>
+      <TopUpSettingsCard />
 
       <section
         aria-labelledby="top-up-history-label"

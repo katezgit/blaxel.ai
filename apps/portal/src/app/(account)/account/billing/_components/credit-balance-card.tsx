@@ -24,7 +24,7 @@ export default function CreditBalanceCard() {
       primaryCta={{ label: "Add credits", href: "/account/billing/credits" }}
       secondaryCta={{
         label: "Configure auto top-up",
-        href: "/account/billing/credits#auto-top-up",
+        href: "/account/billing/credits",
       }}
     >
       <p className="font-mono text-display font-semibold tabular-nums text-foreground">

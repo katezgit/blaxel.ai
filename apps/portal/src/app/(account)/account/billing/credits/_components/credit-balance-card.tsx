@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { Plus } from "lucide-react";
-import { Button } from "@repo/ui/components/button";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 
@@ -31,17 +28,7 @@ export default function CreditBalanceCard() {
     : "No top-ups yet";
 
   return (
-    <Panel
-      title="Credit balance"
-      action={
-        <Button asChild variant="primary">
-          <Link href="/account/billing/credits/stripe-redirect">
-            <Plus aria-hidden="true" />
-            Add credits
-          </Link>
-        </Button>
-      }
-    >
+    <Panel title="Credit balance">
       <output
         aria-live="polite"
         aria-atomic="true"
