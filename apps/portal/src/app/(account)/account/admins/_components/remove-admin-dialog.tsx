@@ -48,7 +48,7 @@ export default function RemoveAdminDialog({
           <DialogTitle>Remove admin?</DialogTitle>
         </DialogHeader>
         <DialogBody className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 rounded-md border border-border bg-muted-surface px-3 py-2.5">
+          <div className="flex items-center gap-3 rounded-md border border-border bg-muted-surface px-3 py-2">
             <Avatar size="sm">
               <AvatarFallback>{getInitials(admin?.name ?? "")}</AvatarFallback>
             </Avatar>

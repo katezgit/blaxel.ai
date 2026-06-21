@@ -128,12 +128,10 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
     }));
   }, []);
 
-  // Re-insert a previously-removed admin at the original index. Used by the
-  // toast Undo affordance after Cancel on a pending invite, so the row
-  // reappears in the same position the user just saw it.
   const restoreAdmin = useCallback((admin: AccountAdmin, index: number) => {
     setState((prev) => {
       const next = prev.admins.slice();
+      // clamp index so splice never throws on a stale position
       const clamped = Math.min(Math.max(index, 0), next.length);
       next.splice(clamped, 0, admin);
       return { ...prev, admins: next };

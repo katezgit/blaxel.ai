@@ -190,7 +190,7 @@ export default function WorkspacesClient() {
 
       <section
         aria-label="Billing account context"
-        className="flex flex-col gap-1 rounded-md border border-border bg-elevated-surface px-5 py-4"
+        className="flex flex-col gap-1 rounded-md border border-border bg-elevated-surface p-4"
       >
         <p className="text-body text-foreground">
           <span className="font-mono">{state.identity.ownerEmail}</span>

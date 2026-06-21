@@ -1,11 +1,13 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { Plus, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
+import { EmptyState } from "@repo/ui/components/empty-state";
+import { Input } from "@repo/ui/components/input";
 import {
   Table,
   TableBody,
@@ -49,12 +51,26 @@ export default function AdminsClient() {
   const { state, removeAdmin, restoreAdmin } = useAccountState();
   const [addOpen, setAddOpen] = useState(false);
   const [pendingRemove, setPendingRemove] = useState<AccountAdmin | null>(null);
+  const [search, setSearch] = useState("");
   const nowMs = Date.now();
 
-  const cancelInvite = (admin: AccountAdmin) => {
+  // Owner row is always pinned visible — search only filters non-Owner rows.
+  const visibleAdmins = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return state.admins;
+    return state.admins.filter((admin) => {
+      if (admin.role === "Owner") return true;
+      return (
+        admin.name.toLowerCase().includes(q) ||
+        admin.email.toLowerCase().includes(q)
+      );
+    });
+  }, [state.admins, search]);
+
+  const revokeInvite = (admin: AccountAdmin) => {
     const index = state.admins.findIndex((a) => a.id === admin.id);
     removeAdmin(admin.id);
-    toast.success(`Invitation to ${admin.email} canceled.`, {
+    toast.success(`Invitation to ${admin.email} revoked.`, {
       action: {
         label: "Undo",
         onClick: () => restoreAdmin(admin, index === -1 ? 0 : index),
@@ -65,6 +81,8 @@ export default function AdminsClient() {
   const resendInvite = (admin: AccountAdmin) => {
     toast.success(`Invitation resent to ${admin.email}.`);
   };
+
+  const hasResults = visibleAdmins.length > 0;
 
   return (
     <>
@@ -81,88 +99,123 @@ export default function AdminsClient() {
         </Button>
       </div>
 
-      <Table
-        bordered
-        totalCount={state.admins.length}
-        pageOffset={0}
-        aria-label="Admins"
-        className="[&_tbody_tr]:hover:bg-transparent"
-      >
-        <colgroup>
-          <col style={{ width: "48%" }} />
-          <col style={{ width: "14%" }} />
-          <col style={{ width: "22%" }} />
-          <col style={{ width: "16%" }} />
-        </colgroup>
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell label="User" />
-            <TableHeaderCell label="Role" />
-            <TableHeaderCell label="Status" />
-            <TableHeaderCell label="Actions" numeric />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {state.admins.map((admin) => {
-            const isPending = admin.status === "pending";
-            return (
-              <TableRow key={admin.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar size="sm">
-                      <AvatarFallback
-                        className={cn(isPending && "bg-muted-foreground")}
-                      >
-                        {getInitials(admin.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span
-                        className={cn(
-                          "font-medium",
-                          isPending && "text-muted-foreground",
-                        )}
-                      >
-                        {admin.name}
-                      </span>
-                      <span className="font-mono text-caption text-muted-foreground">
-                        {admin.email}
-                      </span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">{admin.role}</TableCell>
-                <TableCell>
-                  {isPending ? (
-                    <div className="flex flex-col gap-1">
-                      <Badge variant="warning" showDot className="font-sans">
-                        Pending invite
-                      </Badge>
-                      {admin.invitedAt ? (
-                        <span className="text-caption text-muted-foreground">
-                          {formatSentAgo(admin.invitedAt, nowMs)}
-                        </span>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <Badge variant="success" showDot className="font-sans">
-                      Active
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <AdminRowActions
+      <Input
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        placeholder="Search admins…"
+        leading={<Search aria-hidden="true" className="size-3.5" />}
+        className="max-w-sm"
+        aria-label="Search admins"
+      />
+
+      {hasResults ? (
+        <Table
+          bordered
+          totalCount={visibleAdmins.length}
+          pageOffset={0}
+          aria-label="Admins"
+          className="[&_tbody_tr]:hover:bg-transparent"
+        >
+          <colgroup>
+            <col style={{ width: "48%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "22%" }} />
+            <col style={{ width: "16%" }} />
+          </colgroup>
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell label="User" />
+              <TableHeaderCell label="Role" />
+              <TableHeaderCell label="Status" />
+              <TableHeaderCell label="Actions" numeric />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {visibleAdmins.map((admin) => {
+              const isPending = admin.status === "pending";
+              const isOwner = admin.role === "Owner";
+              let actionsCell: React.ReactNode;
+              if (isOwner) {
+                actionsCell = <OwnerNoActions />;
+              } else if (isPending) {
+                actionsCell = (
+                  <PendingRowActions
+                    admin={admin}
+                    onResend={() => resendInvite(admin)}
+                    onRevoke={() => revokeInvite(admin)}
+                  />
+                );
+              } else {
+                actionsCell = (
+                  <ActiveRowActions
                     admin={admin}
                     onRemove={() => setPendingRemove(admin)}
-                    onCancel={() => cancelInvite(admin)}
-                    onResend={() => resendInvite(admin)}
                   />
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                );
+              }
+              return (
+                <TableRow key={admin.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar size="sm">
+                        <AvatarFallback
+                          className={cn(isPending && "bg-muted-foreground")}
+                        >
+                          {getInitials(admin.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span
+                          className={cn(
+                            "font-medium",
+                            isPending && "text-muted-foreground",
+                          )}
+                        >
+                          {admin.name}
+                        </span>
+                        <span className="font-mono text-caption text-muted-foreground">
+                          {admin.email}
+                        </span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">{admin.role}</TableCell>
+                  <TableCell>
+                    {isPending ? (
+                      <div className="flex flex-col gap-1">
+                        <Badge variant="warning" showDot className="font-sans">
+                          Pending invite
+                        </Badge>
+                        {admin.invitedAt ? (
+                          <span className="text-caption text-muted-foreground">
+                            {formatSentAgo(admin.invitedAt, nowMs)}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <Badge variant="success" showDot className="font-sans">
+                        Active
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">{actionsCell}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        <EmptyState
+          variant="no-results"
+          title="No admins match your search"
+          subtitle="Try a shorter term or clear the search."
+          cta={
+            <Button variant="secondary" onClick={() => setSearch("")}>
+              Clear search
+            </Button>
+          }
+        />
+      )}
 
       <AddAdminDialog open={addOpen} onOpenChange={setAddOpen} />
       <RemoveAdminDialog
@@ -178,45 +231,56 @@ export default function AdminsClient() {
   );
 }
 
-interface AdminRowActionsProps {
-  admin: AccountAdmin;
-  onRemove: () => void;
-  onCancel: () => void;
-  onResend: () => void;
+function OwnerNoActions() {
+  return (
+    <span
+      className="text-muted-foreground"
+      aria-label="No actions available for Owner"
+    >
+      &mdash;
+    </span>
+  );
 }
 
-function AdminRowActions({
+interface PendingRowActionsProps {
+  admin: AccountAdmin;
+  onResend: () => void;
+  onRevoke: () => void;
+}
+
+function PendingRowActions({
   admin,
-  onRemove,
-  onCancel,
   onResend,
-}: AdminRowActionsProps) {
-  if (admin.role === "Owner") {
-    return (
-      <span className="text-muted-foreground" aria-label="No actions available for Owner">
-        &mdash;
+  onRevoke,
+}: PendingRowActionsProps) {
+  return (
+    <div className="inline-flex items-center gap-2">
+      <RowActionButton
+        onClick={onResend}
+        label={`Resend invitation to ${admin.email}`}
+      >
+        Resend
+      </RowActionButton>
+      <span aria-hidden="true" className="text-muted-foreground">
+        &middot;
       </span>
-    );
-  }
-  if (admin.status === "pending") {
-    return (
-      <div className="inline-flex items-center gap-2">
-        <RowActionButton onClick={onResend} label={`Resend invitation to ${admin.email}`}>
-          Resend
-        </RowActionButton>
-        <span aria-hidden="true" className="text-muted-foreground">
-          &middot;
-        </span>
-        <RowActionButton
-          onClick={onCancel}
-          label={`Cancel invitation to ${admin.email}`}
-          destructive
-        >
-          Cancel
-        </RowActionButton>
-      </div>
-    );
-  }
+      <RowActionButton
+        onClick={onRevoke}
+        label={`Revoke invitation to ${admin.email}`}
+        destructive
+      >
+        Revoke
+      </RowActionButton>
+    </div>
+  );
+}
+
+interface ActiveRowActionsProps {
+  admin: AccountAdmin;
+  onRemove: () => void;
+}
+
+function ActiveRowActions({ admin, onRemove }: ActiveRowActionsProps) {
   return (
     <RowActionButton
       onClick={onRemove}

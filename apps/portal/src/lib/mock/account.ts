@@ -298,13 +298,10 @@ const DAY_ONE_OWNER_ADMIN: AccountAdmin = {
   joinedAt: "2026-06-17",
 };
 
-// Two seeded co-admins so the screen renders all three row variants
-// (Owner / Active admin / Pending invite) without manual setup. Both
-// belong to the same demo account; emails align with the demo domain.
 const SEEDED_ACTIVE_ADMIN: AccountAdmin = {
   id: "adm_active_seed",
   name: "Maya Chen",
-  email: "maya@hud.app",
+  email: "maya@acme.dev",
   role: "Admin",
   status: "active",
   joinedAt: "2026-06-18",
@@ -320,7 +317,7 @@ const PENDING_INVITE_SENT_AT = new Date(
 const SEEDED_PENDING_ADMIN: AccountAdmin = {
   id: "adm_pending_seed",
   name: "Invited user",
-  email: "rohan@hud.app",
+  email: "rohan@acme.dev",
   role: "Admin",
   status: "pending",
   joinedAt: PENDING_INVITE_SENT_AT.slice(0, 10),
