@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AccountIdentitySection from "./_components/account-identity";
+import BillingSummarySection from "./_components/billing-summary";
 import WorkspacesSummarySection from "./_components/workspaces-summary";
 
 export const metadata: Metadata = {
@@ -14,12 +15,13 @@ export default function AccountOverviewPage() {
           Account overview
         </h1>
         <p className="text-muted-foreground">
-          Account-level identity, billing tier, and workspace capacity.
+          Account identity, admins, and workspace structure.
         </p>
       </header>
 
       <AccountIdentitySection />
       <WorkspacesSummarySection />
+      <BillingSummarySection />
     </div>
   );
 }

@@ -261,6 +261,36 @@ export interface SamlConfiguration {
   certificateExpiresOn: string | null;
 }
 
+export interface MonthToDateSpend {
+  /** Compute usage (sandboxes, jobs, agents, MCP, volumes, etc.) in USD. */
+  usageUsd: number;
+  /** Add-ons + extras (support tier, HIPAA, etc.) in USD. */
+  addonsUsd: number;
+}
+
+export interface Receipt {
+  id: string;
+  date: string;
+  /** Top-up or one-off purchase amount in USD. */
+  amount: number;
+  status: InvoiceStatus;
+  /** "Visa ending 4242" — already-formatted display. */
+  paymentMethodLabel: string;
+  downloadHref: string;
+}
+
+export interface BillingContact {
+  email: string;
+  address: {
+    line1: string;
+    line2?: string;
+    city: string;
+    region: string;
+    postalCode: string;
+    country: string;
+  };
+}
+
 export interface AccountState {
   tier: Tier;
   balanceUsd: number;
@@ -271,10 +301,13 @@ export interface AccountState {
   wallet: ReadonlyArray<WalletEntry>;
   creditHistory: ReadonlyArray<CreditHistoryEntry>;
   invoices: ReadonlyArray<Invoice>;
+  receipts: ReadonlyArray<Receipt>;
   monthToDateSpendUsd: number;
+  monthToDateSpendBreakdown: MonthToDateSpend;
   autoTopUp: AutoTopUp;
   monthlyTopUp: MonthlyTopUp;
   paymentMethod: PaymentMethod;
+  billingContact: BillingContact;
   addons: ReadonlyArray<AddOn>;
   domains: ReadonlyArray<DomainPolicy>;
   saml: SamlConfiguration;
@@ -383,7 +416,27 @@ const TIER_ONE_INVOICE: Invoice = {
   date: "2026-06-30",
   status: "Open",
   amount: 2.88,
-  downloadHref: "/account/billing/credits#invoice-inv_2026_06",
+  downloadHref: "/account/billing/invoices#invoice-inv_2026_06",
+};
+
+const TIER_ONE_RECEIPT: Receipt = {
+  id: "rcpt_2026_06_18",
+  date: "2026-06-18",
+  amount: 50,
+  status: "Paid",
+  paymentMethodLabel: "Visa ending 4242",
+  downloadHref: "/account/billing/invoices#receipt-rcpt_2026_06_18",
+};
+
+const DAY_ONE_BILLING_CONTACT: BillingContact = {
+  email: "demo@acme.dev",
+  address: {
+    line1: "350 Bryant St",
+    city: "San Francisco",
+    region: "CA",
+    postalCode: "94107",
+    country: "United States",
+  },
 };
 
 const ADD_ONS_TEMPLATE: ReadonlyArray<AddOn> = [
@@ -427,10 +480,13 @@ function tier0Seed(): AccountState {
     wallet: [SIGNUP_PROMO_WALLET],
     creditHistory: [SIGNUP_PROMO_HISTORY],
     invoices: [],
+    receipts: [],
     monthToDateSpendUsd: 0,
+    monthToDateSpendBreakdown: { usageUsd: 0, addonsUsd: 0 },
     autoTopUp: { enabled: false, thresholdUsd: 5, amountUsd: 25 },
     monthlyTopUp: { enabled: false, amountUsd: 50 },
     paymentMethod: { brand: null, last4: null },
+    billingContact: DAY_ONE_BILLING_CONTACT,
     addons: ADD_ONS_TEMPLATE,
     domains: [],
     saml: { idpSsoUrl: null, certificateExpiresOn: null },
@@ -450,7 +506,9 @@ function tierUpgradedSeed(tier: Tier): AccountState {
     TIER_ONE_USAGE_HISTORY,
   ];
   upgraded.invoices = [TIER_ONE_INVOICE];
+  upgraded.receipts = [TIER_ONE_RECEIPT];
   upgraded.monthToDateSpendUsd = 2.88;
+  upgraded.monthToDateSpendBreakdown = { usageUsd: 2.88, addonsUsd: 0 };
   upgraded.autoTopUp = { enabled: true, thresholdUsd: 10, amountUsd: 50 };
   upgraded.usage = {
     ...DEFAULT_USAGE,
