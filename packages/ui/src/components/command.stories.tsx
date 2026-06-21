@@ -231,7 +231,7 @@ function CommandDialogDemo() {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Search"
-          aria-keyshortcuts="/"
+          aria-keyshortcuts="/ Meta+K Control+K"
           className="ml-auto flex h-8 w-72 cursor-pointer items-center gap-2 rounded-lg border border-form-field-border bg-field-rest px-2.5 text-body text-muted-foreground hover:bg-form-field-surface hover:text-foreground"
         >
           <SearchIcon className="size-4 shrink-0" aria-hidden />

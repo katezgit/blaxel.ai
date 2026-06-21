@@ -50,8 +50,8 @@ function CommandDialog({
   return (
     <CommandDialogPrimitive
       data-slot="command-dialog"
+      // Overlay + content base classes mirror DialogOverlay / dialogContentVariants in dialog.tsx — keep in sync.
       contentClassName={cn(
-        // fixed + z-overlay matches DialogContent — without z-overlay the panel sits below the overlay's stacking context and gets blurred by its own backdrop-filter.
         "fixed top-[10vh] left-1/2 z-overlay -translate-x-1/2",
         "w-full max-w-[640px]",
         "overflow-hidden",
@@ -59,7 +59,6 @@ function CommandDialog({
         "rounded-xl",
         "bg-popover text-foreground",
         "shadow-command",
-        "p-0",
         "outline-none",
         "data-[state=open]:animate-slide-up-in",
         "data-[state=closed]:animate-slide-down-out",
