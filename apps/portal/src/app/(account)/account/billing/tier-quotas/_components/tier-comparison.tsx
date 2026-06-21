@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Check, ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { cn } from "@repo/ui/lib/cn";
 import type { Tier } from "@/lib/mock/account";
@@ -155,7 +156,7 @@ const TIERS: ReadonlyArray<TierData> = [
 ];
 
 const GRID_COLS =
-  "grid-cols-[minmax(96px,_120px)_minmax(220px,_260px)_minmax(0,_1fr)_minmax(0,_1fr)]";
+  "grid-cols-[minmax(64px,_80px)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(220px,_260px)]";
 
 interface TierComparisonProps {
   currentTier: Tier;
@@ -163,6 +164,7 @@ interface TierComparisonProps {
 
 export default function TierComparison({ currentTier }: TierComparisonProps) {
   const [tier0Open, setTier0Open] = useState(false);
+  const showTier0 = tier0Open || currentTier === 0;
 
   return (
     <section className="flex flex-col gap-4">
@@ -170,42 +172,37 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
         <h2 className="text-subtitle font-semibold text-foreground">
           All tiers
         </h2>
-        <p className="text-muted-foreground">
-          About to launch and expect a temporary spike?{" "}
-          <a
-            href="mailto:sales@blaxel.ai"
-            className="font-medium text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
-          >
-            Contact us on this form
-          </a>
+        <p className="inline-flex items-baseline gap-2 text-muted-foreground">
+          You're currently on
+          <Badge variant="brand-soft" size="sm">Tier {currentTier}</Badge>
         </p>
       </header>
 
       <div
         className={cn(
-          "grid gap-4 border-b border-border px-4 py-2",
+          "grid gap-4 rounded-md border border-border bg-field-rest px-4 py-2",
           GRID_COLS,
         )}
       >
-        <span className="font-mono text-meta uppercase text-meta-foreground">
+        <span className="text-label font-medium text-muted-foreground">
           Tier
         </span>
-        <span className="font-mono text-meta uppercase text-meta-foreground">
+        <span className="text-label font-medium text-muted-foreground">
+          Key quotas
+        </span>
+        <span className="text-label font-medium text-muted-foreground">
+          Key limits &amp; features
+        </span>
+        <span className="text-label font-medium text-muted-foreground">
           Requirement
-        </span>
-        <span className="font-mono text-meta uppercase text-meta-foreground">
-          Key Quotas
-        </span>
-        <span className="font-mono text-meta uppercase text-meta-foreground">
-          Key Limits &amp; Features
         </span>
       </div>
 
       <div
-        className="flex max-h-[640px] flex-col gap-2 overflow-y-auto"
+        className="flex max-h-[640px] flex-col gap-2 overflow-y-auto pt-3"
         style={{ scrollbarGutter: "stable" }}
       >
-        {tier0Open ? null : (
+        {showTier0 ? null : (
           <button
             type="button"
             onClick={() => setTier0Open(true)}
@@ -218,12 +215,16 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
           </button>
         )}
 
-        {TIERS.filter((t) => t.tier !== 0 || tier0Open).map((t) => (
+        {TIERS.filter((t) => t.tier !== 0 || showTier0).map((t) => (
           <TierRow
             key={t.tier}
             tier={t}
             isCurrent={t.tier === currentTier}
-            onCollapseTier0={t.tier === 0 ? () => setTier0Open(false) : undefined}
+            onCollapseTier0={
+              t.tier === 0 && currentTier !== 0
+                ? () => setTier0Open(false)
+                : undefined
+            }
           />
         ))}
       </div>
@@ -251,7 +252,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       )}
     >
       {isCurrent ? (
-        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-background px-1.5 font-mono text-meta uppercase text-primary">
+        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-[color-mix(in_srgb,var(--color-primary)_22%,var(--color-background))] px-1.5 font-mono text-meta uppercase text-primary">
           Current tier
         </span>
       ) : null}
@@ -274,6 +275,9 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
         ) : null}
       </div>
 
+      <BulletList items={tier.keyQuotas} />
+      <BulletList items={tier.features} />
+
       <div className="flex flex-col items-start gap-2">
         {tier.progressLabel ? (
           <span className="font-mono text-caption text-muted-foreground tabular-nums">
@@ -283,9 +287,6 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
         <span className="text-foreground">{tier.requirement}</span>
         <TierAction action={tier.action} isCurrent={isCurrent} />
       </div>
-
-      <BulletList items={tier.keyQuotas} />
-      <BulletList items={tier.features} />
     </div>
   );
 }

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import CreditBalanceCard from "./_components/credit-balance-card";
-import CurrentLimitsCard from "./_components/current-limits-card";
-import MtdSpendCard from "./_components/mtd-spend-card";
-import PaymentStatusCard from "./_components/payment-status-card";
-import TierStatusCard from "./_components/tier-status-card";
+import ActionNeededBand from "./_components/action-needed-band";
+import BillingStatusCard from "./_components/billing-status-card";
+import BillingSummaryPanel from "./_components/billing-summary-panel";
+import RecentActivityPanel from "./_components/recent-activity-panel";
 
 export const metadata: Metadata = {
-  title: "Billing overview",
+  title: "Plan & billing",
 };
 
 export default function BillingOverviewPage() {
@@ -14,20 +13,20 @@ export default function BillingOverviewPage() {
     <div className="page-shell">
       <header className="page-header">
         <h1 className="text-display font-semibold text-foreground">
-          Billing overview
+          Plan & billing
         </h1>
         <p className="text-muted-foreground">
-          Account funding, spend, and limits at a glance.
+          Review account billing status, credits, usage, and payment readiness.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <TierStatusCard />
-        <CreditBalanceCard />
-        <MtdSpendCard />
-        <PaymentStatusCard />
-        <CurrentLimitsCard />
-      </div>
+      <BillingStatusCard />
+
+      <ActionNeededBand />
+
+      <BillingSummaryPanel />
+
+      <RecentActivityPanel />
     </div>
   );
 }

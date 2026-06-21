@@ -95,8 +95,8 @@ export default function AutoTopUpRule({
   if (enabled) {
     return (
       <RuleShell>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <RuleIcon />
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
@@ -108,13 +108,20 @@ export default function AutoTopUpRule({
                 </Badge>
               </div>
               <p className="text-caption text-muted-foreground">
-                Refills the balance when it dips below your threshold.
+                When balance drops below{" "}
+                <span className="font-mono text-foreground">
+                  {formatUsd(thresholdUsd)}
+                </span>
+                , add{" "}
+                <span className="font-mono text-foreground">
+                  {formatUsd(amountUsd)}
+                </span>
+                .
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Switch
-              size="sm"
               checked
               aria-label="Disable auto top-up"
               onCheckedChange={() => {
@@ -127,27 +134,14 @@ export default function AutoTopUpRule({
             </Button>
           </div>
         </div>
-
-        <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 pl-11">
-          <dt className="text-caption text-muted-foreground">
-            Below threshold
-          </dt>
-          <dt className="text-caption text-muted-foreground">Refill amount</dt>
-          <dd className="font-mono text-body font-medium tabular-nums text-foreground">
-            {formatUsd(thresholdUsd)}
-          </dd>
-          <dd className="font-mono text-body font-medium tabular-nums text-foreground">
-            {formatUsd(amountUsd)}
-          </dd>
-        </dl>
       </RuleShell>
     );
   }
 
   return (
     <RuleShell>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
           <RuleIcon />
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">

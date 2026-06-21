@@ -50,6 +50,8 @@ export interface NavItem {
    * `/profile` vs `/profile/security`).
    */
   exact?: boolean;
+  /** Optional short badge text rendered right-aligned next to the label (e.g. "Soon", "Beta"). Hidden in rail mode. */
+  badge?: string;
 }
 
 export interface NavGroup {
@@ -134,6 +136,7 @@ export const PERSONAL_NAV_GROUPS: ReadonlyArray<NavGroup> = [
     label: "Personal",
     items: [
       { href: "/profile", label: "Profile", icon: User, exact: true },
+      { href: "/profile/workspaces", label: "Workspaces", icon: LayoutGrid },
       { href: "/profile/security", label: "Security", icon: ShieldCheck },
       { href: "/profile/preferences", label: "Preferences", icon: SlidersHorizontal },
       { href: "/profile/invitations", label: "Invitations", icon: Mail },
@@ -157,14 +160,14 @@ export const ACCOUNT_NAV_GROUPS: ReadonlyArray<NavGroup> = [
     ],
   },
   {
-    label: "Billing",
+    label: "Plan & billing",
     items: [
       { href: "/account/billing", label: "Overview", icon: LayoutDashboard, exact: true },
-      { href: "/account/billing/usage", label: "Usage & costs", icon: Activity },
-      { href: "/account/billing/credits", label: "Credits & funding", icon: CreditCard },
-      { href: "/account/billing/plan", label: "Tier & quotas", icon: Gauge },
-      { href: "/account/billing/invoices", label: "Invoices & payment", icon: Receipt },
-      { href: "/account/billing/add-ons", label: "Premium services", icon: Gem },
+      { href: "/account/billing/invoices-payment", label: "Invoices & payment", icon: Receipt },
+      { href: "/account/billing/usage-costs", label: "Usage & costs", icon: Activity },
+      { href: "/account/billing/credits", label: "Credits", icon: CreditCard },
+      { href: "/account/billing/tier-quotas", label: "Tier & quotas", icon: Gauge },
+      { href: "/account/billing/premium-services", label: "Premium services", icon: Gem, badge: "Soon" },
     ],
   },
 ];

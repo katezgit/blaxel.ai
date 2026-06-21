@@ -13,7 +13,6 @@ import {
   DrawerTitle,
 } from "@repo/ui/components/drawer";
 import { useAccountState } from "@/lib/mock/account-context";
-import CurrentTierBand from "./current-tier-band";
 import QuotaDetail from "./quota-detail";
 import TierComparison from "./tier-comparison";
 
@@ -28,11 +27,9 @@ export function PlanQuotasView() {
           Tier &amp; quotas
         </h1>
         <p className="text-muted-foreground">
-          Limits, capabilities, and how to unlock the next tier.
+          Review workspace capacity, execution limits, and tier requirements.
         </p>
       </header>
-
-      <CurrentTierBand />
 
       <TierComparison currentTier={state.tier} />
 

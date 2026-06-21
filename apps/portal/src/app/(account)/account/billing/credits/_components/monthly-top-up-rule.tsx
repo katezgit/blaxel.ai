@@ -90,8 +90,8 @@ export default function MonthlyTopUpRule({
   if (enabled) {
     return (
       <RuleShell>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <RuleIcon />
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
@@ -103,13 +103,16 @@ export default function MonthlyTopUpRule({
                 </Badge>
               </div>
               <p className="text-caption text-muted-foreground">
-                Adds a fixed amount on a recurring schedule.
+                Adds{" "}
+                <span className="font-mono text-foreground">
+                  {formatUsd(amountUsd)}
+                </span>{" "}
+                on the first day of each month.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Switch
-              size="sm"
               checked
               aria-label="Disable monthly top-up"
               onCheckedChange={() => {
@@ -122,25 +125,14 @@ export default function MonthlyTopUpRule({
             </Button>
           </div>
         </div>
-
-        <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 pl-11">
-          <dt className="text-caption text-muted-foreground">Amount</dt>
-          <dt className="text-caption text-muted-foreground">Charge date</dt>
-          <dd className="font-mono text-body font-medium tabular-nums text-foreground">
-            {formatUsd(amountUsd)}
-          </dd>
-          <dd className="text-body font-medium text-foreground">
-            First day of each month
-          </dd>
-        </dl>
       </RuleShell>
     );
   }
 
   return (
     <RuleShell>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
           <RuleIcon />
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">

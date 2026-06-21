@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Badge } from "@repo/ui/components/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -46,6 +47,13 @@ export default function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps
       <span data-nav-label className="truncate">
         {item.label}
       </span>
+      {item.badge ? (
+        <span data-nav-label className="ml-auto">
+          <Badge variant="neutral" className="font-sans">
+            {item.badge}
+          </Badge>
+        </span>
+      ) : null}
     </Link>
   );
 

@@ -8,15 +8,17 @@ export default function CreditsView() {
     <div className="page-shell">
       <header className="page-header">
         <h1 className="text-display font-semibold text-foreground">
-          Credits &amp; funding
+          Credits
         </h1>
         <p className="text-muted-foreground">
-          Manage account balance and automatic funding.
+          Manage your account credit balance and automatic top-ups.
         </p>
       </header>
 
-      <CreditBalanceCard />
-      <TopUpSettingsCard />
+      <div className="flex flex-col gap-8">
+        <CreditBalanceCard />
+        <TopUpSettingsCard />
+      </div>
     </div>
   );
 }

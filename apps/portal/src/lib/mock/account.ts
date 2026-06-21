@@ -416,7 +416,7 @@ const TIER_ONE_INVOICE: Invoice = {
   date: "2026-06-30",
   status: "Open",
   amount: 2.88,
-  downloadHref: "/account/billing/invoices#invoice-inv_2026_06",
+  downloadHref: "/account/billing/invoices-payment#invoice-inv_2026_06",
 };
 
 const TIER_ONE_RECEIPT: Receipt = {
@@ -425,7 +425,7 @@ const TIER_ONE_RECEIPT: Receipt = {
   amount: 50,
   status: "Paid",
   paymentMethodLabel: "Visa ending 4242",
-  downloadHref: "/account/billing/invoices#receipt-rcpt_2026_06_18",
+  downloadHref: "/account/billing/invoices-payment#receipt-rcpt_2026_06_18",
 };
 
 const DAY_ONE_BILLING_CONTACT: BillingContact = {

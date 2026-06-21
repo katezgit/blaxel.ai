@@ -15,8 +15,8 @@ export default function TopUpSettingsCard() {
 
   return (
     <Panel
-      title="Top-up settings"
-      subtitle="Manage automatic credit top-ups."
+      title="Automatic top-ups"
+      subtitle="Rules that keep your balance from running out."
     >
       <div className="flex flex-col gap-3">
         <AutoTopUpRule

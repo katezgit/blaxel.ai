@@ -9,7 +9,6 @@ import {
   ChevronDown,
   Clock,
   Container,
-  Download,
   Layers,
   Radar,
   Route,
@@ -17,8 +16,6 @@ import {
   Table as TableIcon,
   X,
 } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import { DateTimeRangeSelector } from "@repo/ui/components/date-time-range-selector";
 import type {
@@ -72,7 +69,7 @@ type ChartType =
 
 // Built fresh per-render so the presets reflect "now" — preset shifts when the
 // page is reopened across day boundaries are intentional and cheap.
-function buildPresets(): DateTimeRangeSelectorPreset[] {
+function buildPresets(): ReadonlyArray<DateTimeRangeSelectorPreset> {
   const now = new Date();
   const startOfDay = (d: Date) => {
     const c = new Date(d);
@@ -111,7 +108,7 @@ function buildPresets(): DateTimeRangeSelectorPreset[] {
   ];
 }
 
-const TIMEZONE_OPTIONS: DateTimeRangeSelectorTimezoneOption[] = [
+const TIMEZONE_OPTIONS: ReadonlyArray<DateTimeRangeSelectorTimezoneOption> = [
   { label: "UTC", value: "UTC" },
   { label: "America/Los Angeles", value: "America/Los_Angeles" },
   { label: "America/New York", value: "America/New_York" },
@@ -381,9 +378,7 @@ export default function UsageView() {
     >
       <header className="page-header">
         <div className="flex items-start justify-between gap-3">
-          <h1 className="text-display font-semibold text-foreground">
-            Usage &amp; costs
-          </h1>
+          <h1 className="text-display font-semibold text-foreground">Usage</h1>
           <TabsList variant="segmented" aria-label="Usage or cost view">
             {usageAvailable ? (
               <TabsTrigger value="usage">Usage</TabsTrigger>
@@ -405,11 +400,9 @@ export default function UsageView() {
           </TabsList>
         </div>
         <p className="text-muted-foreground">
-          Spend, attribution, and trends across this billing account.
+          See credit consumption by workspace, resource type, and time range.
         </p>
       </header>
-
-      <SpendSummaryBand />
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -552,18 +545,6 @@ export default function UsageView() {
             >
               <SlidersHorizontal />
             </IconButton>
-
-            <Button
-              variant="secondary"
-              onClick={() =>
-                toast.success("Exported usage data to CSV", {
-                  description: "usage-export.csv saved to your downloads.",
-                })
-              }
-            >
-              <Download aria-hidden="true" />
-              Export CSV
-            </Button>
           </div>
         </div>
 
@@ -580,7 +561,6 @@ export default function UsageView() {
             tab="usage"
             chartType={filters.chartType}
           />
-          <BreakdownTable dataset={dataset} tab="usage" />
         </TabsContent>
 
         <TabsContent value="cost" className="mt-0 flex flex-col gap-4">
@@ -596,183 +576,9 @@ export default function UsageView() {
             tab="cost"
             chartType={filters.chartType}
           />
-          <BreakdownTable dataset={dataset} tab="cost" />
         </TabsContent>
       </div>
     </Tabs>
-  );
-}
-
-function SpendSummaryBand() {
-  const { state } = useAccountState();
-  const mtd = state.monthToDateSpendUsd;
-  const now = new Date();
-  const dayOfMonth = now.getDate();
-  const daysInMonth = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0,
-  ).getDate();
-  const forecasted = dayOfMonth > 0 ? (mtd / dayOfMonth) * daysInMonth : 0;
-  const creditsUsedThisMonth = state.creditHistory
-    .filter((entry) => entry.type === "Usage")
-    .reduce((sum, entry) => sum + Math.abs(entry.amount), 0);
-  const monthLabel = new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    year: "numeric",
-  }).format(now);
-  return (
-    <Card className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-      <SummaryCell
-        label="Month-to-date spend"
-        value={formatCurrency(mtd)}
-        helper={monthLabel}
-      />
-      <SummaryCell
-        label="Forecasted month-end"
-        value={formatCurrency(forecasted)}
-        helper={`Based on ${dayOfMonth} day${dayOfMonth === 1 ? "" : "s"} of activity`}
-      />
-      <SummaryCell
-        label="Credits used"
-        value={formatCurrency(creditsUsedThisMonth)}
-        helper="Drawn from wallet this month"
-      />
-    </Card>
-  );
-}
-
-interface SummaryCellProps {
-  label: string;
-  value: string;
-  helper: string;
-}
-
-function SummaryCell({ label, value, helper }: SummaryCellProps) {
-  return (
-    <div className="flex flex-col gap-1.5 px-6 py-5">
-      <span className="text-caption text-muted-foreground">{label}</span>
-      <span className="font-mono text-subtitle font-semibold tabular-nums text-foreground">
-        {value}
-      </span>
-      <span className="text-caption text-muted-foreground">{helper}</span>
-    </div>
-  );
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(value);
-}
-
-interface BreakdownTableProps {
-  dataset: UsageDataset | null;
-  tab: "usage" | "cost";
-}
-
-interface BreakdownRow {
-  resource: string;
-  workspace: string;
-  usage: number;
-  cost: number;
-}
-
-// Demo rows tying resource × workspace to usage/cost slices of the dataset.
-// Shape mirrors what a real "Usage Explorer" backend would return — one row
-// per (resource, workspace) pair, with usage units and dollars side by side.
-function buildBreakdownRows(dataset: UsageDataset): BreakdownRow[] {
-  const resourceTotals = dataset.seriesNames.map((name, idx) => ({
-    name,
-    total: dataset.seriesTotals[idx] ?? 0,
-  }));
-  const workspaces: ReadonlyArray<{ slug: string; weight: number }> = [
-    { slug: "atlas-rl", weight: 0.58 },
-    { slug: "prod-agents", weight: 0.28 },
-    { slug: "dev-scratchpad", weight: 0.14 },
-  ];
-  const rows: BreakdownRow[] = [];
-  for (const resource of resourceTotals) {
-    for (const ws of workspaces) {
-      const cost = resource.total * ws.weight;
-      const usage = Math.round(cost * 80);
-      if (cost <= 0) continue;
-      rows.push({
-        resource: resource.name,
-        workspace: ws.slug,
-        usage,
-        cost,
-      });
-    }
-  }
-  return rows.sort((a, b) => b.cost - a.cost);
-}
-
-function BreakdownTable({ dataset, tab }: BreakdownTableProps) {
-  if (!dataset) {
-    return null;
-  }
-  const rows = buildBreakdownRows(dataset);
-  return (
-    <Card>
-      <div className="flex items-center justify-between gap-3 border-b border-border px-6 py-4">
-        <h2 className="text-body font-semibold text-foreground">
-          Resource &times; workspace breakdown
-        </h2>
-        <span className="text-caption text-muted-foreground">
-          Ranked by {tab === "cost" ? "cost" : "credits used"}
-        </span>
-      </div>
-      <table className="w-full border-collapse text-body">
-        <caption className="sr-only">Resource and workspace breakdown</caption>
-        <thead>
-          <tr className="border-b border-border bg-muted-surface text-left">
-            <th
-              scope="col"
-              className="px-6 py-2 font-mono text-meta uppercase text-meta-foreground"
-            >
-              Resource
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-2 font-mono text-meta uppercase text-meta-foreground"
-            >
-              Workspace
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-2 text-right font-mono text-meta uppercase text-meta-foreground"
-            >
-              Credits used
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-2 text-right font-mono text-meta uppercase text-meta-foreground"
-            >
-              Cost
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr
-              key={`${row.resource}-${row.workspace}`}
-              className="border-b border-border last:border-b-0"
-            >
-              <td className="px-6 py-3 text-foreground">{row.resource}</td>
-              <td className="px-6 py-3 text-muted-foreground">{row.workspace}</td>
-              <td className="px-6 py-3 text-right font-mono tabular-nums text-foreground">
-                {row.usage.toLocaleString()}
-              </td>
-              <td className="px-6 py-3 text-right font-mono tabular-nums text-foreground">
-                {formatCurrency(row.cost)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </Card>
   );
 }
 

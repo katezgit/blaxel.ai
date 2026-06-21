@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import AccountIdentitySection from "./_components/account-identity";
-import BillingSummarySection from "./_components/billing-summary";
-import WorkspacesSummarySection from "./_components/workspaces-summary";
+import AccountIdentityMeta from "./_components/account-identity-meta";
+import AccountSummaryPanel from "./_components/account-summary-panel";
 
 export const metadata: Metadata = {
   title: "Account overview",
@@ -17,11 +16,10 @@ export default function AccountOverviewPage() {
         <p className="text-muted-foreground">
           Account identity, admins, and workspace structure.
         </p>
+        <AccountIdentityMeta />
       </header>
 
-      <AccountIdentitySection />
-      <WorkspacesSummarySection />
-      <BillingSummarySection />
+      <AccountSummaryPanel />
     </div>
   );
 }

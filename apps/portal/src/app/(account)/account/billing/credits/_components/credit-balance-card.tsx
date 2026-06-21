@@ -57,17 +57,12 @@ export default function CreditBalanceCard() {
           {paymentSummary}
         </p>
       </div>
-      <div className="flex items-center gap-2">
-        <Button asChild variant="ghost">
-          <Link href="/account/billing/invoices">Manage payment</Link>
-        </Button>
-        <Button asChild variant="primary">
-          <Link href="/account/billing/credits/stripe-redirect">
-            <Plus aria-hidden="true" />
-            Add credits
-          </Link>
-        </Button>
-      </div>
+      <Button asChild variant="primary">
+        <Link href="/account/billing/credits/stripe-redirect">
+          <Plus aria-hidden="true" />
+          Add credits
+        </Link>
+      </Button>
     </Card>
   );
 }

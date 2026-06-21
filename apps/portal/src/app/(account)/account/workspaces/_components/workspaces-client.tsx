@@ -36,7 +36,7 @@ import type { Org } from "@/lib/mock/types";
 
 const SEARCH_THRESHOLD = 8;
 const PAYMENT_HREF = "/account/billing/credits#payment-method";
-const UPGRADE_HREF = "/account/billing/plan";
+const UPGRADE_HREF = "/account/billing/tier-quotas";
 
 interface QuotaCopy {
   helper: string;
@@ -288,7 +288,7 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
     <div className="flex min-w-0 flex-col gap-0.5">
       <Link
         href={`/${workspace.slug}/settings/general`}
-        className="truncate font-mono text-body text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm outline-hidden"
+        className="truncate font-mono text-body text-foreground transition-colors duration-fast ease-out-standard group-hover/row:text-primary group-hover/row:underline hover:text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm outline-hidden"
       >
         {workspace.name}
       </Link>
