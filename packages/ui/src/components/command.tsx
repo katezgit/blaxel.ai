@@ -49,12 +49,16 @@ function CommandDialog({
     <CommandDialogPrimitive
       data-slot="command-dialog"
       contentClassName={cn(
+        // fixed + z-overlay matches DialogContent — without z-overlay the panel sits below the overlay's stacking context and gets blurred by its own backdrop-filter.
+        "fixed top-[10vh] left-1/2 z-overlay -translate-x-1/2",
+        "w-full max-w-[640px]",
         "overflow-hidden",
         // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
         "rounded-xl",
         "bg-popover text-foreground",
         "shadow-command",
         "p-0",
+        "outline-none",
         "data-[state=open]:animate-slide-up-in",
         "data-[state=closed]:animate-slide-down-out",
       )}
