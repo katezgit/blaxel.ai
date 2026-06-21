@@ -77,7 +77,7 @@
   }
   .shell-topbar > [data-zone="left"]   { display: contents; max-width: none; }
   .shell-topbar > [data-zone="center"] { grid-area: search; justify-self: end; justify-content: flex-end; width: auto; }
-  .shell-topbar > [data-zone="center"] [data-slot="search"] { max-width: none; width: auto; }
+  .shell-topbar > [data-zone="center"] [data-slot="search"] { width: 2rem; max-width: 2rem; }
   .shell-topbar > [data-zone="right"]  { grid-area: actions; }
   .shell-topbar [data-slot="brand"]       { grid-area: brand; justify-self: start; }
   .shell-topbar [data-slot="brand"] > a   { padding-inline: 0; }

@@ -11,17 +11,13 @@ interface IdentityClusterProps {
 
 export function IdentityCluster({ user }: IdentityClusterProps) {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       <NotificationPanel />
-      <span className="ml-2">
-        <HelpMenu />
-      </span>
-      <span className="hidden sm:ml-3 sm:inline">
+      <HelpMenu />
+      <span className="hidden sm:inline">
         <BillingPill />
       </span>
-      <span className="ml-4 sm:ml-3">
-        <AvatarMenu user={user} />
-      </span>
+      <AvatarMenu user={user} />
     </div>
   );
 }
