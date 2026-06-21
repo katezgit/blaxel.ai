@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Zap } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
@@ -38,6 +39,25 @@ const formatUsd = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
+// Outer shell is shared across idle / enabled / editing — uniform border in every
+// state. The "On" Badge below is the sole signal that a rule is active; an enabled
+// rule is not a warning, so no left-edge stripe or primary tint.
+function RuleShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-md border border-border bg-muted-surface px-4 py-3">
+      {children}
+    </div>
+  );
+}
+
+function RuleIcon() {
+  return (
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground">
+      <Zap className="size-4" aria-hidden="true" />
+    </div>
+  );
+}
+
 interface AutoTopUpRuleProps {
   isExpanded: boolean;
   onRequestEdit: () => void;
@@ -57,13 +77,18 @@ export default function AutoTopUpRule({
   if (isExpanded) {
     return (
       <AutoTopUpEditor
-        defaults={{ thresholdUsd, amountUsd }}
         wasOn={enabled}
+        defaults={{ thresholdUsd, amountUsd }}
         hasPaymentMethod={hasPaymentMethod}
         paymentMethodLabel={hasPaymentMethod ? `${brand} ending ${last4}` : null}
         onSave={(values) => {
           setAutoTopUp({ enabled: true, ...values });
           toast.success(enabled ? "Auto top-up updated" : "Auto top-up enabled");
+          onCollapse();
+        }}
+        onTurnOff={() => {
+          setAutoTopUp({ enabled: false, thresholdUsd, amountUsd });
+          toast.success("Auto top-up disabled");
           onCollapse();
         }}
         onCancel={onCollapse}
@@ -73,54 +98,67 @@ export default function AutoTopUpRule({
 
   if (enabled) {
     return (
-      <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <h4 className="text-body font-medium text-foreground">
-              Auto top-up
-            </h4>
-            <Badge variant="success" showDot>
-              On
-            </Badge>
+      <RuleShell>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <RuleIcon />
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <h4 className="text-body font-medium text-foreground">
+                  Auto top-up
+                </h4>
+                <Badge variant="success" showDot>
+                  On
+                </Badge>
+              </div>
+              <p className="text-caption text-muted-foreground">
+                Refills the balance when it dips below your threshold.
+              </p>
+            </div>
           </div>
-          <p className="text-caption text-muted-foreground">
-            When balance drops below {formatUsd(thresholdUsd)}, add{" "}
-            {formatUsd(amountUsd)}.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={onRequestEdit}>
+          <Button variant="secondary" onClick={onRequestEdit}>
             Edit
           </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setAutoTopUp({ enabled: false, thresholdUsd, amountUsd });
-              toast.success("Auto top-up disabled");
-            }}
-          >
-            Turn off
-          </Button>
         </div>
-      </div>
+
+        <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 pl-11">
+          <dt className="text-caption text-muted-foreground">
+            Below threshold
+          </dt>
+          <dt className="text-caption text-muted-foreground">Refill amount</dt>
+          <dd className="font-mono text-body font-medium tabular-nums text-foreground">
+            {formatUsd(thresholdUsd)}
+          </dd>
+          <dd className="font-mono text-body font-medium tabular-nums text-foreground">
+            {formatUsd(amountUsd)}
+          </dd>
+        </dl>
+      </RuleShell>
     );
   }
 
   return (
-    <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <h4 className="text-body font-medium text-foreground">Auto top-up</h4>
-          <Badge variant="neutral">Off</Badge>
+    <RuleShell>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <RuleIcon />
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <h4 className="text-body font-medium text-foreground">
+                Auto top-up
+              </h4>
+              <Badge variant="neutral">Off</Badge>
+            </div>
+            <p className="text-caption text-muted-foreground">
+              Add credits when the balance drops below a threshold.
+            </p>
+          </div>
         </div>
-        <p className="text-caption text-muted-foreground">
-          Add credits when the balance drops below a threshold.
-        </p>
+        <Button variant="secondary" onClick={onRequestEdit}>
+          Enable
+        </Button>
       </div>
-      <Button variant="secondary" onClick={onRequestEdit}>
-        Enable
-      </Button>
-    </div>
+    </RuleShell>
   );
 }
 
@@ -130,6 +168,7 @@ interface AutoTopUpEditorProps {
   hasPaymentMethod: boolean;
   paymentMethodLabel: string | null;
   onSave: (values: Values) => void;
+  onTurnOff: () => void;
   onCancel: () => void;
 }
 
@@ -139,6 +178,7 @@ function AutoTopUpEditor({
   hasPaymentMethod,
   paymentMethodLabel,
   onSave,
+  onTurnOff,
   onCancel,
 }: AutoTopUpEditorProps) {
   const form = useForm<Values>({
@@ -171,77 +211,94 @@ function AutoTopUpEditor({
   const submitLabel = resolveSubmitLabel(isSubmitting, wasOn);
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      className="flex flex-col gap-3 rounded-md border border-border bg-card px-4 py-3"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <h4 className="text-body font-medium text-foreground">Auto top-up</h4>
-      </div>
+    <RuleShell>
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          <RuleIcon />
+          <h4 className="text-body font-medium text-foreground mt-1">
+            Auto top-up
+          </h4>
+        </div>
 
-      <FieldRow cols={2}>
-        <Field
-          label="Balance threshold"
-          error={errors.thresholdUsd?.message}
-          hint="USD"
-        >
-          <Input
-            type="number"
-            step="1"
-            min="1"
-            aria-invalid={errors.thresholdUsd ? true : undefined}
-            {...register("thresholdUsd", { valueAsNumber: true })}
-          />
-        </Field>
-        <Field
-          label="Top-up amount"
-          error={errors.amountUsd?.message}
-          hint="USD"
-        >
-          <Input
-            type="number"
-            step="1"
-            min="1"
-            aria-invalid={errors.amountUsd ? true : undefined}
-            {...register("amountUsd", { valueAsNumber: true })}
-          />
-        </Field>
-      </FieldRow>
+        <div className="pl-11 flex flex-col gap-3">
+          <FieldRow cols={2}>
+            <Field
+              label="Balance threshold"
+              error={errors.thresholdUsd?.message}
+              hint="USD"
+            >
+              <Input
+                type="number"
+                step="1"
+                min="1"
+                aria-invalid={errors.thresholdUsd ? true : undefined}
+                {...register("thresholdUsd", { valueAsNumber: true })}
+              />
+            </Field>
+            <Field
+              label="Top-up amount"
+              error={errors.amountUsd?.message}
+              hint="USD"
+            >
+              <Input
+                type="number"
+                step="1"
+                min="1"
+                aria-invalid={errors.amountUsd ? true : undefined}
+                {...register("amountUsd", { valueAsNumber: true })}
+              />
+            </Field>
+          </FieldRow>
 
-      <div className="flex flex-col gap-0.5">
-        <p className="text-caption text-muted-foreground">
-          When balance drops below {previewThreshold}, {previewAmount} will be
-          added automatically.
-        </p>
-        {paymentMethodLabel ? (
-          <p className="text-caption text-meta-foreground">
-            Charged to {paymentMethodLabel}.
-          </p>
-        ) : null}
-      </div>
+          <div className="flex flex-col gap-0.5">
+            <p className="text-caption text-muted-foreground">
+              When balance drops below {previewThreshold}, {previewAmount} will
+              be added automatically.
+            </p>
+            {paymentMethodLabel ? (
+              <p className="text-caption text-meta-foreground">
+                Charged to {paymentMethodLabel}.
+              </p>
+            ) : null}
+          </div>
 
-      {!hasPaymentMethod ? (
-        <InlineGate tier={1} verb="enable auto top-up" />
-      ) : null}
+          {!hasPaymentMethod ? (
+            <InlineGate tier={1} verb="enable auto top-up" />
+          ) : null}
 
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting || !isValid || !hasPaymentMethod}
-        >
-          {submitLabel}
-        </Button>
-      </div>
-    </form>
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              {wasOn ? (
+                <Button
+                  type="button"
+                  variant="destructive-ghost"
+                  onClick={onTurnOff}
+                  disabled={isSubmitting}
+                >
+                  Turn off
+                </Button>
+              ) : null}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSubmitting || !isValid || !hasPaymentMethod}
+              >
+                {submitLabel}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </RuleShell>
   );
 }

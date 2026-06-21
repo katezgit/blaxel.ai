@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Calendar } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
@@ -34,6 +35,22 @@ const formatUsd = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
+function RuleShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-md border border-border bg-muted-surface px-4 py-3">
+      {children}
+    </div>
+  );
+}
+
+function RuleIcon() {
+  return (
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground">
+      <Calendar className="size-4" aria-hidden="true" />
+    </div>
+  );
+}
+
 interface MonthlyTopUpRuleProps {
   isExpanded: boolean;
   onRequestEdit: () => void;
@@ -53,8 +70,8 @@ export default function MonthlyTopUpRule({
   if (isExpanded) {
     return (
       <MonthlyTopUpEditor
-        defaults={{ amountUsd }}
         wasOn={enabled}
+        defaults={{ amountUsd }}
         hasPaymentMethod={hasPaymentMethod}
         paymentMethodLabel={hasPaymentMethod ? `${brand} ending ${last4}` : null}
         onSave={(values) => {
@@ -64,6 +81,11 @@ export default function MonthlyTopUpRule({
           );
           onCollapse();
         }}
+        onTurnOff={() => {
+          setMonthlyTopUp({ enabled: false, amountUsd });
+          toast.success("Monthly top-up disabled");
+          onCollapse();
+        }}
         onCancel={onCollapse}
       />
     );
@@ -71,55 +93,65 @@ export default function MonthlyTopUpRule({
 
   if (enabled) {
     return (
-      <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <h4 className="text-body font-medium text-foreground">
-              Monthly top-up
-            </h4>
-            <Badge variant="success" showDot>
-              On
-            </Badge>
+      <RuleShell>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <RuleIcon />
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <h4 className="text-body font-medium text-foreground">
+                  Monthly top-up
+                </h4>
+                <Badge variant="success" showDot>
+                  On
+                </Badge>
+              </div>
+              <p className="text-caption text-muted-foreground">
+                Adds a fixed amount on a recurring schedule.
+              </p>
+            </div>
           </div>
-          <p className="text-caption text-muted-foreground">
-            Add {formatUsd(amountUsd)} on the first day of each month.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={onRequestEdit}>
+          <Button variant="secondary" onClick={onRequestEdit}>
             Edit
           </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setMonthlyTopUp({ enabled: false, amountUsd });
-              toast.success("Monthly top-up disabled");
-            }}
-          >
-            Turn off
-          </Button>
         </div>
-      </div>
+
+        <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 pl-11">
+          <dt className="text-caption text-muted-foreground">Amount</dt>
+          <dt className="text-caption text-muted-foreground">Charge date</dt>
+          <dd className="font-mono text-body font-medium tabular-nums text-foreground">
+            {formatUsd(amountUsd)}
+          </dd>
+          <dd className="text-body font-medium text-foreground">
+            First day of each month
+          </dd>
+        </dl>
+      </RuleShell>
     );
   }
 
   return (
-    <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <h4 className="text-body font-medium text-foreground">
-            Monthly top-up
-          </h4>
-          <Badge variant="neutral">Off</Badge>
+    <RuleShell>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <RuleIcon />
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <h4 className="text-body font-medium text-foreground">
+                Monthly top-up
+              </h4>
+              <Badge variant="neutral">Off</Badge>
+            </div>
+            <p className="text-caption text-muted-foreground">
+              Add a fixed credit amount every month.
+            </p>
+          </div>
         </div>
-        <p className="text-caption text-muted-foreground">
-          Add a fixed credit amount every month.
-        </p>
+        <Button variant="secondary" onClick={onRequestEdit}>
+          Enable
+        </Button>
       </div>
-      <Button variant="secondary" onClick={onRequestEdit}>
-        Enable
-      </Button>
-    </div>
+    </RuleShell>
   );
 }
 
@@ -129,6 +161,7 @@ interface MonthlyTopUpEditorProps {
   hasPaymentMethod: boolean;
   paymentMethodLabel: string | null;
   onSave: (values: Values) => void;
+  onTurnOff: () => void;
   onCancel: () => void;
 }
 
@@ -138,6 +171,7 @@ function MonthlyTopUpEditor({
   hasPaymentMethod,
   paymentMethodLabel,
   onSave,
+  onTurnOff,
   onCancel,
 }: MonthlyTopUpEditorProps) {
   const form = useForm<Values>({
@@ -168,70 +202,85 @@ function MonthlyTopUpEditor({
   const submitLabel = resolveSubmitLabel(isSubmitting, wasOn);
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      className="flex flex-col gap-3 rounded-md border border-border bg-card px-4 py-3"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <h4 className="text-body font-medium text-foreground">
-          Monthly top-up
-        </h4>
-      </div>
+    <RuleShell>
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          <RuleIcon />
+          <h4 className="text-body font-medium text-foreground mt-1">
+            Monthly top-up
+          </h4>
+        </div>
 
-      <FieldRow cols={2}>
-        <Field
-          label="Monthly top-up amount"
-          error={errors.amountUsd?.message}
-          hint="USD"
-        >
-          <Input
-            type="number"
-            step="1"
-            min="1"
-            aria-invalid={errors.amountUsd ? true : undefined}
-            {...register("amountUsd", { valueAsNumber: true })}
-          />
-        </Field>
-        <Field label="Charge date">
-          <div className="flex h-9 items-center rounded-md border border-border bg-muted-surface px-3 text-body text-muted-foreground">
-            First day of each month
+        <div className="pl-11 flex flex-col gap-3">
+          <FieldRow cols={2}>
+            <Field
+              label="Monthly top-up amount"
+              error={errors.amountUsd?.message}
+              hint="USD"
+            >
+              <Input
+                type="number"
+                step="1"
+                min="1"
+                aria-invalid={errors.amountUsd ? true : undefined}
+                {...register("amountUsd", { valueAsNumber: true })}
+              />
+            </Field>
+            <Field label="Charge date">
+              <div className="flex h-9 items-center rounded-md border border-border bg-card px-3 text-body text-muted-foreground">
+                First day of each month
+              </div>
+            </Field>
+          </FieldRow>
+
+          <div className="flex flex-col gap-0.5">
+            <p className="text-caption text-muted-foreground">
+              {previewAmount} will be added on the first day of each month.
+            </p>
+            {paymentMethodLabel ? (
+              <p className="text-caption text-meta-foreground">
+                Charged to {paymentMethodLabel}.
+              </p>
+            ) : null}
           </div>
-        </Field>
-      </FieldRow>
 
-      <div className="flex flex-col gap-0.5">
-        <p className="text-caption text-muted-foreground">
-          {previewAmount} will be added on the first day of each month.
-        </p>
-        {paymentMethodLabel ? (
-          <p className="text-caption text-meta-foreground">
-            Charged to {paymentMethodLabel}.
-          </p>
-        ) : null}
-      </div>
+          {!hasPaymentMethod ? (
+            <InlineGate tier={1} verb="enable monthly top-up" />
+          ) : null}
 
-      {!hasPaymentMethod ? (
-        <InlineGate tier={1} verb="enable monthly top-up" />
-      ) : null}
-
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting || !isValid || !hasPaymentMethod}
-        >
-          {submitLabel}
-        </Button>
-      </div>
-    </form>
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              {wasOn ? (
+                <Button
+                  type="button"
+                  variant="destructive-ghost"
+                  onClick={onTurnOff}
+                  disabled={isSubmitting}
+                >
+                  Turn off
+                </Button>
+              ) : null}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSubmitting || !isValid || !hasPaymentMethod}
+              >
+                {submitLabel}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </RuleShell>
   );
 }

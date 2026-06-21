@@ -8,10 +8,10 @@ export default function CreditsView() {
     <div className="page-shell">
       <header className="page-header">
         <h1 className="text-display font-semibold text-foreground">
-          Credits &amp; top-ups
+          Credits &amp; funding
         </h1>
         <p className="text-muted-foreground">
-          Fund your account and prevent interruptions.
+          Manage account balance and automatic funding.
         </p>
       </header>
 
