@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@repo/ui/components/button";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 import AutoTopUpRule from "./auto-top-up-rule";
@@ -27,53 +25,31 @@ export default function TopUpSettingsCard() {
   return (
     <Panel
       title="Top-up settings"
-      subtitle="Manage how credits are added to this account."
+      subtitle="Manage automatic credit top-ups."
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-6">
         <section
           aria-labelledby="payment-method-label"
-          className="flex items-center justify-between gap-4 pb-6"
+          className="flex flex-col gap-1"
         >
-          <div className="flex flex-col gap-0.5">
-            <span
-              id="payment-method-label"
-              className="text-label text-muted-foreground"
+          <span
+            id="payment-method-label"
+            className="text-label text-muted-foreground"
+          >
+            Payment method
+          </span>
+          <div className="flex items-center gap-2 text-body text-foreground">
+            <span>{paymentMethodLabel}</span>
+            <span aria-hidden="true" className="text-muted-foreground">
+              ·
+            </span>
+            <Link
+              href="/account/billing/invoices#payment-method"
+              className="text-primary hover:underline"
             >
-              Payment method
-            </span>
-            <span className="text-body text-foreground">
-              {paymentMethodLabel}
-            </span>
-          </div>
-          <Button asChild variant="secondary">
-            <Link href="/account/billing/invoices#payment-method">
               {hasPaymentMethod ? "Change payment method" : "Add payment method"}
             </Link>
-          </Button>
-        </section>
-
-        <section
-          aria-labelledby="manual-top-up-heading"
-          className="flex items-start justify-between gap-4 border-t border-border py-6"
-        >
-          <div className="flex flex-col gap-1">
-            <h3
-              id="manual-top-up-heading"
-              className="text-body font-semibold text-foreground"
-            >
-              Manual top-up
-            </h3>
-            <p className="text-caption text-muted-foreground">
-              Add credits once. Use this when you want to increase the balance
-              immediately.
-            </p>
           </div>
-          <Button asChild variant="primary">
-            <Link href="/account/billing/credits/stripe-redirect">
-              <Plus aria-hidden="true" />
-              Add credits
-            </Link>
-          </Button>
         </section>
 
         <section

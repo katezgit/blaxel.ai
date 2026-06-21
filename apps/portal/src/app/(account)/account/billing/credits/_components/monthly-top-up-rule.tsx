@@ -171,17 +171,12 @@ function MonthlyTopUpEditor({
     <form
       onSubmit={onSubmit}
       noValidate
-      className="flex flex-col gap-4 rounded-md border border-border bg-card px-4 py-4"
+      className="flex flex-col gap-3 rounded-md border border-border bg-card px-4 py-3"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h4 className="text-body font-medium text-foreground">
-            Monthly top-up
-          </h4>
-          <p className="text-caption text-muted-foreground">
-            Add a fixed credit amount every month.
-          </p>
-        </div>
+      <div className="flex items-center justify-between gap-3">
+        <h4 className="text-body font-medium text-foreground">
+          Monthly top-up
+        </h4>
       </div>
 
       <FieldRow cols={2}>
@@ -205,7 +200,7 @@ function MonthlyTopUpEditor({
         </Field>
       </FieldRow>
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-0.5">
         <p className="text-caption text-muted-foreground">
           {previewAmount} will be added on the first day of each month.
         </p>

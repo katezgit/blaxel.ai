@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 
@@ -29,14 +32,24 @@ export default function CreditBalanceCard() {
 
   return (
     <Panel title="Credit balance">
-      <output
-        aria-live="polite"
-        aria-atomic="true"
-        className="block font-mono text-display font-semibold tabular-nums text-foreground"
-      >
-        {formatUsd(state.balanceUsd)}
-      </output>
-      <p className="mt-2 text-body text-muted-foreground">{lastTopUpLabel}</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <output
+            aria-live="polite"
+            aria-atomic="true"
+            className="block font-mono text-display font-semibold tabular-nums text-foreground"
+          >
+            {formatUsd(state.balanceUsd)}
+          </output>
+          <p className="text-body text-muted-foreground">{lastTopUpLabel}</p>
+        </div>
+        <Button asChild variant="primary">
+          <Link href="/account/billing/credits/stripe-redirect">
+            <Plus aria-hidden="true" />
+            Add credits
+          </Link>
+        </Button>
+      </div>
     </Panel>
   );
 }
