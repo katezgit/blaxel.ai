@@ -43,6 +43,8 @@ function Command({
 
 function CommandDialog({
   children,
+  contentClassName,
+  overlayClassName,
   ...props
 }: React.ComponentProps<typeof CommandDialogPrimitive>) {
   return (
@@ -61,6 +63,7 @@ function CommandDialog({
         "outline-none",
         "data-[state=open]:animate-slide-up-in",
         "data-[state=closed]:animate-slide-down-out",
+        contentClassName,
       )}
       overlayClassName={cn(
         "fixed inset-0 z-overlay",
@@ -68,6 +71,7 @@ function CommandDialog({
         "supports-[backdrop-filter]:backdrop-blur-overlay-dialog",
         "data-[state=open]:animate-fade-in",
         "data-[state=closed]:animate-fade-out",
+        overlayClassName,
       )}
       {...props}
     >
