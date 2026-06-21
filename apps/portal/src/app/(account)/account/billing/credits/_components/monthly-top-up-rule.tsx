@@ -9,6 +9,7 @@ import { Calendar } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
+import { Switch } from "@repo/ui/components/switch";
 import InlineGate from "@/app/(account)/account/_components/inline-gate";
 import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
@@ -81,11 +82,6 @@ export default function MonthlyTopUpRule({
           );
           onCollapse();
         }}
-        onTurnOff={() => {
-          setMonthlyTopUp({ enabled: false, amountUsd });
-          toast.success("Monthly top-up disabled");
-          onCollapse();
-        }}
         onCancel={onCollapse}
       />
     );
@@ -111,9 +107,20 @@ export default function MonthlyTopUpRule({
               </p>
             </div>
           </div>
-          <Button variant="secondary" onClick={onRequestEdit}>
-            Edit
-          </Button>
+          <div className="flex items-center gap-3">
+            <Switch
+              size="sm"
+              checked
+              aria-label="Disable monthly top-up"
+              onCheckedChange={() => {
+                setMonthlyTopUp({ enabled: false, amountUsd });
+                toast.success("Monthly top-up disabled");
+              }}
+            />
+            <Button variant="secondary" onClick={onRequestEdit}>
+              Edit
+            </Button>
+          </div>
         </div>
 
         <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 pl-11">
@@ -161,7 +168,6 @@ interface MonthlyTopUpEditorProps {
   hasPaymentMethod: boolean;
   paymentMethodLabel: string | null;
   onSave: (values: Values) => void;
-  onTurnOff: () => void;
   onCancel: () => void;
 }
 
@@ -171,7 +177,6 @@ function MonthlyTopUpEditor({
   hasPaymentMethod,
   paymentMethodLabel,
   onSave,
-  onTurnOff,
   onCancel,
 }: MonthlyTopUpEditorProps) {
   const form = useForm<Values>({
@@ -248,36 +253,22 @@ function MonthlyTopUpEditor({
             <InlineGate tier={1} verb="enable monthly top-up" />
           ) : null}
 
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              {wasOn ? (
-                <Button
-                  type="button"
-                  variant="destructive-ghost"
-                  onClick={onTurnOff}
-                  disabled={isSubmitting}
-                >
-                  Turn off
-                </Button>
-              ) : null}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={isSubmitting || !isValid || !hasPaymentMethod}
-              >
-                {submitLabel}
-              </Button>
-            </div>
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSubmitting || !isValid || !hasPaymentMethod}
+            >
+              {submitLabel}
+            </Button>
           </div>
         </div>
       </form>

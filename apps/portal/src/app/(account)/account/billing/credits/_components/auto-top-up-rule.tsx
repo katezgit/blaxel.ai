@@ -9,6 +9,7 @@ import { Zap } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
+import { Switch } from "@repo/ui/components/switch";
 import InlineGate from "@/app/(account)/account/_components/inline-gate";
 import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
@@ -86,11 +87,6 @@ export default function AutoTopUpRule({
           toast.success(enabled ? "Auto top-up updated" : "Auto top-up enabled");
           onCollapse();
         }}
-        onTurnOff={() => {
-          setAutoTopUp({ enabled: false, thresholdUsd, amountUsd });
-          toast.success("Auto top-up disabled");
-          onCollapse();
-        }}
         onCancel={onCollapse}
       />
     );
@@ -116,9 +112,20 @@ export default function AutoTopUpRule({
               </p>
             </div>
           </div>
-          <Button variant="secondary" onClick={onRequestEdit}>
-            Edit
-          </Button>
+          <div className="flex items-center gap-3">
+            <Switch
+              size="sm"
+              checked
+              aria-label="Disable auto top-up"
+              onCheckedChange={() => {
+                setAutoTopUp({ enabled: false, thresholdUsd, amountUsd });
+                toast.success("Auto top-up disabled");
+              }}
+            />
+            <Button variant="secondary" onClick={onRequestEdit}>
+              Edit
+            </Button>
+          </div>
         </div>
 
         <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 pl-11">
@@ -168,7 +175,6 @@ interface AutoTopUpEditorProps {
   hasPaymentMethod: boolean;
   paymentMethodLabel: string | null;
   onSave: (values: Values) => void;
-  onTurnOff: () => void;
   onCancel: () => void;
 }
 
@@ -178,7 +184,6 @@ function AutoTopUpEditor({
   hasPaymentMethod,
   paymentMethodLabel,
   onSave,
-  onTurnOff,
   onCancel,
 }: AutoTopUpEditorProps) {
   const form = useForm<Values>({
@@ -266,36 +271,22 @@ function AutoTopUpEditor({
             <InlineGate tier={1} verb="enable auto top-up" />
           ) : null}
 
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              {wasOn ? (
-                <Button
-                  type="button"
-                  variant="destructive-ghost"
-                  onClick={onTurnOff}
-                  disabled={isSubmitting}
-                >
-                  Turn off
-                </Button>
-              ) : null}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={isSubmitting || !isValid || !hasPaymentMethod}
-              >
-                {submitLabel}
-              </Button>
-            </div>
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSubmitting || !isValid || !hasPaymentMethod}
+            >
+              {submitLabel}
+            </Button>
           </div>
         </div>
       </form>
