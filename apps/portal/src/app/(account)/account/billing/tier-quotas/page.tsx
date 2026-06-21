@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PlanQuotasView } from "./_components/plan-quotas-view";
+import PlanQuotasView from "./_components/plan-quotas-view";
 
 export const metadata: Metadata = {
   title: "Tier & quotas",

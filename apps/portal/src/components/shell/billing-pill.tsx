@@ -10,9 +10,8 @@ import {
 import { useAccountState } from "@/lib/mock/account-context";
 
 /**
- * Topbar billing shortcut. Renders tier label + live credit balance as a
- * secondary (outlined) button linking to /account/billing/credits (not
- * /account/billing/tier-quotas — this is a billing shortcut, not a tier badge).
+ * Links to /account/billing/credits (not /account/billing/tier-quotas) —
+ * this is a billing shortcut, not a tier badge.
  */
 export default function BillingPill() {
   const { state } = useAccountState();

@@ -944,9 +944,8 @@ interface BillingHeaderStripProps {
   deltaComparable: boolean;
 }
 
-// Header contract from scenarios.md — period credits + Δ, period dollars,
-// account balance. Visible regardless of chart type so the user always sees
-// the anchor numbers, not just the curve.
+// Period credits + Δ, period dollars, account balance — visible regardless of
+// chart type so the user always sees the anchor numbers, not just the curve.
 function BillingHeaderStrip({
   dataset,
   tab,
@@ -958,26 +957,29 @@ function BillingHeaderStrip({
   const dollarsValue = dataset ? `$${dataset.totalCost.toFixed(2)}` : "$0.00";
   const delta = dataset?.deltaRatio ?? 0;
   const deltaPercent = Math.round(delta * 100);
-  const deltaLabel =
-    deltaPercent > 0 ? `▲ +${deltaPercent}%` : deltaPercent < 0 ? `▼ ${deltaPercent}%` : "—";
-  const deltaColor =
-    deltaPercent > 0
-      ? "text-state-warning"
-      : deltaPercent < 0
-        ? "text-state-scored"
-        : "text-muted-foreground";
+  let deltaLabel = "—";
+  let deltaColor = "text-muted-foreground";
+  if (deltaPercent > 0) {
+    deltaLabel = `▲ +${deltaPercent}%`;
+    deltaColor = "text-state-warning";
+  } else if (deltaPercent < 0) {
+    deltaLabel = `▼ ${deltaPercent}%`;
+    deltaColor = "text-state-scored";
+  }
 
-  const creditsSecondary = !usageAvailable
-    ? "Mixed units — filter by resource type or break down by billing dimension"
-    : !dataset
-      ? "No usage yet"
-      : deltaComparable
-        ? `${deltaLabel} vs last period`
-        : "Custom range — Δ requires a comparable period";
-  const creditsSecondaryColor =
-    usageAvailable && dataset && deltaComparable
-      ? deltaColor
-      : "text-muted-foreground";
+  let creditsSecondary: string;
+  let creditsSecondaryColor = "text-muted-foreground";
+  if (!usageAvailable) {
+    creditsSecondary =
+      "Mixed units — filter by resource type or break down by billing dimension";
+  } else if (!dataset) {
+    creditsSecondary = "No usage yet";
+  } else if (deltaComparable) {
+    creditsSecondary = `${deltaLabel} vs last period`;
+    creditsSecondaryColor = deltaColor;
+  } else {
+    creditsSecondary = "Custom range — Δ requires a comparable period";
+  }
 
   return (
     <Card className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
@@ -1069,9 +1071,8 @@ interface TopContributorsProps {
   tab: "usage" | "cost";
 }
 
-// Sc1 (steady-state gut-check) + Sc4 (reconciliation) + Sc5 (hygiene) all need
-// "ranked by contribution" in <10s. This rail answers that without forcing the
-// user to read the chart's geometry.
+// "Ranked by contribution" visible without forcing the user to read the
+// chart's geometry.
 function TopContributors({ dataset, tab }: TopContributorsProps) {
   const items = seriesTotals(dataset);
   const ranked = [...items].sort((a, b) => b.total - a.total).slice(0, 5);

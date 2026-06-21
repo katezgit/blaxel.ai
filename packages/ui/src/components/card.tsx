@@ -7,8 +7,8 @@ import { cn } from "@repo/ui/lib/cn"
 const cardVariants = cva(
   // Base: text, radius, flex layout — bg and border intentionally omitted here;
   // each variant sets them explicitly so elevated can rely on shadow-card's ring
-  // as its sole boundary (avoids double-edge in dark mode where the 1px ring
-  // shadow and border-border sit adjacent and read as a doubled outline).
+  // as its sole boundary (avoids the doubled-outline artifact when the 1px ring
+  // shadow and border-border sit adjacent).
   [
     "relative flex flex-col",
     "rounded-surface",
@@ -27,7 +27,7 @@ const cardVariants = cva(
          * Elevated: panel surface with shadow-card providing both the 1px ring
          * boundary AND the soft drop. No explicit border — the ring layer of
          * --shadow-1 (0 0 0 1px rgba) is the single edge, which avoids the
-         * double-outline artifact in dark mode where border + ring sit adjacent.
+         * double-outline artifact when border + ring sit adjacent.
          */
         elevated: ["bg-panel", "shadow-card"],
 

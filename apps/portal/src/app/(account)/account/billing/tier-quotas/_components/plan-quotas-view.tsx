@@ -16,7 +16,7 @@ import { useAccountState } from "@/lib/mock/account-context";
 import QuotaDetail from "./quota-detail";
 import TierComparison from "./tier-comparison";
 
-export function PlanQuotasView() {
+export default function PlanQuotasView() {
   const { state } = useAccountState();
   const [drawerOpen, setDrawerOpen] = useState(false);
 

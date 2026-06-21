@@ -21,13 +21,9 @@ export default function BillingSummaryPanel() {
   const openInvoices = state.invoices.filter((inv) => inv.status === "Open");
   const activeAddons = state.addons.filter((a) => a.active);
 
-  const tierValue = (() => {
-    if (!progress.nextTier) {
-      return `Tier ${state.tier} · highest tier reached`;
-    }
-    const next = progress.nextRequirement?.toLowerCase() ?? "";
-    return `Tier ${state.tier} · ${next} for Tier ${progress.nextTier}`;
-  })();
+  const tierValue = !progress.nextTier
+    ? `Tier ${state.tier} · highest tier reached`
+    : `Tier ${state.tier} · ${progress.nextRequirement?.toLowerCase() ?? ""} for Tier ${progress.nextTier}`;
 
   const invoicesValue =
     openInvoices.length === 0
