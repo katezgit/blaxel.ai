@@ -164,7 +164,7 @@ export const ACCOUNT_NAV_GROUPS: ReadonlyArray<NavGroup> = [
       { href: "/account/billing/credits", label: "Credits & top-ups", icon: CreditCard },
       { href: "/account/billing/plan", label: "Tier & quotas", icon: Gauge },
       { href: "/account/billing/invoices", label: "Invoices & payment", icon: Receipt },
-      { href: "/account/billing/add-ons", label: "Add-ons", icon: Gem },
+      { href: "/account/billing/add-ons", label: "Premium services", icon: Gem },
     ],
   },
 ];
