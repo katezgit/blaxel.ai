@@ -16,21 +16,12 @@ import {
   ArrowRight,
   ArrowUp,
   ArrowUpDown,
-  MoreHorizontal,
   Plus,
   Search,
-  Settings,
 } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { CopyButton } from "@repo/ui/components/copy-button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@repo/ui/components/dropdown-menu";
 import { EmptyState } from "@repo/ui/components/empty-state";
-import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
 import {
   Tooltip,
@@ -120,10 +111,15 @@ export default function WorkspacesClient() {
           <span className="text-meta-foreground">Created by</span>
         ),
         enableSorting: false,
-        cell: (info) => (
-          <span className="text-body text-muted-foreground">
-            {info.getValue()}
-          </span>
+        cell: ({ row }) => (
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-body text-foreground">
+              {row.original.accountOwnerName}
+            </span>
+            <span className="font-mono text-caption text-muted-foreground">
+              {row.original.accountOwner}
+            </span>
+          </div>
         ),
       }),
       columnHelper.accessor("createdAt", {
@@ -136,15 +132,6 @@ export default function WorkspacesClient() {
             {info.getValue()}
           </span>
         ),
-      }),
-      columnHelper.display({
-        id: "action",
-        header: () => <span className="sr-only">Action</span>,
-        meta: {
-          headerClassName: "w-32",
-          cellClassName: "text-right",
-        },
-        cell: ({ row }) => <RowActions workspace={row.original} />,
       }),
     ],
     [],
@@ -287,7 +274,9 @@ export default function WorkspacesClient() {
           table={table}
           bordered
           caption="Workspaces"
-          onRowClick={(row) => router.push(`/${row.original.slug}`)}
+          onRowClick={(row) =>
+            router.push(`/${row.original.slug}/settings/general`)
+          }
         />
       )}
     </>
@@ -298,7 +287,7 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <Link
-        href={`/${workspace.slug}`}
+        href={`/${workspace.slug}/settings/general`}
         className="truncate font-mono text-body text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm outline-hidden"
       >
         {workspace.name}
@@ -316,40 +305,6 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
           tooltipLabel="Copy workspace ID"
         />
       </div>
-    </div>
-  );
-}
-
-function RowActions({ workspace }: { workspace: Org }) {
-  return (
-    <div
-      className="flex items-center justify-end gap-1"
-      onClick={(event) => event.stopPropagation()}
-    >
-      <Button variant="secondary" asChild>
-        <Link href={`/${workspace.slug}`} aria-label={`Open ${workspace.name}`}>
-          Open
-        </Link>
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <IconButton
-            variant="ghost"
-            size="sm"
-            aria-label={`More actions for ${workspace.name}`}
-          >
-            <MoreHorizontal />
-          </IconButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem asChild>
-            <Link href={`/${workspace.slug}/settings/name`}>
-              <Settings aria-hidden="true" className="size-3.5" />
-              Workspace settings
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   );
 }

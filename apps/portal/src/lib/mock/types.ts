@@ -35,6 +35,8 @@ export interface Org {
   accountId: string;
   /** Email of the account owner. Surfaced read-only on workspace settings — escalation contact. */
   accountOwner: string;
+  /** Display name of the account owner, paired with `accountOwner` email for two-line presentation. */
+  accountOwnerName: string;
   /** Workspace-scoped sandbox runtime defaults. */
   sandboxSettings: {
     /** When true, sandboxes do not capture per-process stdout/stderr. Mirrors live Blaxel toggle. */

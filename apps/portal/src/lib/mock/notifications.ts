@@ -47,7 +47,7 @@ function daysAgo(d: number): string {
   return minutesAgo(d * 60 * 24);
 }
 
-const WORKSPACE_SLUG = "prod";
+const WORKSPACE_SLUG = "astra-prod";
 
 const FIXTURES: ReadonlyArray<Notification> = [
   {
@@ -98,7 +98,7 @@ const FIXTURES: ReadonlyArray<Notification> = [
   {
     id: "ntf_invite_received",
     category: "collaboration",
-    title: "Workspace invitation: staging",
+    title: "Workspace invitation: astra-staging",
     body: "Hana Park invited you as admin.",
     timestamp: hoursAgo(7),
     read: true,
@@ -144,7 +144,7 @@ const FIXTURES: ReadonlyArray<Notification> = [
     id: "ntf_invite_accepted",
     category: "collaboration",
     title: "Riya Shah accepted your invitation",
-    body: "Joined prod as member.",
+    body: "Joined astra-prod as member.",
     timestamp: daysAgo(3),
     read: true,
     href: `/${WORKSPACE_SLUG}/settings/team`,
