@@ -1,19 +1,32 @@
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { requireSession } from "@/lib/auth/session";
 import AccountShell from "@/components/shell/account-shell";
+import { AccountShellSkeleton } from "@/components/shell/account-shell-skeleton";
+import { requireSession } from "@/lib/auth/session";
 import { getQueryClient } from "@/lib/query/get-query-client";
 import { orgQueries } from "@/lib/query/org";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { TenancyProvider } from "@/lib/query/tenancy-context";
 
-// Single auth/tenancy gate for both /profile/* and /account/*. AccountShell
-// is a client component and discriminates its sidebar (Profile vs Account)
-// from `usePathname()` — keeps the React-component icon refs out of the
-// server-to-client serialization boundary.
+// Sync layout — async work is delegated to AccountShellHost behind a
+// Suspense boundary so cross-shell entries paint the destination shell
+// skeleton immediately. The (account)/loading.tsx file-level fallback
+// can't catch the layout's own await (Next 16: loading.tsx wraps children
+// of a segment, not the segment's own layout), so the Suspense lives
+// inside the layout itself. Sub-shell discrimination (Profile vs Account
+// nav) stays URL-derived inside both the skeleton and the real shell.
 const FALLBACK_USER_TIER = "Tier 0";
 
-export default async function AccountLayout({ children }: { children: ReactNode }) {
+export default function AccountLayout({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<AccountShellSkeleton />}>
+      <AccountShellHost>{children}</AccountShellHost>
+    </Suspense>
+  );
+}
+
+async function AccountShellHost({ children }: { children: ReactNode }) {
   const [session, tenancy] = await Promise.all([
     requireSession(),
     getCurrentTenancy(),
