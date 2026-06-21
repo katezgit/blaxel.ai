@@ -116,8 +116,13 @@
   --color-primary-hover: light-dark(var(--orange-900), var(--orange-400));
   --color-primary-glow:  light-dark(
     color-mix(in srgb, var(--orange-700) 12%, transparent),
-    color-mix(in srgb, var(--orange-500) 14%, transparent)
+    color-mix(in srgb, var(--surface-bg-dark) 93.5%, var(--orange-500) 6.5%)
   );
+  /* Dark value: surface-anchored mix (94% surface + 6% orange-500). Pure
+   * orange alphas amplify warmth on near-black due to perceptual hue
+   * amplification at low luminance — anchoring on the sidebar's own bg
+   * surface keeps the selected tint readable above idle/hover without
+   * reading as orange. */
   /* Soft / border: alpha tints for badges and selection pills. */
   --color-primary-soft:   light-dark(
     color-mix(in srgb, var(--orange-800) 10%, transparent),
