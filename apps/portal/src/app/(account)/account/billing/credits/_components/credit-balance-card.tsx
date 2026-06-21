@@ -38,7 +38,7 @@ export default function CreditBalanceCard() {
   return (
     <Card
       variant="elevated"
-      className="flex flex-row items-center justify-between gap-4 bg-elevated-surface px-6 py-7"
+      className="flex flex-col gap-4 bg-elevated-surface px-6 py-6 sm:flex-row sm:items-center sm:justify-between"
     >
       <div className="flex flex-col gap-2">
         <span className="text-meta font-mono uppercase tracking-[0.16em] text-meta-foreground">
@@ -57,7 +57,7 @@ export default function CreditBalanceCard() {
           {paymentSummary}
         </p>
       </div>
-      <Button asChild variant="primary">
+      <Button asChild variant="primary" className="w-full sm:w-auto">
         <Link href="/account/billing/credits/stripe-redirect">
           <Plus aria-hidden="true" />
           Add credits

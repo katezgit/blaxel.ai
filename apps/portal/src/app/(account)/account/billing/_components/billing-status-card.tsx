@@ -48,9 +48,9 @@ export default function BillingStatusCard() {
   return (
     <Card
       variant="elevated"
-      className="flex flex-col gap-4 bg-elevated-surface p-6 sm:flex-row sm:items-start sm:justify-between"
+      className="flex flex-col gap-4 bg-elevated-surface p-6 sm:flex-row sm:items-center sm:justify-between"
     >
-      <dl className="grid flex-1 grid-cols-1 gap-x-8 gap-y-4 text-body sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="grid flex-1 grid-cols-2 gap-x-8 gap-y-4 text-body lg:grid-cols-3">
         <Field label="Current tier">
           <Badge variant="brand-soft" size="sm">Tier {state.tier}</Badge>
         </Field>

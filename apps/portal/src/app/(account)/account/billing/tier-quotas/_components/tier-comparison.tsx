@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Check, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
@@ -180,7 +180,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
 
       <div
         className={cn(
-          "grid gap-4 rounded-md border border-border bg-field-rest px-4 py-2",
+          "hidden sm:grid gap-4 rounded-md border border-border bg-field-rest px-4 py-2",
           GRID_COLS,
         )}
       >
@@ -244,7 +244,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       id={tier.tier === 0 ? "tier-row-0" : undefined}
       aria-current={isCurrent ? "true" : undefined}
       className={cn(
-        "group relative grid gap-4 rounded-md border px-4 py-4 transition-colors duration-fast ease-out-standard",
+        "group relative flex flex-col gap-3 rounded-md border px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
         GRID_COLS,
         isCurrent
           ? "border-primary"
@@ -252,7 +252,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       )}
     >
       {isCurrent ? (
-        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-[color-mix(in_srgb,var(--color-primary)_22%,var(--color-background))] px-1.5 font-mono text-meta uppercase text-primary">
+        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-background px-1.5 font-mono text-meta uppercase text-primary">
           Current tier
         </span>
       ) : null}
@@ -275,10 +275,14 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
         ) : null}
       </div>
 
-      <BulletList items={tier.keyQuotas} />
-      <BulletList items={tier.features} />
+      <LabeledCell label="Key quotas">
+        <BulletList items={tier.keyQuotas} />
+      </LabeledCell>
+      <LabeledCell label="Key limits & features">
+        <BulletList items={tier.features} />
+      </LabeledCell>
 
-      <div className="flex flex-col items-start gap-2">
+      <LabeledCell label="Requirement" className="items-start gap-2">
         {tier.progressLabel ? (
           <span className="font-mono text-caption text-muted-foreground tabular-nums">
             {tier.progressLabel}
@@ -286,7 +290,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
         ) : null}
         <span className="text-foreground">{tier.requirement}</span>
         <TierAction action={tier.action} isCurrent={isCurrent} />
-      </div>
+      </LabeledCell>
     </div>
   );
 }
@@ -300,7 +304,7 @@ function TierAction({ action, isCurrent }: TierActionProps) {
   if (!action || isCurrent) return null;
 
   const reveal =
-    "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-fast ease-out-standard";
+    "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-fast ease-out-standard";
 
   if (action === "top-up") {
     return (
@@ -317,6 +321,23 @@ function TierAction({ action, isCurrent }: TierActionProps) {
     <Button asChild variant="secondary" className={reveal}>
       <a href="mailto:sales@blaxel.ai">Contact Us</a>
     </Button>
+  );
+}
+
+interface LabeledCellProps {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}
+
+function LabeledCell({ label, children, className }: LabeledCellProps) {
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <span className="text-label font-medium text-muted-foreground sm:hidden">
+        {label}
+      </span>
+      {children}
+    </div>
   );
 }
 

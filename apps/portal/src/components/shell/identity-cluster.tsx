@@ -16,10 +16,10 @@ export function IdentityCluster({ user }: IdentityClusterProps) {
       <span className="ml-2">
         <HelpMenu />
       </span>
-      <span className="ml-3">
+      <span className="hidden sm:ml-3 sm:inline">
         <BillingPill />
       </span>
-      <span className="ml-3">
+      <span className="ml-4 sm:ml-3">
         <AvatarMenu user={user} />
       </span>
     </div>
