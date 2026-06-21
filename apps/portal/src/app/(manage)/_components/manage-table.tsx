@@ -109,6 +109,7 @@ export default function ManageTable<TData>({
             <tr
               key={row.id}
               className={cn(
+                "group/row",
                 tableRowVariants(),
                 noRowHover && "[tbody_&]:hover:bg-transparent",
                 onRowClick && "cursor-pointer",

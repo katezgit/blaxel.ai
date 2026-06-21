@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@repo/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
@@ -9,9 +10,8 @@ import {
 import { useAccountState } from "@/lib/mock/account-context";
 
 /**
- * Topbar billing shortcut. Renders tier label + live credit balance in one
- * outlined pill linking to /account/billing/credits (not /account/billing/plan
- * — the pill is a billing shortcut, not a tier badge).
+ * Links to /account/billing/credits (not /account/billing/tier-quotas) —
+ * this is a billing shortcut, not a tier badge.
  */
 export default function BillingPill() {
   const { state } = useAccountState();
@@ -21,19 +21,20 @@ export default function BillingPill() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Link
-          href="/account/billing/credits"
-          aria-label={`Tier ${state.tier} · Open Billing`}
-          className="inline-flex h-7 cursor-pointer items-center rounded-md border border-border bg-transparent px-2.5 text-label font-medium text-foreground transition-colors duration-fast ease-out-standard hover:bg-hover-surface focus-visible:shadow-focus-ring"
-        >
-          Tier {state.tier}
-          <span aria-hidden="true" className="mx-1.5 text-meta-foreground">
-            &middot;
-          </span>
-          <span className="tabular-nums">{balanceLabel}</span>
-        </Link>
+        <Button asChild variant="secondary">
+          <Link
+            href="/account/billing/credits"
+            aria-label={`Tier ${state.tier} · Open Billing`}
+          >
+            Tier {state.tier}
+            <span aria-hidden="true" className="text-meta-foreground">
+              &middot;
+            </span>
+            <span className="tabular-nums">{balanceLabel}</span>
+          </Link>
+        </Button>
       </TooltipTrigger>
-      <TooltipContent>Billing &amp; credits</TooltipContent>
+      <TooltipContent>Credits &amp; top-ups</TooltipContent>
     </Tooltip>
   );
 }

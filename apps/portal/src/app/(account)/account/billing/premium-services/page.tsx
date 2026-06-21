@@ -3,7 +3,7 @@ import { seedForTier } from "@/lib/mock/account";
 import AddOnRow from "./_components/addon-row";
 
 export const metadata: Metadata = {
-  title: "Add-ons",
+  title: "Premium services",
 };
 
 // Add-ons are tier-invariant in the mock (same template across every seed), so
@@ -15,10 +15,10 @@ export default function AddOnsPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Add-ons</h1>
+        <h1 className="text-display font-semibold text-foreground">Premium services</h1>
         <p className="text-muted-foreground">
-          Paid capabilities you can attach to your account, billed separately
-          from credit usage.
+          Optional paid services for support, compliance, and account-level
+          assistance.
         </p>
       </header>
 

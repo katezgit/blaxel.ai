@@ -88,6 +88,44 @@ export const activeSessions: ReadonlyArray<ActiveSession> = [
   },
 ];
 
+export interface WorkspaceMembership {
+  id: string;
+  workspaceName: string;
+  workspaceSlug: string;
+  role: "owner" | "admin" | "member";
+  /** ISO timestamp of when this user joined the workspace. */
+  joinedAt: string;
+  /** ISO timestamp of last activity in this workspace. */
+  lastAccessedAt: string;
+}
+
+export const workspaceMemberships: ReadonlyArray<WorkspaceMembership> = [
+  {
+    id: "wsm_astra_prod",
+    workspaceName: "astra-prod",
+    workspaceSlug: "astra-prod",
+    role: "admin",
+    joinedAt: "2026-04-12",
+    lastAccessedAt: "2026-06-21T09:14:00Z",
+  },
+  {
+    id: "wsm_astra_eval",
+    workspaceName: "astra-eval",
+    workspaceSlug: "astra-eval",
+    role: "admin",
+    joinedAt: "2026-05-19",
+    lastAccessedAt: "2026-06-20T16:30:00Z",
+  },
+  {
+    id: "wsm_astra_staging",
+    workspaceName: "astra-staging",
+    workspaceSlug: "astra-staging",
+    role: "member",
+    joinedAt: "2026-03-02",
+    lastAccessedAt: "2026-05-28T11:05:00Z",
+  },
+];
+
 export const workspaceInvitations: ReadonlyArray<WorkspaceInvitation> = [
   {
     id: "inv_horizon",

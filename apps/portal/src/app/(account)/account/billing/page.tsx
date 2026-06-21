@@ -1,8 +1,32 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import ActionNeededBand from "./_components/action-needed-band";
+import BillingStatusCard from "./_components/billing-status-card";
+import BillingSummaryPanel from "./_components/billing-summary-panel";
+import RecentActivityPanel from "./_components/recent-activity-panel";
 
-// /account/billing has no surface of its own — billing is split into Plan,
-// Credits, and Add-ons. Land on Credits as the default since that's the
-// payment-method + balance view that most outbound links target.
-export default function BillingIndexRedirectPage() {
-  redirect("/account/billing/credits");
+export const metadata: Metadata = {
+  title: "Plan & billing",
+};
+
+export default function BillingOverviewPage() {
+  return (
+    <div className="page-shell">
+      <header className="page-header">
+        <h1 className="text-display font-semibold text-foreground">
+          Plan & billing overview
+        </h1>
+        <p className="text-muted-foreground">
+          Review account billing status, credits, usage, and payment readiness.
+        </p>
+      </header>
+
+      <BillingStatusCard />
+
+      <ActionNeededBand />
+
+      <BillingSummaryPanel />
+
+      <RecentActivityPanel />
+    </div>
+  );
 }

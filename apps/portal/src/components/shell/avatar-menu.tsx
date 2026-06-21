@@ -74,17 +74,17 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
             <span className="flex flex-1 flex-col gap-0.5 leading-tight">
               <span>Account</span>
               <span className="text-caption text-meta-foreground">
-                Company account settings
+                Team, workspaces, and access
               </span>
             </span>
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/account/billing/credits" className="items-start">
+          <Link href="/account/billing" className="items-start">
             <CreditCard aria-hidden="true" className="mt-0.5 shrink-0" />
             <span className="flex flex-1 flex-col gap-0.5 leading-tight">
-              <span>Billing &amp; credits</span>
+              <span>Plan &amp; billing</span>
               <span className="text-caption text-meta-foreground tabular-nums">
                 Tier {state.tier} &middot; {balanceLabel} credits
               </span>
