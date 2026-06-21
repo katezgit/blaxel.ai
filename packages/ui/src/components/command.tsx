@@ -55,8 +55,16 @@ function CommandDialog({
         "bg-popover text-foreground",
         "shadow-command",
         "p-0",
+        "data-[state=open]:animate-slide-up-in",
+        "data-[state=closed]:animate-slide-down-out",
       )}
-      overlayClassName="fixed inset-0 z-overlay bg-(--overlay-backdrop)"
+      overlayClassName={cn(
+        "fixed inset-0 z-overlay",
+        "bg-overlay-dialog",
+        "supports-[backdrop-filter]:backdrop-blur-overlay-dialog",
+        "data-[state=open]:animate-fade-in",
+        "data-[state=closed]:animate-fade-out",
+      )}
       {...props}
     >
       {children}
