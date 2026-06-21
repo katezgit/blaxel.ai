@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@repo/ui/components/badge";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
@@ -18,7 +17,7 @@ export default function AccountIdentitySection() {
 
   return (
     <Panel title="Account identity">
-      <dl className="grid max-w-[720px] grid-cols-[180px_minmax(0,1fr)] gap-x-8 gap-y-4 text-body">
+      <dl className="grid max-w-[720px] grid-cols-1 gap-y-3 text-body sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-x-8 sm:gap-y-4">
         <dt className="text-muted-foreground">Owner email</dt>
         <dd className="font-mono text-foreground">
           {state.identity.ownerEmail}
@@ -34,11 +33,6 @@ export default function AccountIdentitySection() {
             ariaLabel={`Copy account ID ${accountId}`}
             tooltipLabel="Copy account ID"
           />
-        </dd>
-
-        <dt className="text-muted-foreground">Billing tier</dt>
-        <dd>
-          <Badge variant="neutral">Tier {state.tier}</Badge>
         </dd>
       </dl>
     </Panel>

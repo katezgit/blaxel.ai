@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-table";
 import {
   ArrowDown,
+  ArrowRight,
   ArrowUp,
   ArrowUpDown,
   MoreHorizontal,
@@ -31,12 +32,49 @@ import {
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@repo/ui/components/tooltip";
 import { cn } from "@repo/ui/lib/cn";
 import ManageTable from "@/app/(manage)/_components/manage-table";
-import InlineGate from "@/app/(account)/account/_components/inline-gate";
 import { TIER_LIMITS } from "@/lib/mock/account";
 import { useAccountState } from "@/lib/mock/account-context";
 import type { Org } from "@/lib/mock/types";
+
+const SEARCH_THRESHOLD = 8;
+const PAYMENT_HREF = "/account/billing/credits#payment-method";
+const UPGRADE_HREF = "/account/billing/plan";
+
+interface QuotaCopy {
+  helper: string;
+  link: string;
+  href: string;
+  tooltip: string;
+}
+
+function getQuotaCopy(
+  tier: number,
+  workspaceLimit: number,
+  atLimit: boolean,
+): QuotaCopy | null {
+  if (!atLimit) return null;
+  if (tier === 0) {
+    return {
+      helper: `Tier ${tier} includes ${workspaceLimit} workspace${workspaceLimit === 1 ? "" : "s"}.`,
+      link: "Add a payment method to create more workspaces",
+      href: PAYMENT_HREF,
+      tooltip: "Add a payment method to create more workspaces.",
+    };
+  }
+  return {
+    helper: "You have reached your workspace limit.",
+    link: "Upgrade your plan to create more workspaces",
+    href: UPGRADE_HREF,
+    tooltip: "Upgrade your plan to create more workspaces.",
+  };
+}
 
 const columnHelper = createColumnHelper<Org>();
 
@@ -47,8 +85,8 @@ export default function WorkspacesClient() {
   const workspaceLimit = limits.workspaces;
   const count = state.workspaces.length;
   const atLimit = count >= workspaceLimit;
-  const isTierZero = state.tier === 0;
-  const showInlineGate = isTierZero && atLimit;
+  const quotaCopy = getQuotaCopy(state.tier, workspaceLimit, atLimit);
+  const showSearch = count >= SEARCH_THRESHOLD;
 
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState<SortingState>([
@@ -56,6 +94,7 @@ export default function WorkspacesClient() {
   ]);
 
   const filteredWorkspaces = useMemo(() => {
+    if (!showSearch) return state.workspaces;
     const q = search.trim().toLowerCase();
     if (!q) return state.workspaces;
     return state.workspaces.filter(
@@ -63,7 +102,7 @@ export default function WorkspacesClient() {
         w.name.toLowerCase().includes(q) ||
         w.workspaceId.toLowerCase().includes(q),
     );
-  }, [state.workspaces, search]);
+  }, [state.workspaces, search, showSearch]);
 
   const columns = useMemo(
     () => [
@@ -99,13 +138,13 @@ export default function WorkspacesClient() {
         ),
       }),
       columnHelper.display({
-        id: "actions",
-        header: () => <span className="sr-only">Actions</span>,
+        id: "action",
+        header: () => <span className="sr-only">Action</span>,
         meta: {
-          headerClassName: "w-10",
+          headerClassName: "w-32",
           cellClassName: "text-right",
         },
-        cell: ({ row }) => <RowMenu workspace={row.original} />,
+        cell: ({ row }) => <RowActions workspace={row.original} />,
       }),
     ],
     [],
@@ -122,9 +161,16 @@ export default function WorkspacesClient() {
   });
 
   const createDisabled = atLimit;
-  const createLabel = atLimit
-    ? `Workspace limit reached (${count}/${workspaceLimit}).`
-    : `Create workspace. ${count} of ${workspaceLimit} used.`;
+  const createButton = (
+    <Button
+      variant="primary"
+      disabled={createDisabled}
+      onClick={() => toast.success("Create workspace (mock).")}
+    >
+      <Plus aria-hidden="true" />
+      <span>Create workspace</span>
+    </Button>
+  );
 
   return (
     <>
@@ -134,47 +180,98 @@ export default function WorkspacesClient() {
             Workspaces
           </h1>
           <p className="text-muted-foreground">
-            Manage the workspaces associated with this billing account.
+            Manage workspaces associated with this billing account.
           </p>
         </header>
-        <Button
-          variant="primary"
-          disabled={createDisabled}
-          aria-label={createLabel}
-          onClick={() => toast.success("Create workspace (mock).")}
-        >
-          <Plus aria-hidden="true" />
-          <span>Create workspace</span>
-        </Button>
+        {createDisabled ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {/* Disabled button needs a focusable wrapper to receive tooltip events */}
+              <span tabIndex={0} className="rounded-lg focus-visible:shadow-focus-ring">
+                {createButton}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {quotaCopy?.tooltip ??
+                "Add a payment method to create more workspaces."}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          createButton
+        )}
       </div>
 
-      <p className="text-caption text-muted-foreground">
-        Billing account:{" "}
-        <span className="font-mono text-foreground">
-          {state.identity.ownerEmail}
-        </span>
-        {" · "}
-        <span className="text-foreground">Tier {state.tier}</span>
-        {" · "}
-        <span className="text-foreground">
-          {count} {count === 1 ? "workspace" : "workspaces"}
-        </span>
-      </p>
+      <section
+        aria-label="Billing account context"
+        className="flex flex-col gap-1 rounded-md border border-border bg-elevated-surface px-5 py-4"
+      >
+        <p className="text-body text-foreground">
+          <span className="font-mono">{state.identity.ownerEmail}</span>
+          <span className="text-muted-foreground">
+            {" · "}
+            <span className="font-medium text-foreground">
+              Tier {state.tier}
+            </span>
+            {" · "}
+            <span className="font-medium text-foreground">
+              {count} / {workspaceLimit} workspace
+              {workspaceLimit === 1 ? "" : "s"} used
+            </span>
+          </span>
+        </p>
+        {quotaCopy ? (
+          <p className="text-caption text-muted-foreground">
+            {quotaCopy.helper}{" "}
+            <Link
+              href={quotaCopy.href}
+              className="inline-flex items-center gap-0.5 font-medium text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
+            >
+              {quotaCopy.link}
+              <ArrowRight aria-hidden="true" className="size-3" />
+            </Link>
+          </p>
+        ) : null}
+      </section>
 
-      {showInlineGate ? (
-        <InlineGate tier={1} verb="create up to 5 workspaces" />
+      {showSearch ? (
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search workspaces…"
+          leading={<Search aria-hidden="true" className="size-3.5" />}
+          className="max-w-sm"
+          aria-label="Search workspaces"
+        />
       ) : null}
 
-      <Input
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search workspaces…"
-        leading={<Search aria-hidden="true" className="size-3.5" />}
-        className="max-w-sm"
-        aria-label="Search workspaces"
-      />
-
-      {filteredWorkspaces.length === 0 ? (
+      {state.workspaces.length === 0 ? (
+        <EmptyState
+          variant="zero-state"
+          title="No workspaces yet."
+          subtitle={
+            createDisabled
+              ? "Add a payment method to create a workspace."
+              : "Create a workspace to start organizing resources."
+          }
+          cta={
+            createDisabled ? (
+              <Button variant="primary" asChild>
+                <Link href={quotaCopy?.href ?? PAYMENT_HREF}>
+                  Add payment method
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                onClick={() => toast.success("Create workspace (mock).")}
+              >
+                <Plus aria-hidden="true" />
+                <span>Create workspace</span>
+              </Button>
+            )
+          }
+        />
+      ) : filteredWorkspaces.length === 0 ? (
         <EmptyState
           variant="no-results"
           title="No workspaces match your search"
@@ -219,6 +316,40 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
           tooltipLabel="Copy workspace ID"
         />
       </div>
+    </div>
+  );
+}
+
+function RowActions({ workspace }: { workspace: Org }) {
+  return (
+    <div
+      className="flex items-center justify-end gap-1"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <Button variant="secondary" asChild>
+        <Link href={`/${workspace.slug}`} aria-label={`Open ${workspace.name}`}>
+          Open
+        </Link>
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <IconButton
+            variant="ghost"
+            size="sm"
+            aria-label={`More actions for ${workspace.name}`}
+          >
+            <MoreHorizontal />
+          </IconButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem asChild>
+            <Link href={`/${workspace.slug}/settings/name`}>
+              <Settings aria-hidden="true" className="size-3.5" />
+              Workspace settings
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
@@ -270,31 +401,5 @@ function SortHeader({ column, label }: SortHeaderProps) {
         )}
       />
     </button>
-  );
-}
-
-function RowMenu({ workspace }: { workspace: Org }) {
-  return (
-    <div onClick={(event) => event.stopPropagation()}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <IconButton
-            variant="ghost"
-            size="sm"
-            aria-label={`Actions for ${workspace.name}`}
-          >
-            <MoreHorizontal />
-          </IconButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem asChild>
-            <Link href={`/${workspace.slug}/settings/name`}>
-              <Settings aria-hidden="true" className="size-3.5" />
-              Workspace settings
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
   );
 }

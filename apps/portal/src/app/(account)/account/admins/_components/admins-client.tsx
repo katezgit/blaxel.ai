@@ -2,19 +2,69 @@
 
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@repo/ui/components/tooltip";
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHeaderCell,
+  TableRow,
+} from "@repo/ui/components/table";
+import { cn } from "@repo/ui/lib/cn";
 import { useAccountState } from "@/lib/mock/account-context";
+import type { AccountAdmin } from "@/lib/mock/account";
 import AddAdminDialog from "./add-admin-dialog";
+import RemoveAdminDialog from "./remove-admin-dialog";
+
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
+function formatSentAgo(invitedAtIso: string, nowMs: number): string {
+  const sentMs = new Date(invitedAtIso).getTime();
+  const diffMs = Math.max(0, nowMs - sentMs);
+  if (diffMs < DAY_MS) {
+    const hours = Math.max(1, Math.round(diffMs / HOUR_MS));
+    return `Sent ${hours}h ago`;
+  }
+  const days = Math.max(1, Math.round(diffMs / DAY_MS));
+  return `Sent ${days}d ago`;
+}
+
+function getInitials(name: string): string {
+  if (name === "Invited user") return "?";
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
 
 export default function AdminsClient() {
-  const { state, removeAdmin } = useAccountState();
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { state, removeAdmin, restoreAdmin } = useAccountState();
+  const [addOpen, setAddOpen] = useState(false);
+  const [pendingRemove, setPendingRemove] = useState<AccountAdmin | null>(null);
+  const nowMs = Date.now();
+
+  const cancelInvite = (admin: AccountAdmin) => {
+    const index = state.admins.findIndex((a) => a.id === admin.id);
+    removeAdmin(admin.id);
+    toast.success(`Invitation to ${admin.email} canceled.`, {
+      action: {
+        label: "Undo",
+        onClick: () => restoreAdmin(admin, index === -1 ? 0 : index),
+      },
+    });
+  };
+
+  const resendInvite = (admin: AccountAdmin) => {
+    toast.success(`Invitation resent to ${admin.email}.`);
+  };
 
   return (
     <>
@@ -25,102 +75,185 @@ export default function AdminsClient() {
             Admins can manage this billing account and its workspaces.
           </p>
         </header>
-        <Button
-          variant="primary"
-          onClick={() => setDialogOpen(true)}
-        >
+        <Button variant="primary" onClick={() => setAddOpen(true)}>
           <Plus aria-hidden="true" />
           <span>Add admin</span>
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border">
-        <table className="w-full border-collapse text-body">
-          <caption className="sr-only">Admins</caption>
-          <thead>
-            <tr className="border-b border-border bg-muted-surface text-left">
-              <th
-                scope="col"
-                className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
-              >
-                Full name
-              </th>
-              <th
-                scope="col"
-                className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
-              >
-                Email
-              </th>
-              <th
-                scope="col"
-                className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
-              >
-                Role
-              </th>
-              <th
-                scope="col"
-                className="px-4 py-2 text-right font-mono text-meta uppercase text-meta-foreground"
-              >
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {state.admins.map((admin) => {
-              const isOwner = admin.role === "Owner";
-              const isPending = admin.status === "pending";
-              return (
-                <tr
-                  key={admin.id}
-                  className="border-b border-border last:border-b-0"
-                >
-                  <td className="px-4 py-3 text-foreground">{admin.name}</td>
-                  <td className="px-4 py-3 font-mono text-muted-foreground">
-                    {admin.email}
-                  </td>
-                  <td className="px-4 py-3">
-                    {isOwner ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span
-                            tabIndex={0}
-                            aria-label="Owner — account creator. Cannot be removed."
-                            className="inline-flex rounded-sm focus-visible:shadow-focus-ring"
-                          >
-                            <Badge variant="brand-soft">Owner</Badge>
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Account creator. Cannot be removed.
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <Badge variant={isPending ? "neutral" : "success"}>
-                        Admin{isPending ? " · Pending" : ""}
-                      </Badge>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {isOwner ? (
-                      <span className="text-muted-foreground">&mdash;</span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => removeAdmin(admin.id)}
-                        className="text-caption text-state-errored-text hover:underline focus-visible:shadow-focus-ring rounded-sm"
+      <Table
+        bordered
+        totalCount={state.admins.length}
+        pageOffset={0}
+        aria-label="Admins"
+        className="[&_tbody_tr]:hover:bg-transparent"
+      >
+        <colgroup>
+          <col style={{ width: "48%" }} />
+          <col style={{ width: "14%" }} />
+          <col style={{ width: "22%" }} />
+          <col style={{ width: "16%" }} />
+        </colgroup>
+        <TableHeader>
+          <TableRow>
+            <TableHeaderCell label="User" />
+            <TableHeaderCell label="Role" />
+            <TableHeaderCell label="Status" />
+            <TableHeaderCell label="Actions" numeric />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {state.admins.map((admin) => {
+            const isPending = admin.status === "pending";
+            return (
+              <TableRow key={admin.id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar size="sm">
+                      <AvatarFallback
+                        className={cn(isPending && "bg-muted-foreground")}
                       >
-                        {isPending ? "Revoke" : "Remove"}
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                        {getInitials(admin.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span
+                        className={cn(
+                          "font-medium",
+                          isPending && "text-muted-foreground",
+                        )}
+                      >
+                        {admin.name}
+                      </span>
+                      <span className="font-mono text-caption text-muted-foreground">
+                        {admin.email}
+                      </span>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">{admin.role}</TableCell>
+                <TableCell>
+                  {isPending ? (
+                    <div className="flex flex-col gap-1">
+                      <Badge variant="warning" showDot className="font-sans">
+                        Pending invite
+                      </Badge>
+                      {admin.invitedAt ? (
+                        <span className="text-caption text-muted-foreground">
+                          {formatSentAgo(admin.invitedAt, nowMs)}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <Badge variant="success" showDot className="font-sans">
+                      Active
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <AdminRowActions
+                    admin={admin}
+                    onRemove={() => setPendingRemove(admin)}
+                    onCancel={() => cancelInvite(admin)}
+                    onResend={() => resendInvite(admin)}
+                  />
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
 
-      <AddAdminDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <AddAdminDialog open={addOpen} onOpenChange={setAddOpen} />
+      <RemoveAdminDialog
+        admin={pendingRemove}
+        onClose={() => setPendingRemove(null)}
+        onConfirm={() => {
+          if (!pendingRemove) return;
+          removeAdmin(pendingRemove.id);
+          toast.success(`Removed ${pendingRemove.name} from this account.`);
+        }}
+      />
     </>
+  );
+}
+
+interface AdminRowActionsProps {
+  admin: AccountAdmin;
+  onRemove: () => void;
+  onCancel: () => void;
+  onResend: () => void;
+}
+
+function AdminRowActions({
+  admin,
+  onRemove,
+  onCancel,
+  onResend,
+}: AdminRowActionsProps) {
+  if (admin.role === "Owner") {
+    return (
+      <span className="text-muted-foreground" aria-label="No actions available for Owner">
+        &mdash;
+      </span>
+    );
+  }
+  if (admin.status === "pending") {
+    return (
+      <div className="inline-flex items-center gap-2">
+        <RowActionButton onClick={onResend} label={`Resend invitation to ${admin.email}`}>
+          Resend
+        </RowActionButton>
+        <span aria-hidden="true" className="text-muted-foreground">
+          &middot;
+        </span>
+        <RowActionButton
+          onClick={onCancel}
+          label={`Cancel invitation to ${admin.email}`}
+          destructive
+        >
+          Cancel
+        </RowActionButton>
+      </div>
+    );
+  }
+  return (
+    <RowActionButton
+      onClick={onRemove}
+      label={`Remove ${admin.name}`}
+      destructive
+    >
+      Remove
+    </RowActionButton>
+  );
+}
+
+interface RowActionButtonProps {
+  onClick: () => void;
+  label: string;
+  destructive?: boolean;
+  children: React.ReactNode;
+}
+
+function RowActionButton({
+  onClick,
+  label,
+  destructive,
+  children,
+}: RowActionButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={cn(
+        "rounded-sm text-body hover:underline focus-visible:shadow-focus-ring cursor-pointer",
+        destructive
+          ? "text-destructive hover:text-destructive-hover"
+          : "text-foreground",
+      )}
+    >
+      {children}
+    </button>
   );
 }
