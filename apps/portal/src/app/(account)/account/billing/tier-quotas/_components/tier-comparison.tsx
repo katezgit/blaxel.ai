@@ -173,7 +173,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
           All tiers
         </h2>
         <p className="inline-flex items-baseline gap-2 text-muted-foreground">
-          You're currently on
+          You&apos;re currently on
           <Badge variant="brand-soft" size="sm">Tier {currentTier}</Badge>
         </p>
       </header>
