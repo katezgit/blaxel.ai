@@ -56,7 +56,7 @@ export default function RecentActivityPanel() {
             No billing activity yet.
           </p>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-3">
             {entries.map((entry) => (
               <li
                 key={entry.id}

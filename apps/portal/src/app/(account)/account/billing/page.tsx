@@ -13,7 +13,7 @@ export default function BillingOverviewPage() {
     <div className="page-shell">
       <header className="page-header">
         <h1 className="text-display font-semibold text-foreground">
-          Plan & billing
+          Plan & billing overview
         </h1>
         <p className="text-muted-foreground">
           Review account billing status, credits, usage, and payment readiness.

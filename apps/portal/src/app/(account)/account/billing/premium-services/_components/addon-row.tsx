@@ -1,6 +1,5 @@
 import { Check, Gem, Headphones, ShieldCheck, type LucideIcon } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
-import { cn } from "@repo/ui/lib/cn";
 import type { AddOn, AddOnId } from "@/lib/mock/account";
 
 const ICONS: Record<AddOnId, LucideIcon> = {
@@ -20,14 +19,10 @@ export default function AddOnRow({ addon }: AddOnRowProps) {
   const Icon = ICONS[addon.id];
 
   return (
-    <article
-      className={cn(
-        "flex flex-col gap-3 rounded-lg border border-border bg-card p-4 md:flex-row md:items-start md:justify-between md:gap-6",
-      )}
-    >
+    <article className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 md:flex-row md:items-start md:justify-between md:gap-6">
       <div className="flex flex-1 items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-foreground">
-          <Icon className="size-5" aria-hidden="true" />
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-background text-foreground">
+          <Icon className="size-4" aria-hidden="true" />
         </span>
         <div className="flex flex-col gap-1">
           <h2 className="text-body font-semibold text-foreground">
@@ -45,7 +40,7 @@ export default function AddOnRow({ addon }: AddOnRowProps) {
         </div>
       </div>
 
-      <div className="flex shrink-0 flex-col items-end gap-2">
+      <div className="flex shrink-0 flex-col items-end gap-1 md:gap-2">
         <span className="font-mono text-body font-semibold tabular-nums text-foreground">
           {formatUsd(addon.priceUsd)}
           <span className="font-normal text-muted-foreground">/mo</span>
