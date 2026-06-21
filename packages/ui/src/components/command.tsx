@@ -66,7 +66,7 @@ function CommandDialog({
         contentClassName,
       )}
       overlayClassName={cn(
-        "fixed inset-0 z-overlay",
+        "fixed inset-0 isolate z-overlay",
         "bg-overlay-dialog",
         "supports-[backdrop-filter]:backdrop-blur-overlay-dialog",
         "data-[state=open]:animate-fade-in",
