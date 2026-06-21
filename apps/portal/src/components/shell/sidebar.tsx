@@ -65,7 +65,14 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
           onClick={onToggle}
           aria-label={isRail ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
           aria-pressed={isRail}
-          className="absolute top-4 -right-3 z-10 hidden size-6 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-meta-foreground shadow-card transition hover:text-foreground hover:bg-secondary-surface focus-visible:shadow-focus-ring lg:inline-flex"
+          // Anchored to the topbar/sidebar seam (the aside's top edge sits on
+          // that seam), then nudged up half the button height so it straddles
+          // the border equally. Keeps the control in chrome across every
+          // shell — workspace, settings, account, profile — without depending
+          // on a sidebar header row to push it down. The ::before pseudo
+          // widens the pointer target to 32×32 without enlarging the visual
+          // chip — the chip stays the original 24px chrome dot.
+          className="absolute top-0 -right-3 z-10 hidden size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-secondary-surface focus-visible:shadow-focus-ring lg:inline-flex"
         >
           {isRail ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
         </button>
