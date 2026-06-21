@@ -1,9 +1,9 @@
 import { ArrowDownToLine } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
-import type { Invoice, InvoiceStatus } from "@/lib/mock/account";
+import type { InvoiceStatus, Receipt } from "@/lib/mock/account";
 
-interface InvoicesTableProps {
-  invoices: ReadonlyArray<Invoice>;
+interface ReceiptsTableProps {
+  receipts: ReadonlyArray<Receipt>;
 }
 
 const STATUS_VARIANT: Record<InvoiceStatus, "success" | "warning" | "neutral"> = {
@@ -29,14 +29,13 @@ const formatUsd = (value: number): string =>
     currency: "USD",
   }).format(value);
 
-export default function InvoicesTable({ invoices }: InvoicesTableProps) {
-  if (invoices.length === 0) {
+export default function ReceiptsTable({ receipts }: ReceiptsTableProps) {
+  if (receipts.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-card px-4 py-6">
-        <p className="text-body text-foreground">No invoices yet.</p>
+        <p className="text-body text-foreground">No receipts found.</p>
         <p className="text-caption text-muted-foreground">
-          Invoices are generated at the end of each billing period once charges
-          exceed your credit balance.
+          Receipts appear here once you top up credits or purchase add-ons.
         </p>
       </div>
     );
@@ -45,7 +44,7 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
       <table className="w-full border-collapse text-body">
-        <caption className="sr-only">Invoices</caption>
+        <caption className="sr-only">Receipts and credit purchases</caption>
         <thead>
           <tr className="border-b border-border bg-muted-surface text-left">
             <th
@@ -53,12 +52,6 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
               className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
             >
               Date
-            </th>
-            <th
-              scope="col"
-              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
-            >
-              Status
             </th>
             <th
               scope="col"
@@ -70,30 +63,36 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
               scope="col"
               className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
             >
-              Invoice
+              Status
+            </th>
+            <th
+              scope="col"
+              className="px-4 py-2 font-mono text-meta uppercase text-meta-foreground"
+            >
+              Receipt
             </th>
           </tr>
         </thead>
         <tbody>
-          {invoices.map((invoice) => (
+          {receipts.map((receipt) => (
             <tr
-              key={invoice.id}
+              key={receipt.id}
               className="border-b border-border last:border-b-0"
             >
               <td className="px-4 py-3 text-muted-foreground">
-                {formatDate(invoice.date)}
-              </td>
-              <td className="px-4 py-3">
-                <Badge variant={STATUS_VARIANT[invoice.status]} showDot>
-                  {invoice.status}
-                </Badge>
+                {formatDate(receipt.date)}
               </td>
               <td className="px-4 py-3 text-right font-mono tabular-nums text-foreground">
-                {formatUsd(invoice.amount)}
+                {formatUsd(receipt.amount)}
+              </td>
+              <td className="px-4 py-3">
+                <Badge variant={STATUS_VARIANT[receipt.status]} showDot>
+                  {receipt.status}
+                </Badge>
               </td>
               <td className="px-4 py-3">
                 <a
-                  href={invoice.downloadHref}
+                  href={receipt.downloadHref}
                   className="inline-flex items-center gap-1 rounded-sm text-primary hover:underline focus-visible:shadow-focus-ring"
                 >
                   <ArrowDownToLine className="size-4" aria-hidden="true" />
