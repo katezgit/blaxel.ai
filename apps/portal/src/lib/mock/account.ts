@@ -227,6 +227,8 @@ export interface AccountAdmin {
   role: AdminRole;
   status: AdminStatus;
   joinedAt: string;
+  /** ISO timestamp the invitation was sent. Required when `status === "pending"`. */
+  invitedAt?: string;
 }
 
 export type AddOnId = "premium-support" | "dedicated-support" | "hipaa";
@@ -283,7 +285,7 @@ const DAY_ONE_OWNER: AccountIdentity = {
   // UUID-style ID; the trailing `0010` distinguishes the demo account from
   // a real one. Stable across sessions because seeded statically.
   accountId: "00000000-0000-4000-8000-000000000010",
-  ownerEmail: "demo@hud.app",
+  ownerEmail: "demo@acme.dev",
   ownerName: "Demo User",
 };
 
@@ -294,6 +296,32 @@ const DAY_ONE_OWNER_ADMIN: AccountAdmin = {
   role: "Owner",
   status: "active",
   joinedAt: "2026-06-17",
+};
+
+const SEEDED_ACTIVE_ADMIN: AccountAdmin = {
+  id: "adm_active_seed",
+  name: "Maya Chen",
+  email: "maya@acme.dev",
+  role: "Admin",
+  status: "active",
+  joinedAt: "2026-06-18",
+};
+
+// Seed an invite that always reads as ~3 days old regardless of when the demo
+// runs. Computed at module load so re-mounts of the provider stay consistent
+// within a session; the demo doesn't persist mock state across reloads anyway.
+const PENDING_INVITE_SENT_AT = new Date(
+  Date.now() - 3 * 24 * 60 * 60 * 1000,
+).toISOString();
+
+const SEEDED_PENDING_ADMIN: AccountAdmin = {
+  id: "adm_pending_seed",
+  name: "Invited user",
+  email: "rohan@acme.dev",
+  role: "Admin",
+  status: "pending",
+  joinedAt: PENDING_INVITE_SENT_AT.slice(0, 10),
+  invitedAt: PENDING_INVITE_SENT_AT,
 };
 
 /**
@@ -393,7 +421,7 @@ function tier0Seed(): AccountState {
     tier: 0,
     balanceUsd: 10,
     identity: DAY_ONE_OWNER,
-    admins: [DAY_ONE_OWNER_ADMIN],
+    admins: [DAY_ONE_OWNER_ADMIN, SEEDED_ACTIVE_ADMIN, SEEDED_PENDING_ADMIN],
     workspaces: TIER_ZERO_WORKSPACES,
     usage: { ...DEFAULT_USAGE },
     wallet: [SIGNUP_PROMO_WALLET],

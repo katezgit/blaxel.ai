@@ -91,7 +91,7 @@ function makeUserTrainedModel(): Model {
 export const VIEWER: Viewer = {
   id: "viewer-aman",
   name: "Aman",
-  email: "aman@hud.app",
+  email: "aman@acme.dev",
   persona: "rl-researcher",
   orgRole: "owner",
 };
@@ -104,7 +104,7 @@ export const VIEWER: Viewer = {
 export const PRIYA_VIEWER: Viewer = {
   id: "viewer-priya",
   name: "Priya",
-  email: "priya@hud.app",
+  email: "priya@acme.dev",
   persona: "agent-engineer",
   orgRole: "member",
 };

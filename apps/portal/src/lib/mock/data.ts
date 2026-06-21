@@ -27,9 +27,9 @@ export const currentUser: User = {
 
 export const currentOrg: Org = {
   id: "00000000-0000-4000-8000-000000000001",
-  slug: "webflow-prod",
-  name: "webflow-prod",
-  avatarInitial: "w",
+  slug: "astra-prod",
+  name: "astra-prod",
+  avatarInitial: "a",
   hint: "12 members · you own this",
   members: 12,
   accountName: "acme",
@@ -37,6 +37,7 @@ export const currentOrg: Org = {
   workspaceId: "WFP7DX",
   accountId: "00000000-0000-4000-8000-000000000010",
   accountOwner: "avery@acme.dev",
+  accountOwnerName: "Avery Lin",
   sandboxSettings: { disableProcessLogging: false },
 };
 
@@ -44,9 +45,9 @@ export const orgList: ReadonlyArray<OrgMembership> = [
   { org: currentOrg, role: "owner" },
   {
     org: {
-      id: "org_atlas",
-      slug: "atlas-rl",
-      name: "atlas-rl",
+      id: "org_staging",
+      slug: "astra-staging",
+      name: "astra-staging",
       avatarInitial: "a",
       hint: "12 members · admin",
       members: 12,
@@ -55,16 +56,17 @@ export const orgList: ReadonlyArray<OrgMembership> = [
       workspaceId: "ATLR9X",
       accountId: "00000000-0000-4000-8000-000000000010",
       accountOwner: "avery@acme.dev",
+      accountOwnerName: "Avery Lin",
       sandboxSettings: { disableProcessLogging: false },
     },
     role: "admin",
   },
   {
     org: {
-      id: "org_sandbox",
-      slug: "sandbox-dev",
-      name: "sandbox-dev",
-      avatarInitial: "s",
+      id: "org_eval",
+      slug: "astra-eval",
+      name: "astra-eval",
+      avatarInitial: "a",
       hint: "3 members · member",
       members: 3,
       accountName: "acme",
@@ -72,6 +74,7 @@ export const orgList: ReadonlyArray<OrgMembership> = [
       workspaceId: "SDV3KQ",
       accountId: "00000000-0000-4000-8000-000000000010",
       accountOwner: "avery@acme.dev",
+      accountOwnerName: "Avery Lin",
       sandboxSettings: { disableProcessLogging: false },
     },
     role: "member",

@@ -36,6 +36,7 @@ interface AccountContextValue {
   toggleAddOn: (id: AddOnId) => void;
   addAdmin: (admin: AccountAdmin) => void;
   removeAdmin: (id: string) => void;
+  restoreAdmin: (admin: AccountAdmin, index: number) => void;
   addDomain: (domain: string) => void;
   verifyDomain: (id: string) => void;
   setDomainMethod: (
@@ -127,6 +128,16 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
     }));
   }, []);
 
+  const restoreAdmin = useCallback((admin: AccountAdmin, index: number) => {
+    setState((prev) => {
+      const next = prev.admins.slice();
+      // clamp index so splice never throws on a stale position
+      const clamped = Math.min(Math.max(index, 0), next.length);
+      next.splice(clamped, 0, admin);
+      return { ...prev, admins: next };
+    });
+  }, []);
+
   const addDomain = useCallback((domain: string) => {
     const id = `dom_${domain.replace(/[^a-z0-9]/gi, "_")}_${Date.now()}`;
     const txtRecord = `blaxel-verify=${Math.random().toString(36).slice(2, 14)}`;
@@ -188,6 +199,7 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
       toggleAddOn,
       addAdmin,
       removeAdmin,
+      restoreAdmin,
       addDomain,
       verifyDomain,
       setDomainMethod,
@@ -202,6 +214,7 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
       toggleAddOn,
       addAdmin,
       removeAdmin,
+      restoreAdmin,
       addDomain,
       verifyDomain,
       setDomainMethod,

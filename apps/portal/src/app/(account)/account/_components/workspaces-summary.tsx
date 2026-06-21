@@ -22,13 +22,13 @@ export default function WorkspacesSummarySection() {
         </Button>
       }
     >
-      <dl className="grid max-w-[720px] grid-cols-[180px_minmax(0,1fr)] gap-x-8 gap-y-4 text-body">
+      <dl className="grid max-w-[720px] grid-cols-1 gap-y-3 text-body sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-x-8 sm:gap-y-4">
         <dt className="text-muted-foreground">Workspace count</dt>
         <dd className="text-foreground">{count}</dd>
 
         <dt className="text-muted-foreground">Resource scope</dt>
         <dd className="text-foreground">
-          Sandboxes, agents, and policies are scoped to workspaces.
+          Resources are scoped to workspaces.
         </dd>
       </dl>
     </Panel>

@@ -52,13 +52,17 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
 
   const onSubmit = handleSubmit(async ({ email }) => {
     await new Promise((resolve) => setTimeout(resolve, 250));
+    const now = new Date();
     const admin: AccountAdmin = {
       id: `adm_${Date.now()}`,
-      name: email.split("@")[0] ?? email,
+      // Pending rows show "Invited user" until the invite is accepted; the real
+      // name is unknown until the invitee completes signup.
+      name: "Invited user",
       email,
       role: "Admin",
       status: "pending",
-      joinedAt: new Date().toISOString().slice(0, 10),
+      joinedAt: now.toISOString().slice(0, 10),
+      invitedAt: now.toISOString(),
     };
     addAdmin(admin);
     toast.success(`Invitation sent to ${email}`);

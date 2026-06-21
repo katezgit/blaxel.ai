@@ -5,7 +5,7 @@ export type MockUser = {
 
 // No persistence: store resets on dev reload — mock auth scaffold.
 const users = new Map<string, MockUser>([
-  ["demo@hud.app", { email: "demo@hud.app", name: "Demo User" }],
+  ["demo@acme.dev", { email: "demo@acme.dev", name: "Demo User" }],
 ]);
 
 export function upsertUser(user: MockUser): MockUser {
