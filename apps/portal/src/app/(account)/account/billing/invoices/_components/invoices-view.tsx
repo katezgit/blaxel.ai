@@ -15,7 +15,7 @@ export default function InvoicesView() {
           Invoices &amp; payment
         </h1>
         <p className="text-muted-foreground">
-          Billing records and payment configuration.
+          Manage billing details and download billing records.
         </p>
       </header>
 

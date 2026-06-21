@@ -6,20 +6,33 @@ import { Button } from "@repo/ui/components/button";
 import { Panel } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 
+// Two-letter country code in the compressed address line — the demo fixture
+// only ships US-based accounts, so the abbreviation is hardcoded rather than
+// derived from the long-form `address.country` value.
+const COUNTRY_CODE = "US";
+
 export default function PaymentMethodSection() {
   const { state } = useAccountState();
   const { brand, last4 } = state.paymentMethod;
   const hasMethod = brand !== null;
   const { email, address } = state.billingContact;
+  const addressLine = [
+    address.line1,
+    address.line2,
+    `${address.city}, ${address.region} ${address.postalCode}`,
+    COUNTRY_CODE,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return (
     <Panel
-      title="Payment method"
+      title="Payment setup"
       action={
         <Button asChild variant="secondary">
           <Link href="/account/billing/credits/stripe-redirect">
             <Pencil aria-hidden="true" />
-            {hasMethod ? "Edit payment method" : "Add payment method"}
+            Manage billing
           </Link>
         </Button>
       }
@@ -52,20 +65,9 @@ export default function PaymentMethodSection() {
 
           <dt className="text-muted-foreground">Billing address</dt>
           <dd className="text-foreground">
-            <address className="not-italic">
-              <div>{address.line1}</div>
-              {address.line2 ? <div>{address.line2}</div> : null}
-              <div>
-                {address.city}, {address.region} {address.postalCode}
-              </div>
-              <div>{address.country}</div>
-            </address>
+            <address className="not-italic">{addressLine}</address>
           </dd>
         </dl>
-
-        <p className="text-caption text-meta-foreground">
-          Edits open Stripe to confirm the change.
-        </p>
       </section>
     </Panel>
   );
