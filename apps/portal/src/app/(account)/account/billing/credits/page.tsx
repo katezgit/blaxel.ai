@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { BillingView } from "./_components/billing-view";
+import CreditsView from "./_components/credits-view";
 
 export const metadata: Metadata = {
-  title: "Billing",
+  title: "Credits & top-ups",
 };
 
-export default function BillingPage() {
-  return <BillingView />;
+export default function CreditsPage() {
+  return <CreditsView />;
 }
