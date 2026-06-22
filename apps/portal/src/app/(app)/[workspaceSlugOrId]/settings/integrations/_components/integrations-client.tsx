@@ -25,39 +25,28 @@ import {
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui/components/select";
 import { SegmentedControl } from "@repo/ui/components/segmented-control";
 import { cn } from "@repo/ui/lib/cn";
-import type { Integration, IntegrationCategory } from "@/lib/mock/types";
+import type { Integration } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import IntegrationsTable from "./integrations-table";
 
-type StatusFilter = "all" | "connected";
-type TypeFilter = "all" | IntegrationCategory;
+// Flat one-click filter: a single category state covers status + type in one
+// row, matching Blaxel's production vocabulary (status label is "Enabled", and
+// the four buckets sit side-by-side as a single selector).
+type CategoryFilter = "all" | "enabled" | "model" | "mcp-server";
 
-interface StatusItem {
-  value: StatusFilter;
+interface CategoryItem {
+  value: CategoryFilter;
   label: string;
 }
 
-// Two-axis filter IA: status segment (binary) + type dropdown (extensible).
-// New integration categories extend the dropdown only — the segment never grows.
-const STATUS_FILTERS: ReadonlyArray<StatusItem> = [
+const CATEGORY_FILTERS: ReadonlyArray<CategoryItem> = [
   { value: "all", label: "All" },
-  { value: "connected", label: "Connected" },
-];
-
-const TYPE_OPTIONS: ReadonlyArray<{ value: TypeFilter; label: string }> = [
-  { value: "all", label: "All types" },
+  { value: "enabled", label: "Enabled" },
   { value: "model", label: "Model" },
-  { value: "mcp-server", label: "MCP server" },
+  { value: "mcp-server", label: "Mcp server" },
 ];
 
 const columnHelper = createColumnHelper<Integration>();
@@ -68,34 +57,31 @@ export default function IntegrationsClient() {
     workspaceIntegrationQueries.list(accountId, workspaceId),
   );
 
-  const [status, setStatus] = useState<StatusFilter>("all");
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [category, setCategory] = useState<CategoryFilter>("all");
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Integration | null>(null);
 
-  // Counts respect the current type-filter so the segment numbers reflect what
-  // the table actually shows when the user toggles between All / Enabled.
-  const statusCounts = useMemo(() => {
-    const typeScoped = integrations.filter(
-      (i) => typeFilter === "all" || i.category === typeFilter,
-    );
+  const categoryCounts = useMemo(() => {
     return {
-      all: typeScoped.length,
-      connected: typeScoped.filter((i) => i.enabled).length,
-    } satisfies Record<StatusFilter, number>;
-  }, [integrations, typeFilter]);
+      all: integrations.length,
+      enabled: integrations.filter((i) => i.enabled).length,
+      model: integrations.filter((i) => i.category === "model").length,
+      "mcp-server": integrations.filter((i) => i.category === "mcp-server").length,
+    } satisfies Record<CategoryFilter, number>;
+  }, [integrations]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return integrations.filter((i) => {
-      if (status === "connected" && !i.enabled) return false;
-      if (typeFilter !== "all" && i.category !== typeFilter) return false;
+      if (category === "enabled" && !i.enabled) return false;
+      if (category === "model" && i.category !== "model") return false;
+      if (category === "mcp-server" && i.category !== "mcp-server") return false;
       if (q && !i.name.toLowerCase().includes(q) && !i.description.toLowerCase().includes(q)) {
         return false;
       }
       return true;
     });
-  }, [integrations, status, typeFilter, search]);
+  }, [integrations, category, search]);
 
   // Stable `now` for the lifetime of the view — every row computes against the
   // same reference. Reloading the page (or remounting) re-anchors it. Matches
@@ -168,8 +154,7 @@ export default function IntegrationsClient() {
 
   const onClearFilters = () => {
     setSearch("");
-    setTypeFilter("all");
-    setStatus("all");
+    setCategory("all");
   };
 
   return (
@@ -183,45 +168,29 @@ export default function IntegrationsClient() {
           className="max-w-xs"
           aria-label="Search integrations"
         />
-        <div className="ml-auto flex items-center gap-2">
-          <SegmentedControl
-            value={status}
-            onValueChange={(v) => setStatus(v as StatusFilter)}
-            aria-label="Filter integrations by status"
-          >
-            {STATUS_FILTERS.map((item) => (
-              <SegmentedControl.Item key={item.value} value={item.value}>
-                <span className="flex items-center gap-1.5">
-                  {item.value === "connected" && (
-                    <span
-                      aria-hidden="true"
-                      className="size-1.5 shrink-0 rounded-full bg-state-scored"
-                    />
-                  )}
-                  {item.label}
-                </span>
-                <span className="font-mono text-meta tabular-nums opacity-70">
-                  {statusCounts[item.value]}
-                </span>
-              </SegmentedControl.Item>
-            ))}
-          </SegmentedControl>
-          <Select
-            value={typeFilter}
-            onValueChange={(v) => setTypeFilter(v as TypeFilter)}
-          >
-            <SelectTrigger aria-label="Filter by type" className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TYPE_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <SegmentedControl
+          value={category}
+          onValueChange={(v) => setCategory(v as CategoryFilter)}
+          aria-label="Filter integrations by category"
+          className="ml-auto"
+        >
+          {CATEGORY_FILTERS.map((item) => (
+            <SegmentedControl.Item key={item.value} value={item.value}>
+              <span className="flex items-center gap-1.5">
+                {item.value === "enabled" && (
+                  <span
+                    aria-hidden="true"
+                    className="size-1.5 shrink-0 rounded-full bg-state-scored"
+                  />
+                )}
+                {item.label}
+              </span>
+              <span className="font-mono text-meta tabular-nums opacity-70">
+                {categoryCounts[item.value]}
+              </span>
+            </SegmentedControl.Item>
+          ))}
+        </SegmentedControl>
       </div>
 
       {filtered.length === 0 ? (
@@ -288,7 +257,13 @@ function NameCell({ integration }: { integration: Integration }) {
     <div className="flex items-center gap-3">
       <Avatar size="sm" shape="square">
         {integration.logoUrl && (
-          <AvatarImage src={integration.logoUrl} alt={integration.name} />
+          <AvatarImage
+            src={integration.logoUrl}
+            alt={integration.name}
+            // simple-icons SVGs ship as black-on-transparent. Inverting in dark
+            // mode flips them to white so they remain legible on bg-card (dark).
+            className="dark:invert"
+          />
         )}
         <AvatarFallback>{integration.logoInitial}</AvatarFallback>
       </Avatar>
@@ -418,6 +393,7 @@ function ConfigureIntegrationDrawer({
                     <AvatarImage
                       src={integration.logoUrl}
                       alt={integration.name}
+                      className="dark:invert"
                     />
                   )}
                   <AvatarFallback>{integration.logoInitial}</AvatarFallback>
