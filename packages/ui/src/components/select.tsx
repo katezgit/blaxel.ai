@@ -41,7 +41,7 @@ function SelectTrigger({
         "flex w-fit items-center justify-between gap-2 whitespace-nowrap",
         formFieldBoxVariants({ size }),
         "data-[placeholder]:text-meta-foreground",
-        // typography-body (13px) — no text-foreground pairing here to avoid twMerge conflict with consumer overrides.
+        // typography-body (14px) — no text-foreground pairing here to avoid twMerge conflict with consumer overrides.
         // typography-body is already emitted by formFieldBoxVariants size=md; kept here as a noop fallback guard.
         // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
         "focus-visible:bg-form-field-surface data-[state=open]:bg-form-field-surface",

@@ -98,7 +98,7 @@ const Table = React.forwardRef<HTMLDivElement, TableProps>(
         )}
         {...props}
       >
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse typography-body">
           {children}
         </table>
       </div>

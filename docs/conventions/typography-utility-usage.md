@@ -98,11 +98,12 @@ The `typography-*` namespace removes this collision structurally. `cn.ts` no lon
 | `typography-label` | 12px | Form labels, nav labels |
 | `typography-caption` | 12px | Supporting labels, metadata |
 | `typography-meta` | 10px, mono, uppercase + tracking | Column headers, timestamps, status pips |
+| `typography-table-header` | 10px, sans, uppercase + tracking | Table column headers (uppercase, 0.08em tracking) |
 | `typography-code` | 12px, mono | Inline / block code fragments — used as leaf override in `tableCellVariants.mono` |
 
 ---
 
 ## See also
 
-- [`docs/conventions/tailwind-v4.md`](./tailwind-v4.md) — token-form precedence rules (rank 1 utility → rank 2 `prop-(--x)` → rank 3 arbitrary for font-size only)
+- [`docs/conventions/tailwind-v4.md`](./tailwind-v4.md) — token-form precedence rules (rank 1 utility → rank 2 `prop-(--x)`; rank 3 `[var(--x)]` is never permitted)
 - [`docs/design/foundations/spacing.md`](../design/foundations/spacing.md) — spacing canon and composition cheatsheet

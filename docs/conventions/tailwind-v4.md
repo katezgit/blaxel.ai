@@ -6,9 +6,7 @@ Three forms, in priority order:
 
 1. **Rank 1 — generated utility** (`bg-card`, `text-foreground`, `border-border`, `gap-4`). Use whenever a `@theme` token generates a matching utility. This is the default.
 2. **Rank 2 — `prop-(--x)`** (`prop-(--sidebar-width)`). Use for `:root`-only CSS custom properties that do not have a generated utility counterpart.
-3. **Rank 3 — `[var(--x)]` arbitrary syntax**. Allowed only for `font-size` when the token has no generated utility and `prop-(--x)` does not apply. Never use `[var(--x)]` for color, spacing, radius, shadow, or z-index.
-
-Reviewer FAILs `[var(--x)]` whenever a generated utility or `prop-(--x)` form exists.
+3. **Rank 3 — `[var(--x)]` arbitrary syntax**. Never use. Reviewer FAILs this form.
 
 ---
 

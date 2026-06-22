@@ -292,7 +292,7 @@ function DropdownMenuSubContent({
       data-slot="dropdown-menu-sub-content"
       className={cn(
         // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
-        "bg-popover text-popover-foreground shadow-popover rounded-lg",
+        "bg-popover text-popover-foreground shadow-popover rounded-lg typography-body",
         "z-overlay min-w-32 p-1 overflow-hidden",
         "origin-(--radix-dropdown-menu-content-transform-origin)",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
