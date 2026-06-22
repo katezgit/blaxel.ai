@@ -46,7 +46,7 @@ const CATEGORY_FILTERS: ReadonlyArray<CategoryItem> = [
   { value: "all", label: "All" },
   { value: "enabled", label: "Enabled" },
   { value: "model", label: "Model" },
-  { value: "mcp-server", label: "Mcp server" },
+  { value: "mcp-server", label: "MCP server" },
 ];
 
 const columnHelper = createColumnHelper<Integration>();
@@ -439,7 +439,7 @@ function ConfigureIntegrationDrawer({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  "inline-flex items-center gap-1 text-caption text-primary hover:underline",
+                  "inline-flex items-center gap-1 text-caption text-muted-foreground hover:text-foreground hover:underline",
                 )}
               >
                 Get your API key
