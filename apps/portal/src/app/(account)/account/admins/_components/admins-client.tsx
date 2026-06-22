@@ -286,42 +286,14 @@ interface ActiveRowActionsProps {
 
 function ActiveRowActions({ admin, onRemove }: ActiveRowActionsProps) {
   return (
-    <RowActionButton
-      onClick={onRemove}
-      label={`Remove ${admin.name}`}
-      destructive
-    >
-      Remove
-    </RowActionButton>
-  );
-}
-
-interface RowActionButtonProps {
-  onClick: () => void;
-  label: string;
-  destructive?: boolean;
-  children: React.ReactNode;
-}
-
-function RowActionButton({
-  onClick,
-  label,
-  destructive,
-  children,
-}: RowActionButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className={cn(
-        "rounded-sm typography-body hover:underline focus-visible:shadow-focus-ring cursor-pointer",
-        destructive
-          ? "text-destructive hover:text-destructive-hover"
-          : "text-foreground",
-      )}
-    >
-      {children}
-    </button>
+    <div className="inline-flex h-8 items-center">
+      <Button
+        variant="destructive-link"
+        onClick={onRemove}
+        aria-label={`Remove ${admin.name}`}
+      >
+        Remove
+      </Button>
+    </div>
   );
 }
