@@ -6,10 +6,12 @@ import { useMemo, useState } from "react";
 import {
   createColumnHelper,
   getCoreRowModel,
+  getSortedRowModel,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
@@ -17,6 +19,7 @@ import { Card } from "@repo/ui/components/card";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { Input } from "@repo/ui/components/input";
 import { SegmentedControl } from "@repo/ui/components/segmented-control";
+import { cn } from "@repo/ui/lib/cn";
 import type { Integration } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
@@ -60,6 +63,9 @@ export default function IntegrationsClient() {
 
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "name", desc: false },
+  ]);
 
   const rows = useMemo<ReadonlyArray<IntegrationRow>>(() => {
     const counts = new Map<string, number>();
@@ -104,7 +110,9 @@ export default function IntegrationsClient() {
     () => [
       columnHelper.accessor((row) => row.integration.name, {
         id: "name",
-        header: () => <span>Name</span>,
+        header: ({ column }) => <SortHeader column={column} label="Name" />,
+        sortingFn: (a, b) =>
+          a.original.integration.name.localeCompare(b.original.integration.name),
         cell: ({ row }) => (
           <NameCell
             integration={row.original.integration}
@@ -115,6 +123,7 @@ export default function IntegrationsClient() {
       columnHelper.accessor((row) => row.integration.description, {
         id: "description",
         header: () => <span>Description</span>,
+        enableSorting: false,
         meta: {
           cellClassName:
             "text-caption text-muted-foreground max-w-[28rem] whitespace-normal",
@@ -124,6 +133,7 @@ export default function IntegrationsClient() {
       columnHelper.accessor((row) => row.connectionCount, {
         id: "connections",
         header: () => <span>Connections</span>,
+        enableSorting: false,
         meta: { cellClassName: "font-mono tabular-nums" },
         cell: ({ row }) => {
           const count = row.original.connectionCount;
@@ -138,6 +148,7 @@ export default function IntegrationsClient() {
       columnHelper.display({
         id: "action",
         header: () => <span className="sr-only">Action</span>,
+        enableSorting: false,
         meta: { headerClassName: "w-32", cellClassName: "w-32 text-right" },
         cell: ({ row }) => (
           <RowAction
@@ -154,7 +165,10 @@ export default function IntegrationsClient() {
   const table = useReactTable({
     data: filtered as IntegrationRow[],
     columns,
+    state: { sorting },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getRowId: (row) => row.integration.id,
   });
 
@@ -310,6 +324,54 @@ interface IntegrationCardProps {
   integration: Integration;
   connectionCount: number;
   workspaceSlug: string;
+}
+
+interface SortHeaderProps {
+  // `Column` from TanStack carries the row type; cast at the call site since
+  // this header is reused across columns that all share the same row shape.
+  column: {
+    getIsSorted: () => false | "asc" | "desc";
+    toggleSorting: (desc?: boolean) => void;
+  };
+  label: string;
+}
+
+const SORT_ICON = {
+  asc: ArrowUp,
+  desc: ArrowDown,
+  none: ArrowUpDown,
+} as const;
+
+function SortHeader({ column, label }: SortHeaderProps) {
+  const sorted = column.getIsSorted();
+  const Icon = SORT_ICON[sorted === false ? "none" : sorted];
+  return (
+    <button
+      type="button"
+      onClick={() => column.toggleSorting(sorted === "asc")}
+      className={cn(
+        "group inline-flex items-center gap-1.5 text-left text-label font-medium",
+        "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
+        sorted ? "text-foreground" : "text-meta-foreground hover:text-foreground",
+      )}
+      aria-label={
+        sorted === "asc"
+          ? `Sorted by ${label} ascending. Click to sort descending.`
+          : sorted === "desc"
+            ? `Sorted by ${label} descending. Click to clear sort.`
+            : `Sort by ${label}.`
+      }
+    >
+      <span>{label}</span>
+      <Icon
+        aria-hidden="true"
+        className={cn(
+          "size-3 shrink-0 transition-opacity",
+          sorted ? "opacity-100" : "opacity-0 group-hover:opacity-60",
+        )}
+      />
+    </button>
+  );
 }
 
 function IntegrationCard({
