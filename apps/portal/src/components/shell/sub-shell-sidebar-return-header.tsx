@@ -30,7 +30,7 @@ export function SubShellSidebarReturnHeader({
       onClick={onNavigate}
       className={cn(
         "sidebar-row-hover group flex items-center gap-2 border-b border-border px-2 pt-3 pb-1.5",
-        "text-body font-medium text-muted-foreground outline-hidden",
+        "typography-body font-medium text-muted-foreground outline-hidden",
         "hover:text-foreground",
         "focus-visible:shadow-focus-ring",
       )}
