@@ -7,16 +7,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import {
-  AlertTriangle,
-  Check,
-  Circle,
-  ExternalLink,
-  Search,
-} from "lucide-react";
+import { AlertTriangle, ExternalLink, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Button } from "@repo/ui/components/button";
+import { Card } from "@repo/ui/components/card";
 import {
   Drawer,
   DrawerBody,
@@ -44,19 +39,19 @@ import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations"
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import IntegrationsTable from "./integrations-table";
 
-type CategoryFilter = "all" | "enabled" | IntegrationCategory;
+type StatusFilter = "all" | "enabled";
 type TypeFilter = "all" | IntegrationCategory;
 
-interface CategoryItem {
-  value: CategoryFilter;
+interface StatusItem {
+  value: StatusFilter;
   label: string;
 }
 
-const CATEGORIES: ReadonlyArray<CategoryItem> = [
+// Two-axis filter IA: status segment (binary) + type dropdown (extensible).
+// New integration categories extend the dropdown only — the segment never grows.
+const STATUS_FILTERS: ReadonlyArray<StatusItem> = [
   { value: "all", label: "All" },
   { value: "enabled", label: "Enabled" },
-  { value: "model", label: "Model" },
-  { value: "mcp-server", label: "MCP server" },
 ];
 
 const TYPE_OPTIONS: ReadonlyArray<{ value: TypeFilter; label: string }> = [
@@ -73,35 +68,34 @@ export default function IntegrationsClient() {
     workspaceIntegrationQueries.list(accountId, workspaceId),
   );
 
-  const [category, setCategory] = useState<CategoryFilter>("all");
+  const [status, setStatus] = useState<StatusFilter>("all");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Integration | null>(null);
 
-  const categoryCounts = useMemo(() => {
-    const out: Record<CategoryFilter, number> = {
-      all: integrations.length,
-      enabled: integrations.filter((i) => i.enabled).length,
-      model: integrations.filter((i) => i.category === "model").length,
-      "mcp-server": integrations.filter((i) => i.category === "mcp-server").length,
-    };
-    return out;
-  }, [integrations]);
+  // Counts respect the current type-filter so the segment numbers reflect what
+  // the table actually shows when the user toggles between All / Enabled.
+  const statusCounts = useMemo(() => {
+    const typeScoped = integrations.filter(
+      (i) => typeFilter === "all" || i.category === typeFilter,
+    );
+    return {
+      all: typeScoped.length,
+      enabled: typeScoped.filter((i) => i.enabled).length,
+    } satisfies Record<StatusFilter, number>;
+  }, [integrations, typeFilter]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return integrations.filter((i) => {
-      if (category === "enabled" && !i.enabled) return false;
-      if (category !== "all" && category !== "enabled" && i.category !== category) {
-        return false;
-      }
+      if (status === "enabled" && !i.enabled) return false;
       if (typeFilter !== "all" && i.category !== typeFilter) return false;
       if (q && !i.name.toLowerCase().includes(q) && !i.description.toLowerCase().includes(q)) {
         return false;
       }
       return true;
     });
-  }, [integrations, category, typeFilter, search]);
+  }, [integrations, status, typeFilter, search]);
 
   // Stable `now` for the lifetime of the view — every row computes against the
   // same reference. Reloading the page (or remounting) re-anchors it. Matches
@@ -110,37 +104,10 @@ export default function IntegrationsClient() {
 
   const columns = useMemo(
     () => [
-      columnHelper.display({
-        id: "status",
-        header: () => <span className="sr-only">Status</span>,
-        meta: { headerClassName: "w-8", cellClassName: "w-8 pr-0" },
-        cell: ({ row }) => <StatusIcon integration={row.original} />,
-      }),
       columnHelper.accessor("name", {
         id: "name",
         header: () => <span>Name</span>,
-        cell: ({ row }) => (
-          <div className="flex items-center gap-3">
-            <Avatar size="sm" shape="square">
-              <AvatarFallback>{row.original.logoInitial}</AvatarFallback>
-            </Avatar>
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="flex items-center gap-2">
-                <span className="truncate text-label font-medium text-foreground">
-                  {row.original.name}
-                </span>
-                {row.original.comingSoon && (
-                  <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
-                    Coming soon
-                  </span>
-                )}
-              </span>
-              <span className="text-caption text-meta-foreground">
-                {row.original.category === "model" ? "Model" : "MCP server"}
-              </span>
-            </div>
-          </div>
-        ),
+        cell: ({ row }) => <NameCell integration={row.original} />,
       }),
       columnHelper.accessor("description", {
         id: "description",
@@ -199,9 +166,15 @@ export default function IntegrationsClient() {
     getRowId: (row) => row.id,
   });
 
+  const onClearFilters = () => {
+    setSearch("");
+    setTypeFilter("all");
+    setStatus("all");
+  };
+
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-4">
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
         <Input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
@@ -211,39 +184,16 @@ export default function IntegrationsClient() {
           aria-label="Search integrations"
         />
         <div className="ml-auto flex items-center gap-2">
-          {/* Category — segment at lg+, select below. Four segments at "MCP
-              server" length need the full desktop row to look right; tablet
-              widths squeeze them into a wrapped row that orphans the cluster.
-              Stay on the Select pattern until we're past lg (1024). */}
-          <Select
-            value={category}
-            onValueChange={(v) => setCategory(v as CategoryFilter)}
-          >
-            <SelectTrigger
-              aria-label="Filter integrations by category (compact)"
-              className="w-40 lg:hidden"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label} ({categoryCounts[item.value] ?? 0})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <SegmentedControl
-            value={category}
-            onValueChange={(v) => setCategory(v as CategoryFilter)}
-            aria-label="Filter integrations by category"
-            className="hidden overflow-x-auto lg:inline-flex"
+            value={status}
+            onValueChange={(v) => setStatus(v as StatusFilter)}
+            aria-label="Filter integrations by status"
           >
-            {CATEGORIES.map((item) => (
+            {STATUS_FILTERS.map((item) => (
               <SegmentedControl.Item key={item.value} value={item.value}>
                 <span>{item.label}</span>
                 <span className="font-mono text-meta tabular-nums opacity-70">
-                  {categoryCounts[item.value] ?? 0}
+                  {statusCounts[item.value]}
                 </span>
               </SegmentedControl.Item>
             ))}
@@ -252,7 +202,7 @@ export default function IntegrationsClient() {
             value={typeFilter}
             onValueChange={(v) => setTypeFilter(v as TypeFilter)}
           >
-            <SelectTrigger aria-label="Filter by type" className="w-28">
+            <SelectTrigger aria-label="Filter by type" className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -272,27 +222,44 @@ export default function IntegrationsClient() {
           title="No integrations match"
           subtitle="Try a different search or clear the filters."
           cta={
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setSearch("");
-                setTypeFilter("all");
-                setCategory("all");
-              }}
-            >
+            <Button variant="secondary" onClick={onClearFilters}>
               Clear search
             </Button>
           }
         />
       ) : (
-        <IntegrationsTable
-          table={table}
-          renderRowExtra={(row) =>
-            row.original.statusWarning ? (
-              <WarningBand message={row.original.statusWarning} />
-            ) : null
-          }
-        />
+        <>
+          {/* Table at md+; card list below md. Two structurally different
+              renderings of the same filtered data, switched by responsive
+              visibility — keeps each layout's markup honest instead of
+              jamming a layout prop through one component. */}
+          <div className="hidden min-h-0 flex-1 md:flex md:flex-col">
+            <IntegrationsTable
+              table={table}
+              getRowClassName={(row) =>
+                row.original.statusWarning
+                  ? "bg-state-warning-subtle border-l-2 border-l-state-warning hover:bg-state-warning-subtle"
+                  : undefined
+              }
+              renderRowExtra={(row) =>
+                row.original.statusWarning ? (
+                  <WarningBand message={row.original.statusWarning} />
+                ) : null
+              }
+            />
+          </div>
+          <ul className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto md:hidden" role="list">
+            {filtered.map((integration) => (
+              <li key={integration.id}>
+                <IntegrationCard
+                  integration={integration}
+                  now={now}
+                  onActivate={() => setActive(integration)}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <ConfigureIntegrationDrawer
@@ -303,28 +270,38 @@ export default function IntegrationsClient() {
   );
 }
 
-function StatusIcon({ integration }: { integration: Integration }) {
-  if (integration.statusWarning) {
-    return (
-      <AlertTriangle
-        aria-label="Connection issue"
-        className="size-4 text-state-warning"
-      />
-    );
-  }
-  if (integration.enabled) {
-    return (
-      <Check
-        aria-label="Connected"
-        className="size-4 text-state-scored"
-      />
-    );
-  }
+function NameCell({ integration }: { integration: Integration }) {
+  // Connected-state indicator: filled green dot inline with the name. Only
+  // appears for healthy connected rows — the warning row carries its own
+  // amber treatment, so a green dot there would conflict with the band.
+  const showConnectedDot = integration.enabled && !integration.statusWarning;
   return (
-    <Circle
-      aria-label="Not connected"
-      className="size-4 text-meta-foreground"
-    />
+    <div className="flex items-center gap-3">
+      <Avatar size="sm" shape="square">
+        <AvatarFallback>{integration.logoInitial}</AvatarFallback>
+      </Avatar>
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <span className="flex items-center gap-2">
+          {showConnectedDot && (
+            <span
+              aria-hidden="true"
+              className="size-1.5 shrink-0 rounded-full bg-state-scored"
+            />
+          )}
+          <span className="truncate text-body text-foreground">
+            {integration.name}
+          </span>
+          {integration.comingSoon && (
+            <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
+              Coming soon
+            </span>
+          )}
+        </span>
+        <span className="text-meta text-meta-foreground">
+          {integration.category === "model" ? "Model" : "MCP server"}
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -364,6 +341,39 @@ function WarningBand({ message }: { message: string }) {
       />
       <span>{message}</span>
     </div>
+  );
+}
+
+interface IntegrationCardProps {
+  integration: Integration;
+  now: number;
+  onActivate: () => void;
+}
+
+function IntegrationCard({ integration, now, onActivate }: IntegrationCardProps) {
+  const metaLine = formatCardMeta(integration, now);
+
+  return (
+    <Card
+      variant="elevated"
+      className={cn(
+        "flex flex-col gap-3 p-4",
+        integration.statusWarning &&
+          "border-l-2 border-l-state-warning bg-state-warning-subtle",
+      )}
+    >
+      <NameCell integration={integration} />
+      <p className="text-caption text-muted-foreground">
+        {integration.description}
+      </p>
+      {integration.statusWarning && (
+        <WarningBand message={integration.statusWarning} />
+      )}
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-caption text-meta-foreground">{metaLine}</span>
+        <RowAction integration={integration} onActivate={onActivate} />
+      </div>
+    </Card>
   );
 }
 
@@ -479,6 +489,22 @@ function ConfigureIntegrationDrawer({
 
 function randomSuffix() {
   return Math.random().toString(36).slice(2, 8);
+}
+
+// Card-meta line condenses the two table columns ("Service accounts" + "Last
+// activity") into a single muted line. Disabled integrations have no use count
+// and may have no activity timestamp — em-dash when both are absent.
+function formatCardMeta(integration: Integration, now: number): string {
+  const parts: string[] = [];
+  if (integration.enabled) {
+    const used = integration.usedByCount ?? 0;
+    parts.push(`${used} ${used === 1 ? "account" : "accounts"}`);
+  }
+  if (integration.lastActivityAt) {
+    parts.push(formatRelativeTime(integration.lastActivityAt, now));
+  }
+  if (parts.length === 0) return "—";
+  return parts.join(" · ");
 }
 
 // Compact relative-time formatter; identical shape to the logs-tab helper.
