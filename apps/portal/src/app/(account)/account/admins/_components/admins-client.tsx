@@ -8,6 +8,7 @@ import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { Input } from "@repo/ui/components/input";
+import { Separator } from "@repo/ui/components/separator";
 import {
   Table,
   TableBody,
@@ -254,23 +255,26 @@ function PendingRowActions({
   onRevoke,
 }: PendingRowActionsProps) {
   return (
-    <div className="inline-flex items-center gap-2">
-      <RowActionButton
+    <div className="inline-flex h-8 items-center">
+      <Button
+        variant="link"
         onClick={onResend}
-        label={`Resend invitation to ${admin.email}`}
+        aria-label={`Resend invitation to ${admin.email}`}
       >
         Resend
-      </RowActionButton>
-      <span aria-hidden="true" className="text-muted-foreground">
-        &middot;
-      </span>
-      <RowActionButton
+      </Button>
+      <Separator
+        orientation="vertical"
+        decorative
+        className="mx-1 data-[orientation=vertical]:h-3.5"
+      />
+      <Button
+        variant="destructive-link"
         onClick={onRevoke}
-        label={`Revoke invitation to ${admin.email}`}
-        destructive
+        aria-label={`Revoke invitation to ${admin.email}`}
       >
         Revoke
-      </RowActionButton>
+      </Button>
     </div>
   );
 }
