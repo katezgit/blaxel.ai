@@ -56,6 +56,12 @@ const buttonVariants = cva(
           "hover:text-primary",
           "disabled:bg-transparent",
         ],
+
+        "destructive-link": [
+          "bg-transparent text-state-errored underline-offset-4",
+          "hover:underline hover:text-state-errored-text",
+          "disabled:bg-transparent",
+        ],
       },
     },
     compoundVariants: [
