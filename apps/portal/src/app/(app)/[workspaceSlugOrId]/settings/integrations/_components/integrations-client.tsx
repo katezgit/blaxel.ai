@@ -1,26 +1,24 @@
 "use client";
 
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getSortedRowModel,
+  type SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight, ExternalLink, Search } from "lucide-react";
-import { toast } from "sonner";
-import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
+import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@repo/ui/components/drawer";
 import { EmptyState } from "@repo/ui/components/empty-state";
-import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
-import { ScrollArea } from "@repo/ui/components/scroll-area";
+import { SegmentedControl } from "@repo/ui/components/segmented-control";
 import {
   Select,
   SelectContent,
@@ -28,68 +26,172 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import { SegmentedControl } from "@repo/ui/components/segmented-control";
 import { cn } from "@repo/ui/lib/cn";
-import type { Integration, IntegrationCategory } from "@/lib/mock/types";
+import type { Integration } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
+import ConnectionDrawer from "../[provider]/_components/connection-drawer";
+import IntegrationsTable from "./integrations-table";
 
-type CategoryFilter = "all" | "enabled" | IntegrationCategory;
-type TypeFilter = "all" | IntegrationCategory;
+// Flat one-click filter: a single category state covers status + type in one
+// row, matching Blaxel's production vocabulary (status label is "Enabled", and
+// the four buckets sit side-by-side as a single selector). "Enabled" derives
+// from connection count > 0; no separate stored flag.
+type CategoryFilter = "all" | "enabled" | "model" | "mcp-server";
 
 interface CategoryItem {
   value: CategoryFilter;
   label: string;
 }
 
-const CATEGORIES: ReadonlyArray<CategoryItem> = [
+const CATEGORY_FILTERS: ReadonlyArray<CategoryItem> = [
   { value: "all", label: "All" },
-  { value: "enabled", label: "Enabled" },
+  { value: "enabled", label: "Connected providers" },
   { value: "model", label: "Model" },
   { value: "mcp-server", label: "MCP server" },
 ];
 
-const TYPE_OPTIONS: ReadonlyArray<{ value: TypeFilter; label: string }> = [
-  { value: "all", label: "All types" },
-  { value: "model", label: "Model" },
-  { value: "mcp-server", label: "MCP server" },
-];
+interface IntegrationRow {
+  integration: Integration;
+  connectionCount: number;
+}
+
+const columnHelper = createColumnHelper<IntegrationRow>();
 
 export default function IntegrationsClient() {
   const { accountId, workspaceId } = useCurrentTenancy();
+  const params = useParams<{ workspaceSlugOrId: string }>();
+  const workspaceSlug = params.workspaceSlugOrId;
+  const router = useRouter();
   const { data: integrations } = useSuspenseQuery(
     workspaceIntegrationQueries.list(accountId, workspaceId),
   );
+  const { data: connections } = useSuspenseQuery(
+    workspaceIntegrationQueries.connections(accountId, workspaceId),
+  );
 
   const [category, setCategory] = useState<CategoryFilter>("all");
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [search, setSearch] = useState("");
-  const [active, setActive] = useState<Integration | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "name", desc: false },
+  ]);
+  // First-connection path: catalog opens the create drawer inline so the user
+  // doesn't bounce through an empty detail page just to click another CTA.
+  // `connectFor === null` = closed; otherwise the row whose Connect button was
+  // clicked. On successful create we route to that provider's detail page so
+  // the user lands where the freshly-created connection lives.
+  const [connectFor, setConnectFor] = useState<Integration | null>(null);
+
+  const rows = useMemo<ReadonlyArray<IntegrationRow>>(() => {
+    const counts = new Map<string, number>();
+    for (const c of connections) {
+      counts.set(c.providerId, (counts.get(c.providerId) ?? 0) + 1);
+    }
+    return integrations.map((integration) => ({
+      integration,
+      connectionCount: counts.get(integration.id) ?? 0,
+    }));
+  }, [integrations, connections]);
 
   const categoryCounts = useMemo(() => {
-    const out: Record<CategoryFilter, number> = {
-      all: integrations.length,
-      enabled: integrations.filter((i) => i.enabled).length,
-      model: integrations.filter((i) => i.category === "model").length,
-      "mcp-server": integrations.filter((i) => i.category === "mcp-server").length,
-    };
-    return out;
-  }, [integrations]);
+    return {
+      all: rows.length,
+      enabled: rows.filter((r) => r.connectionCount > 0).length,
+      model: rows.filter((r) => r.integration.category === "model").length,
+      "mcp-server": rows.filter((r) => r.integration.category === "mcp-server")
+        .length,
+    } satisfies Record<CategoryFilter, number>;
+  }, [rows]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return integrations.filter((i) => {
-      if (category === "enabled" && !i.enabled) return false;
-      if (category !== "all" && category !== "enabled" && i.category !== category) {
+    return rows.filter(({ integration, connectionCount }) => {
+      if (category === "enabled" && connectionCount === 0) return false;
+      if (category === "model" && integration.category !== "model") return false;
+      if (category === "mcp-server" && integration.category !== "mcp-server")
         return false;
-      }
-      if (typeFilter !== "all" && i.category !== typeFilter) return false;
-      if (q && !i.name.toLowerCase().includes(q) && !i.description.toLowerCase().includes(q)) {
+      if (
+        q &&
+        !integration.name.toLowerCase().includes(q) &&
+        !integration.description.toLowerCase().includes(q)
+      ) {
         return false;
       }
       return true;
     });
-  }, [integrations, category, typeFilter, search]);
+  }, [rows, category, search]);
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor((row) => row.integration.name, {
+        id: "name",
+        header: ({ column }) => <SortHeader column={column} label="Name" />,
+        sortingFn: (a, b) =>
+          a.original.integration.name.localeCompare(b.original.integration.name),
+        cell: ({ row }) => (
+          <NameCell
+            integration={row.original.integration}
+            connectionCount={row.original.connectionCount}
+          />
+        ),
+      }),
+      columnHelper.accessor((row) => row.integration.description, {
+        id: "description",
+        header: () => <span>Description</span>,
+        enableSorting: false,
+        meta: {
+          cellClassName:
+            "text-caption text-muted-foreground max-w-[28rem] whitespace-normal",
+        },
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor((row) => row.connectionCount, {
+        id: "connections",
+        header: () => <span>Connections</span>,
+        enableSorting: false,
+        meta: { cellClassName: "font-mono tabular-nums" },
+        cell: ({ row }) => {
+          const count = row.original.connectionCount;
+          if (count === 0) return <span className="text-meta-foreground">—</span>;
+          return (
+            <span className="text-foreground">
+              {count} {count === 1 ? "connection" : "connections"}
+            </span>
+          );
+        },
+      }),
+      columnHelper.display({
+        id: "action",
+        header: () => <span className="sr-only">Action</span>,
+        enableSorting: false,
+        meta: { headerClassName: "w-32", cellClassName: "w-32 text-right" },
+        cell: ({ row }) => (
+          <RowAction
+            integration={row.original.integration}
+            connectionCount={row.original.connectionCount}
+            workspaceSlug={workspaceSlug}
+            onConnect={setConnectFor}
+          />
+        ),
+      }),
+    ],
+    [workspaceSlug],
+  );
+
+  const table = useReactTable({
+    data: filtered as IntegrationRow[],
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getRowId: (row) => row.integration.id,
+  });
+
+  const onClearFilters = () => {
+    setSearch("");
+    setCategory("all");
+  };
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-4">
@@ -99,63 +201,45 @@ export default function IntegrationsClient() {
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search integrations"
           leading={<Search aria-hidden="true" className="size-3.5" />}
-          className="max-w-xs"
+          className="min-w-0 flex-1 md:max-w-xs"
           aria-label="Search integrations"
         />
-        <div className="ml-auto flex items-center gap-2">
-          {/* Category — segment at lg+, select below. Four segments at "MCP
-              server" length need the full desktop row to look right; tablet
-              widths squeeze them into a wrapped row that orphans the cluster.
-              Stay on the Select pattern until we're past lg (1024). */}
-          <Select
-            value={category}
-            onValueChange={(v) => setCategory(v as CategoryFilter)}
-          >
-            <SelectTrigger
-              aria-label="Filter integrations by category (compact)"
-              className="w-40 lg:hidden"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label} ({categoryCounts[item.value] ?? 0})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <SegmentedControl
-            value={category}
-            onValueChange={(v) => setCategory(v as CategoryFilter)}
+        <SegmentedControl
+          value={category}
+          onValueChange={(v) => setCategory(v as CategoryFilter)}
+          aria-label="Filter integrations by category"
+          className="ml-auto hidden md:inline-flex"
+        >
+          {CATEGORY_FILTERS.map((item) => (
+            <SegmentedControl.Item key={item.value} value={item.value}>
+              <span>{item.label}</span>
+              <span className="font-mono text-meta tabular-nums opacity-70">
+                {categoryCounts[item.value]}
+              </span>
+            </SegmentedControl.Item>
+          ))}
+        </SegmentedControl>
+        <Select
+          value={category}
+          onValueChange={(v) => setCategory(v as CategoryFilter)}
+        >
+          <SelectTrigger
             aria-label="Filter integrations by category"
-            className="hidden overflow-x-auto lg:inline-flex"
+            className="shrink-0 md:hidden"
           >
-            {CATEGORIES.map((item) => (
-              <SegmentedControl.Item key={item.value} value={item.value}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORY_FILTERS.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
                 <span>{item.label}</span>
-                <span className="font-mono text-meta tabular-nums opacity-70">
-                  {categoryCounts[item.value] ?? 0}
+                <span className="ml-2 font-mono text-meta tabular-nums opacity-70">
+                  {categoryCounts[item.value]}
                 </span>
-              </SegmentedControl.Item>
+              </SelectItem>
             ))}
-          </SegmentedControl>
-          <Select
-            value={typeFilter}
-            onValueChange={(v) => setTypeFilter(v as TypeFilter)}
-          >
-            <SelectTrigger aria-label="Filter by type" className="w-28">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TYPE_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+          </SelectContent>
+        </Select>
       </div>
 
       {filtered.length === 0 ? (
@@ -164,259 +248,217 @@ export default function IntegrationsClient() {
           title="No integrations match"
           subtitle="Try a different search or clear the filters."
           cta={
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setSearch("");
-                setTypeFilter("all");
-                setCategory("all");
-              }}
-            >
+            <Button variant="secondary" onClick={onClearFilters}>
               Clear search
             </Button>
           }
         />
       ) : (
-        <ScrollArea className="-mx-1 min-h-0 flex-1">
+        <>
+          {/* Table at md+; card list below md. Two structurally different
+              renderings of the same filtered data, switched by responsive
+              visibility — keeps each layout's markup honest instead of
+              jamming a layout prop through one component. */}
+          <div className="hidden min-h-0 flex-1 md:flex md:flex-col">
+            <IntegrationsTable table={table} />
+          </div>
           <ul
-            className="grid grid-cols-1 gap-3 px-1 pb-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            aria-label="Available integrations"
+            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-px md:hidden"
+            role="list"
           >
-            {filtered.map((integration) => (
-              <li key={integration.id}>
+            {filtered.map((row) => (
+              <li key={row.integration.id}>
                 <IntegrationCard
-                  integration={integration}
-                  isActive={active?.id === integration.id}
-                  onConfigure={() => setActive(integration)}
+                  integration={row.integration}
+                  connectionCount={row.connectionCount}
+                  workspaceSlug={workspaceSlug}
+                  onConnect={setConnectFor}
                 />
               </li>
             ))}
           </ul>
-        </ScrollArea>
+        </>
       )}
 
-      <ConfigureIntegrationDrawer
-        integration={active}
-        onClose={() => setActive(null)}
-      />
+      {connectFor && (
+        <ConnectionDrawer
+          provider={connectFor}
+          state={{ mode: "create" }}
+          onClose={(reason) => {
+            const providerId = connectFor.id;
+            setConnectFor(null);
+            if (reason === "created") {
+              router.push(
+                `/${workspaceSlug}/settings/integrations/${providerId}`,
+              );
+            }
+          }}
+        />
+      )}
     </section>
+  );
+}
+
+interface NameCellProps {
+  integration: Integration;
+  connectionCount: number;
+}
+
+function NameCell({ integration, connectionCount }: NameCellProps) {
+  return (
+    <div className="flex items-center gap-3">
+      <Avatar size="sm" shape="square">
+        {integration.logoUrl && (
+          <AvatarImage src={integration.logoUrl} alt={integration.name} />
+        )}
+        <AvatarFallback>{integration.logoInitial}</AvatarFallback>
+      </Avatar>
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <span className="flex items-center gap-2">
+          <span className="truncate text-body text-foreground">
+            {integration.name}
+          </span>
+          {connectionCount > 0 && (
+            <Badge variant="success" size="sm" showDot>
+              Connected
+            </Badge>
+          )}
+          {integration.comingSoon && (
+            <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
+              Coming soon
+            </span>
+          )}
+        </span>
+        <span className="text-meta text-meta-foreground">
+          {integration.category === "model" ? "Model" : "MCP server"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+interface RowActionProps {
+  integration: Integration;
+  connectionCount: number;
+  workspaceSlug: string;
+  onConnect: (integration: Integration) => void;
+}
+
+function RowAction({
+  integration,
+  connectionCount,
+  workspaceSlug,
+  onConnect,
+}: RowActionProps) {
+  if (integration.comingSoon) {
+    return (
+      <Button
+        variant="secondary"
+        disabled
+        aria-label={`${integration.name} — coming soon`}
+      >
+        Connect
+      </Button>
+    );
+  }
+  if (connectionCount > 0) {
+    const base = `/${workspaceSlug}/settings/integrations/${integration.id}`;
+    return (
+      <Button variant="ghost" asChild>
+        <Link href={base}>Manage</Link>
+      </Button>
+    );
+  }
+  return (
+    <Button variant="secondary" onClick={() => onConnect(integration)}>
+      Connect
+    </Button>
   );
 }
 
 interface IntegrationCardProps {
   integration: Integration;
-  isActive: boolean;
-  onConfigure: () => void;
+  connectionCount: number;
+  workspaceSlug: string;
+  onConnect: (integration: Integration) => void;
+}
+
+interface SortHeaderProps {
+  // `Column` from TanStack carries the row type; cast at the call site since
+  // this header is reused across columns that all share the same row shape.
+  column: {
+    getIsSorted: () => false | "asc" | "desc";
+    toggleSorting: (desc?: boolean) => void;
+  };
+  label: string;
+}
+
+const SORT_ICON = {
+  asc: ArrowUp,
+  desc: ArrowDown,
+  none: ArrowUpDown,
+} as const;
+
+function SortHeader({ column, label }: SortHeaderProps) {
+  const sorted = column.getIsSorted();
+  const Icon = SORT_ICON[sorted === false ? "none" : sorted];
+  return (
+    <button
+      type="button"
+      onClick={() => column.toggleSorting(sorted === "asc")}
+      className={cn(
+        "group inline-flex items-center gap-1.5 text-left text-label font-medium",
+        "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
+        sorted ? "text-foreground" : "text-meta-foreground hover:text-foreground",
+      )}
+      aria-label={
+        sorted === "asc"
+          ? `Sorted by ${label} ascending. Click to sort descending.`
+          : sorted === "desc"
+            ? `Sorted by ${label} descending. Click to clear sort.`
+            : `Sort by ${label}.`
+      }
+    >
+      <span>{label}</span>
+      <Icon
+        aria-hidden="true"
+        className={cn(
+          "size-3 shrink-0 transition-opacity",
+          sorted ? "opacity-100" : "opacity-0 group-hover:opacity-60",
+        )}
+      />
+    </button>
+  );
 }
 
 function IntegrationCard({
   integration,
-  isActive,
-  onConfigure,
+  connectionCount,
+  workspaceSlug,
+  onConnect,
 }: IntegrationCardProps) {
-  const disabled = integration.comingSoon;
-  const typeLabel = integration.category === "model" ? "Model" : "MCP server";
+  const label =
+    connectionCount === 0
+      ? "—"
+      : `${connectionCount} ${connectionCount === 1 ? "connection" : "connections"}`;
+
   return (
-    <Card
-      variant={disabled ? "default" : "interactive"}
-      className={cn(
-        "group flex h-full flex-col gap-3 p-4",
-        disabled && "cursor-not-allowed opacity-60",
-        !disabled && "cursor-pointer",
-        // Selected state: this card's drawer is the open one. Border picks up the
-        // brand colour and a tint backs the surface so the link between card and
-        // drawer is unambiguous even when the grid scrolls.
-        isActive && "border-primary bg-primary/5 ring-1 ring-primary/30",
-      )}
-      // Card is a drawer trigger, not a toggle. aria-haspopup advertises the
-      // dialog destination; aria-expanded reflects whether *this* card's drawer
-      // is the currently-open one. aria-pressed would lie ("on/off toggle").
-      aria-disabled={disabled || undefined}
-      aria-haspopup={disabled ? undefined : "dialog"}
-      aria-expanded={disabled ? undefined : isActive}
-      role={disabled ? "article" : "button"}
-      tabIndex={disabled ? -1 : 0}
-      onClick={disabled ? undefined : onConfigure}
-      onKeyDown={
-        disabled
-          ? undefined
-          : (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                onConfigure();
-              }
-            }
-      }
-      aria-label={
-        disabled
-          ? `${integration.name} — coming soon, not yet available`
-          : `Configure ${integration.name}`
-      }
-    >
-      <div className="flex items-start gap-3">
-        <Avatar size="md" shape="square">
-          <AvatarFallback>{integration.logoInitial}</AvatarFallback>
-        </Avatar>
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <div className="flex items-center gap-2">
-            <span className="truncate text-body font-medium text-foreground">
-              {integration.name}
-            </span>
-            {integration.comingSoon && (
-              <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-caption font-mono text-meta-foreground">
-                Coming soon
-              </span>
-            )}
-            {integration.enabled && !integration.comingSoon && (
-              <span className="rounded-sm bg-state-scored/10 px-1.5 py-0.5 text-caption font-mono text-state-scored">
-                Connected
-              </span>
-            )}
-          </div>
-          <span className="text-caption text-meta-foreground">{typeLabel}</span>
-        </div>
-      </div>
-      <p className="line-clamp-2 flex-1 text-caption text-muted-foreground">
+    <Card variant="elevated" className="flex flex-col gap-3 p-4">
+      <NameCell integration={integration} connectionCount={connectionCount} />
+      <p className="text-caption text-muted-foreground">
         {integration.description}
       </p>
-      <div className="flex items-center justify-between gap-2 border-t border-border pt-3">
-        <span className="text-caption text-meta-foreground">
-          {integration.usedByCount
-            ? `${integration.usedByCount} service account${integration.usedByCount === 1 ? "" : "s"}`
-            : "Not connected"}
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-mono text-caption text-meta-foreground tabular-nums">
+          {label}
         </span>
-        {!disabled && (
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 text-caption font-medium transition-colors",
-              isActive
-                ? "text-primary"
-                : "text-meta-foreground group-hover:text-primary group-focus-visible:text-primary",
-            )}
-            aria-hidden="true"
-          >
-            {isActive ? "Configuring" : "Configure"}
-            <ArrowRight
-              className={cn(
-                "size-3 transition-transform",
-                isActive ? "translate-x-0.5" : "group-hover:translate-x-0.5",
-              )}
-            />
-          </span>
-        )}
+        <RowAction
+          integration={integration}
+          connectionCount={connectionCount}
+          workspaceSlug={workspaceSlug}
+          onConnect={onConnect}
+        />
       </div>
     </Card>
   );
-}
-
-interface ConfigureIntegrationDrawerProps {
-  integration: Integration | null;
-  onClose: () => void;
-}
-
-function ConfigureIntegrationDrawer({
-  integration,
-  onClose,
-}: ConfigureIntegrationDrawerProps) {
-  const open = integration !== null;
-  return (
-    <Drawer
-      direction="right"
-      open={open}
-      onOpenChange={(next) => {
-        if (!next) onClose();
-      }}
-    >
-      <DrawerContent size="md" aria-describedby={undefined}>
-        {integration && (
-          <>
-            <DrawerHeader className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <Avatar size="md" shape="square">
-                  <AvatarFallback>{integration.logoInitial}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col gap-1">
-                  <DrawerTitle className="text-subtitle">
-                    {integration.enabled ? "Configure" : "Connect"}{" "}
-                    {integration.name}
-                  </DrawerTitle>
-                  <DrawerDescription className="text-muted-foreground">
-                    {integration.description}
-                  </DrawerDescription>
-                </div>
-              </div>
-              <DrawerCloseButton />
-            </DrawerHeader>
-
-            <DrawerBody className="flex flex-col gap-4">
-              <FormField
-                id={`${integration.id}-name`}
-                label="Name"
-                helper="Identifier for this integration instance. Cannot be changed after creation."
-              >
-                <Input
-                  defaultValue={`${integration.id}-${randomSuffix()}`}
-                  className="font-mono"
-                />
-              </FormField>
-              <FormField
-                id={`${integration.id}-endpoint`}
-                label={
-                  integration.category === "model"
-                    ? "Base URL"
-                    : `${integration.name} Base URL`
-                }
-                helper={`Default: https://api.${integration.id}.com`}
-              >
-                <Input placeholder={`https://api.${integration.id}.com`} />
-              </FormField>
-              <FormField
-                id={`${integration.id}-api-key`}
-                label="API key"
-                helper="Stored in the workspace credential vault. Rotate any time from this drawer."
-              >
-                <Input
-                  type="password"
-                  placeholder="sk_…"
-                  className="font-mono"
-                />
-              </FormField>
-              <a
-                href={`https://docs.blaxel.ai/integrations/${integration.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-caption text-primary hover:underline"
-              >
-                Get your API key
-                <ExternalLink className="size-3" aria-hidden="true" />
-              </a>
-            </DrawerBody>
-
-            <DrawerFooter className="flex justify-end gap-2">
-              <Button variant="secondary" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  toast.success(
-                    integration.enabled
-                      ? `${integration.name} integration updated.`
-                      : `${integration.name} integration created.`,
-                  );
-                  onClose();
-                }}
-              >
-                {integration.enabled ? "Save changes" : "Create"}
-              </Button>
-            </DrawerFooter>
-          </>
-        )}
-      </DrawerContent>
-    </Drawer>
-  );
-}
-
-function randomSuffix() {
-  return Math.random().toString(36).slice(2, 8);
 }
