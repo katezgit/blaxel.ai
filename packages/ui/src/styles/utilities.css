@@ -23,65 +23,65 @@
  * Token source: primitive.css → @theme typography block. */
 @utility text-display {
   font-family:    var(--font-sans);
-  font-size:      var(--text-display);
-  line-height:    var(--text-display--line-height);
-  letter-spacing: var(--text-display--letter-spacing);
+  font-size:      var(--typography-display);
+  line-height:    var(--typography-display--line-height);
+  letter-spacing: var(--typography-display--letter-spacing);
   font-weight:    var(--font-weight-semibold);
 }
 
 @utility text-subtitle {
   font-family:    var(--font-sans);
-  font-size:      var(--text-subtitle);
-  line-height:    var(--text-subtitle--line-height);
-  letter-spacing: var(--text-subtitle--letter-spacing);
+  font-size:      var(--typography-subtitle);
+  line-height:    var(--typography-subtitle--line-height);
+  letter-spacing: var(--typography-subtitle--letter-spacing);
   font-weight:    var(--font-weight-semibold);
 }
 
 @utility text-body {
   font-family:    var(--font-sans);
-  font-size:      var(--text-body);
-  line-height:    var(--text-body--line-height);
-  letter-spacing: var(--text-body--letter-spacing);
+  font-size:      var(--typography-body);
+  line-height:    var(--typography-body--line-height);
+  letter-spacing: var(--typography-body--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility text-label {
   font-family:    var(--font-sans);
-  font-size:      var(--text-label);
-  line-height:    var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
+  font-size:      var(--typography-label);
+  line-height:    var(--typography-label--line-height);
+  letter-spacing: var(--typography-label--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility text-caption {
   font-family:    var(--font-sans);
-  font-size:      var(--text-caption);
-  line-height:    var(--text-caption--line-height);
-  letter-spacing: var(--text-caption--letter-spacing);
+  font-size:      var(--typography-caption);
+  line-height:    var(--typography-caption--line-height);
+  letter-spacing: var(--typography-caption--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility text-code {
   font-family:    var(--font-mono);
-  font-size:      var(--text-code);
-  line-height:    var(--text-code--line-height);
-  letter-spacing: var(--text-code--letter-spacing);
+  font-size:      var(--typography-code);
+  line-height:    var(--typography-code--line-height);
+  letter-spacing: var(--typography-code--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility text-meta {
   font-family:    var(--font-mono);
-  font-size:      var(--text-meta);
-  line-height:    var(--text-meta--line-height);
-  letter-spacing: var(--text-meta--letter-spacing);
+  font-size:      var(--typography-meta);
+  line-height:    var(--typography-meta--line-height);
+  letter-spacing: var(--typography-meta--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility text-table-header {
   font-family:    var(--font-sans);
-  font-size:      var(--text-table-header);
-  line-height:    var(--text-table-header--line-height);
-  letter-spacing: var(--text-table-header--letter-spacing);
+  font-size:      var(--typography-table-header);
+  line-height:    var(--typography-table-header--line-height);
+  letter-spacing: var(--typography-table-header--letter-spacing);
   font-weight:    var(--font-weight-medium);
   text-transform: uppercase;
 }
@@ -94,65 +94,65 @@
  * config once all consumers are migrated (Rounds 2a/2b). */
 @utility typography-display {
   font-family:    var(--font-sans);
-  font-size:      var(--text-display);
-  line-height:    var(--text-display--line-height);
-  letter-spacing: var(--text-display--letter-spacing);
+  font-size:      var(--typography-display);
+  line-height:    var(--typography-display--line-height);
+  letter-spacing: var(--typography-display--letter-spacing);
   font-weight:    var(--font-weight-semibold);
 }
 
 @utility typography-subtitle {
   font-family:    var(--font-sans);
-  font-size:      var(--text-subtitle);
-  line-height:    var(--text-subtitle--line-height);
-  letter-spacing: var(--text-subtitle--letter-spacing);
+  font-size:      var(--typography-subtitle);
+  line-height:    var(--typography-subtitle--line-height);
+  letter-spacing: var(--typography-subtitle--letter-spacing);
   font-weight:    var(--font-weight-semibold);
 }
 
 @utility typography-body {
   font-family:    var(--font-sans);
-  font-size:      var(--text-body);
-  line-height:    var(--text-body--line-height);
-  letter-spacing: var(--text-body--letter-spacing);
+  font-size:      var(--typography-body);
+  line-height:    var(--typography-body--line-height);
+  letter-spacing: var(--typography-body--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility typography-label {
   font-family:    var(--font-sans);
-  font-size:      var(--text-label);
-  line-height:    var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
+  font-size:      var(--typography-label);
+  line-height:    var(--typography-label--line-height);
+  letter-spacing: var(--typography-label--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility typography-caption {
   font-family:    var(--font-sans);
-  font-size:      var(--text-caption);
-  line-height:    var(--text-caption--line-height);
-  letter-spacing: var(--text-caption--letter-spacing);
+  font-size:      var(--typography-caption);
+  line-height:    var(--typography-caption--line-height);
+  letter-spacing: var(--typography-caption--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility typography-meta {
   font-family:    var(--font-mono);
-  font-size:      var(--text-meta);
-  line-height:    var(--text-meta--line-height);
-  letter-spacing: var(--text-meta--letter-spacing);
+  font-size:      var(--typography-meta);
+  line-height:    var(--typography-meta--line-height);
+  letter-spacing: var(--typography-meta--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility typography-code {
   font-family:    var(--font-mono);
-  font-size:      var(--text-code);
-  line-height:    var(--text-code--line-height);
-  letter-spacing: var(--text-code--letter-spacing);
+  font-size:      var(--typography-code);
+  line-height:    var(--typography-code--line-height);
+  letter-spacing: var(--typography-code--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
 @utility typography-table-header {
   font-family:    var(--font-sans);
-  font-size:      var(--text-table-header);
-  line-height:    var(--text-table-header--line-height);
-  letter-spacing: var(--text-table-header--letter-spacing);
+  font-size:      var(--typography-table-header);
+  line-height:    var(--typography-table-header--line-height);
+  letter-spacing: var(--typography-table-header--letter-spacing);
   font-weight:    var(--font-weight-medium);
   text-transform: uppercase;
 }
