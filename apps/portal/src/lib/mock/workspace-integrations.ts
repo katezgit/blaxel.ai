@@ -1,9 +1,9 @@
 import type { Integration } from "@/lib/mock/types";
 
 const FIXTURES: ReadonlyArray<Integration> = [
-  { id: "agentmail", name: "AgentMail", description: "Programmable email inboxes for agents.", category: "mcp-server", logoInitial: "A", enabled: true, usedByCount: 2 },
+  { id: "agentmail", name: "AgentMail", description: "Programmable email inboxes for agents.", category: "mcp-server", logoInitial: "A", enabled: true, usedByCount: 2, lastActivityAt: "2026-06-20T14:22:00Z" },
   { id: "airweave", name: "Airweave", description: "Sync structured data from SaaS apps.", category: "mcp-server", logoInitial: "A", enabled: false },
-  { id: "anthropic", name: "Anthropic", description: "Claude models via the official API.", category: "model", logoInitial: "A", enabled: true, usedByCount: 5 },
+  { id: "anthropic", name: "Anthropic", description: "Claude models via the official API.", category: "model", logoInitial: "A", enabled: true, usedByCount: 5, lastActivityAt: "2026-06-21T09:48:00Z" },
   { id: "aws-bedrock", name: "AWS Bedrock", description: "Managed access to foundation models on AWS.", category: "model", logoInitial: "A", enabled: false },
   { id: "aws-s3", name: "AWS S3", description: "Read/write object storage.", category: "mcp-server", logoInitial: "S", enabled: false },
   { id: "aws-ses", name: "AWS SES", description: "Send transactional email from agents.", category: "mcp-server", logoInitial: "S", enabled: false },
@@ -27,7 +27,7 @@ const FIXTURES: ReadonlyArray<Integration> = [
   { id: "google-docs", name: "Google Docs", description: "Edit Google Docs as a structured surface.", category: "mcp-server", logoInitial: "G", enabled: false, comingSoon: true },
   { id: "groq", name: "Groq", description: "Ultra-low-latency LPU inference.", category: "model", logoInitial: "G", enabled: false },
   { id: "mistral", name: "Mistral", description: "Mistral and Mixtral models via API.", category: "model", logoInitial: "M", enabled: false },
-  { id: "openai", name: "OpenAI", description: "GPT-4 family of models.", category: "model", logoInitial: "O", enabled: true, usedByCount: 3 },
+  { id: "openai", name: "OpenAI", description: "GPT-4 family of models.", category: "model", logoInitial: "O", enabled: true, usedByCount: 3, lastActivityAt: "2026-06-21T11:02:00Z", statusWarning: "401 from /v1/models — rotate the workspace key" },
   { id: "slack", name: "Slack", description: "Read channels, send messages, respond to mentions.", category: "mcp-server", logoInitial: "S", enabled: false },
 ];
 

@@ -1,12 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight, ExternalLink, Search } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  Circle,
+  ExternalLink,
+  Search,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Button } from "@repo/ui/components/button";
-import { Card } from "@repo/ui/components/card";
 import {
   Drawer,
   DrawerBody,
@@ -20,7 +30,6 @@ import {
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
-import { ScrollArea } from "@repo/ui/components/scroll-area";
 import {
   Select,
   SelectContent,
@@ -33,6 +42,7 @@ import { cn } from "@repo/ui/lib/cn";
 import type { Integration, IntegrationCategory } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
+import IntegrationsTable from "./integrations-table";
 
 type CategoryFilter = "all" | "enabled" | IntegrationCategory;
 type TypeFilter = "all" | IntegrationCategory;
@@ -54,6 +64,8 @@ const TYPE_OPTIONS: ReadonlyArray<{ value: TypeFilter; label: string }> = [
   { value: "model", label: "Model" },
   { value: "mcp-server", label: "MCP server" },
 ];
+
+const columnHelper = createColumnHelper<Integration>();
 
 export default function IntegrationsClient() {
   const { accountId, workspaceId } = useCurrentTenancy();
@@ -90,6 +102,102 @@ export default function IntegrationsClient() {
       return true;
     });
   }, [integrations, category, typeFilter, search]);
+
+  // Stable `now` for the lifetime of the view — every row computes against the
+  // same reference. Reloading the page (or remounting) re-anchors it. Matches
+  // the logs-tab pattern; tied to mount, not to filter changes.
+  const now = useMemo(() => Date.now(), []);
+
+  const columns = useMemo(
+    () => [
+      columnHelper.display({
+        id: "status",
+        header: () => <span className="sr-only">Status</span>,
+        meta: { headerClassName: "w-8", cellClassName: "w-8 pr-0" },
+        cell: ({ row }) => <StatusIcon integration={row.original} />,
+      }),
+      columnHelper.accessor("name", {
+        id: "name",
+        header: () => <span>Name</span>,
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <Avatar size="sm" shape="square">
+              <AvatarFallback>{row.original.logoInitial}</AvatarFallback>
+            </Avatar>
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="flex items-center gap-2">
+                <span className="truncate text-label font-medium text-foreground">
+                  {row.original.name}
+                </span>
+                {row.original.comingSoon && (
+                  <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
+                    Coming soon
+                  </span>
+                )}
+              </span>
+              <span className="text-caption text-meta-foreground">
+                {row.original.category === "model" ? "Model" : "MCP server"}
+              </span>
+            </div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor("description", {
+        id: "description",
+        header: () => <span>Description</span>,
+        meta: {
+          cellClassName:
+            "text-caption text-muted-foreground max-w-[28rem] whitespace-normal",
+        },
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("usedByCount", {
+        id: "serviceAccounts",
+        header: () => <span>Service accounts</span>,
+        meta: { cellClassName: "text-meta-foreground tabular-nums" },
+        cell: ({ row }) => {
+          const count = row.original.usedByCount ?? 0;
+          if (!row.original.enabled) {
+            return <span className="text-meta-foreground">—</span>;
+          }
+          return (
+            <span>
+              {count} {count === 1 ? "account" : "accounts"}
+            </span>
+          );
+        },
+      }),
+      columnHelper.accessor("lastActivityAt", {
+        id: "lastActivity",
+        header: () => <span>Last activity</span>,
+        meta: { cellClassName: "text-meta-foreground" },
+        cell: ({ row }) => {
+          const iso = row.original.lastActivityAt;
+          if (!iso) return <span className="text-meta-foreground">—</span>;
+          return <span>{formatRelativeTime(iso, now)}</span>;
+        },
+      }),
+      columnHelper.display({
+        id: "action",
+        header: () => <span className="sr-only">Action</span>,
+        meta: { headerClassName: "w-32", cellClassName: "w-32 text-right" },
+        cell: ({ row }) => (
+          <RowAction
+            integration={row.original}
+            onActivate={() => setActive(row.original)}
+          />
+        ),
+      }),
+    ],
+    [now],
+  );
+
+  const table = useReactTable({
+    data: filtered as Integration[],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
+  });
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-4">
@@ -177,22 +285,14 @@ export default function IntegrationsClient() {
           }
         />
       ) : (
-        <ScrollArea className="-mx-1 min-h-0 flex-1">
-          <ul
-            className="grid grid-cols-1 gap-3 px-1 pb-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            aria-label="Available integrations"
-          >
-            {filtered.map((integration) => (
-              <li key={integration.id}>
-                <IntegrationCard
-                  integration={integration}
-                  isActive={active?.id === integration.id}
-                  onConfigure={() => setActive(integration)}
-                />
-              </li>
-            ))}
-          </ul>
-        </ScrollArea>
+        <IntegrationsTable
+          table={table}
+          renderRowExtra={(row) =>
+            row.original.statusWarning ? (
+              <WarningBand message={row.original.statusWarning} />
+            ) : null
+          }
+        />
       )}
 
       <ConfigureIntegrationDrawer
@@ -203,109 +303,67 @@ export default function IntegrationsClient() {
   );
 }
 
-interface IntegrationCardProps {
-  integration: Integration;
-  isActive: boolean;
-  onConfigure: () => void;
+function StatusIcon({ integration }: { integration: Integration }) {
+  if (integration.statusWarning) {
+    return (
+      <AlertTriangle
+        aria-label="Connection issue"
+        className="size-4 text-state-warning"
+      />
+    );
+  }
+  if (integration.enabled) {
+    return (
+      <Check
+        aria-label="Connected"
+        className="size-4 text-state-scored"
+      />
+    );
+  }
+  return (
+    <Circle
+      aria-label="Not connected"
+      className="size-4 text-meta-foreground"
+    />
+  );
 }
 
-function IntegrationCard({
-  integration,
-  isActive,
-  onConfigure,
-}: IntegrationCardProps) {
-  const disabled = integration.comingSoon;
-  const typeLabel = integration.category === "model" ? "Model" : "MCP server";
+interface RowActionProps {
+  integration: Integration;
+  onActivate: () => void;
+}
+
+function RowAction({ integration, onActivate }: RowActionProps) {
+  if (integration.comingSoon) {
+    return (
+      <Button variant="secondary" disabled aria-label={`${integration.name} — coming soon`}>
+        Connect
+      </Button>
+    );
+  }
+  if (integration.enabled) {
+    return (
+      <Button variant="ghost" onClick={onActivate}>
+        Configure
+      </Button>
+    );
+  }
   return (
-    <Card
-      variant={disabled ? "default" : "interactive"}
-      className={cn(
-        "group flex h-full flex-col gap-3 p-4",
-        disabled && "cursor-not-allowed opacity-60",
-        !disabled && "cursor-pointer",
-        // Selected state: this card's drawer is the open one. Border picks up the
-        // brand colour and a tint backs the surface so the link between card and
-        // drawer is unambiguous even when the grid scrolls.
-        isActive && "border-primary bg-primary/5 ring-1 ring-primary/30",
-      )}
-      // Card is a drawer trigger, not a toggle. aria-haspopup advertises the
-      // dialog destination; aria-expanded reflects whether *this* card's drawer
-      // is the currently-open one. aria-pressed would lie ("on/off toggle").
-      aria-disabled={disabled || undefined}
-      aria-haspopup={disabled ? undefined : "dialog"}
-      aria-expanded={disabled ? undefined : isActive}
-      role={disabled ? "article" : "button"}
-      tabIndex={disabled ? -1 : 0}
-      onClick={disabled ? undefined : onConfigure}
-      onKeyDown={
-        disabled
-          ? undefined
-          : (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                onConfigure();
-              }
-            }
-      }
-      aria-label={
-        disabled
-          ? `${integration.name} — coming soon, not yet available`
-          : `Configure ${integration.name}`
-      }
-    >
-      <div className="flex items-start gap-3">
-        <Avatar size="md" shape="square">
-          <AvatarFallback>{integration.logoInitial}</AvatarFallback>
-        </Avatar>
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <div className="flex items-center gap-2">
-            <span className="truncate text-body font-medium text-foreground">
-              {integration.name}
-            </span>
-            {integration.comingSoon && (
-              <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-caption font-mono text-meta-foreground">
-                Coming soon
-              </span>
-            )}
-            {integration.enabled && !integration.comingSoon && (
-              <span className="rounded-sm bg-state-scored/10 px-1.5 py-0.5 text-caption font-mono text-state-scored">
-                Connected
-              </span>
-            )}
-          </div>
-          <span className="text-caption text-meta-foreground">{typeLabel}</span>
-        </div>
-      </div>
-      <p className="line-clamp-2 flex-1 text-caption text-muted-foreground">
-        {integration.description}
-      </p>
-      <div className="flex items-center justify-between gap-2 border-t border-border pt-3">
-        <span className="text-caption text-meta-foreground">
-          {integration.usedByCount
-            ? `${integration.usedByCount} service account${integration.usedByCount === 1 ? "" : "s"}`
-            : "Not connected"}
-        </span>
-        {!disabled && (
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 text-caption font-medium transition-colors",
-              isActive
-                ? "text-primary"
-                : "text-meta-foreground group-hover:text-primary group-focus-visible:text-primary",
-            )}
-            aria-hidden="true"
-          >
-            {isActive ? "Configuring" : "Configure"}
-            <ArrowRight
-              className={cn(
-                "size-3 transition-transform",
-                isActive ? "translate-x-0.5" : "group-hover:translate-x-0.5",
-              )}
-            />
-          </span>
-        )}
-      </div>
-    </Card>
+    <Button variant="secondary" onClick={onActivate}>
+      Connect
+    </Button>
+  );
+}
+
+function WarningBand({ message }: { message: string }) {
+  return (
+    <div className="flex items-start gap-2 text-caption text-state-warning-text">
+      <AlertTriangle
+        aria-hidden="true"
+        className="mt-0.5 size-3.5 shrink-0 text-state-warning"
+      />
+      <span>{message}</span>
+    </div>
   );
 }
 
@@ -385,7 +443,9 @@ function ConfigureIntegrationDrawer({
                 href={`https://docs.blaxel.ai/integrations/${integration.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-caption text-primary hover:underline"
+                className={cn(
+                  "inline-flex items-center gap-1 text-caption text-primary hover:underline",
+                )}
               >
                 Get your API key
                 <ExternalLink className="size-3" aria-hidden="true" />
@@ -419,4 +479,24 @@ function ConfigureIntegrationDrawer({
 
 function randomSuffix() {
   return Math.random().toString(36).slice(2, 8);
+}
+
+// Compact relative-time formatter; identical shape to the logs-tab helper.
+// Local because integrations live on a different route and the model-apis
+// helper is colocated with its route's components.
+function formatRelativeTime(iso: string, now: number): string {
+  const then = Date.parse(iso);
+  if (Number.isNaN(then)) return iso;
+  const diffMs = now - then;
+  if (diffMs < 60_000) return "just now";
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hr ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} mo ago`;
+  const years = Math.floor(months / 12);
+  return `${years} yr${years === 1 ? "" : "s"} ago`;
 }

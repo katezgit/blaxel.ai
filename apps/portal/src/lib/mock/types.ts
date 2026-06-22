@@ -103,6 +103,10 @@ export interface Integration {
   comingSoon?: boolean;
   /** Service accounts currently holding credentials for this integration. */
   usedByCount?: number;
+  /** ISO date string — last time this integration was exercised by a service account. */
+  lastActivityAt?: string;
+  /** Active provider-side issue surfaced as an inline warning band under the row (e.g. "401 from /v1/models — rotate the workspace key"). */
+  statusWarning?: string;
 }
 
 export interface ApiKey {
