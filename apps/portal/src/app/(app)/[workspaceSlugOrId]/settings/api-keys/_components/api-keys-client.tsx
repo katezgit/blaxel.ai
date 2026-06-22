@@ -27,7 +27,7 @@ import { workspaceApiKeyQueries } from "@/lib/query/workspace-api-keys";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
 import ApiKeysTable from "./api-keys-table";
 import CreateApiKeyDialog from "./create-api-key-dialog";
 

@@ -44,7 +44,7 @@ import type {
 } from "@/lib/mock/types";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
 import FilterPopover from "./filter-popover";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
 import TeamTable from "./team-table";
