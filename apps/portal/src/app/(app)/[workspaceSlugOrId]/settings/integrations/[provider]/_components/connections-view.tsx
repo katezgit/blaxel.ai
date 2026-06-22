@@ -156,7 +156,7 @@ export default function ConnectionsView({
         />
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="flex items-start gap-3">
-            <Avatar size="lg" shape="square">
+            <Avatar size="lg" shape="square" className="hidden sm:flex">
               {integration.logoUrl && (
                 <AvatarImage src={integration.logoUrl} alt={integration.name} />
               )}
@@ -166,9 +166,12 @@ export default function ConnectionsView({
               <h1 className="text-display font-semibold text-foreground">
                 {integration.name}
               </h1>
-              <p className="text-muted-foreground">{integration.description}</p>
-              <p className="mt-1 text-meta text-meta-foreground">
-                {integration.category === "model" ? "Model" : "MCP server"}
+              <p className="text-muted-foreground">
+                <span className="text-meta-foreground">
+                  {integration.category === "model" ? "Model" : "MCP server"}
+                </span>
+                {" · "}
+                {integration.description}
               </p>
             </div>
           </div>
@@ -185,20 +188,22 @@ export default function ConnectionsView({
       </header>
 
       {connections.length === 0 ? (
-        <EmptyState
-          variant="zero-state"
-          title={`No ${integration.name} connections yet`}
-          subtitle="Connect this workspace with an API key to start using it from agents and the CLI."
-          cta={
-            <Button
-              variant="primary"
-              onClick={() => setDrawer({ mode: "create" })}
-            >
-              <Plus aria-hidden="true" />
-              <span>Create integration</span>
-            </Button>
-          }
-        />
+        <div className="rounded-md border border-border bg-card overflow-hidden">
+          <EmptyState
+            variant="zero-state"
+            title={`No ${integration.name} connections yet`}
+            subtitle="Connect this workspace with an API key to start using it from agents and the CLI."
+            cta={
+              <Button
+                variant="primary"
+                onClick={() => setDrawer({ mode: "create" })}
+              >
+                <Plus aria-hidden="true" />
+                <span>Create integration</span>
+              </Button>
+            }
+          />
+        </div>
       ) : (
         <ConnectionsTable table={table} />
       )}
