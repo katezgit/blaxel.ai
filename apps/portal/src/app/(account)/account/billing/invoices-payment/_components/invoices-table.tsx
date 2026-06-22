@@ -8,6 +8,7 @@ import {
   TableHeaderCell,
   TableRow,
 } from "@repo/ui/components/table";
+import { cn } from "@repo/ui/lib/cn";
 import type { Invoice, InvoiceStatus } from "@/lib/mock/account";
 
 interface InvoicesTableProps {
@@ -73,28 +74,35 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.id}>
-            <TableCell className="text-muted-foreground">
-              {formatDate(invoice.date)}
-            </TableCell>
-            <TableCell variant="numeric">{formatUsd(invoice.amount)}</TableCell>
-            <TableCell>
-              <Badge variant={STATUS_VARIANT[invoice.status]} showDot>
-                {invoice.status}
-              </Badge>
-            </TableCell>
-            <TableCell className="text-right">
-              <a
-                href={invoice.downloadHref}
-                className="inline-flex items-center gap-1 rounded-sm text-foreground transition-colors duration-fast ease-out-standard hover:text-primary hover:underline focus-visible:shadow-focus-ring"
-              >
-                <ArrowDownToLine className="size-4" aria-hidden="true" />
-                Download
-              </a>
-            </TableCell>
-          </TableRow>
-        ))}
+        {invoices.map((invoice) => {
+          const isOpen = invoice.status === "Open";
+          const rowHighlight = "bg-state-warning-subtle border-l-2 border-l-state-warning hover:bg-state-warning-subtle";
+          return (
+            <TableRow
+              key={invoice.id}
+              className={cn(isOpen && rowHighlight)}
+            >
+              <TableCell className="text-muted-foreground">
+                {formatDate(invoice.date)}
+              </TableCell>
+              <TableCell variant="numeric">{formatUsd(invoice.amount)}</TableCell>
+              <TableCell>
+                <Badge variant={STATUS_VARIANT[invoice.status]} showDot>
+                  {invoice.status}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-right">
+                <a
+                  href={invoice.downloadHref}
+                  className="inline-flex items-center gap-1 rounded-sm text-foreground transition-colors duration-fast ease-out-standard hover:text-primary hover:underline focus-visible:shadow-focus-ring"
+                >
+                  <ArrowDownToLine className="size-4" aria-hidden="true" />
+                  Download
+                </a>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
