@@ -9,7 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { MoreHorizontal, Plug, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
 import { Button } from "@repo/ui/components/button";
@@ -28,7 +28,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
-import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
   tableBodyClass,
@@ -140,7 +139,7 @@ export default function ConnectionsView({
         />
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="flex items-start gap-3">
-            <Avatar size="lg" shape="square" className="hidden sm:flex">
+            <Avatar size="md" shape="square" className="hidden sm:flex">
               {integration.logoUrl && (
                 <AvatarImage src={integration.logoUrl} alt={integration.name} />
               )}
@@ -172,21 +171,34 @@ export default function ConnectionsView({
       </header>
 
       {connections.length === 0 ? (
-        <div className="rounded-md border border-border bg-card overflow-hidden">
-          <EmptyState
-            variant="zero-state"
-            title={`No ${integration.name} connections yet`}
-            subtitle="Connect this workspace with an API key to start using it from agents and the CLI."
-            cta={
-              <Button
-                variant="primary"
-                onClick={() => setDrawer({ mode: "create" })}
-              >
-                <Plus aria-hidden="true" />
-                <span>Create integration</span>
-              </Button>
-            }
-          />
+        <div className="rounded-md border border-border bg-secondary-surface overflow-hidden">
+          {/* Inline empty-state composition — uses tighter on-canon spacing
+              (py-8 / size-10 icon tile / size-5 inner) than the DS EmptyState
+              primitive ships with. DS refinement tracked separately. */}
+          <div
+            role="status"
+            className="flex flex-col items-center justify-center gap-4 px-6 py-8 text-center"
+          >
+            <div className="flex size-10 items-center justify-center rounded-lg bg-card">
+              <Plug aria-hidden="true" className="size-6 text-muted-foreground" />
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-body font-medium text-foreground">
+                No {integration.name} connections yet
+              </p>
+              <p className="text-body text-muted-foreground">
+                Connect this workspace with an API key to start using it from
+                agents and the CLI.
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              onClick={() => setDrawer({ mode: "create" })}
+            >
+              <Plus aria-hidden="true" />
+              <span>Create integration</span>
+            </Button>
+          </div>
         </div>
       ) : (
         <ConnectionsTable table={table} />
