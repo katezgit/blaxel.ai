@@ -47,7 +47,7 @@ export default function FilterPopover<T extends string>({
         <button
           type="button"
           className={cn(
-            "inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 typography-label text-foreground",
+            "inline-flex h-8 items-center gap-1.5 rounded-md border border-form-field-border bg-background px-2.5 typography-label text-foreground",
             "hover:bg-secondary-surface focus-visible:shadow-focus-ring",
           )}
         >
