@@ -202,7 +202,7 @@ function TabsTrigger({
         ],
         variant === "underline" && [
           "relative z-10 cursor-pointer",
-          "px-1.5 py-2 text-body font-medium whitespace-nowrap",
+          "px-1.5 py-2 typography-body font-medium whitespace-nowrap",
           // CSS-only — no measurement, no JS indicator span for this variant.
           "border-b-2 border-transparent",
           "data-[state=inactive]:hover:border-border-strong",

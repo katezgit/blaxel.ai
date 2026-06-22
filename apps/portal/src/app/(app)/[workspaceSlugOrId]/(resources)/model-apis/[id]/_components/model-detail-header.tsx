@@ -24,7 +24,7 @@ export function ModelDetailHeader({
       <div className="flex items-start justify-between gap-6">
         <div className="flex min-w-0 flex-col page-header">
           <div className="flex items-center gap-2">
-            <h1 className="truncate text-display font-semibold text-foreground">
+            <h1 className="truncate typography-display font-semibold text-foreground">
               {model.displayName}
             </h1>
             <ModelStatusBadge status={model.status} />
@@ -37,7 +37,7 @@ export function ModelDetailHeader({
           {model.activeTrainingJobsCount >= 1 && (
             <Link
               href={`/jobs?source_model_id=${model.id}`}
-              className="inline-flex items-center gap-1.5 text-label text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-1.5 typography-label text-muted-foreground transition-colors hover:text-foreground"
             >
               <span aria-hidden="true" className="size-1.5 rounded-full bg-muted-foreground" />
               {model.activeTrainingJobsCount} {model.activeTrainingJobsCount === 1 ? "job" : "jobs"} running

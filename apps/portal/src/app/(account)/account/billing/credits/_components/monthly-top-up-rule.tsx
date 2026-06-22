@@ -95,14 +95,14 @@ export default function MonthlyTopUpRule({
             <RuleIcon />
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <h4 className="text-body font-medium text-foreground">
+                <h4 className="typography-body font-medium text-foreground">
                   Monthly top-up
                 </h4>
                 <Badge variant="success" showDot>
                   On
                 </Badge>
               </div>
-              <p className="text-caption text-muted-foreground">
+              <p className="typography-caption text-muted-foreground">
                 Adds{" "}
                 <span className="font-mono text-foreground">
                   {formatUsd(amountUsd)}
@@ -136,12 +136,12 @@ export default function MonthlyTopUpRule({
           <RuleIcon />
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <h4 className="text-body font-medium text-foreground">
+              <h4 className="typography-body font-medium text-foreground">
                 Monthly top-up
               </h4>
               <Badge variant="neutral">Off</Badge>
             </div>
-            <p className="text-caption text-muted-foreground">
+            <p className="typography-caption text-muted-foreground">
               Add a fixed credit amount every month.
             </p>
           </div>
@@ -203,7 +203,7 @@ function MonthlyTopUpEditor({
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
         <div className="flex items-start gap-3">
           <RuleIcon />
-          <h4 className="text-body font-medium text-foreground mt-1">
+          <h4 className="typography-body font-medium text-foreground mt-1">
             Monthly top-up
           </h4>
         </div>
@@ -224,18 +224,18 @@ function MonthlyTopUpEditor({
               />
             </Field>
             <Field label="Charge date">
-              <div className="flex h-9 items-center rounded-md border border-border bg-card px-3 text-body text-muted-foreground">
+              <div className="flex h-9 items-center rounded-md border border-border bg-card px-3 typography-body text-muted-foreground">
                 First day of each month
               </div>
             </Field>
           </FieldRow>
 
           <div className="flex flex-col gap-0.5">
-            <p className="text-caption text-muted-foreground">
+            <p className="typography-caption text-muted-foreground">
               {previewAmount} will be added on the first day of each month.
             </p>
             {paymentMethodLabel ? (
-              <p className="text-caption text-meta-foreground">
+              <p className="typography-caption text-meta-foreground">
                 Charged to {paymentMethodLabel}.
               </p>
             ) : null}

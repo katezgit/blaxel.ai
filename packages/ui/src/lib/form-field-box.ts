@@ -15,8 +15,8 @@ export const formFieldBoxVariants = cva(
   {
     variants: {
       size: {
-        md: "h-8 px-2.5 rounded-lg text-body",
-        sm: "h-7 px-2 rounded-md text-label",
+        md: "h-8 px-2.5 rounded-lg typography-body",
+        sm: "h-7 px-2 rounded-md typography-label",
       },
     },
     defaultVariants: { size: "md" },

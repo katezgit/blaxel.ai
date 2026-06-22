@@ -41,8 +41,8 @@ export default function ReceiptsTable({ receipts }: ReceiptsTableProps) {
   if (receipts.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-card px-4 py-6">
-        <p className="text-body text-foreground">No receipts found.</p>
-        <p className="text-caption text-muted-foreground">
+        <p className="typography-body text-foreground">No receipts found.</p>
+        <p className="typography-caption text-muted-foreground">
           Receipts appear here once you top up credits or purchase add-ons.
         </p>
       </div>

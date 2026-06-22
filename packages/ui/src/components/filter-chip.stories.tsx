@@ -141,28 +141,28 @@ export const AllStates: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Enabled — no count</p>
+        <p className="typography-label text-muted-foreground">Enabled — no count</p>
         <div className="flex items-center gap-3">
           <FilterChip label="Unselected" selected={false} onSelectedChange={() => {}} />
           <FilterChip label="Selected" selected={true} onSelectedChange={() => {}} />
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Enabled — with count</p>
+        <p className="typography-label text-muted-foreground">Enabled — with count</p>
         <div className="flex items-center gap-3">
           <FilterChip label="Unselected" count={16} selected={false} onSelectedChange={() => {}} />
           <FilterChip label="Selected" count={16} selected={true} onSelectedChange={() => {}} />
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Disabled — no count</p>
+        <p className="typography-label text-muted-foreground">Disabled — no count</p>
         <div className="flex items-center gap-3">
           <FilterChip label="Unselected" selected={false} onSelectedChange={() => {}} disabled />
           <FilterChip label="Selected" selected={true} onSelectedChange={() => {}} disabled />
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Disabled — with count</p>
+        <p className="typography-label text-muted-foreground">Disabled — with count</p>
         <div className="flex items-center gap-3">
           <FilterChip label="Unselected" count={16} selected={false} onSelectedChange={() => {}} disabled />
           <FilterChip label="Selected" count={16} selected={true} onSelectedChange={() => {}} disabled />

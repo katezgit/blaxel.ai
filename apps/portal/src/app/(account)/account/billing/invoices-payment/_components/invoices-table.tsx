@@ -41,8 +41,8 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
   if (invoices.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-card px-4 py-6">
-        <p className="text-body text-foreground">No invoices found.</p>
-        <p className="text-caption text-muted-foreground">
+        <p className="typography-body text-foreground">No invoices found.</p>
+        <p className="typography-caption text-muted-foreground">
           Invoices are generated at the end of each billing period once charges
           exceed your credit balance.
         </p>

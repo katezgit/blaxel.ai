@@ -61,24 +61,24 @@ export default function ActiveSessionsCard({ sessions }: ActiveSessionsCardProps
                 </span>
                 <div className="flex flex-col gap-0.5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-body font-medium text-foreground">
+                    <span className="typography-body font-medium text-foreground">
                       {session.device}
                     </span>
                     {session.isCurrent ? (
                       <Badge variant="brand-soft">This device</Badge>
                     ) : null}
                   </div>
-                  <span className="text-caption text-muted-foreground">
+                  <span className="typography-caption text-muted-foreground">
                     {session.browser}
                   </span>
-                  <span className="text-caption text-muted-foreground">
+                  <span className="typography-caption text-muted-foreground">
                     {session.location} &middot; Active {lastActive}
                   </span>
                 </div>
               </div>
               <div className="shrink-0">
                 {session.isCurrent ? (
-                  <span className="text-caption text-muted-foreground">
+                  <span className="typography-caption text-muted-foreground">
                     Current session
                   </span>
                 ) : (

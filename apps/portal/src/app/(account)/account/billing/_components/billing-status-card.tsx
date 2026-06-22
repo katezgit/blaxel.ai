@@ -50,7 +50,7 @@ export default function BillingStatusCard() {
       variant="elevated"
       className="flex flex-col gap-4 bg-elevated-surface p-6 sm:flex-row sm:items-center sm:justify-between"
     >
-      <dl className="grid flex-1 grid-cols-2 gap-x-8 gap-y-4 text-body lg:grid-cols-3">
+      <dl className="grid flex-1 grid-cols-2 gap-x-8 gap-y-4 typography-body lg:grid-cols-3">
         <Field label="Current tier">
           <Badge variant="brand-soft" size="sm">Tier {state.tier}</Badge>
         </Field>
@@ -115,7 +115,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <dt className="text-caption text-muted-foreground">{label}</dt>
+      <dt className="typography-caption text-muted-foreground">{label}</dt>
       <dd className="flex items-center gap-2">{children}</dd>
     </div>
   );

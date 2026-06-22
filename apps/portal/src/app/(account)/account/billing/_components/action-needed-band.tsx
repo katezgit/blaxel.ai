@@ -86,10 +86,10 @@ export default function ActionNeededBand() {
               className="mt-0.5 size-5 shrink-0 text-state-warning"
             />
             <div className="flex flex-col gap-1">
-              <p className="text-body font-medium text-foreground">
+              <p className="typography-body font-medium text-foreground">
                 {action.title}
               </p>
-              <p className="text-caption text-muted-foreground">
+              <p className="typography-caption text-muted-foreground">
                 {action.description}
               </p>
             </div>

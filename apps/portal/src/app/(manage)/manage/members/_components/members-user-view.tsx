@@ -11,7 +11,7 @@ export function MembersUserView() {
   return (
     <>
       <MembersTable members={members} />
-      <p className="mt-4 text-caption text-meta-foreground">
+      <p className="mt-4 typography-caption text-meta-foreground">
         You can see the roster, but only owners and admins can invite or remove members.
       </p>
     </>

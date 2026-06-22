@@ -13,19 +13,19 @@ const DensityContext = React.createContext<TableDensity>("default")
 
 // ── CSS-only exports (legacy — backward-compat, consumed by TanStack Table) ──
 
-export const tableClass = "w-full caption-bottom border-collapse"
+export const tableClass = "w-full caption-bottom border-collapse typography-body"
 export const tableHeaderClass = "bg-field-rest"
 export const tableHeaderStickyClass = "bg-field-rest"
 export const tableBodyClass = "[&_tr:last-child]:border-b-0"
 export const tableFooterClass = "border-t border-border bg-field-rest font-medium [&>tr]:last:border-b-0"
-export const tableCaptionClass = "mt-4 text-caption text-muted-foreground"
-export const tableEmptyCellClass = "py-8 text-center text-body text-muted-foreground"
+export const tableCaptionClass = "mt-4 typography-caption text-muted-foreground"
+export const tableEmptyCellClass = "py-8 text-center typography-body text-muted-foreground"
 
 export const tableHeadVariants = cva(
   [
     "sticky top-0 z-table-header",
     "text-left align-middle whitespace-nowrap",
-    "text-label font-medium",
+    "font-medium",
     "text-muted-foreground",
     "border-b border-border",
     // First/last inset aligns with surrounding container chrome (Card px-6, page-section px-6)
@@ -53,7 +53,7 @@ export const tableRowVariants = cva(
 
 export const tableCellVariants = cva(
   [
-    "align-middle text-body font-normal text-foreground whitespace-nowrap",
+    "align-middle font-normal text-foreground whitespace-nowrap",
     // First/last inset aligns with surrounding container chrome (Card px-6, page-section px-6)
     "first:pl-6 last:pr-6",
   ].join(" "),
@@ -62,7 +62,7 @@ export const tableCellVariants = cva(
       density: { default: "py-2 px-3", compact: "py-1.5 px-3" },
       variant: {
         default: "",
-        mono: "font-mono text-code [font-feature-settings:'tnum'_1,'lnum'_1]",
+        mono: "font-mono typography-code [font-feature-settings:'tnum'_1,'lnum'_1]",
         truncated: "overflow-hidden text-ellipsis max-w-0",
         "row-action": "text-right w-12",
       },
@@ -98,7 +98,7 @@ const Table = React.forwardRef<HTMLDivElement, TableProps>(
         )}
         {...props}
       >
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse typography-body">
           {children}
         </table>
       </div>
@@ -289,13 +289,13 @@ const TableSelectionBar = React.forwardRef<HTMLTableRowElement, TableSelectionBa
       >
         <td colSpan={999} className="px-4">
           <div className="flex items-center gap-3">
-            <span className="text-body font-medium text-foreground tabular-nums">
+            <span className="typography-body font-medium text-foreground tabular-nums">
               {count} selected
             </span>
             {actions}
             <button
               type="button"
-              className="text-body text-muted-foreground hover:text-foreground ml-auto"
+              className="typography-body text-muted-foreground hover:text-foreground ml-auto"
               onClick={onClear}
             >
               Clear
@@ -319,11 +319,11 @@ const TableEmptyRow = React.forwardRef<HTMLTableRowElement, TableEmptyRowProps>(
     <tr ref={ref} data-slot="table-empty-row" className={cn("border-b-0", className)} {...props}>
       <td colSpan={colSpan} className="py-8 px-4">
         <div className="flex items-center gap-3">
-          <code className="text-code text-muted-foreground font-mono">{cliCommand}</code>
+          <code className="typography-code text-muted-foreground font-mono">{cliCommand}</code>
           {docHref && (
             <a
               href={docHref}
-              className="text-body text-primary underline underline-offset-4 hover:text-primary-hover shrink-0"
+              className="typography-body text-primary underline underline-offset-4 hover:text-primary-hover shrink-0"
             >
               Docs
             </a>
@@ -346,11 +346,11 @@ const TableErrorBand = React.forwardRef<HTMLTableRowElement, TableErrorBandProps
     <tr ref={ref} data-slot="table-error-band" className={cn("bg-state-errored-subtle border-b border-border", className)} {...props}>
       <td colSpan={colSpan} className="px-4 py-2">
         <div className="flex items-center gap-3">
-          <span className="text-body text-state-errored-text flex-1">{cause}</span>
+          <span className="typography-body text-state-errored-text flex-1">{cause}</span>
           {onRetry && (
             <button
               type="button"
-              className="text-body text-muted-foreground hover:text-foreground shrink-0"
+              className="typography-body text-muted-foreground hover:text-foreground shrink-0"
               onClick={onRetry}
             >
               Retry

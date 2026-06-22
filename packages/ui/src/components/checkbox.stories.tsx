@@ -39,16 +39,16 @@ export const Variants: Story = {
       style={{ gridTemplateColumns: "auto repeat(6, minmax(0, max-content))" }}
     >
       {/* Header row */}
-      <span className="text-label font-medium text-muted-foreground">Size</span>
-      <span className="text-label font-medium text-muted-foreground">Unchecked</span>
-      <span className="text-label font-medium text-muted-foreground">Checked</span>
-      <span className="text-label font-medium text-muted-foreground">Indeterminate</span>
-      <span className="text-label font-medium text-muted-foreground">Disabled</span>
-      <span className="text-label font-medium text-muted-foreground">Disabled · Checked</span>
-      <span className="text-label font-medium text-muted-foreground">Error</span>
+      <span className="typography-label font-medium text-muted-foreground">Size</span>
+      <span className="typography-label font-medium text-muted-foreground">Unchecked</span>
+      <span className="typography-label font-medium text-muted-foreground">Checked</span>
+      <span className="typography-label font-medium text-muted-foreground">Indeterminate</span>
+      <span className="typography-label font-medium text-muted-foreground">Disabled</span>
+      <span className="typography-label font-medium text-muted-foreground">Disabled · Checked</span>
+      <span className="typography-label font-medium text-muted-foreground">Error</span>
 
       {/* md row */}
-      <span className="text-label font-medium text-muted-foreground">md</span>
+      <span className="typography-label font-medium text-muted-foreground">md</span>
       <Checkbox size="md" aria-label="Unchecked md" />
       <Checkbox size="md" checked aria-label="Checked md" onCheckedChange={() => {}} />
       <Checkbox size="md" checked="indeterminate" aria-label="Indeterminate md" onCheckedChange={() => {}} />
@@ -57,7 +57,7 @@ export const Variants: Story = {
       <Checkbox size="md" aria-invalid aria-label="Error unchecked md" />
 
       {/* sm row */}
-      <span className="text-label font-medium text-muted-foreground">sm</span>
+      <span className="typography-label font-medium text-muted-foreground">sm</span>
       <Checkbox size="sm" aria-label="Unchecked sm" />
       <Checkbox size="sm" checked aria-label="Checked sm" onCheckedChange={() => {}} />
       <Checkbox size="sm" checked="indeterminate" aria-label="Indeterminate sm" onCheckedChange={() => {}} />

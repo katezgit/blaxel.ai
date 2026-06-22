@@ -150,7 +150,7 @@ export function PresetList({ presets, selectedLabel, onSelect, listRef }: Preset
             onMouseEnter={() => setActiveIndex(idx)}
             className={cn(
               "relative flex cursor-default select-none items-center gap-2",
-              "rounded-md px-2 py-1.5 text-body text-foreground outline-none focus-inset",
+              "rounded-md px-2 py-1.5 typography-body text-foreground outline-none focus-inset",
               "hover:bg-highlight-surface aria-selected:font-medium",
               "data-[focused=true]:bg-highlight-surface",
             )}
@@ -238,7 +238,7 @@ export function RangePopoverContent({
             numberOfMonths={1}
           />
           {isInvalid && (
-            <p id={errorId} role="alert" className="text-label text-state-errored-text">
+            <p id={errorId} role="alert" className="typography-label text-state-errored-text">
               End must be after start
             </p>
           )}
@@ -409,7 +409,7 @@ export function RangeTriggerButton({ triggerRef, disabled, className, ariaLabel,
 
 export function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor: string }) {
   return (
-    <label htmlFor={htmlFor} className="text-label font-medium text-meta-foreground uppercase">
+    <label htmlFor={htmlFor} className="typography-label font-medium text-meta-foreground uppercase">
       {children}
     </label>
   )

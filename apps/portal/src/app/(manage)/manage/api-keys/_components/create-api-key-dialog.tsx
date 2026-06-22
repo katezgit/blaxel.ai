@@ -112,7 +112,7 @@ export function CreateApiKeyDialog({ open, onOpenChange, onGenerate }: CreateApi
               />
             </FormField>
             <div className="flex flex-col gap-1.5">
-              <span className="text-label text-foreground">Expiration</span>
+              <span className="typography-label text-foreground">Expiration</span>
               <Select
                 value={expiration}
                 onValueChange={(value) => setExpiration(value as ExpirationOption)}

@@ -141,7 +141,7 @@ export default function IntegrationsClient() {
         enableSorting: false,
         meta: {
           cellClassName:
-            "text-caption text-muted-foreground max-w-[28rem] whitespace-normal",
+            "typography-caption text-muted-foreground max-w-[28rem] whitespace-normal",
         },
         cell: (info) => info.getValue(),
       }),
@@ -213,7 +213,7 @@ export default function IntegrationsClient() {
           {CATEGORY_FILTERS.map((item) => (
             <SegmentedControl.Item key={item.value} value={item.value}>
               <span>{item.label}</span>
-              <span className="font-mono text-meta tabular-nums opacity-70">
+              <span className="font-mono typography-meta tabular-nums opacity-70">
                 {categoryCounts[item.value]}
               </span>
             </SegmentedControl.Item>
@@ -233,7 +233,7 @@ export default function IntegrationsClient() {
             {CATEGORY_FILTERS.map((item) => (
               <SelectItem key={item.value} value={item.value}>
                 <span>{item.label}</span>
-                <span className="ml-2 font-mono text-meta tabular-nums opacity-70">
+                <span className="ml-2 font-mono typography-meta tabular-nums opacity-70">
                   {categoryCounts[item.value]}
                 </span>
               </SelectItem>
@@ -315,7 +315,7 @@ function NameCell({ integration, connectionCount }: NameCellProps) {
       </Avatar>
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="flex items-center gap-2">
-          <span className="truncate text-body text-foreground">
+          <span className="truncate typography-body text-foreground">
             {integration.name}
           </span>
           {connectionCount > 0 && (
@@ -324,12 +324,12 @@ function NameCell({ integration, connectionCount }: NameCellProps) {
             </Badge>
           )}
           {integration.comingSoon && (
-            <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
+            <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
               Coming soon
             </span>
           )}
         </span>
-        <span className="text-meta text-meta-foreground">
+        <span className="typography-meta text-meta-foreground">
           {integration.category === "model" ? "Model" : "MCP server"}
         </span>
       </div>
@@ -407,7 +407,7 @@ function SortHeader({ column, label }: SortHeaderProps) {
       type="button"
       onClick={() => column.toggleSorting(sorted === "asc")}
       className={cn(
-        "group inline-flex items-center gap-1.5 text-left text-label font-medium",
+        "group inline-flex items-center gap-1.5 text-left typography-label font-medium",
         "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
         sorted ? "text-foreground" : "text-meta-foreground hover:text-foreground",
       )}
@@ -445,11 +445,11 @@ function IntegrationCard({
   return (
     <Card variant="elevated" className="flex flex-col gap-3 p-4">
       <NameCell integration={integration} connectionCount={connectionCount} />
-      <p className="text-caption text-muted-foreground">
+      <p className="typography-caption text-muted-foreground">
         {integration.description}
       </p>
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-caption text-meta-foreground tabular-nums">
+        <span className="font-mono typography-caption text-meta-foreground tabular-nums">
           {label}
         </span>
         <RowAction

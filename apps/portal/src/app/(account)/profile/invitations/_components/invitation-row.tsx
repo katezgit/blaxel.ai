@@ -26,18 +26,18 @@ export default function InvitationRow({
         <div className="flex items-start gap-3">
           <span
             aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-body font-semibold text-primary"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft typography-body font-semibold text-primary"
           >
             {initial}
           </span>
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-body font-medium text-foreground">
+              <span className="typography-body font-medium text-foreground">
                 {invitation.workspaceName}
               </span>
               <Badge variant="neutral">{invitation.role}</Badge>
             </div>
-            <span className="text-caption text-muted-foreground">
+            <span className="typography-caption text-muted-foreground">
               Invited by {invitation.invitedBy} on{" "}
               {DATE_FMT.format(new Date(invitation.invitedAt))}
             </span>

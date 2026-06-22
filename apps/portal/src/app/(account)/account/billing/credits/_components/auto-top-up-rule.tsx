@@ -100,14 +100,14 @@ export default function AutoTopUpRule({
             <RuleIcon />
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <h4 className="text-body font-medium text-foreground">
+                <h4 className="typography-body font-medium text-foreground">
                   Auto top-up
                 </h4>
                 <Badge variant="success" showDot>
                   On
                 </Badge>
               </div>
-              <p className="text-caption text-muted-foreground">
+              <p className="typography-caption text-muted-foreground">
                 When balance drops below{" "}
                 <span className="font-mono text-foreground">
                   {formatUsd(thresholdUsd)}
@@ -145,12 +145,12 @@ export default function AutoTopUpRule({
           <RuleIcon />
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <h4 className="text-body font-medium text-foreground">
+              <h4 className="typography-body font-medium text-foreground">
                 Auto top-up
               </h4>
               <Badge variant="neutral">Off</Badge>
             </div>
-            <p className="text-caption text-muted-foreground">
+            <p className="typography-caption text-muted-foreground">
               Add credits when the balance drops below a threshold.
             </p>
           </div>
@@ -214,7 +214,7 @@ function AutoTopUpEditor({
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
         <div className="flex items-start gap-3">
           <RuleIcon />
-          <h4 className="text-body font-medium text-foreground mt-1">
+          <h4 className="typography-body font-medium text-foreground mt-1">
             Auto top-up
           </h4>
         </div>
@@ -250,12 +250,12 @@ function AutoTopUpEditor({
           </FieldRow>
 
           <div className="flex flex-col gap-0.5">
-            <p className="text-caption text-muted-foreground">
+            <p className="typography-caption text-muted-foreground">
               When balance drops below {previewThreshold}, {previewAmount} will
               be added automatically.
             </p>
             {paymentMethodLabel ? (
-              <p className="text-caption text-meta-foreground">
+              <p className="typography-caption text-meta-foreground">
                 Charged to {paymentMethodLabel}.
               </p>
             ) : null}

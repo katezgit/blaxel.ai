@@ -10,7 +10,7 @@ export default function AccountOverviewPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">
+        <h1 className="typography-display font-semibold text-foreground">
           Account overview
         </h1>
         <p className="text-muted-foreground">

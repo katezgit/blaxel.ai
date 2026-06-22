@@ -180,12 +180,12 @@ const ResourceNotFound = React.forwardRef<
     >
       {/* Inner 360px column — left-aligned content block */}
       <div className="flex flex-col gap-1 w-full max-w-[360px]">
-        {/* Heading — text-subtitle, semibold, foreground, tight tracking.
+        {/* Heading — typography-subtitle, semibold, foreground, tight tracking.
             Element is configurable (default h2 — see header docblock).
             Visual styling is fixed; semantic level varies per route context. */}
         <Heading
           className={cn(
-            "text-subtitle font-semibold text-foreground",
+            "typography-subtitle font-semibold text-foreground",
             "tracking-[-.01em] leading-[1.375rem]"
           )}
         >
@@ -198,7 +198,7 @@ const ResourceNotFound = React.forwardRef<
             matches the semantic role (value the user reads to cross-reference). */}
         <p
           className={cn(
-            "font-mono text-code font-regular text-muted-foreground",
+            "font-mono typography-code font-regular text-muted-foreground",
             "leading-[1.25rem]",
             "mt-0.5"
           )}
@@ -208,7 +208,7 @@ const ResourceNotFound = React.forwardRef<
 
         {/* Wrong-workspace sub-copy — shown only when variant="wrong-workspace" */}
         {subCopy != null && (
-          <p className="text-body text-muted-foreground leading-[1.375rem]">
+          <p className="typography-body text-muted-foreground leading-[1.375rem]">
             {subCopy}
           </p>
         )}

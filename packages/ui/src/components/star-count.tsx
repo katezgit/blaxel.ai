@@ -59,8 +59,8 @@ const starCountLabelVariants = cva(
   {
     variants: {
       size: {
-        sm: "text-meta",
-        md: "text-label",
+        sm: "typography-meta",
+        md: "typography-label",
       },
     },
     defaultVariants: { size: "sm" },

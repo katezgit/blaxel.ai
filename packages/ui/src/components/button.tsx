@@ -9,7 +9,7 @@ import { buttonBaseClasses } from "./button-base"
 const buttonVariants = cva(
   [
     ...buttonBaseClasses,
-    "h-8 px-3.5 py-0 text-body font-medium rounded-lg gap-2 [&_svg]:size-4",
+    "h-8 px-3.5 py-0 typography-body font-medium rounded-lg gap-2 [&_svg]:size-4",
   ],
   {
     variants: {

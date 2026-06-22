@@ -56,20 +56,20 @@ export default function RemoveAdminDialog({
               <span className="font-medium text-foreground">
                 {admin?.name}
               </span>
-              <span className="text-caption text-muted-foreground">
+              <span className="typography-caption text-muted-foreground">
                 <span className="font-mono">{admin?.email}</span>
                 {admin?.role ? ` · ${admin.role}` : ""}
               </span>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <p className="text-body text-foreground">This will remove:</p>
-            <ul className="ml-4 list-disc space-y-1 text-body text-foreground marker:text-muted-foreground">
+            <p className="typography-body text-foreground">This will remove:</p>
+            <ul className="ml-4 list-disc space-y-1 typography-body text-foreground marker:text-muted-foreground">
               <li>Billing account access</li>
               <li>Access to all workspaces</li>
             </ul>
           </div>
-          <p className="text-body text-muted-foreground">
+          <p className="typography-body text-muted-foreground">
             You can invite them again later.
           </p>
         </DialogBody>

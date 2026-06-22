@@ -14,74 +14,74 @@
 
 /* ─── Typography composites ──────────────────────────────────────────────────
  * Bundle font-family + size + line-height + letter-spacing + weight into a
- * single utility. These OVERRIDE Tailwind v4's auto-generated text-* utilities
- * from primitive.css @theme — values mirror the primitive tokens.
+ * single utility. Named typography-* to avoid collision with Tailwind v4's
+ * text-* namespace (color, size, alignment, decoration).
  *
  * Override pattern: append a later utility (font-bold, leading-5, tracking-wide)
  * to override any single property — Tailwind's conflict resolution wins.
  *
  * Token source: primitive.css → @theme typography block. */
-@utility text-display {
+@utility typography-display {
   font-family:    var(--font-sans);
-  font-size:      var(--text-display);
-  line-height:    var(--text-display--line-height);
-  letter-spacing: var(--text-display--letter-spacing);
+  font-size:      var(--typography-display);
+  line-height:    var(--typography-display--line-height);
+  letter-spacing: var(--typography-display--letter-spacing);
   font-weight:    var(--font-weight-semibold);
 }
 
-@utility text-subtitle {
+@utility typography-subtitle {
   font-family:    var(--font-sans);
-  font-size:      var(--text-subtitle);
-  line-height:    var(--text-subtitle--line-height);
-  letter-spacing: var(--text-subtitle--letter-spacing);
+  font-size:      var(--typography-subtitle);
+  line-height:    var(--typography-subtitle--line-height);
+  letter-spacing: var(--typography-subtitle--letter-spacing);
   font-weight:    var(--font-weight-semibold);
 }
 
-@utility text-body {
+@utility typography-body {
   font-family:    var(--font-sans);
-  font-size:      var(--text-body);
-  line-height:    var(--text-body--line-height);
-  letter-spacing: var(--text-body--letter-spacing);
+  font-size:      var(--typography-body);
+  line-height:    var(--typography-body--line-height);
+  letter-spacing: var(--typography-body--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
-@utility text-label {
+@utility typography-label {
   font-family:    var(--font-sans);
-  font-size:      var(--text-label);
-  line-height:    var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
+  font-size:      var(--typography-label);
+  line-height:    var(--typography-label--line-height);
+  letter-spacing: var(--typography-label--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
-@utility text-caption {
+@utility typography-caption {
   font-family:    var(--font-sans);
-  font-size:      var(--text-caption);
-  line-height:    var(--text-caption--line-height);
-  letter-spacing: var(--text-caption--letter-spacing);
+  font-size:      var(--typography-caption);
+  line-height:    var(--typography-caption--line-height);
+  letter-spacing: var(--typography-caption--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
-@utility text-code {
+@utility typography-meta {
   font-family:    var(--font-mono);
-  font-size:      var(--text-code);
-  line-height:    var(--text-code--line-height);
-  letter-spacing: var(--text-code--letter-spacing);
+  font-size:      var(--typography-meta);
+  line-height:    var(--typography-meta--line-height);
+  letter-spacing: var(--typography-meta--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
-@utility text-meta {
+@utility typography-code {
   font-family:    var(--font-mono);
-  font-size:      var(--text-meta);
-  line-height:    var(--text-meta--line-height);
-  letter-spacing: var(--text-meta--letter-spacing);
+  font-size:      var(--typography-code);
+  line-height:    var(--typography-code--line-height);
+  letter-spacing: var(--typography-code--letter-spacing);
   font-weight:    var(--font-weight-regular);
 }
 
-@utility text-table-header {
+@utility typography-table-header {
   font-family:    var(--font-sans);
-  font-size:      var(--text-table-header);
-  line-height:    var(--text-table-header--line-height);
-  letter-spacing: var(--text-table-header--letter-spacing);
+  font-size:      var(--typography-table-header);
+  line-height:    var(--typography-table-header--line-height);
+  letter-spacing: var(--typography-table-header--letter-spacing);
   font-weight:    var(--font-weight-medium);
   text-transform: uppercase;
 }

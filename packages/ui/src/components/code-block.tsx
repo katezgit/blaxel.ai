@@ -30,8 +30,8 @@ const codeBlockVariants = cva(
   // Base: shared layout + typography
   [
     "relative",
-    "font-mono text-code",
-    "leading-[--text-code--line-height]",  // --text-code--line-height: 1.25rem (20px)
+    "font-mono typography-code",
+    "leading-[--typography-code--line-height]",  // --typography-code--line-height: 1.25rem (20px)
     "rounded-md",
     "overflow-x-auto",
     "whitespace-pre",
@@ -223,7 +223,7 @@ const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
               <div className="flex h-9 items-center justify-between px-3 border-b border-code-border">
                 <span
                   data-slot="language-label"
-                  className="text-label font-medium text-code-muted"
+                  className="typography-label font-medium text-code-muted"
                 >
                   {language}
                 </span>
@@ -237,8 +237,8 @@ const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
                 data-variant={variant}
                 className={cn(
                   // Base classes without border/radius (wrapper owns them) and without pt-8
-                  "relative font-mono text-code",
-                  "leading-[--text-code--line-height]",
+                  "relative font-mono typography-code",
+                  "leading-[--typography-code--line-height]",
                   "overflow-x-auto whitespace-pre",
                   "bg-code-bg text-code-fg",
                   "px-4 py-3",

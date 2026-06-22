@@ -18,11 +18,11 @@ export default function SandboxSettingsClient({
       <div className="flex flex-col gap-0.5">
         <label
           htmlFor="disable-process-logging"
-          className="text-body font-medium text-foreground"
+          className="typography-body font-medium text-foreground"
         >
           Disable process logging
         </label>
-        <p className="text-caption text-muted-foreground">
+        <p className="typography-caption text-muted-foreground">
           Prevent sandboxes from capturing per-process stdout / stderr logs.
           Requires sandbox-api v0.2.28+.
         </p>

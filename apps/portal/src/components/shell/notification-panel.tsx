@@ -132,7 +132,7 @@ export function NotificationPanel() {
           {hasUnread ? (
             <span
               aria-hidden="true"
-              className="absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-state-errored px-1 font-mono text-meta font-semibold tracking-normal text-white"
+              className="absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-state-errored px-1 font-mono typography-meta font-semibold tracking-normal text-white"
             >
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
@@ -149,17 +149,17 @@ export function NotificationPanel() {
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <h2
             id="notification-panel-heading"
-            className="text-label font-medium text-foreground"
+            className="typography-label font-medium text-foreground"
           >
             Notifications
           </h2>
-          <span className="font-mono text-meta text-muted-foreground tabular-nums">
+          <span className="font-mono typography-meta text-muted-foreground tabular-nums">
             {hasUnread ? `${unreadCount} unread` : "All read"}
           </span>
         </div>
 
         {notifications.length === 0 ? (
-          <p className="px-3 py-6 text-caption text-muted-foreground">
+          <p className="px-3 py-6 typography-caption text-muted-foreground">
             No notifications.
           </p>
         ) : (
@@ -242,7 +242,7 @@ function NotificationRowBody({ notification, relative }: NotificationRowBodyProp
         <span className="flex items-baseline gap-2">
           <span
             className={cn(
-              "min-w-0 flex-1 truncate text-body",
+              "min-w-0 flex-1 truncate typography-body",
               notification.read
                 ? "font-normal text-muted-foreground"
                 : "font-medium text-foreground",
@@ -250,13 +250,13 @@ function NotificationRowBody({ notification, relative }: NotificationRowBodyProp
           >
             {notification.title}
           </span>
-          <span className="shrink-0 font-mono text-meta text-muted-foreground tabular-nums">
+          <span className="shrink-0 font-mono typography-meta text-muted-foreground tabular-nums">
             {relative}
           </span>
         </span>
         <span
           className={cn(
-            "mt-0.5 block truncate text-caption",
+            "mt-0.5 block truncate typography-caption",
             notification.read ? "text-muted-foreground" : "text-foreground",
           )}
         >

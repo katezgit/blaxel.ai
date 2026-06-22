@@ -106,7 +106,7 @@ function AccordionTrigger({
           // Layout: compact per Instrument Precision v1 spec (py-3 px-1)
           "group flex w-full flex-1 items-center justify-between gap-3 py-3 px-1",
           // Typography
-          "text-body font-sans font-medium text-foreground",
+          "typography-body font-sans font-medium text-foreground",
           // Hover: text-only color shift (no bg fill)
           "hover:text-foreground/70",
           "transition-colors duration-instant ease-out-standard",
@@ -126,7 +126,7 @@ function AccordionTrigger({
           {subtitle && (
             <span
               className={cn(
-                "text-caption font-normal",
+                "typography-caption font-normal",
                 "text-muted-foreground",
                 "group-data-[disabled]:text-text-disabled"
               )}

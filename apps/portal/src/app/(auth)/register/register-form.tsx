@@ -108,11 +108,11 @@ export default function RegisterForm() {
           <h2
             ref={headingRef}
             tabIndex={-1}
-            className="text-subtitle font-semibold text-foreground"
+            className="typography-subtitle font-semibold text-foreground"
           >
             Check your email to finish signing up
           </h2>
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             We sent a confirmation link to{" "}
             <span className="text-foreground font-medium">{sentEmail}</span>.
             Open it on this device to create your account.
@@ -196,7 +196,7 @@ export default function RegisterForm() {
 
       <div className="flex items-center gap-3">
         <Separator className="flex-1" />
-        <span aria-hidden="true" className="text-caption text-muted-foreground">
+        <span aria-hidden="true" className="typography-caption text-muted-foreground">
           or
         </span>
         <Separator className="flex-1" />
@@ -245,7 +245,7 @@ export default function RegisterForm() {
             "Send magic link"
           )}
         </Button>
-        <p className="text-caption text-muted-foreground text-center">
+        <p className="typography-caption text-muted-foreground text-center">
           By continuing, you accept HUD&apos;s Terms of Service, Privacy Policy,
           and Acceptable Use Policy.
         </p>

@@ -43,7 +43,7 @@ export function BurndownPanel() {
         </ResponsiveContainer>
       </div>
       <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-        <span className="font-mono text-label text-foreground tabular-nums">
+        <span className="font-mono typography-label text-foreground tabular-nums">
           {NUMBER.format(currentBurn)} cr spent
         </span>
         <Badge variant={isOverPrior ? "warning" : "success"}>

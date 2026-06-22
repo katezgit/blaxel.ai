@@ -198,7 +198,7 @@ export function InviteUsersDialog({
                           }
                         }}
                         placeholder={chips.length === 0 ? "name@company.com" : ""}
-                        className="min-w-[10ch] flex-1 bg-transparent text-label text-foreground outline-none placeholder:text-meta-foreground"
+                        className="min-w-[10ch] flex-1 bg-transparent typography-label text-foreground outline-none placeholder:text-meta-foreground"
                         autoComplete="off"
                         aria-label="Add invite email"
                       />
@@ -230,7 +230,7 @@ export function InviteUsersDialog({
                 )}
               />
             </FormField>
-            <p className="text-caption text-muted-foreground">
+            <p className="typography-caption text-muted-foreground">
               Press <kbd className="font-mono">{"⌘"}</kbd> +{" "}
               <kbd className="font-mono">Enter</kbd> to send invites.
             </p>
@@ -282,7 +282,7 @@ function EmailChipView({ chip, onRemove }: EmailChipViewProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-caption font-medium",
+        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 typography-caption font-medium",
         chip.valid
           ? "border-border bg-secondary-surface text-foreground"
           : "border-destructive/40 bg-destructive/5 text-destructive",

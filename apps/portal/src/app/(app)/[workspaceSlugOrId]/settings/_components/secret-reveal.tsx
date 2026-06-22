@@ -21,14 +21,14 @@ export function SecretReveal({ label, value, sensitive }: SecretRevealProps) {
   const [shown, setShown] = useState(!sensitive);
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-caption font-medium text-meta-foreground">
+      <span className="typography-caption font-medium text-meta-foreground">
         {label}
       </span>
       <div className="flex items-center gap-2 rounded-md border border-border bg-muted-surface px-2 py-1.5">
         <code
           aria-live="polite"
           className={cn(
-            "min-w-0 flex-1 truncate font-mono text-label",
+            "min-w-0 flex-1 truncate font-mono typography-label",
             shown ? "text-foreground" : "text-meta-foreground",
           )}
         >
@@ -73,8 +73,8 @@ export function SecretWarning({
       <div className="flex items-start gap-2 rounded-md border border-state-warning/30 bg-state-warning/5 p-3">
         <AlertTriangle aria-hidden="true" className="size-4 shrink-0 text-state-warning" />
         <div className="flex flex-col gap-0.5">
-          <span className="text-label font-medium text-foreground">{title}</span>
-          <span className="text-caption text-muted-foreground">{description}</span>
+          <span className="typography-label font-medium text-foreground">{title}</span>
+          <span className="typography-caption text-muted-foreground">{description}</span>
         </div>
       </div>
       <div className="flex justify-end">

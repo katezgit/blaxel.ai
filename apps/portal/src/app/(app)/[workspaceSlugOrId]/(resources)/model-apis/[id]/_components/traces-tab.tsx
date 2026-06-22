@@ -286,13 +286,13 @@ function TraceCard({ trace }: { trace: Trace }) {
           href={`/traces/${trace.id}`}
           className={cn(
             "self-start rounded-sm",
-            "font-mono text-meta text-muted-foreground",
+            "font-mono typography-meta text-muted-foreground",
             "hover:underline hover:text-foreground",
           )}
         >
           {truncateTraceId(trace.id)}
         </Link>
-        <span className="text-meta text-meta-foreground">
+        <span className="typography-meta text-meta-foreground">
           {trace.tasksetName}
         </span>
       </CardContent>
@@ -325,7 +325,7 @@ function TraceThumbnail({ trace }: { trace: Trace }) {
         <span
           className={cn(
             "rounded-badge bg-panel/90 px-1.5 py-0.5",
-            "font-mono text-meta text-foreground",
+            "font-mono typography-meta text-foreground",
             "border border-border",
           )}
         >
@@ -349,7 +349,7 @@ function TraceList({ traces }: { traces: ReadonlyArray<Trace> }) {
             href={`/traces/${info.getValue()}`}
             className={cn(
               "rounded-sm",
-              "font-mono text-meta text-foreground",
+              "font-mono typography-meta text-foreground",
               "hover:underline hover:text-foreground",
             )}
           >
@@ -386,7 +386,7 @@ function TraceList({ traces }: { traces: ReadonlyArray<Trace> }) {
           return (
             <span
               title={iso}
-              className="font-mono text-meta text-muted-foreground tabular-nums"
+              className="font-mono typography-meta text-muted-foreground tabular-nums"
             >
               {relativeTime(iso)}
             </span>

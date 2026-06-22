@@ -169,7 +169,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
   return (
     <section className="flex flex-col gap-4">
       <header className="flex flex-col gap-1">
-        <h2 className="text-subtitle font-semibold text-foreground">
+        <h2 className="typography-subtitle font-semibold text-foreground">
           All tiers
         </h2>
         <p className="inline-flex items-baseline gap-2 text-muted-foreground">
@@ -184,16 +184,16 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
           GRID_COLS,
         )}
       >
-        <span className="text-label font-medium text-muted-foreground">
+        <span className="typography-label font-medium text-muted-foreground">
           Tier
         </span>
-        <span className="text-label font-medium text-muted-foreground">
+        <span className="typography-label font-medium text-muted-foreground">
           Key quotas
         </span>
-        <span className="text-label font-medium text-muted-foreground">
+        <span className="typography-label font-medium text-muted-foreground">
           Key limits &amp; features
         </span>
-        <span className="text-label font-medium text-muted-foreground">
+        <span className="typography-label font-medium text-muted-foreground">
           Requirement
         </span>
       </div>
@@ -208,7 +208,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
             onClick={() => setTier0Open(true)}
             aria-expanded={false}
             aria-controls="tier-row-0"
-            className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-left text-caption text-muted-foreground hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring transition-colors duration-fast ease-out-standard"
+            className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-left typography-caption text-muted-foreground hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring transition-colors duration-fast ease-out-standard"
           >
             <ChevronRight className="size-4" aria-hidden="true" />
             Show Tier 0 — 0
@@ -252,13 +252,13 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       )}
     >
       {isCurrent ? (
-        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-background px-1.5 font-mono text-meta uppercase text-primary">
+        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-background px-1.5 font-mono typography-meta uppercase text-primary">
           Current tier
         </span>
       ) : null}
 
       <div className="flex flex-col gap-1">
-        <span className="font-mono text-body text-foreground tabular-nums">
+        <span className="font-mono typography-body text-foreground tabular-nums">
           Tier {tier.tier}
         </span>
         {tier.tier === 0 && onCollapseTier0 ? (
@@ -267,7 +267,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
             onClick={onCollapseTier0}
             aria-expanded={true}
             aria-controls="tier-row-0"
-            className="-ml-1 inline-flex items-center gap-1 self-start rounded-sm px-1 text-caption text-muted-foreground hover:text-foreground focus-visible:shadow-focus-ring"
+            className="-ml-1 inline-flex items-center gap-1 self-start rounded-sm px-1 typography-caption text-muted-foreground hover:text-foreground focus-visible:shadow-focus-ring"
           >
             <ChevronDown className="size-3" aria-hidden="true" />
             Hide
@@ -284,7 +284,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
 
       <LabeledCell label="Requirement" className="items-start gap-2">
         {tier.progressLabel ? (
-          <span className="font-mono text-caption text-muted-foreground tabular-nums">
+          <span className="font-mono typography-caption text-muted-foreground tabular-nums">
             {tier.progressLabel}
           </span>
         ) : null}
@@ -333,7 +333,7 @@ interface LabeledCellProps {
 function LabeledCell({ label, children, className }: LabeledCellProps) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <span className="text-label font-medium text-muted-foreground sm:hidden">
+      <span className="typography-label font-medium text-muted-foreground sm:hidden">
         {label}
       </span>
       {children}

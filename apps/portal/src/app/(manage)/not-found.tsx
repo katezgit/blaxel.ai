@@ -13,15 +13,15 @@ export default function ManageNotFound() {
   return (
     <div className="flex min-h-full w-full items-center justify-center py-12">
       <div className="flex max-w-[480px] flex-col items-center gap-4 px-6 text-center">
-        <span className="inline-flex items-center rounded-md border border-border bg-muted-surface px-3 py-1.5 font-mono text-label font-medium text-muted-foreground">
+        <span className="inline-flex items-center rounded-md border border-border bg-muted-surface px-3 py-1.5 font-mono typography-label font-medium text-muted-foreground">
           404
         </span>
 
-        <h1 className="text-subtitle font-semibold text-foreground tracking-(--text-subtitle--letter-spacing)">
+        <h1 className="typography-subtitle font-semibold text-foreground tracking-(--typography-subtitle--letter-spacing)">
           Page not found
         </h1>
 
-        <p className="line-clamp-2 max-w-[440px] font-mono text-body text-muted-foreground">
+        <p className="line-clamp-2 max-w-[440px] font-mono typography-body text-muted-foreground">
           {diagnostic}
         </p>
 

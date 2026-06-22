@@ -27,7 +27,7 @@ export const Playground: Story = {
         <AccordionItem value="model">
           <AccordionTrigger>Model configuration</AccordionTrigger>
           <AccordionContent>
-            <p className="text-body text-muted-foreground">
+            <p className="typography-body text-muted-foreground">
               Select the model and adjust hyperparameters for this eval run.
             </p>
           </AccordionContent>
@@ -35,7 +35,7 @@ export const Playground: Story = {
         <AccordionItem value="environment">
           <AccordionTrigger>Environment settings</AccordionTrigger>
           <AccordionContent>
-            <p className="text-body text-muted-foreground">
+            <p className="typography-body text-muted-foreground">
               Configure sandbox isolation, memory limits, and execution timeout.
             </p>
           </AccordionContent>
@@ -43,7 +43,7 @@ export const Playground: Story = {
         <AccordionItem value="scoring">
           <AccordionTrigger>Scoring criteria</AccordionTrigger>
           <AccordionContent>
-            <p className="text-body text-muted-foreground">
+            <p className="typography-body text-muted-foreground">
               Define the reward function and pass/fail thresholds.
             </p>
           </AccordionContent>
@@ -67,13 +67,13 @@ export const Variants: Story = {
           <AccordionItem value="a">
             <AccordionTrigger>Model configuration</AccordionTrigger>
             <AccordionContent>
-              <p className="text-body text-muted-foreground">Config panel content.</p>
+              <p className="typography-body text-muted-foreground">Config panel content.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="b">
             <AccordionTrigger>Environment settings</AccordionTrigger>
             <AccordionContent>
-              <p className="text-body text-muted-foreground">Config panel content.</p>
+              <p className="typography-body text-muted-foreground">Config panel content.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -93,7 +93,7 @@ export const Variants: Story = {
               Install SDK
             </AccordionTrigger>
             <AccordionContent stepper>
-              <p className="text-body text-muted-foreground">SDK installed.</p>
+              <p className="typography-body text-muted-foreground">SDK installed.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="step-active" stepState="active">
@@ -104,7 +104,7 @@ export const Variants: Story = {
               Configure API key
             </AccordionTrigger>
             <AccordionContent stepper>
-              <p className="text-body text-muted-foreground">API key configuration.</p>
+              <p className="typography-body text-muted-foreground">API key configuration.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="step-default" stepState="default">
@@ -115,7 +115,7 @@ export const Variants: Story = {
               Run first eval
             </AccordionTrigger>
             <AccordionContent stepper>
-              <p className="text-body text-muted-foreground">Deploy and start the eval loop.</p>
+              <p className="typography-body text-muted-foreground">Deploy and start the eval loop.</p>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="step-locked" stepState="locked">
@@ -126,7 +126,7 @@ export const Variants: Story = {
               Review results
             </AccordionTrigger>
             <AccordionContent stepper>
-              <p className="text-body text-muted-foreground">Results appear after the eval completes.</p>
+              <p className="typography-body text-muted-foreground">Results appear after the eval completes.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

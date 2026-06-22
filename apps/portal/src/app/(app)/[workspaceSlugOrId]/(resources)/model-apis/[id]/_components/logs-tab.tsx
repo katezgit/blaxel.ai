@@ -69,7 +69,7 @@ export function LogsTab({
 
   if (logs === null) {
     return (
-      <div className="py-12 text-body text-muted-foreground" aria-live="polite">
+      <div className="py-12 typography-body text-muted-foreground" aria-live="polite">
         Loading logs…
       </div>
     );
@@ -245,7 +245,7 @@ function LogsTable({
         id: "id",
         header: () => <span>ID</span>,
         cell: (info) => (
-          <span className="font-mono text-code text-foreground">
+          <span className="font-mono typography-code text-foreground">
             {info.row.original.id}
           </span>
         ),
@@ -426,7 +426,7 @@ function InputCell({ log }: { log: Log }) {
   const text = truncate(log.input);
   return (
     <span
-      className="block max-w-[20rem] truncate font-mono text-code text-foreground"
+      className="block max-w-[20rem] truncate font-mono typography-code text-foreground"
       title={log.input}
     >
       {text}
@@ -441,7 +441,7 @@ function OutputCell({ log }: { log: Log }) {
   const text = truncate(log.output);
   return (
     <span
-      className="block max-w-[20rem] truncate font-mono text-code text-foreground"
+      className="block max-w-[20rem] truncate font-mono typography-code text-foreground"
       title={log.output}
     >
       {text}

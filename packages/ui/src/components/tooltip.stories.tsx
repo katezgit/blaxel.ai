@@ -79,7 +79,7 @@ export const Variants: Story = {
         <Tooltip defaultOpen>
           <TooltipTrigger asChild>
             <p
-              className="text-body text-foreground cursor-default truncate"
+              className="typography-body text-foreground cursor-default truncate"
               style={{ maxWidth: 180 }}
             >
               swe-bench-verified-gpt-4o-2024-11-20-run-003-final

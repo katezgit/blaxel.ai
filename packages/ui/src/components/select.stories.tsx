@@ -56,7 +56,7 @@ export const Variants: Story = {
   render: () => (
     <div className="flex flex-col gap-4" style={{ width: 240 }}>
       <div className="flex flex-col gap-1.5">
-        <span className="text-caption text-muted-foreground">md (32px)</span>
+        <span className="typography-caption text-muted-foreground">md (32px)</span>
         <Select>
           <SelectTrigger size="md">
             <SelectValue placeholder="Select model" />
@@ -68,7 +68,7 @@ export const Variants: Story = {
         </Select>
       </div>
       <div className="flex flex-col gap-1.5">
-        <span className="text-caption text-muted-foreground">sm (28px)</span>
+        <span className="typography-caption text-muted-foreground">sm (28px)</span>
         <Select>
           <SelectTrigger size="sm">
             <SelectValue placeholder="Select model" />

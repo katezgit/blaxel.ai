@@ -19,7 +19,7 @@ export default async function WorkspaceSandboxSettingsPage({
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">
+        <h1 className="typography-display font-semibold text-foreground">
           Sandbox settings
         </h1>
         <p className="text-muted-foreground">

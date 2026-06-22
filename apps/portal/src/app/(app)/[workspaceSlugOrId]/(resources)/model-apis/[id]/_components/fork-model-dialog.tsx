@@ -89,7 +89,7 @@ export function ForkModelDialog({ model, open, onOpenChange }: ForkModelDialogPr
             <DialogTitle>Fork {model.displayName}</DialogTitle>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-4">
-            <p className="text-body text-foreground">{subtitle}</p>
+            <p className="typography-body text-foreground">{subtitle}</p>
 
             <FormField
               id={nameId}

@@ -73,7 +73,7 @@ export default function GeneralSettingsClient({
   return (
     <div className="flex w-full max-w-3xl flex-col gap-6 lg:gap-8">
       <section className="flex flex-col gap-4">
-        <h2 className="text-subtitle font-semibold text-foreground">
+        <h2 className="typography-subtitle font-semibold text-foreground">
           Workspace identity
         </h2>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -123,14 +123,14 @@ export default function GeneralSettingsClient({
 
       <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-subtitle font-semibold text-foreground">
+          <h2 className="typography-subtitle font-semibold text-foreground">
             Account context
           </h2>
           <p className="text-muted-foreground">
             This workspace belongs to the following billing account.
           </p>
         </div>
-        <dl className="grid grid-cols-[max-content_1fr] items-center gap-x-6 gap-y-2 text-caption">
+        <dl className="grid grid-cols-[max-content_1fr] items-center gap-x-6 gap-y-2 typography-caption">
           <dt className="text-meta-foreground">Account ID</dt>
           <dd className="flex items-center gap-2 font-mono text-foreground">
             <span className="truncate">{workspace.accountId}</span>
@@ -146,7 +146,7 @@ export default function GeneralSettingsClient({
 
       <section id="danger" className="flex flex-col gap-4 border-t-2 border-destructive pt-6">
         <div className="flex flex-col gap-1">
-          <h2 className="text-subtitle font-semibold text-destructive">
+          <h2 className="typography-subtitle font-semibold text-destructive">
             Danger zone
           </h2>
           <p className="text-muted-foreground">
@@ -174,10 +174,10 @@ export default function GeneralSettingsClient({
         description="Deleting the workspace is permanent. Every workspace-scoped resource and credential below will be removed."
         details={
           <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
-            <p className="text-label font-medium text-foreground">
+            <p className="typography-label font-medium text-foreground">
               The following will be permanently removed:
             </p>
-            <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-caption text-muted-foreground sm:grid-cols-3">
+            <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 typography-caption text-muted-foreground sm:grid-cols-3">
               {DELETION_TARGETS.map((target) => (
                 <li key={target}>{target}</li>
               ))}

@@ -61,11 +61,11 @@ export default function DomainSection({ emailDomain }: DomainSectionProps) {
       <header className="flex flex-col gap-1">
         <h2
           id="domain-section-heading"
-          className="text-subtitle font-semibold text-foreground"
+          className="typography-subtitle font-semibold text-foreground"
         >
           Domain authentication policy
         </h2>
-        <p className="text-body text-muted-foreground">
+        <p className="typography-body text-muted-foreground">
           Enforce specific login methods for your email domains without setting
           up a SAML provider. Verify domain ownership via a DNS TXT record,
           then choose which authentication methods (Google, GitHub, email) are
@@ -97,7 +97,7 @@ export default function DomainSection({ emailDomain }: DomainSectionProps) {
           <span
             id={errorId}
             role="alert"
-            className="text-caption font-medium text-state-errored-text"
+            className="typography-caption font-medium text-state-errored-text"
           >
             {errors.domain.message}
           </span>
@@ -111,7 +111,7 @@ export default function DomainSection({ emailDomain }: DomainSectionProps) {
           ))}
         </div>
       ) : (
-        <p className="text-body text-muted-foreground">
+        <p className="typography-body text-muted-foreground">
           No domains configured yet. Add a domain to enforce authentication
           policies for your users.
         </p>

@@ -32,7 +32,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
   return (
     <article className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4">
       <header className="flex items-center justify-between gap-3">
-        <h3 className="font-mono text-body font-medium text-foreground">
+        <h3 className="font-mono typography-body font-medium text-foreground">
           {domain.domain}
         </h3>
         {isVerified ? (
@@ -48,7 +48,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
 
       {isVerified ? (
         <div className="flex flex-col gap-3">
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             Users on this domain must sign in with{" "}
             <span className="font-medium text-foreground">
               {savedMethod ?? "Any"}
@@ -56,7 +56,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
             .
           </p>
           <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1.5 text-label">
+            <div className="flex flex-col gap-1.5 typography-label">
               <span className="text-muted-foreground">Enforce login method</span>
               <Select
                 value={pendingMethod ?? "Any"}
@@ -100,10 +100,10 @@ export default function DomainCard({ domain }: DomainCardProps) {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             Verify domain ownership via DNS TXT record.
           </p>
-          <div className="grid grid-cols-[6rem_1fr_auto] items-center gap-2 rounded-md border border-border bg-secondary-surface px-3 py-2 font-mono text-caption">
+          <div className="grid grid-cols-[6rem_1fr_auto] items-center gap-2 rounded-md border border-border bg-secondary-surface px-3 py-2 font-mono typography-caption">
             <span className="text-muted-foreground">Type</span>
             <span className="text-foreground">TXT</span>
             <span />
@@ -114,7 +114,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
             <span className="truncate text-foreground">{domain.txtRecord}</span>
             <CopyButton value={domain.txtRecord} tooltipLabel="Copy TXT value" />
           </div>
-          <p className="text-caption text-meta-foreground">
+          <p className="typography-caption text-meta-foreground">
             DNS changes can take up to 48 hours to propagate.
           </p>
           <div className="flex items-center gap-2">

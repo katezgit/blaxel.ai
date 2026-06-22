@@ -36,12 +36,12 @@ export function Panel({ title, subtitle, action, children, className }: PanelPro
         <div className="mb-6 flex flex-col gap-1">
           <div className="flex items-center justify-between gap-3">
             {title ? (
-              <h2 className="text-subtitle font-semibold text-foreground">{title}</h2>
+              <h2 className="typography-subtitle font-semibold text-foreground">{title}</h2>
             ) : <span />}
             {action}
           </div>
           {subtitle ? (
-            <p className="text-body text-muted-foreground">{subtitle}</p>
+            <p className="typography-body text-muted-foreground">{subtitle}</p>
           ) : null}
         </div>
       ) : null}
@@ -87,7 +87,7 @@ export function Field({ label, children, hint, error }: FieldProps) {
   const enriched = enrichControlChild(children, { describedBy, hasError: Boolean(error) });
 
   return (
-    <label className="flex flex-col gap-1.5 text-label">
+    <label className="flex flex-col gap-1.5 typography-label">
       <span className="text-muted-foreground">{label}</span>
       {enriched}
       {footer}
@@ -134,7 +134,7 @@ function renderFieldFooter({
       <span
         id={errorId}
         role="alert"
-        className="text-caption font-medium text-state-errored-text"
+        className="typography-caption font-medium text-state-errored-text"
       >
         {error}
       </span>
@@ -142,7 +142,7 @@ function renderFieldFooter({
   }
   if (hint) {
     return (
-      <span id={hintId} className="text-caption text-meta-foreground">
+      <span id={hintId} className="typography-caption text-meta-foreground">
         {hint}
       </span>
     );

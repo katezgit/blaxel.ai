@@ -31,8 +31,8 @@ export function UtilizedQuotaRow({ label, used, limit, unit }: UtilizedRowProps)
   return (
     <div className="flex flex-col gap-1.5 py-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-body text-foreground">{label}</span>
-        <div className="flex items-center gap-2 font-mono text-meta tabular-nums text-foreground">
+        <span className="typography-body text-foreground">{label}</span>
+        <div className="flex items-center gap-2 font-mono typography-meta tabular-nums text-foreground">
           {atLimit ? (
             <>
               <TriangleAlert
@@ -61,8 +61,8 @@ interface CeilingRowProps {
 export function CeilingQuotaRow({ label, value }: CeilingRowProps) {
   return (
     <div className="flex items-baseline justify-between gap-3 py-3">
-      <span className="text-body text-foreground">{label}</span>
-      <span className="font-mono text-meta tabular-nums text-muted-foreground">
+      <span className="typography-body text-foreground">{label}</span>
+      <span className="font-mono typography-meta tabular-nums text-muted-foreground">
         {value} <span className="ml-1 text-meta-foreground">(tier ceiling)</span>
       </span>
     </div>
@@ -80,11 +80,11 @@ export function GatedQuotaRow({ label, tier, verb, contactSales }: GatedRowProps
   return (
     <div className="flex flex-col gap-1.5 py-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-body text-foreground">{label}</span>
-        <span className="font-mono text-meta text-muted-foreground">Not included</span>
+        <span className="typography-body text-foreground">{label}</span>
+        <span className="font-mono typography-meta text-muted-foreground">Not included</span>
       </div>
       {contactSales ? (
-        <p className="text-caption text-muted-foreground">
+        <p className="typography-caption text-muted-foreground">
           Tier {tier} required &mdash; contact us for upgrade options.{" "}
           <a
             href="mailto:sales@blaxel.ai"
@@ -115,7 +115,7 @@ export function QuotaGroup({ label, children, className }: QuotaGroupProps) {
       )}
     >
       <header className="border-b border-border px-4 py-2">
-        <h2 className="font-mono text-meta uppercase text-meta-foreground">
+        <h2 className="font-mono typography-meta uppercase text-meta-foreground">
           {label}
         </h2>
       </header>

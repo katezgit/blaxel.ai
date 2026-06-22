@@ -133,7 +133,7 @@ function DialogContent({
             data-slot="dialog-close-button"
             className={cn(
               // top-[18px]: structural compensation — aligns button optical center with DialogTitle optical center
-              // Inter cap-height ≈ 0.73em; at text-subtitle 16px → cap = 11.68px, optical center = 5.84px above cap top
+              // Inter cap-height ≈ 0.73em; at typography-subtitle 16px → cap = 11.68px, optical center = 5.84px above cap top
               // DialogHeader pt-6 (24px) + 5.84 = 29.84px; button size-6 center = top + 12px → top = 17.84px ≈ 18px
               "absolute top-[18px] right-4",
               "size-6",
@@ -194,7 +194,7 @@ function DialogTitle({
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "text-[length:var(--text-subtitle)] font-semibold text-foreground leading-none", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
+        "text-[length:var(--typography-subtitle)] font-semibold text-foreground leading-none", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
         className
       )}
       {...props}
@@ -210,7 +210,7 @@ function DialogDescription({
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
-        "text-body",
+        "typography-body",
         "text-muted-foreground",
         className
       )}

@@ -73,7 +73,7 @@ export default function ConnectionsView({
       columnHelper.accessor("id", {
         header: "Name",
         cell: (info) => (
-          <span className="font-mono text-label text-foreground">
+          <span className="font-mono typography-label text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -81,7 +81,7 @@ export default function ConnectionsView({
       columnHelper.accessor("apiKeyPreview", {
         header: "API key",
         cell: (info) => (
-          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono text-caption text-muted-foreground">
+          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono typography-caption text-muted-foreground">
             {info.getValue()}
           </code>
         ),
@@ -89,7 +89,7 @@ export default function ConnectionsView({
       columnHelper.accessor("createdAt", {
         header: "Created",
         cell: (info) => (
-          <span className="font-mono text-label text-muted-foreground">
+          <span className="font-mono typography-label text-muted-foreground">
             {DATE_FMT.format(new Date(info.getValue()))}
           </span>
         ),
@@ -137,7 +137,7 @@ export default function ConnectionsView({
               <AvatarFallback>{integration.logoInitial}</AvatarFallback>
             </Avatar>
             <div className="page-header">
-              <h1 className="text-display font-semibold text-foreground">
+              <h1 className="typography-display font-semibold text-foreground">
                 {integration.name}
               </h1>
               <p className="text-muted-foreground">
@@ -174,10 +174,10 @@ export default function ConnectionsView({
               <Plug aria-hidden="true" className="size-6 text-muted-foreground" />
             </div>
             <div className="flex flex-col items-center gap-1">
-              <p className="text-body font-medium text-foreground">
+              <p className="typography-body font-medium text-foreground">
                 No {integration.name} connections yet
               </p>
-              <p className="text-body text-muted-foreground">
+              <p className="typography-body text-muted-foreground">
                 Connect this workspace with an API key to start using it from
                 agents and the CLI.
               </p>
@@ -212,7 +212,7 @@ export default function ConnectionsView({
             <DialogTitle>Remove {pendingRemove?.id}?</DialogTitle>
           </DialogHeader>
           <DialogBody>
-            <p className="text-body text-muted-foreground">
+            <p className="typography-body text-muted-foreground">
               Agents and CLI sessions using this connection will start receiving
               401 responses immediately. This action cannot be undone.
             </p>

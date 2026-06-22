@@ -52,7 +52,7 @@ function GeneralHeading() {
   return (
     <h2
       id="general-heading"
-      className="text-subtitle font-medium text-foreground"
+      className="typography-subtitle font-medium text-foreground"
     >
       General
     </h2>
@@ -65,7 +65,7 @@ function VisibilityRow({ isPrivate }: { isPrivate: boolean }) {
       <FieldLabel htmlFor="model-visibility">Visibility</FieldLabel>
       <div
         id="model-visibility"
-        className="inline-flex items-center gap-1.5 text-body text-foreground"
+        className="inline-flex items-center gap-1.5 typography-body text-foreground"
       >
         {isPrivate ? (
           <LockIcon aria-hidden="true" className="size-3.5 text-meta-foreground" />
@@ -223,7 +223,7 @@ function ReadOnlyTagsField({
         )}
       >
         {value.length === 0 ? (
-          <span className="text-body text-meta-foreground">—</span>
+          <span className="typography-body text-meta-foreground">—</span>
         ) : (
           value.map((tag) => (
             <span
@@ -231,7 +231,7 @@ function ReadOnlyTagsField({
               className={cn(
                 "inline-flex items-center",
                 "rounded-badge border border-border bg-background px-2 py-0.5",
-                "text-label font-mono text-foreground",
+                "typography-label font-mono text-foreground",
               )}
             >
               {tag}
@@ -297,7 +297,7 @@ function EditableTagsField({
             className={cn(
               "inline-flex items-center gap-1",
               "rounded-badge border border-border bg-muted-surface px-2 py-0.5",
-              "text-label font-mono text-foreground",
+              "typography-label font-mono text-foreground",
             )}
           >
             {tag}
@@ -334,7 +334,7 @@ function EditableTagsField({
           }}
           onBlur={commit}
           className={cn(
-            "min-w-0 flex-1 border-none bg-transparent text-body text-foreground outline-none",
+            "min-w-0 flex-1 border-none bg-transparent typography-body text-foreground outline-none",
             "placeholder:text-meta-foreground",
             // Suppress the global *:focus-visible ring (outline + shadow-focus glow)
             // on the inner input — the outer shell div already paints the focus ring

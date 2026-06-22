@@ -15,7 +15,7 @@ export default function AddOnsPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Premium services</h1>
+        <h1 className="typography-display font-semibold text-foreground">Premium services</h1>
         <p className="text-muted-foreground">
           Optional paid services for support, compliance, and account-level
           assistance.

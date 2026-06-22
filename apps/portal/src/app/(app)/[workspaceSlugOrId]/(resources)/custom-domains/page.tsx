@@ -16,7 +16,7 @@ export default async function CustomDomainsPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Custom domains</h1>
+        <h1 className="typography-display font-semibold text-foreground">Custom domains</h1>
         <p className="text-muted-foreground">Custom DNS routes pointing at your hosted resources.</p>
       </header>
       <HydrationBoundary state={dehydrate(queryClient)}>

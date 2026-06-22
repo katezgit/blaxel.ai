@@ -46,7 +46,7 @@ export const Playground: Story = {}
 export const InContextIDCell: Story = {
   render: () => (
     <div className="flex items-center gap-1.5">
-      <span className="font-mono text-meta text-foreground">mdl_a1b2c3d4</span>
+      <span className="font-mono typography-meta text-foreground">mdl_a1b2c3d4</span>
       <CopyButton value="mdl_a1b2c3d4" />
     </div>
   ),
@@ -58,17 +58,17 @@ export const InContextIDCell: Story = {
 export const InContextLabelValue: Story = {
   render: () => (
     <dl className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1">
-      <dt className="text-meta text-muted-foreground">Model ID</dt>
+      <dt className="typography-meta text-muted-foreground">Model ID</dt>
       <dd className="flex items-center gap-1">
-        <span className="font-mono text-meta text-foreground">mdl_a1b2c3d4</span>
+        <span className="font-mono typography-meta text-foreground">mdl_a1b2c3d4</span>
         <CopyButton
           value="mdl_a1b2c3d4"
           className="shrink-0 text-meta-foreground"
         />
       </dd>
-      <dt className="text-meta text-muted-foreground">Base model</dt>
+      <dt className="typography-meta text-muted-foreground">Base model</dt>
       <dd className="flex items-center gap-1">
-        <span className="font-mono text-meta text-foreground">claude-3-5-sonnet-20241022</span>
+        <span className="font-mono typography-meta text-foreground">claude-3-5-sonnet-20241022</span>
         <CopyButton
           value="claude-3-5-sonnet-20241022"
           className="shrink-0 text-meta-foreground"

@@ -51,7 +51,7 @@ const columns = [
   columnHelper.accessor("date", {
     header: "Date",
     cell: (info) => DATE_FMT.format(new Date(info.getValue())),
-    meta: { cellClassName: "font-mono text-label text-muted-foreground" },
+    meta: { cellClassName: "font-mono typography-label text-muted-foreground" },
   }),
   columnHelper.accessor("type", {
     header: "Type",
@@ -70,7 +70,7 @@ const columns = [
     cell: (info) => formatCredits(info.getValue()),
     meta: {
       headerClassName: "text-right",
-      cellClassName: "text-right font-mono text-label tabular-nums",
+      cellClassName: "text-right font-mono typography-label tabular-nums",
     },
   }),
   columnHelper.accessor("amount", {
@@ -78,7 +78,7 @@ const columns = [
     cell: (info) => USD.format(info.getValue()),
     meta: {
       headerClassName: "text-right",
-      cellClassName: "text-right font-mono text-label tabular-nums",
+      cellClassName: "text-right font-mono typography-label tabular-nums",
     },
   }),
 ];
@@ -95,8 +95,8 @@ export function BillingHistoryPanel() {
   return (
     <Card className="mb-4 overflow-hidden">
       <header className="px-6 pt-6 pb-4">
-        <h2 className="text-subtitle font-semibold text-foreground">Billing history</h2>
-        <p className="mt-1 text-body text-muted-foreground">
+        <h2 className="typography-subtitle font-semibold text-foreground">Billing history</h2>
+        <p className="mt-1 typography-body text-muted-foreground">
           Your recent credit purchases and transactions
         </p>
       </header>

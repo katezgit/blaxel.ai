@@ -103,12 +103,12 @@ export function ApiKeysClient() {
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => info.getValue(),
-        meta: { cellClassName: "font-mono text-label" },
+        meta: { cellClassName: "font-mono typography-label" },
       }),
       columnHelper.accessor("masked", {
         header: "Key",
         cell: (info) => (
-          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono text-caption text-muted-foreground">
+          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono typography-caption text-muted-foreground">
             {info.getValue()}
           </code>
         ),
@@ -116,7 +116,7 @@ export function ApiKeysClient() {
       columnHelper.accessor("createdAt", {
         header: "Created",
         cell: (info) => DATE_FMT.format(new Date(info.getValue())),
-        meta: { cellClassName: "font-mono text-label text-muted-foreground" },
+        meta: { cellClassName: "font-mono typography-label text-muted-foreground" },
       }),
       columnHelper.accessor("expiresAt", {
         header: "Expires",
@@ -125,7 +125,7 @@ export function ApiKeysClient() {
           if (value) return DATE_FMT.format(new Date(value));
           return "Never";
         },
-        meta: { cellClassName: "font-mono text-label text-muted-foreground" },
+        meta: { cellClassName: "font-mono typography-label text-muted-foreground" },
       }),
       columnHelper.display({
         id: "actions",

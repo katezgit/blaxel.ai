@@ -23,7 +23,7 @@ export default function PlanQuotasView() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">
+        <h1 className="typography-display font-semibold text-foreground">
           Tier &amp; quotas
         </h1>
         <p className="text-muted-foreground">
@@ -48,7 +48,7 @@ export default function PlanQuotasView() {
         <DrawerContent size="lg">
           <DrawerHeader className="flex items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
-              <DrawerTitle className="text-subtitle">
+              <DrawerTitle className="typography-subtitle">
                 All quotas — Tier {state.tier}
               </DrawerTitle>
               <DrawerDescription className="text-muted-foreground">

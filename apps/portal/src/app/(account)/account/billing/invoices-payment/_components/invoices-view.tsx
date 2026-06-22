@@ -16,7 +16,7 @@ export default function InvoicesView() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">
+        <h1 className="typography-display font-semibold text-foreground">
           Invoices &amp; payment
         </h1>
         <p className="text-muted-foreground">
@@ -33,7 +33,7 @@ export default function InvoicesView() {
         <div className="flex items-center justify-between gap-3">
           <h2
             id="invoices-label"
-            className="text-subtitle font-semibold text-foreground"
+            className="typography-subtitle font-semibold text-foreground"
           >
             Invoices
           </h2>
@@ -58,7 +58,7 @@ export default function InvoicesView() {
         <div className="flex items-center justify-between gap-3">
           <h2
             id="receipts-label"
-            className="text-subtitle font-semibold text-foreground"
+            className="typography-subtitle font-semibold text-foreground"
           >
             Receipts &amp; credit purchases
           </h2>

@@ -109,7 +109,7 @@ function CalendarMonthCaption({ calendarMonth, displayIndex, ...divProps }: Mont
 const dayButtonBase = [
   "relative flex size-8 items-center justify-center",
   "rounded-md",
-  "text-body text-foreground",
+  "typography-body text-foreground",
   "transition-colors duration-fast ease-out-standard",
   "cursor-pointer select-none",
   // Forced-colors (Windows HC) fallback — preserves outline when box-shadow is ignored.
@@ -131,7 +131,7 @@ function Calendar({ className, ...props }: CalendarProps) {
         month: "flex flex-col gap-4",
         // month_caption layout is owned by CalendarMonthCaption custom component.
         month_caption: "",
-        caption_label: "text-body font-medium text-foreground",
+        caption_label: "typography-body font-medium text-foreground",
         button_previous: cn(
           buttonBaseClasses,
           "size-7 p-0 rounded-md",
@@ -150,7 +150,7 @@ function Calendar({ className, ...props }: CalendarProps) {
         weekdays: "flex",
         weekday: [
           "w-8 text-center",
-          "text-meta text-meta-foreground font-normal",
+          "typography-meta text-meta-foreground font-normal",
           "pb-1",
         ].join(" "),
         weeks: "flex flex-col gap-px",

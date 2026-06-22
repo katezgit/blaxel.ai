@@ -13,7 +13,7 @@ export default function ProfilePage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Profile</h1>
+        <h1 className="typography-display font-semibold text-foreground">Profile</h1>
         <p className="text-muted-foreground">
           Your personal identity across every Blaxel workspace.
         </p>

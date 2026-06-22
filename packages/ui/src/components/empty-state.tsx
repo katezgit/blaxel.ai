@@ -76,12 +76,12 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
         )}
 
         {/* Text block */}
-        <div className="flex flex-col items-center gap-1">
-          <p className="text-body font-medium text-foreground">
+        <div className="flex flex-col items-center gap-1 typography-body">
+          <p className="font-medium text-foreground">
             {title}
           </p>
           {subtitle != null && (
-            <p className="text-body text-muted-foreground">
+            <p className="text-muted-foreground">
               {subtitle}
             </p>
           )}

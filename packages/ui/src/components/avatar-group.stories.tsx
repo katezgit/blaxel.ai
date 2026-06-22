@@ -54,19 +54,19 @@ export const Variants: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <span className="text-label text-muted-foreground">xs — 20px, -ml-1</span>
+        <span className="typography-label text-muted-foreground">xs — 20px, -ml-1</span>
         <AvatarGroup items={FIVE_ITEMS} size="xs" maxVisible={3} />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-label text-muted-foreground">sm (default) — 28px, -ml-2</span>
+        <span className="typography-label text-muted-foreground">sm (default) — 28px, -ml-2</span>
         <AvatarGroup items={FIVE_ITEMS} size="sm" maxVisible={3} />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-label text-muted-foreground">md — 32px, -ml-2</span>
+        <span className="typography-label text-muted-foreground">md — 32px, -ml-2</span>
         <AvatarGroup items={FIVE_ITEMS} size="md" maxVisible={3} />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-label text-muted-foreground">lg — 40px, -ml-3</span>
+        <span className="typography-label text-muted-foreground">lg — 40px, -ml-3</span>
         <AvatarGroup items={FIVE_ITEMS} size="lg" maxVisible={3} />
       </div>
     </div>
@@ -80,7 +80,7 @@ export const ZOrder: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <span className="text-label text-muted-foreground">
+        <span className="typography-label text-muted-foreground">
           First avatar (Alice) should visually sit on top of the stack
         </span>
         <AvatarGroup items={FIVE_ITEMS} size="md" maxVisible={4} />
@@ -97,7 +97,7 @@ export const Overflow: Story = {
     <div className="flex flex-col gap-6">
       {(["xs", "sm", "md", "lg"] as const).map((size) => (
         <div key={size} className="flex flex-col gap-2">
-          <span className="text-label text-muted-foreground">{size} — overflow chip</span>
+          <span className="typography-label text-muted-foreground">{size} — overflow chip</span>
           <AvatarGroup items={FIVE_ITEMS} size={size} maxVisible={2} />
         </div>
       ))}

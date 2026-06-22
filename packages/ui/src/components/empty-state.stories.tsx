@@ -81,7 +81,7 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex flex-col gap-6" style={{ width: 480 }}>
       <div>
-        <p className="text-caption text-muted-foreground mb-2 ml-1">size=&quot;md&quot; (default)</p>
+        <p className="typography-caption text-muted-foreground mb-2 ml-1">size=&quot;md&quot; (default)</p>
         <div className="border border-border rounded-surface bg-panel">
           <EmptyState
             variant="zero-state"
@@ -93,7 +93,7 @@ export const Sizes: Story = {
         </div>
       </div>
       <div>
-        <p className="text-caption text-muted-foreground mb-2 ml-1">size=&quot;sm&quot; (compact — icon suppressed)</p>
+        <p className="typography-caption text-muted-foreground mb-2 ml-1">size=&quot;sm&quot; (compact — icon suppressed)</p>
         <div className="border border-border rounded-surface bg-panel" style={{ width: 320 }}>
           <EmptyState
             variant="no-results"

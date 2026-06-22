@@ -68,10 +68,10 @@ const overflowSizeClass: Record<AvatarGroupSize, string> = {
 
 // Overflow chip font class by size variant.
 const overflowFontClass: Record<AvatarGroupSize, string> = {
-  xs: "text-[10px] font-mono font-medium", // eslint-disable-line no-restricted-syntax -- no token for 10px; xs size only (below text-meta at 10px/mono/uppercase)
-  sm: "text-label font-mono font-medium",
-  md: "text-label font-mono font-medium",
-  lg: "text-body font-mono font-medium",
+  xs: "text-[10px] font-mono font-medium", // eslint-disable-line no-restricted-syntax -- no token for 10px; xs size only (below typography-meta at 10px/mono/uppercase)
+  sm: "typography-label font-mono font-medium",
+  md: "typography-label font-mono font-medium",
+  lg: "typography-body font-mono font-medium",
 }
 
 // ── AvatarGroup ───────────────────────────────────────────────────────────────

@@ -81,9 +81,9 @@ function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
         "bg-foreground text-panel font-mono font-semibold rounded-full",
         // text sizes keyed to parent size via data-size on group
         "text-[10px]", // eslint-disable-line no-restricted-syntax -- no token for 10px; xs size only
-        "group-data-[size=sm]/avatar:text-label",
-        "group-data-[size=md]/avatar:text-label",
-        "group-data-[size=lg]/avatar:text-body",
+        "group-data-[size=sm]/avatar:typography-label",
+        "group-data-[size=md]/avatar:typography-label",
+        "group-data-[size=lg]/avatar:typography-body",
         className
       )}
       {...props}

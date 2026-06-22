@@ -278,19 +278,19 @@ export default function ModelsCatalog() {
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Link
                       href={`/models/${m.modelId}`}
-                      className="text-body font-medium text-foreground hover:underline truncate"
+                      className="typography-body font-medium text-foreground hover:underline truncate"
                     >
                       {m.name}
                     </Link>
                     {m.isPrivate && <VisibilityIcon visibility="private" />}
                   </div>
-                  <div className="text-caption text-muted-foreground">
+                  <div className="typography-caption text-muted-foreground">
                     {m.provider}
                   </div>
                   {(m.reasoning === true || m.trainable) && (
                     <div className="flex flex-wrap items-center gap-1.5">
                       {m.reasoning === true && (
-                        <span className="inline-flex items-center gap-1 rounded-sm bg-muted-surface px-1.5 py-0.5 text-meta text-foreground">
+                        <span className="inline-flex items-center gap-1 rounded-sm bg-muted-surface px-1.5 py-0.5 typography-meta text-foreground">
                           <CheckIcon
                             aria-hidden="true"
                             className="size-3 text-state-scored-text"
@@ -299,7 +299,7 @@ export default function ModelsCatalog() {
                         </span>
                       )}
                       {m.trainable && (
-                        <span className="inline-flex items-center gap-1 rounded-sm bg-muted-surface px-1.5 py-0.5 text-meta text-foreground">
+                        <span className="inline-flex items-center gap-1 rounded-sm bg-muted-surface px-1.5 py-0.5 typography-meta text-foreground">
                           <CheckIcon
                             aria-hidden="true"
                             className="size-3 text-state-scored-text"
@@ -320,14 +320,14 @@ export default function ModelsCatalog() {
                 <div className="flex items-center gap-1.5">
                   <Link
                     href={`/models/${m.modelId}`}
-                    className="text-body font-medium text-foreground hover:underline truncate"
+                    className="typography-body font-medium text-foreground hover:underline truncate"
                   >
                     {m.name}
                   </Link>
                   {m.isPrivate && <VisibilityIcon visibility="private" />}
                 </div>
                 <div className="flex items-center gap-0 -mt-1.5">
-                  <code className="font-mono text-caption text-muted-foreground">
+                  <code className="font-mono typography-caption text-muted-foreground">
                     {m.modelId}
                   </code>
                   <CopyButton
@@ -346,7 +346,7 @@ export default function ModelsCatalog() {
         header: "Provider",
         size: COLUMN_SIZES.provider,
         cell: (info) => (
-          <span className="text-body text-muted-foreground">{info.getValue()}</span>
+          <span className="typography-body text-muted-foreground">{info.getValue()}</span>
         ),
       }),
       columnHelper.display({
@@ -354,7 +354,7 @@ export default function ModelsCatalog() {
         header: "Price / M",
         size: COLUMN_SIZES.price,
         cell: (info) => (
-          <span className="font-mono text-label tabular-nums text-foreground">
+          <span className="font-mono typography-label tabular-nums text-foreground">
             {formatPrice(info.row.original.priceIn)}
             <span className="text-meta-foreground"> / </span>
             {formatPrice(info.row.original.priceOut)}
@@ -405,7 +405,7 @@ export default function ModelsCatalog() {
             );
           } else {
             inner = (
-              <span aria-label="Reasoning: no" className="text-label text-muted-foreground">
+              <span aria-label="Reasoning: no" className="typography-label text-muted-foreground">
                 —
               </span>
             );
@@ -430,7 +430,7 @@ export default function ModelsCatalog() {
                 className="size-3.5 text-state-scored-text"
               />
             ) : (
-              <span aria-label="Trainable: no" className="text-label text-muted-foreground">
+              <span aria-label="Trainable: no" className="typography-label text-muted-foreground">
                 —
               </span>
             )}
@@ -448,7 +448,7 @@ export default function ModelsCatalog() {
         cell: (info) => (
           <div className="flex items-center justify-end gap-2">
             <UsageSparkline data={info.row.original.usageSparkline} />
-            <span className="font-mono text-label tabular-nums text-foreground">
+            <span className="font-mono typography-label tabular-nums text-foreground">
               {formatUsage(info.getValue())}
             </span>
           </div>
@@ -504,14 +504,14 @@ export default function ModelsCatalog() {
                 <div className="flex items-center gap-1.5">
                   <Link
                     href={`/models/${m.modelId}`}
-                    className="text-body font-medium text-foreground hover:underline truncate"
+                    className="typography-body font-medium text-foreground hover:underline truncate"
                   >
                     {m.name}
                   </Link>
                   <VisibilityIcon visibility="private" />
                 </div>
                 <div className="flex items-center gap-0 -mt-1.5">
-                  <code className="font-mono text-caption text-muted-foreground">
+                  <code className="font-mono typography-caption text-muted-foreground">
                     {m.modelId}
                   </code>
                   <CopyButton
@@ -539,7 +539,7 @@ export default function ModelsCatalog() {
           return (
             <Link
               href={`/models/${baseId}`}
-              className="text-body text-muted-foreground hover:text-foreground hover:underline"
+              className="typography-body text-muted-foreground hover:text-foreground hover:underline"
             >
               {label}
             </Link>
@@ -756,13 +756,13 @@ export default function ModelsCatalog() {
         <TabsList variant="underline">
           <TabsTrigger value="all">
             All models
-            <span className="ml-1.5 font-mono text-meta tabular-nums text-meta-foreground">
+            <span className="ml-1.5 font-mono typography-meta tabular-nums text-meta-foreground">
               {tabCounts.all}
             </span>
           </TabsTrigger>
           <TabsTrigger value="mine">
             Private models
-            <span className="ml-1.5 font-mono text-meta tabular-nums text-meta-foreground">
+            <span className="ml-1.5 font-mono typography-meta tabular-nums text-meta-foreground">
               {tabCounts.mine}
             </span>
           </TabsTrigger>
@@ -852,14 +852,14 @@ export default function ModelsCatalog() {
             />
 
             <div className="ml-auto flex items-center gap-2">
-              <span className="text-label text-muted-foreground">
+              <span className="typography-label text-muted-foreground">
                 {resultCountLabel}
               </span>
               {hasActiveFilters && (
                 <button
                   type="button"
                   onClick={clearAllFilters}
-                  className="text-label text-primary cursor-pointer hover:underline"
+                  className="typography-label text-primary cursor-pointer hover:underline"
                 >
                   Clear all
                 </button>
@@ -880,7 +880,7 @@ export default function ModelsCatalog() {
                   <SlidersHorizontalIcon aria-hidden="true" className="size-3.5" />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span className="font-mono text-meta tabular-nums text-foreground">
+                    <span className="font-mono typography-meta tabular-nums text-foreground">
                       {activeFilterCount}
                     </span>
                   )}
@@ -890,7 +890,7 @@ export default function ModelsCatalog() {
                 <DrawerHeader>
                   <div className="flex flex-col gap-1">
                     <DrawerTitle>Filters</DrawerTitle>
-                    <span className="text-label text-muted-foreground">
+                    <span className="typography-label text-muted-foreground">
                       {resultCountLabel}
                     </span>
                   </div>
@@ -898,7 +898,7 @@ export default function ModelsCatalog() {
                     <button
                       type="button"
                       onClick={clearAllFilters}
-                      className="text-label text-primary cursor-pointer hover:underline"
+                      className="typography-label text-primary cursor-pointer hover:underline"
                     >
                       Clear all
                     </button>
@@ -955,7 +955,7 @@ export default function ModelsCatalog() {
                                   updateFilters({ baseModelIds: nextSet });
                                 }}
                               />
-                              <span className="text-body text-foreground">
+                              <span className="typography-body text-foreground">
                                 {opt.label}
                               </span>
                             </label>
@@ -989,7 +989,7 @@ export default function ModelsCatalog() {
                                   updateFilters({ providers: nextSet });
                                 }}
                               />
-                              <span className="text-body text-foreground">{opt.label}</span>
+                              <span className="typography-body text-foreground">{opt.label}</span>
                             </label>
                           );
                         })}
@@ -1143,7 +1143,7 @@ function FilterGroup({
 }) {
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-label font-medium text-foreground">{label}</h3>
+      <h3 className="typography-label font-medium text-foreground">{label}</h3>
       <div className="flex flex-col gap-1">{children}</div>
     </section>
   );
@@ -1170,9 +1170,9 @@ function CapabilityCheckbox({
         checked={checked}
         onCheckedChange={(v) => onCheckedChange(v === true)}
       />
-      <span className="flex-1 text-body text-foreground">{label}</span>
+      <span className="flex-1 typography-body text-foreground">{label}</span>
       {count > 0 && (
-        <span className="font-mono text-meta tabular-nums text-meta-foreground">
+        <span className="font-mono typography-meta tabular-nums text-meta-foreground">
           {count}
         </span>
       )}

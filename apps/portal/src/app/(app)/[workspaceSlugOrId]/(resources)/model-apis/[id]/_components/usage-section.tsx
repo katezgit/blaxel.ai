@@ -11,7 +11,7 @@ export function UsageSection({ model }: { model: Model }) {
       <div className="rounded-surface border border-border bg-panel px-5 py-4">
         <h2
           id="usage-heading"
-          className="text-subtitle font-medium text-foreground"
+          className="typography-subtitle font-medium text-foreground"
         >
           Usage
         </h2>
@@ -24,10 +24,10 @@ export function UsageSection({ model }: { model: Model }) {
             <CopyableValue value={model.apiName} mono ariaLabel="Copy API name" />
           </Row>
           <Row label="Provider">
-            <span className="text-body text-foreground">{model.provider}</span>
+            <span className="typography-body text-foreground">{model.provider}</span>
           </Row>
           <Row label="Routes">
-            <span className="text-body text-foreground">
+            <span className="typography-body text-foreground">
               {model.routes.length === 0 ? (
                 <span className="text-meta-foreground">—</span>
               ) : (
@@ -36,7 +36,7 @@ export function UsageSection({ model }: { model: Model }) {
             </span>
           </Row>
           <Row label="Trainable">
-            <span className="text-body text-foreground">
+            <span className="typography-body text-foreground">
               {model.trainable ? "Yes" : "No"}
             </span>
           </Row>

@@ -56,7 +56,7 @@ export function OrganizationFields() {
         </Field>
       </FieldRow>
 
-      <div className="mt-4 flex items-center gap-2 font-mono text-caption text-meta-foreground">
+      <div className="mt-4 flex items-center gap-2 font-mono typography-caption text-meta-foreground">
         <span>Organization ID: {currentOrg.id}</span>
         <CopyButton value={currentOrg.id} ariaLabel="Copy organization ID" />
       </div>

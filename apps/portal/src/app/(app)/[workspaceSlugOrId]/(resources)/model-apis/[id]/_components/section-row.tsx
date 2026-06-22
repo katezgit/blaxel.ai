@@ -12,8 +12,8 @@ export function Row({
 }) {
   return (
     <>
-      <dt className="text-body text-muted-foreground">{label}</dt>
-      <dd className="flex min-w-0 items-center gap-2 text-body">{children}</dd>
+      <dt className="typography-body text-muted-foreground">{label}</dt>
+      <dd className="flex min-w-0 items-center gap-2 typography-body">{children}</dd>
     </>
   );
 }

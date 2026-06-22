@@ -378,7 +378,7 @@ export default function UsageView() {
     >
       <header className="page-header">
         <div className="flex items-start justify-between gap-3">
-          <h1 className="text-display font-semibold text-foreground">Usage</h1>
+          <h1 className="typography-display font-semibold text-foreground">Usage</h1>
           <TabsList variant="segmented" aria-label="Usage or cost view">
             {usageAvailable ? (
               <TabsTrigger value="usage">Usage</TabsTrigger>
@@ -452,7 +452,7 @@ export default function UsageView() {
               timezone={timezone}
               timezoneOptions={TIMEZONE_OPTIONS}
               onTimezoneChange={setTimezone}
-              className="h-8 gap-2 rounded-md text-body"
+              className="h-8 gap-2 rounded-md typography-body"
               aria-label={`Time range, current value: ${timeRangeLabel}`}
             >
               {timeRangeLabel}
@@ -464,7 +464,7 @@ export default function UsageView() {
                   type="button"
                   aria-label="Granularity"
                   className={cn(
-                    "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-border bg-card px-3 text-body text-foreground",
+                    "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-border bg-card px-3 typography-body text-foreground",
                     "hover:bg-secondary-surface focus-visible:bg-form-field-surface focus-visible:shadow-focus-ring focus-visible:outline-none",
                     "data-[state=open]:bg-form-field-surface data-[state=open]:shadow-focus-ring",
                   )}
@@ -496,10 +496,10 @@ export default function UsageView() {
                       value={opt.value}
                       className="flex-col items-start gap-0.5 py-2"
                     >
-                      <span className="text-body text-foreground">
+                      <span className="typography-body text-foreground">
                         {opt.label}
                       </span>
-                      <span className="text-caption text-muted-foreground">
+                      <span className="typography-caption text-muted-foreground">
                         {opt.description}
                       </span>
                     </DropdownMenuRadioItem>
@@ -640,7 +640,7 @@ function FilterChipShell({
     <div
       className={cn(
         "inline-flex items-center rounded-md border border-border bg-card",
-        "h-7 text-label text-foreground",
+        "h-7 typography-label text-foreground",
       )}
     >
       <Select value={value} onValueChange={onChange}>
@@ -703,7 +703,7 @@ function WorkspaceChip({ workspaces, value, onChange }: WorkspaceChipProps) {
       ariaLabel="Workspace"
       badge={
         initial ? (
-          <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-meta font-semibold text-primary-foreground">
+          <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary typography-meta font-semibold text-primary-foreground">
             {initial.toUpperCase()}
           </span>
         ) : undefined
@@ -833,13 +833,13 @@ function HeaderCell({
 }: HeaderCellProps) {
   return (
     <div className="flex flex-col gap-1.5 px-6 py-5">
-      <span className="text-caption text-muted-foreground">{label}</span>
+      <span className="typography-caption text-muted-foreground">{label}</span>
       <span
-        className={cn("text-subtitle font-semibold tabular-nums", primaryClassName)}
+        className={cn("typography-subtitle font-semibold tabular-nums", primaryClassName)}
       >
         {primary}
       </span>
-      <span className={cn("text-caption", secondaryClassName)}>{secondary}</span>
+      <span className={cn("typography-caption", secondaryClassName)}>{secondary}</span>
     </div>
   );
 }
@@ -854,7 +854,7 @@ function UsagePanel({ dataset, tab, chartType }: UsagePanelProps) {
   if (!dataset) {
     return (
       <Card className="flex h-80 items-center justify-center px-6">
-        <p className="text-body text-muted-foreground">
+        <p className="typography-body text-muted-foreground">
           No billing data for this range.
         </p>
       </Card>
@@ -889,10 +889,10 @@ function TopContributors({ dataset, tab }: TopContributorsProps) {
   return (
     <div className="flex flex-col gap-3 px-5 py-5">
       <div className="flex items-baseline justify-between">
-        <h3 className="text-label font-medium text-foreground">
+        <h3 className="typography-label font-medium text-foreground">
           Top contributors
         </h3>
-        <span className="text-meta uppercase tracking-wider text-muted-foreground">
+        <span className="typography-meta uppercase tracking-wider text-muted-foreground">
           {tab === "cost" ? "of total expense" : "of total usage"}
         </span>
       </div>
@@ -914,10 +914,10 @@ function TopContributors({ dataset, tab }: TopContributorsProps) {
                     item.color,
                   )}
                 />
-                <span className="flex-1 truncate text-body text-foreground">
+                <span className="flex-1 truncate typography-body text-foreground">
                   {idx + 1}. {item.name}
                 </span>
-                <span className="font-mono text-caption tabular-nums text-foreground">
+                <span className="font-mono typography-caption tabular-nums text-foreground">
                   {formatTotal(item.total)}
                 </span>
               </div>
@@ -928,7 +928,7 @@ function TopContributors({ dataset, tab }: TopContributorsProps) {
                   aria-hidden="true"
                 />
               </div>
-              <span className="text-caption text-muted-foreground">
+              <span className="typography-caption text-muted-foreground">
                 {Math.round(currentShare * 100)}%
                 {deltaPercent !== 0 ? (
                   <span
@@ -974,11 +974,11 @@ function ChartView({ dataset, tab, chartType }: ChartViewProps) {
     default:
       return (
         <div className="flex h-80 flex-col items-center justify-center gap-1 px-6">
-          <p className="text-body text-foreground">
+          <p className="typography-body text-foreground">
             {chartType === "radar" ? "Radar" : "Composition"} view not available
             in this demo.
           </p>
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             Switch to Bar, Pie, Table, Stacked bar, or Stacked area.
           </p>
         </div>
@@ -1140,7 +1140,7 @@ function SeriesBarChart({ dataset, tab }: SeriesBarChartProps) {
         const widthPercent = (item.total / max) * 100;
         return (
           <div key={item.name} className="flex items-center gap-3">
-            <span className="w-28 shrink-0 text-caption text-muted-foreground">
+            <span className="w-28 shrink-0 typography-caption text-muted-foreground">
               {item.name}
             </span>
             <div className="relative h-6 flex-1 rounded-sm bg-muted-surface">
@@ -1150,7 +1150,7 @@ function SeriesBarChart({ dataset, tab }: SeriesBarChartProps) {
                 aria-hidden="true"
               />
             </div>
-            <span className="w-20 shrink-0 text-right font-mono text-caption tabular-nums text-foreground">
+            <span className="w-20 shrink-0 text-right font-mono typography-caption tabular-nums text-foreground">
               {formatTotal(item.total)}
             </span>
           </div>
@@ -1212,7 +1212,7 @@ function SeriesPieChart({ dataset, tab }: SeriesPieChartProps) {
         {items.map((item) => (
           <li
             key={item.name}
-            className="flex items-center justify-between gap-3 text-caption"
+            className="flex items-center justify-between gap-3 typography-caption"
           >
             <span className="inline-flex items-center gap-2">
               <span
@@ -1242,25 +1242,25 @@ function SeriesTable({ dataset, tab }: SeriesTableProps) {
     tab === "cost" ? `$${value.toFixed(2)}` : Math.round(value * 80).toLocaleString();
   return (
     <div className="px-6 py-5">
-      <table className="w-full border-collapse text-body">
+      <table className="w-full border-collapse typography-body">
         <caption className="sr-only">{`Usage breakdown by series`}</caption>
         <thead>
           <tr className="border-b border-border text-left">
             <th
               scope="col"
-              className="py-2 font-mono text-meta uppercase text-meta-foreground"
+              className="py-2 font-mono typography-meta uppercase text-meta-foreground"
             >
               Series
             </th>
             <th
               scope="col"
-              className="py-2 text-right font-mono text-meta uppercase text-meta-foreground"
+              className="py-2 text-right font-mono typography-meta uppercase text-meta-foreground"
             >
               {tab === "cost" ? "Cost" : "Credits used"}
             </th>
             <th
               scope="col"
-              className="py-2 text-right font-mono text-meta uppercase text-meta-foreground"
+              className="py-2 text-right font-mono typography-meta uppercase text-meta-foreground"
             >
               % of total
             </th>
@@ -1298,7 +1298,7 @@ interface ChartLegendProps {
 
 function ChartLegend({ names }: ChartLegendProps) {
   return (
-    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-muted-foreground">
+    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 typography-caption text-muted-foreground">
       {names.map((name, idx) => {
         const color = SERIES_PALETTE[idx % SERIES_PALETTE.length] ?? SERIES_PALETTE[0]!;
         return (

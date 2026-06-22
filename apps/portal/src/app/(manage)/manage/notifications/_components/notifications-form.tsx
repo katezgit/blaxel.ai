@@ -78,8 +78,8 @@ function SettingRow({ title, description, control }: SettingRowProps) {
   return (
     <div className="flex items-center justify-between gap-6 py-4 first:pt-0 last:pb-0">
       <div className="min-w-0 flex-1">
-        <h3 className="text-body font-semibold text-foreground">{title}</h3>
-        <p className="mt-1 max-w-prose text-body text-muted-foreground">
+        <h3 className="typography-body font-semibold text-foreground">{title}</h3>
+        <p className="mt-1 max-w-prose typography-body text-muted-foreground">
           {description}
         </p>
       </div>

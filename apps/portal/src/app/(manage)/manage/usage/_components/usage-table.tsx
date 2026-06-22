@@ -22,7 +22,7 @@ const columns = [
     cell: (info) => info.getValue(),
     meta: {
       headerClassName: "text-right",
-      cellClassName: "text-right font-mono text-label text-muted-foreground tabular-nums",
+      cellClassName: "text-right font-mono typography-label text-muted-foreground tabular-nums",
     },
   }),
   columnHelper.accessor("credits", {
@@ -30,7 +30,7 @@ const columns = [
     cell: (info) => NUMBER.format(info.getValue()),
     meta: {
       headerClassName: "text-right",
-      cellClassName: "text-right font-mono text-label text-muted-foreground tabular-nums",
+      cellClassName: "text-right font-mono typography-label text-muted-foreground tabular-nums",
     },
   }),
 ];

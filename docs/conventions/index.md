@@ -17,3 +17,5 @@ Living documents maintained by the engineering team. Propose changes via PR with
 | [git.md](git.md)                               | Branch naming, commit format, push strategy, PR                |
 | [documentation.md](documentation.md)           | LLM-optimized doc framework, signal-to-noise methodology       |
 | [table.md](table.md)                           | JSX primitive vs CSS-string table modes, Pattern A/B layout, token gotchas |
+| [tailwind-v4.md](tailwind-v4.md)               | Token-form precedence, no dark mode, typography-* namespace |
+| [typography-utility-usage.md](typography-utility-usage.md) | Layer split (DS vs app), role-vs-size rule, quick reference table |

@@ -46,7 +46,7 @@ function DropdownMenuContent({
         sideOffset={sideOffset}
         className={cn(
           // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
-          "bg-popover text-popover-foreground shadow-popover rounded-lg",
+          "bg-popover text-popover-foreground shadow-popover rounded-lg typography-body",
           "z-overlay min-w-32 p-1",
           "max-h-(--radix-dropdown-menu-content-available-height)",
           "origin-(--radix-dropdown-menu-content-transform-origin)",
@@ -86,7 +86,7 @@ function DropdownMenuItem({
       data-variant={variant}
       className={cn(
         "relative flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5",
-        "text-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer hover + keyboard nav — sidesteps the
         // Tailwind v4 :hover/:focus cascade issue. No font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
@@ -122,7 +122,7 @@ function DropdownMenuCheckboxItem({
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
         "relative flex cursor-default select-none items-center gap-2 rounded-md py-1.5 pr-2 pl-8",
-        "text-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer + keyboard; no font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
         // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator.
@@ -168,7 +168,7 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       className={cn(
         "relative flex cursor-default select-none items-center gap-2 rounded-md py-1.5 pr-2 pl-8",
-        "text-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer + keyboard; no font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
         // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator.
@@ -204,7 +204,7 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        "px-2 pt-3 pb-1 first:pt-2 text-meta tracking-normal font-sans text-muted-foreground data-[inset]:pl-8",
+        "px-2 pt-3 pb-1 first:pt-2 typography-meta tracking-normal font-sans text-muted-foreground data-[inset]:pl-8",
         className
       )}
       {...props}
@@ -233,7 +233,7 @@ function DropdownMenuShortcut({
     <span
       data-slot="dropdown-menu-shortcut"
       className={cn(
-        "ml-auto font-mono text-meta text-muted-foreground tracking-wider",
+        "ml-auto font-mono typography-meta text-muted-foreground tracking-wider",
         className
       )}
       {...props}
@@ -261,7 +261,7 @@ function DropdownMenuSubTrigger({
       data-inset={inset}
       className={cn(
         "flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5",
-        "text-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer + keyboard; no font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
         // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator.
@@ -292,7 +292,7 @@ function DropdownMenuSubContent({
       data-slot="dropdown-menu-sub-content"
       className={cn(
         // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
-        "bg-popover text-popover-foreground shadow-popover rounded-lg",
+        "bg-popover text-popover-foreground shadow-popover rounded-lg typography-body",
         "z-overlay min-w-32 p-1 overflow-hidden",
         "origin-(--radix-dropdown-menu-content-transform-origin)",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",

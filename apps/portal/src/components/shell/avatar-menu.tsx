@@ -49,10 +49,10 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
             <AvatarFallback>{user.name.charAt(0) || "?"}</AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
-            <div className="text-label font-semibold text-foreground truncate">
+            <div className="typography-label font-semibold text-foreground truncate">
               {user.name}
             </div>
-            <div className="font-mono text-caption text-meta-foreground truncate">
+            <div className="font-mono typography-caption text-meta-foreground truncate">
               {user.email}
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
             <User aria-hidden="true" className="mt-0.5 shrink-0" />
             <span className="flex flex-1 flex-col gap-0.5 leading-tight">
               <span>Profile</span>
-              <span className="text-caption text-meta-foreground">
+              <span className="typography-caption text-meta-foreground">
                 Personal settings
               </span>
             </span>
@@ -75,7 +75,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
             <Building2 aria-hidden="true" className="mt-0.5 shrink-0" />
             <span className="flex flex-1 flex-col gap-0.5 leading-tight">
               <span>Account</span>
-              <span className="text-caption text-meta-foreground">
+              <span className="typography-caption text-meta-foreground">
                 Team, workspaces, and access
               </span>
             </span>
@@ -87,7 +87,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
             <CreditCard aria-hidden="true" className="mt-0.5 shrink-0" />
             <span className="flex flex-1 flex-col gap-0.5 leading-tight">
               <span>Plan &amp; billing</span>
-              <span className="text-caption text-meta-foreground tabular-nums">
+              <span className="typography-caption text-meta-foreground tabular-nums">
                 Tier {state.tier} &middot; {balanceLabel} credits
               </span>
             </span>

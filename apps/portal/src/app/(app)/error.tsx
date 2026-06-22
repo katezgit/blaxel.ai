@@ -103,13 +103,13 @@ export default function AppError({ error, reset }: AppErrorProps) {
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-col gap-2">
                 <Badge variant="destructive">{badge}</Badge>
-                <h2 className="text-subtitle font-semibold text-foreground tracking-(--text-subtitle--letter-spacing)">
+                <h2 className="typography-subtitle font-semibold text-foreground tracking-(--typography-subtitle--letter-spacing)">
                   {headline}
                 </h2>
               </div>
               <time
                 dateTime={timestamp.toISOString()}
-                className="shrink-0 font-mono text-caption text-muted-foreground"
+                className="shrink-0 font-mono typography-caption text-muted-foreground"
               >
                 {timestamp.toLocaleTimeString("en-US", {
                   hour: "2-digit",
@@ -123,17 +123,17 @@ export default function AppError({ error, reset }: AppErrorProps) {
 
           <CardContent>
             <dl className="grid grid-cols-[96px_1fr] gap-x-4 gap-y-2">
-              <dt className="text-label font-medium text-muted-foreground">
+              <dt className="typography-label font-medium text-muted-foreground">
                 status
               </dt>
-              <dd className="font-mono text-code text-foreground">{status}</dd>
+              <dd className="font-mono typography-code text-foreground">{status}</dd>
 
               {error.name && error.name !== "Error" && (
                 <>
-                  <dt className="text-label font-medium text-muted-foreground">
+                  <dt className="typography-label font-medium text-muted-foreground">
                     type
                   </dt>
-                  <dd className="font-mono text-code text-foreground">
+                  <dd className="font-mono typography-code text-foreground">
                     {error.name}
                   </dd>
                 </>
@@ -141,7 +141,7 @@ export default function AppError({ error, reset }: AppErrorProps) {
 
               {truncatedMessage && (
                 <>
-                  <dt className="text-label font-medium text-muted-foreground">
+                  <dt className="typography-label font-medium text-muted-foreground">
                     message
                   </dt>
                   <dd className="min-w-0">
@@ -154,14 +154,14 @@ export default function AppError({ error, reset }: AppErrorProps) {
                 </>
               )}
 
-              <dt className="text-label font-medium text-muted-foreground">
+              <dt className="typography-label font-medium text-muted-foreground">
                 incident
               </dt>
               <dd className="min-w-0">
                 {error.digest ? (
                   <CodeBlock variant="inline" code={error.digest} />
                 ) : (
-                  <span className="font-mono text-code text-muted-foreground">
+                  <span className="font-mono typography-code text-muted-foreground">
                     —
                   </span>
                 )}
@@ -185,7 +185,7 @@ export default function AppError({ error, reset }: AppErrorProps) {
           </CardFooter>
         </Card>
 
-        <p className="text-caption text-muted-foreground">
+        <p className="typography-caption text-muted-foreground">
           Platform status:{" "}
           <a
             href="https://status.blaxel.ai"

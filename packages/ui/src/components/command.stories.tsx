@@ -226,18 +226,18 @@ function CommandDialogDemo() {
   return (
     <div className="min-h-[640px] bg-canvas-base text-foreground p-6">
       <header className="flex items-center gap-3 border-b border-border pb-4 mb-6">
-        <span className="text-subtitle font-semibold">Sandboxes</span>
+        <span className="typography-subtitle font-semibold">Sandboxes</span>
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Search"
           aria-keyshortcuts="/ Meta+K Control+K"
-          className="ml-auto flex h-8 w-72 cursor-pointer items-center gap-2 rounded-lg border border-form-field-border bg-field-rest px-2.5 text-body text-muted-foreground hover:bg-form-field-surface hover:text-foreground"
+          className="ml-auto flex h-8 w-72 cursor-pointer items-center gap-2 rounded-lg border border-form-field-border bg-field-rest px-2.5 typography-body text-muted-foreground hover:bg-form-field-surface hover:text-foreground"
         >
           <SearchIcon className="size-4 shrink-0" aria-hidden />
           <span className="flex flex-1 items-center gap-1 text-left">
             Type
-            <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded border border-border bg-muted-surface px-1 font-mono text-meta text-muted-foreground">
+            <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded border border-border bg-muted-surface px-1 font-mono typography-meta text-muted-foreground">
               /
             </kbd>
             to search
@@ -249,10 +249,10 @@ function CommandDialogDemo() {
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3 text-body"
+            className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3 typography-body"
           >
             <span>sandbox-{String(i + 1).padStart(2, "0")}</span>
-            <span className="text-muted-foreground text-meta">RUNNING</span>
+            <span className="text-muted-foreground typography-meta">RUNNING</span>
           </div>
         ))}
       </div>

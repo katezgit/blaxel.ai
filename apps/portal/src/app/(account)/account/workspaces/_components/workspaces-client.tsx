@@ -113,10 +113,10 @@ export default function WorkspacesClient() {
         enableSorting: false,
         cell: ({ row }) => (
           <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-body text-foreground">
+            <span className="typography-body text-foreground">
               {row.original.accountOwnerName}
             </span>
-            <span className="font-mono text-caption text-muted-foreground">
+            <span className="font-mono typography-caption text-muted-foreground">
               {row.original.accountOwner}
             </span>
           </div>
@@ -128,7 +128,7 @@ export default function WorkspacesClient() {
         sortingFn: (a, b) =>
           a.original.createdAt.localeCompare(b.original.createdAt),
         cell: (info) => (
-          <span className="font-mono text-body text-muted-foreground">
+          <span className="font-mono typography-body text-muted-foreground">
             {info.getValue()}
           </span>
         ),
@@ -163,7 +163,7 @@ export default function WorkspacesClient() {
     <>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
-          <h1 className="text-display font-semibold text-foreground">
+          <h1 className="typography-display font-semibold text-foreground">
             Workspaces
           </h1>
           <p className="text-muted-foreground">
@@ -192,7 +192,7 @@ export default function WorkspacesClient() {
         aria-label="Billing account context"
         className="flex flex-col gap-1 rounded-md border border-border bg-elevated-surface p-4"
       >
-        <p className="text-body text-foreground">
+        <p className="typography-body text-foreground">
           <span className="font-mono">{state.identity.ownerEmail}</span>
           <span className="text-muted-foreground">
             {" · "}
@@ -207,7 +207,7 @@ export default function WorkspacesClient() {
           </span>
         </p>
         {quotaCopy ? (
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             {quotaCopy.helper}{" "}
             <Link
               href={quotaCopy.href}
@@ -288,7 +288,7 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
     <div className="flex min-w-0 flex-col gap-0.5">
       <Link
         href={`/${workspace.slug}/settings/general`}
-        className="truncate font-mono text-body text-foreground transition-colors duration-fast ease-out-standard group-hover/row:text-primary group-hover/row:underline hover:text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm outline-hidden"
+        className="truncate font-mono typography-body text-foreground transition-colors duration-fast ease-out-standard group-hover/row:text-primary group-hover/row:underline hover:text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm outline-hidden"
       >
         {workspace.name}
       </Link>
@@ -296,7 +296,7 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
         className="flex min-w-0 items-center gap-1"
         onClick={(event) => event.stopPropagation()}
       >
-        <span className="truncate font-mono text-caption text-meta-foreground">
+        <span className="truncate font-mono typography-caption text-meta-foreground">
           {workspace.workspaceId}
         </span>
         <CopyButton
@@ -339,7 +339,7 @@ function SortHeader({ column, label }: SortHeaderProps) {
       type="button"
       onClick={() => column.toggleSorting(sorted === "asc")}
       className={cn(
-        "group inline-flex items-center gap-1.5 text-left text-label font-medium",
+        "group inline-flex items-center gap-1.5 text-left typography-label font-medium",
         "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
         sorted
           ? "text-foreground"

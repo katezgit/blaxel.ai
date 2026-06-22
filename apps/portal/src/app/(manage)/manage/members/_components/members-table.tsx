@@ -36,7 +36,7 @@ function buildColumns(renderRowActions?: (member: Member) => ReactNode) {
         <>
           {info.getValue()}
           {info.row.original.isYou ? (
-            <span className="ml-1.5 font-mono text-caption text-meta-foreground">
+            <span className="ml-1.5 font-mono typography-caption text-meta-foreground">
               · you
             </span>
           ) : null}
@@ -46,7 +46,7 @@ function buildColumns(renderRowActions?: (member: Member) => ReactNode) {
     columnHelper.accessor("email", {
       header: "Email",
       cell: (info) => info.getValue(),
-      meta: { cellClassName: "font-mono text-label text-muted-foreground" },
+      meta: { cellClassName: "font-mono typography-label text-muted-foreground" },
     }),
     columnHelper.accessor("role", {
       header: "Role",

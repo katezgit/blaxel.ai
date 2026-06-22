@@ -46,7 +46,7 @@ export default function TwoFactorChooseMethodStep({
 }: TwoFactorChooseMethodStepProps) {
   return (
     <div className="flex flex-col gap-6 pt-2">
-      <p className="text-body text-muted-foreground">
+      <p className="typography-body text-muted-foreground">
         Pick how you&rsquo;d like to verify when signing in.
       </p>
       <div
@@ -83,10 +83,10 @@ export default function TwoFactorChooseMethodStep({
               >
                 <Icon className="size-5" />
               </span>
-              <span className="text-body font-medium text-foreground">
+              <span className="typography-body font-medium text-foreground">
                 {option.label}
               </span>
-              <span className="text-caption text-muted-foreground">
+              <span className="typography-caption text-muted-foreground">
                 {option.description}
               </span>
             </button>

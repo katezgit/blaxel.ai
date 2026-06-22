@@ -329,7 +329,7 @@ function DrawerTitle({
     <DrawerPrimitive.Title
       data-slot="drawer-title"
       className={cn(
-        "text-[length:var(--text-subtitle)] font-semibold text-foreground leading-none", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
+        "text-[length:var(--typography-subtitle)] font-semibold text-foreground leading-none", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
         className
       )}
       {...props}
@@ -345,7 +345,7 @@ function DrawerDescription({
     <DrawerPrimitive.Description
       data-slot="drawer-description"
       className={cn(
-        "text-[length:var(--text-caption)] text-muted-foreground mt-1", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
+        "text-[length:var(--typography-caption)] text-muted-foreground mt-1", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
         className
       )}
       {...props}
@@ -386,7 +386,7 @@ function DrawerBody({ className, children, ...props }: React.ComponentProps<"div
       data-slot="drawer-body"
       className={cn(
         "flex flex-1 flex-col min-h-0",
-        "text-[length:var(--text-body)] text-foreground", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
+        "text-[length:var(--typography-body)] text-foreground", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
       )}
     >
       {/* tabIndex={-1} + focus-visible:outline-none suppress Chromium's

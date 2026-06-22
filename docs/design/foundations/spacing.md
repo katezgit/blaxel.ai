@@ -77,3 +77,9 @@ Index pages omit the `<header className="gap-3">` wrapper (no breadcrumb) and us
 **Header rhythm** (`docs/design/foundations/header-rhythm.md`) — the title column owns 4px (`gap-1`) between title and description; breadcrumb ↔ title is 12px (`gap-3`) left inline at the outer `<header>`; meta-row items are 8px (`gap-2`). These are specializations of the canonical scale above, not overrides.
 
 **Page shell** (`page-shell` utility) — owns topbar-edge ↔ page-header (`pt-8`, 32px), page-header ↔ content (`gap-6`, 24px), and bottom-of-page padding (`pb-16`, 64px). The upper boundary is the **topbar** (a chrome surface with its own visual weight), not the raw browser viewport; `pt-6` (24px) was the pre-topbar value and is now retired. `pt-8` (32px) is the on-canon maximum — large enough to signal "content starts here" against the topbar, on-scale per the spacing canon. `docs/design/guidelines/app-shell-layout.md §7` cites 40px from peer benchmarks; that value (`pt-10`) is off-scale and is not used here. These compose with this scale without conflict: `page-shell` sets the outermost rhythm; the tokens here govern everything inside the content region.
+
+---
+
+## See also
+
+[`docs/conventions/typography-utility-usage.md`](../../conventions/typography-utility-usage.md) — typography role utilities, layer split (DS vs app), and role-vs-size rule.

@@ -36,11 +36,11 @@ export default function AccountSummaryPanel() {
 
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-subtitle font-semibold text-foreground">
+      <h2 className="typography-subtitle font-semibold text-foreground">
         Account summary
       </h2>
       <Card className="p-4">
-        <dl className="grid grid-cols-1 gap-y-2 text-body sm:grid-cols-[140px_minmax(0,1fr)] sm:gap-x-6 sm:gap-y-3">
+        <dl className="grid grid-cols-1 gap-y-2 typography-body sm:grid-cols-[140px_minmax(0,1fr)] sm:gap-x-6 sm:gap-y-3">
           {rows.map((row) => (
             <div key={row.label} className="contents">
               <dt className="text-muted-foreground">{row.label}</dt>

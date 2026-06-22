@@ -85,11 +85,11 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex flex-col gap-4" style={{ width: 320 }}>
       <div className="flex flex-col gap-1">
-        <p className="text-label text-muted-foreground">32px ✓</p>
+        <p className="typography-label text-muted-foreground">32px ✓</p>
         <Input placeholder="Run name or config key" />
       </div>
       <div className="flex flex-col gap-1" style={{ opacity: 0.35 }}>
-        <p className="text-label text-muted-foreground">28px — rejected</p>
+        <p className="typography-label text-muted-foreground">28px — rejected</p>
         <div
           style={{
             height: 28,
@@ -115,7 +115,7 @@ export const Sizes: Story = {
 export const WithLeadingIcon: Story = {
   render: () => (
     <div className="flex flex-col gap-1" style={{ width: 320 }}>
-      <p className="text-label text-muted-foreground">With leading icon</p>
+      <p className="typography-label text-muted-foreground">With leading icon</p>
       <Input
         placeholder="Search runs…"
         leading={<Search className="size-4 shrink-0 text-muted-foreground" />}
@@ -130,23 +130,23 @@ export const WithKbdHint: Story = {
   render: () => (
     <div className="flex flex-col gap-4" style={{ width: 320 }}>
       <div className="flex flex-col gap-1">
-        <p className="text-label text-muted-foreground">cmd-bar (icon + kbd)</p>
+        <p className="typography-label text-muted-foreground">cmd-bar (icon + kbd)</p>
         <Input
           placeholder="Search or jump to…"
           leading={<Search className="size-4 shrink-0 text-muted-foreground" />}
           trailing={
-            <kbd className="font-mono text-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
+            <kbd className="font-mono typography-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
               ⌘K
             </kbd>
           }
         />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-label text-muted-foreground">trailing kbd only</p>
+        <p className="typography-label text-muted-foreground">trailing kbd only</p>
         <Input
           placeholder="Jump to run…"
           trailing={
-            <kbd className="font-mono text-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
+            <kbd className="font-mono typography-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
               /
             </kbd>
           }

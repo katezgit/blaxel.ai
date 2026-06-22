@@ -35,7 +35,7 @@ export default function TwoFactorVerifyStep({
 
   return (
     <div className="flex flex-col gap-6 pt-2">
-      <p className="text-body text-muted-foreground">{COPY[method].hint}</p>
+      <p className="typography-body text-muted-foreground">{COPY[method].hint}</p>
       <Field label="Verification code">
         <Input
           type="text"
