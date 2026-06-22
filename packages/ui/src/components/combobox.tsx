@@ -48,9 +48,9 @@ type ComboboxInternalProps = ComboboxPropsBase & {
 }
 
 export interface ComboboxTwoLineOptionProps {
-  /** Primary label — text-body 14px font-medium text-foreground. Truncates. */
+  /** Primary label — typography-body 14px font-medium text-foreground. Truncates. */
   primary: string
-  /** Secondary metadata line — text-meta 12px font-normal text-muted-foreground. Wraps. */
+  /** Secondary metadata line — typography-meta 12px font-normal text-muted-foreground. Wraps. */
   secondary: string
 }
 
@@ -63,8 +63,8 @@ export interface ComboboxTwoLineOptionProps {
 export function ComboboxTwoLineOption({ primary, secondary }: ComboboxTwoLineOptionProps) {
   return (
     <span className="flex flex-col items-start gap-0.5 flex-1 min-w-0">
-      <span className="text-body font-medium text-foreground truncate w-full">{primary}</span>
-      <span className="text-meta font-normal text-muted-foreground">{secondary}</span>
+      <span className="typography-body font-medium text-foreground truncate w-full">{primary}</span>
+      <span className="typography-meta font-normal text-muted-foreground">{secondary}</span>
     </span>
   )
 }
@@ -159,7 +159,7 @@ const TriggerInput = React.forwardRef<HTMLInputElement, TriggerInputProps>(
             // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
             "focus:bg-form-field-surface data-[state=open]:bg-form-field-surface",
             "aria-invalid:border-state-errored",
-            "text-body text-foreground placeholder:text-meta-foreground",
+            "typography-body text-foreground placeholder:text-meta-foreground",
             // Open state: chevron rotation is the only open feedback. Keyboard nav gets the global ring via base.css.
             "disabled:cursor-not-allowed disabled:bg-muted-surface disabled:border-border disabled:text-muted-foreground",
             "transition-[background-color,border-color,box-shadow] duration-fast ease-out-standard",
@@ -419,7 +419,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
               role="listbox"
               className="max-h-[360px] scroll-py-1 overflow-x-hidden overflow-y-auto"
             >
-              <CommandEmptyPrimitive className="py-6 text-center text-body text-muted-foreground">
+              <CommandEmptyPrimitive className="py-6 text-center typography-body text-muted-foreground">
                 {emptyText ?? "No results found."}
               </CommandEmptyPrimitive>
 

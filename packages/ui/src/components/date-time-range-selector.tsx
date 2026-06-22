@@ -154,7 +154,7 @@ const DateTimeRangeSelector = React.forwardRef<HTMLButtonElement, DateTimeRangeS
               </SelectContent>
             </Select>
           ) : (
-            <span id={timezoneId} className="text-body text-foreground">
+            <span id={timezoneId} className="typography-body text-foreground">
               {timezone}
             </span>
           )}

@@ -41,8 +41,8 @@ function SelectTrigger({
         "flex w-fit items-center justify-between gap-2 whitespace-nowrap",
         formFieldBoxVariants({ size }),
         "data-[placeholder]:text-meta-foreground",
-        // text-body (13px) — no text-foreground pairing here to avoid twMerge conflict with consumer overrides.
-        // text-body is already emitted by formFieldBoxVariants size=md; kept here as a noop fallback guard.
+        // typography-body (13px) — no text-foreground pairing here to avoid twMerge conflict with consumer overrides.
+        // typography-body is already emitted by formFieldBoxVariants size=md; kept here as a noop fallback guard.
         // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
         "focus-visible:bg-form-field-surface data-[state=open]:bg-form-field-surface",
         "data-[state=open]:shadow-focus-ring",
@@ -127,7 +127,7 @@ function SelectLabel({
       data-slot="select-label"
       className={cn(
         "px-2 pt-3 pb-1 first:pt-2",
-        "text-meta tracking-normal font-sans text-muted-foreground",
+        "typography-meta tracking-normal font-sans text-muted-foreground",
         className
       )}
       {...props}
@@ -146,7 +146,7 @@ function SelectItem({
       className={cn(
         "relative flex w-full cursor-default select-none items-center gap-2",
         "rounded-sm py-1.5 pr-8 pl-2",
-        "text-body",
+        "typography-body",
         "outline-hidden",
         // Radix's data-[highlighted] fires on both pointer hover + keyboard nav — sidesteps the
         // Tailwind v4 :hover/:focus cascade where focus: always wins. No font-medium on highlight

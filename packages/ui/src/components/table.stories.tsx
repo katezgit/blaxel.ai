@@ -94,7 +94,7 @@ export const Playground: Story = {
           ))}
         </TableBody>
       </Table>
-      <div className="mt-2 text-body text-muted-foreground">5 Runs</div>
+      <div className="mt-2 typography-body text-muted-foreground">5 Runs</div>
     </div>
   ),
 }
@@ -105,7 +105,7 @@ export const DensityComparison: Story = {
   render: () => (
     <div className="flex flex-col gap-8" style={{ width: 680 }}>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Default — 40px rows · header 32px · first cell pl-6, last cell pr-6 in both densities</p>
+        <p className="typography-label text-muted-foreground">Default — 40px rows · header 32px · first cell pl-6, last cell pr-6 in both densities</p>
         <Table totalCount={3} pageOffset={0} density="default">
           <TableHeader>
             <tr>
@@ -131,7 +131,7 @@ export const DensityComparison: Story = {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Compact — 36px rows · header 32px · first cell pl-6, last cell pr-6</p>
+        <p className="typography-label text-muted-foreground">Compact — 36px rows · header 32px · first cell pl-6, last cell pr-6</p>
         <Table totalCount={3} pageOffset={0} density="compact">
           <TableHeader>
             <tr>
@@ -240,7 +240,7 @@ export const StickyScroll: Story = {
   name: "Sticky columns (narrow viewport)",
   render: () => (
     <div style={{ width: 460 }}>
-      <p className="mb-2 text-label text-muted-foreground">
+      <p className="mb-2 typography-label text-muted-foreground">
         ID column sticky-left, actions sticky-right — middle columns truncate + scroll-x.
       </p>
       <Table totalCount={WIDE_RUNS.length} pageOffset={0}>
@@ -283,7 +283,7 @@ export const EmptyLoadingError: Story = {
   render: () => (
     <div className="flex flex-col gap-8" style={{ width: 560 }}>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Empty — CLI command pattern</p>
+        <p className="typography-label text-muted-foreground">Empty — CLI command pattern</p>
         <Table totalCount={0} pageOffset={0}>
           <TableHeader>
             <tr>
@@ -303,7 +303,7 @@ export const EmptyLoadingError: Story = {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Loading — skeleton rows at density height</p>
+        <p className="typography-label text-muted-foreground">Loading — skeleton rows at density height</p>
         <Table totalCount={0} pageOffset={0}>
           <TableHeader>
             <tr>
@@ -321,7 +321,7 @@ export const EmptyLoadingError: Story = {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">Error — cause stated, no apology</p>
+        <p className="typography-label text-muted-foreground">Error — cause stated, no apology</p>
         <Table totalCount={0} pageOffset={0}>
           <TableHeader>
             <tr>
@@ -349,7 +349,7 @@ export const InsideCard: Story = {
   name: "Inside Card (header bg vs card bg)",
   render: () => (
     <div className="flex flex-col gap-6" style={{ width: 560 }}>
-      <p className="text-label text-muted-foreground">
+      <p className="typography-label text-muted-foreground">
         Header carries bg-muted-surface as a structural band — consistent in both Card and freestanding contexts.
       </p>
       <Card className="overflow-hidden p-0">
@@ -372,7 +372,7 @@ export const InsideCard: Story = {
           </TableBody>
         </Table>
       </Card>
-      <p className="text-label text-muted-foreground">
+      <p className="typography-label text-muted-foreground">
         Freestanding on page bg — same header bg, reads cleanly.
       </p>
       <Table totalCount={3} pageOffset={0}>
@@ -420,7 +420,7 @@ export const PatternA_PageSection: Story = {
     <div className="flex flex-col gap-3 px-6" style={{ width: 612 }}>
       <div>
         <h2 className="text-heading font-semibold text-foreground">API Keys</h2>
-        <p className="mt-1 text-body text-muted-foreground">
+        <p className="mt-1 typography-body text-muted-foreground">
           Keys are scoped to this workspace. Revoke any key at any time.
         </p>
       </div>
@@ -539,8 +539,8 @@ export const Antipattern_DoubleChrome: Story = {
   render: () => (
     <div className="flex flex-col gap-3" style={{ width: 560 }}>
       <div className="flex items-center gap-2 rounded-md border border-state-errored-border bg-state-errored-subtle px-3 py-2">
-        <span className="text-label font-semibold text-state-errored-text">Anti-pattern</span>
-        <span className="text-label text-state-errored-text">
+        <span className="typography-label font-semibold text-state-errored-text">Anti-pattern</span>
+        <span className="typography-label text-state-errored-text">
           Don&apos;t do this — double border + double bg. Use Pattern A or Pattern B.
         </span>
       </div>
@@ -575,7 +575,7 @@ export const WrappingContent: Story = {
   render: () => (
     <div className="flex flex-col gap-8" style={{ width: 560 }}>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">
+        <p className="typography-label text-muted-foreground">
           Default density — long cell text wraps; row grows past 40px min-h, separators track correctly.
         </p>
         <Table totalCount={3} pageOffset={0} density="default">
@@ -613,7 +613,7 @@ export const WrappingContent: Story = {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">
+        <p className="typography-label text-muted-foreground">
           Compact density — same wrapping test at 36px min-h baseline.
         </p>
         <Table totalCount={3} pageOffset={0} density="compact">

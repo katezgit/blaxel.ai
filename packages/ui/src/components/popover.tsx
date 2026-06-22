@@ -121,7 +121,7 @@ function PopoverLabel({
     <span
       data-slot="popover-label"
       className={cn(
-        "text-label font-medium text-muted-foreground",
+        "typography-label font-medium text-muted-foreground",
         className
       )}
       {...props}
@@ -136,7 +136,7 @@ function PopoverValue({
   return (
     <span
       data-slot="popover-value"
-      className={cn("text-body font-normal text-foreground", className)}
+      className={cn("typography-body font-normal text-foreground", className)}
       {...props}
     />
   )
@@ -152,7 +152,7 @@ function PopoverItem({
       data-slot="popover-item"
       className={cn(
         "flex w-full cursor-pointer items-center rounded-md px-2 py-1",
-        "text-body font-normal text-foreground",
+        "typography-body font-normal text-foreground",
         "bg-transparent hover:bg-border",
         "transition-colors",
         "disabled:pointer-events-none disabled:opacity-mid",

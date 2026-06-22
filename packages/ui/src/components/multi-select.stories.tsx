@@ -100,16 +100,16 @@ export const Variants: Story = {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
         <div className="flex flex-col gap-1.5">
-          <span className="text-caption text-muted-foreground">md (32px) — empty</span>
+          <span className="typography-caption text-muted-foreground">md (32px) — empty</span>
           <ControlledMultiSelect options={TAG_OPTIONS} placeholder="Filter by tag…" maxChips={2} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="text-caption text-muted-foreground">sm (28px)</span>
+          <span className="typography-caption text-muted-foreground">sm (28px)</span>
           <ControlledMultiSelect options={TAG_OPTIONS} defaultValue={["production"]} size="sm" maxChips={2} />
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <span className="text-caption text-muted-foreground">Chip overflow — 4 selected, maxChips=2 → +2</span>
+        <span className="typography-caption text-muted-foreground">Chip overflow — 4 selected, maxChips=2 → +2</span>
         <ControlledMultiSelect
           options={TAG_OPTIONS}
           defaultValue={["production", "staging", "scored", "running"]}
@@ -117,11 +117,11 @@ export const Variants: Story = {
         />
       </div>
       <div className="flex flex-col gap-1.5">
-        <span className="text-caption text-muted-foreground">Disabled control</span>
+        <span className="typography-caption text-muted-foreground">Disabled control</span>
         <ControlledMultiSelect options={TAG_OPTIONS} defaultValue={["production"]} disabled />
       </div>
       <div className="flex flex-col gap-1.5">
-        <span className="text-caption text-muted-foreground">Disabled options (gpu-required, gpu-a100)</span>
+        <span className="typography-caption text-muted-foreground">Disabled options (gpu-required, gpu-a100)</span>
         <ControlledMultiSelect options={MIXED_OPTIONS} placeholder="Filter by tag…" maxChips={2} />
       </div>
     </div>

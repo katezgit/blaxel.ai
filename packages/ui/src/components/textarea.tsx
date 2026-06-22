@@ -15,7 +15,7 @@ function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
         // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
         "focus:bg-form-field-surface",
         "placeholder:text-meta-foreground",
-        "text-body font-sans font-normal",
+        "typography-body font-sans font-normal",
         // Focus ring — *:focus-visible in base.css (WCAG 2.4.11). outline-none removed; base layer owns it.
         // Errored focus ring — [aria-invalid="true"]:focus-visible in base.css handles the red ring.
         "transition-[color,box-shadow,outline]",

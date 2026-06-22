@@ -157,11 +157,11 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
       const overflow = value.length - maxChips
       return (
         <span className="flex items-center gap-1 overflow-hidden flex-1 min-w-0">
-          <span className="text-body text-foreground font-sans line-clamp-1">
+          <span className="typography-body text-foreground font-sans line-clamp-1">
             {labelsToShow.join(", ")}
           </span>
           {overflow > 0 && (
-            <span className="text-meta text-muted-foreground shrink-0">
+            <span className="typography-meta text-muted-foreground shrink-0">
               +{overflow}
             </span>
           )}
@@ -219,7 +219,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                         className="pointer-events-none group-data-[selected=true]/item:border-border"
                         size="sm"
                       />
-                      <span className="text-body">
+                      <span className="typography-body">
                         {allVisibleSelected ? clearLabel : selectAllLabel}
                       </span>
                     </CommandItem>

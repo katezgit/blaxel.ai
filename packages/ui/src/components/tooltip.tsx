@@ -14,9 +14,9 @@ const tooltipContentVariants = cva(
     // Surface — inverse dark fill per spec
     "rounded-sm bg-foreground shadow-popover",
     // Typography — 12px label size + inverse surface color.
-    // text-[length:var(--text-label)] avoids tailwind-merge treating font-size
+    // text-[length:var(--typography-label)] avoids tailwind-merge treating font-size
     // as a color conflict with text-background (both text-* prefix).
-    "text-[length:var(--text-label)] font-medium tracking-[0.02em] text-background", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
+    "text-[length:var(--typography-label)] font-medium tracking-[0.02em] text-background", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
     // Compact label padding: px-2 py-1.5 (8px × 6px) — 6px min vertical to read as a container
     "px-2 py-1.5",
     // Text wraps at max-width; no truncation inside the tooltip

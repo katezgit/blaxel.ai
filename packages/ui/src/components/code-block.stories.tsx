@@ -32,18 +32,18 @@ export const Variants: Story = {
   render: () => (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">inline</p>
+        <p className="typography-label text-muted-foreground">inline</p>
         <CodeBlock variant="inline" code="hud set HUD_API_KEY=abc123" />
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">block (no language)</p>
+        <p className="typography-label text-muted-foreground">block (no language)</p>
         <CodeBlock
           variant="block"
           code={`$ hud env create my-env\nCreating environment... done\nEnvironment ID: env_8xkP3`}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">block (with language label)</p>
+        <p className="typography-label text-muted-foreground">block (with language label)</p>
         <CodeBlock
           variant="block"
           language="bash"
@@ -51,7 +51,7 @@ export const Variants: Story = {
         />
       </div>
       <div className="flex flex-col gap-2">
-        <p className="text-label text-muted-foreground">block (long line — overflow-x scroll)</p>
+        <p className="typography-label text-muted-foreground">block (long line — overflow-x scroll)</p>
         <CodeBlock
           variant="block"
           language="bash"
@@ -69,7 +69,7 @@ export const Variants: Story = {
 export const BlockScrollRegression: Story = {
   render: () => (
     <div className="flex flex-col gap-2 p-6" style={{ maxWidth: 640 }}>
-      <p className="text-label text-muted-foreground">
+      <p className="typography-label text-muted-foreground">
         block — tall snippet (scroll inside pre, copy button stays clickable)
       </p>
       <CodeBlock

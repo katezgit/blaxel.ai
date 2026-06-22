@@ -9,7 +9,7 @@ const inputBaseClasses = [
   "text-foreground",
   "font-sans font-normal",
   "placeholder:text-meta-foreground",
-  "file:inline-flex file:h-8 file:border-0 file:bg-transparent file:text-body file:font-medium file:text-foreground",
+  "file:inline-flex file:h-8 file:border-0 file:bg-transparent file:typography-body file:font-medium file:text-foreground",
   "disabled:pointer-events-none",
   "disabled:placeholder:text-muted-foreground/70",
 ] as const
@@ -25,7 +25,7 @@ export interface InputProps
   /**
    * Trailing slot — rendered right of the value text.
    * Pass a styled `<kbd>` with class
-   * `font-mono text-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground`
+   * `font-mono typography-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground`
    * for the v1 cmd-bar look.
    * When provided, the component renders a flex shell that owns the border/bg/radius/focus ring.
    */
@@ -70,7 +70,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             data-slot="input"
             className={cn(
               "flex-1 min-w-0 bg-transparent border-none outline-none focus-visible:shadow-none",
-              "text-foreground font-sans font-normal text-body",
+              "text-foreground font-sans font-normal typography-body",
               "placeholder:text-meta-foreground",
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:text-muted-foreground",
               "disabled:placeholder:text-muted-foreground/70",

@@ -102,7 +102,7 @@ export const segmentedControlRootVariants = cva(
 export const segmentedControlItemVariants = cva([
   "relative z-10 inline-flex h-full items-center justify-center gap-1.5",
   "rounded-sm px-3",
-  "text-body font-medium select-none",
+  "typography-body font-medium select-none",
   "text-foreground/60",
   "hover:text-foreground",
   // Active text color — paired with bg-primary thumb (primary button pair).

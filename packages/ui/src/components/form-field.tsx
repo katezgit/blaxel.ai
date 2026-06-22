@@ -32,8 +32,8 @@ function FieldHelper({ className, children, ...props }: React.ComponentProps<"p"
     <p
       data-slot="field-helper"
       className={cn(
-        // text-caption = 12px, font-normal = 400, --muted-foreground
-        "text-caption font-normal font-sans text-muted-foreground mt-1.5",
+        // typography-caption = 12px, font-normal = 400, --muted-foreground
+        "typography-caption font-normal font-sans text-muted-foreground mt-1.5",
         className
       )}
       {...props}
@@ -51,8 +51,8 @@ function FieldError({ className, children, ...props }: React.ComponentProps<"p">
       role="alert"
       data-slot="field-error"
       className={cn(
-        // text-caption = 12px, font-medium = 500, --state-errored-text
-        "text-caption font-medium font-sans text-state-errored-text mt-1.5 flex items-center gap-1",
+        // typography-caption = 12px, font-medium = 500, --state-errored-text
+        "typography-caption font-medium font-sans text-state-errored-text mt-1.5 flex items-center gap-1",
         className
       )}
       {...props}

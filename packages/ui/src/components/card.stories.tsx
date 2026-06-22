@@ -38,12 +38,12 @@ export const Playground: Story = {
         <CardDescription>SWE-bench — 128 tasks</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-body text-muted-foreground">
+        <p className="typography-body text-muted-foreground">
           94 tasks scored, 34 in review.
         </p>
       </CardContent>
       <CardFooter>
-        <span className="text-caption text-muted-foreground">Last updated 2 min ago</span>
+        <span className="typography-caption text-muted-foreground">Last updated 2 min ago</span>
       </CardFooter>
     </Card>
   ),
@@ -62,7 +62,7 @@ export const Variants: Story = {
             <CardDescription>variant=&quot;{variant}&quot;</CardDescription>
             <CardAction>
               <button
-                className="text-caption text-muted-foreground border border-border rounded-surface px-2 py-1 cursor-pointer"
+                className="typography-caption text-muted-foreground border border-border rounded-surface px-2 py-1 cursor-pointer"
                 type="button"
               >
                 View
@@ -70,7 +70,7 @@ export const Variants: Story = {
             </CardAction>
           </CardHeader>
           <CardContent>
-            <p className="text-caption text-muted-foreground">Card body.</p>
+            <p className="typography-caption text-muted-foreground">Card body.</p>
           </CardContent>
         </Card>
       ))}

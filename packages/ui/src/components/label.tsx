@@ -9,12 +9,12 @@ const labelVariants = cva("select-none leading-none", {
   variants: {
     variant: {
       default: [
-        "font-sans text-label font-medium text-foreground",
+        "font-sans typography-label font-medium text-foreground",
         "peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
         "group-data-[disabled=true]:opacity-50",
       ],
       section: [
-        "font-mono text-meta font-semibold tracking-[.16em] uppercase",
+        "font-mono typography-meta font-semibold tracking-[.16em] uppercase",
         "text-meta-foreground",
       ],
     },

@@ -80,7 +80,7 @@ export const ToolbarAlignment: Story = {
     <div className="flex flex-col gap-6">
       {/* Filter bar — all three primitives at 32px */}
       <div className="flex flex-col gap-1.5">
-        <p className="text-label text-muted-foreground">Toolbar / filter bar — Button + IconButton md + Input (all 32px)</p>
+        <p className="typography-label text-muted-foreground">Toolbar / filter bar — Button + IconButton md + Input (all 32px)</p>
         <div className="flex items-center gap-2">
           <Input
             placeholder="Search runs…"
@@ -102,14 +102,14 @@ export const ToolbarAlignment: Story = {
 
       {/* Table row — IconButton sm (24px) inside a fake ~40px row */}
       <div className="flex flex-col gap-1.5">
-        <p className="text-label text-muted-foreground">Table cell — IconButton sm (24px) inside ~40px row</p>
+        <p className="typography-label text-muted-foreground">Table cell — IconButton sm (24px) inside ~40px row</p>
         <div className="border border-border rounded-lg overflow-hidden w-96">
           {["frontier-reasoning-v1", "env-8xkp3-baseline", "rl-train-2026-06-07"].map((name) => (
             <div
               key={name}
               className="flex items-center justify-between h-10 px-3 border-b border-border last:border-b-0 hover:bg-hover-surface"
             >
-              <span className="text-body text-foreground font-mono">{name}</span>
+              <span className="typography-body text-foreground font-mono">{name}</span>
               <div className="flex items-center gap-1">
                 <IconButton variant="ghost" size="sm" aria-label={`Copy ID for ${name}`}>
                   <Search className="size-3.5" />

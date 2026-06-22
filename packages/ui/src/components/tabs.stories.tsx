@@ -24,16 +24,16 @@ export const Playground: Story = {
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <p className="text-body text-muted-foreground">Overview panel.</p>
+          <p className="typography-body text-muted-foreground">Overview panel.</p>
         </TabsContent>
         <TabsContent value="trajectories">
-          <p className="text-body text-muted-foreground">Trajectories panel.</p>
+          <p className="typography-body text-muted-foreground">Trajectories panel.</p>
         </TabsContent>
         <TabsContent value="logs">
-          <p className="text-body text-muted-foreground">Logs panel.</p>
+          <p className="typography-body text-muted-foreground">Logs panel.</p>
         </TabsContent>
         <TabsContent value="settings">
-          <p className="text-body text-muted-foreground">Settings panel.</p>
+          <p className="typography-body text-muted-foreground">Settings panel.</p>
         </TabsContent>
       </Tabs>
     </div>
@@ -54,16 +54,16 @@ export const Underline: Story = {
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <p className="text-body text-muted-foreground">Overview panel.</p>
+          <p className="typography-body text-muted-foreground">Overview panel.</p>
         </TabsContent>
         <TabsContent value="trajectories">
-          <p className="text-body text-muted-foreground">Trajectories panel.</p>
+          <p className="typography-body text-muted-foreground">Trajectories panel.</p>
         </TabsContent>
         <TabsContent value="logs">
-          <p className="text-body text-muted-foreground">Logs panel.</p>
+          <p className="typography-body text-muted-foreground">Logs panel.</p>
         </TabsContent>
         <TabsContent value="settings">
-          <p className="text-body text-muted-foreground">Settings panel.</p>
+          <p className="typography-body text-muted-foreground">Settings panel.</p>
         </TabsContent>
       </Tabs>
     </div>
@@ -84,10 +84,10 @@ export const UnderlineDisabled: Story = {
           <TabsTrigger value="config" disabled>Configuration</TabsTrigger>
         </TabsList>
         <TabsContent value="model">
-          <p className="text-body text-muted-foreground">Select model — subsequent steps unlock after.</p>
+          <p className="typography-body text-muted-foreground">Select model — subsequent steps unlock after.</p>
         </TabsContent>
         <TabsContent value="taskset">
-          <p className="text-body text-muted-foreground">Configure task set.</p>
+          <p className="typography-body text-muted-foreground">Configure task set.</p>
         </TabsContent>
       </Tabs>
     </div>
@@ -108,10 +108,10 @@ export const Disabled: Story = {
           <TabsTrigger value="config" disabled>Configuration</TabsTrigger>
         </TabsList>
         <TabsContent value="model">
-          <p className="text-body text-muted-foreground">Select model — subsequent steps unlock after.</p>
+          <p className="typography-body text-muted-foreground">Select model — subsequent steps unlock after.</p>
         </TabsContent>
         <TabsContent value="taskset">
-          <p className="text-body text-muted-foreground">Configure task set.</p>
+          <p className="typography-body text-muted-foreground">Configure task set.</p>
         </TabsContent>
       </Tabs>
     </div>

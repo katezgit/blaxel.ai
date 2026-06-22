@@ -307,7 +307,7 @@
  * Generates: font-{sans,mono}, text-{code,caption,label,body,subtitle,display,meta},
  * font-{regular,medium,semibold,bold}, tracking-*, leading-*.
  *
- * USAGE NOTE: --text-meta (10px) is designed for mono + uppercase + ≥0.14em tracking.
+ * USAGE NOTE: --typography-meta (10px) is designed for mono + uppercase + ≥0.14em tracking.
  * The token enforces none of this — apply font-mono + uppercase + tracking in the component. */
 @theme {
   --text-*: initial; /* close namespace — only the named scale below generates text-{name} utilities */
@@ -317,36 +317,36 @@
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   /* Font sizes with paired line-heights */
-  --text-code:    0.75rem;   /* 12px — monospace code fragments */
-  --text-code--line-height: 1.25rem;
+  --typography-code:    0.75rem;   /* 12px — monospace code fragments */
+  --typography-code--line-height: 1.25rem;
 
-  --text-caption: 0.75rem;   /* 12px — supporting labels, metadata */
-  --text-caption--line-height: 1rem;
+  --typography-caption: 0.75rem;   /* 12px — supporting labels, metadata */
+  --typography-caption--line-height: 1rem;
 
-  --text-label:   0.75rem;   /* 12px — form labels, nav labels */
-  --text-label--line-height: 1rem;
+  --typography-label:   0.75rem;   /* 12px — form labels, nav labels */
+  --typography-label--line-height: 1rem;
 
-  --text-body:    0.875rem;  /* 14px — primary reading size */
-  --text-body--line-height: 1.375rem;
+  --typography-body:    0.875rem;  /* 14px — primary reading size */
+  --typography-body--line-height: 1.375rem;
 
-  --text-subtitle: 1rem;      /* 16px — dialog, drawer, sheet, section headings */
-  --text-subtitle--line-height: 1.375rem;
+  --typography-subtitle: 1rem;      /* 16px — dialog, drawer, sheet, section headings */
+  --typography-subtitle--line-height: 1.375rem;
 
-  --text-display: 1.5rem;    /* 24px — page / hero display */
-  --text-display--line-height: 1.75rem;
+  --typography-display: 1.5rem;    /* 24px — page / hero display */
+  --typography-display--line-height: 1.75rem;
 
-  --text-meta:    0.625rem;  /* 10px — micro labels: column headers, timestamps, status pips.
+  --typography-meta:    0.625rem;  /* 10px — micro labels: column headers, timestamps, status pips.
                               *         Use with font-mono + uppercase + tracking ≥0.14em. */
-  --text-meta--line-height: 0.875rem;
+  --typography-meta--line-height: 0.875rem;
 
   /* Letter-spacing paired tokens */
-  --text-display--letter-spacing:  -0.02em;
-  --text-subtitle--letter-spacing: -0.01em;
-  --text-body--letter-spacing:      0em;
-  --text-label--letter-spacing:     0.02em;
-  --text-caption--letter-spacing:   0em;
-  --text-code--letter-spacing:      0em;
-  --text-meta--letter-spacing:      0.16em;
+  --typography-display--letter-spacing:  -0.02em;
+  --typography-subtitle--letter-spacing: -0.01em;
+  --typography-body--letter-spacing:      0em;
+  --typography-label--letter-spacing:     0.02em;
+  --typography-caption--letter-spacing:   0em;
+  --typography-code--letter-spacing:      0em;
+  --typography-meta--letter-spacing:      0.16em;
 
   /* Font weights */
   --font-weight-regular:  400;

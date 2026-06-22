@@ -184,9 +184,9 @@ export const TypeScale: StoryObj = {
         }}
       >
         <strong style={{ fontWeight: 600 }}>Composite utilities</strong> —{" "}
-        <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>.text-display</code>,{" "}
-        <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>.text-subtitle</code>, and{" "}
-        <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>.text-body</code> bundle
+        <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>.typography-display</code>,{" "}
+        <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>.typography-subtitle</code>, and{" "}
+        <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>.typography-body</code> bundle
         font-family + size + line-height + letter-spacing + weight into a single class and override
         Tailwind&apos;s auto-generated <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>text-*</code> utilities
         from primitive.css. Source: <code style={{ fontFamily: "var(--font-sans)", fontSize: 11 }}>utilities.css</code>.
@@ -220,30 +220,30 @@ export const TypeScale: StoryObj = {
       </div>
 
       <TypeRow
-        token="--text-display"
+        token="--typography-display"
         sample="Page title"
         sizeRem="1.5rem"
         sizePx="24px"
         weight="600"
-        utility=".text-display"
+        utility=".typography-display"
         usage="Page title (H1) — hero / display heading. Also used for metric tile numbers."
       />
       <TypeRow
-        token="--text-subtitle"
+        token="--typography-subtitle"
         sample="Section heading"
         sizeRem="1rem"
         sizePx="16px"
         weight="600"
-        utility=".text-subtitle"
+        utility=".typography-subtitle"
         usage="Section title (H2) — dialog title, drawer header, sheet header, section headings."
       />
       <TypeRow
-        token="--text-body"
+        token="--typography-body"
         sample="The quick brown fox jumps over the lazy dog"
         sizeRem="0.875rem"
         sizePx="14px"
         weight="400"
-        utility=".text-body"
+        utility=".typography-body"
         usage="Universal paragraph font — default reading text, table cell prose. Use this whenever in doubt."
       />
     </div>
@@ -287,7 +287,7 @@ export const Weights: StoryObj = {
           }}
         >
           {/* Sample text */}
-          <div style={{ gridColumn: "1 / -1", fontFamily: "var(--font-sans)", fontSize: "var(--text-body)", fontWeight: value, color: "var(--color-foreground)", marginBottom: 6 }}>
+          <div style={{ gridColumn: "1 / -1", fontFamily: "var(--font-sans)", fontSize: "var(--typography-body)", fontWeight: value, color: "var(--color-foreground)", marginBottom: 6 }}>
             The quick brown fox jumps over the lazy dog
           </div>
 
@@ -307,7 +307,7 @@ export const Weights: StoryObj = {
 
 const LINE_HEIGHT_ROWS = [
   {
-    token: "--text-display",
+    token: "--typography-display",
     sizePx: "24px",
     lineHeightCss: "2rem",
     lineHeightRatio: "1.33",
@@ -321,7 +321,7 @@ const LINE_HEIGHT_ROWS = [
     mono: false,
   },
   {
-    token: "--text-subtitle",
+    token: "--typography-subtitle",
     sizePx: "16px",
     lineHeightCss: "1.375rem",
     lineHeightRatio: "1.375",
@@ -335,7 +335,7 @@ const LINE_HEIGHT_ROWS = [
     mono: false,
   },
   {
-    token: "--text-body",
+    token: "--typography-body",
     sizePx: "14px",
     lineHeightCss: "1.375rem",
     lineHeightRatio: "1.57",
@@ -409,33 +409,33 @@ export const LineHeight: StoryObj = {
 
 const LETTER_SPACING_ROWS = [
   {
-    token: "--text-display",
+    token: "--typography-display",
     tracking: "-0.02em",
     trackingLabel: "-0.02em",
     role: "Metric tiles, hero stat numbers",
     sample: "Page title",
     weight: 600,
-    fontSize: "var(--text-display)",
+    fontSize: "var(--typography-display)",
     uppercase: false,
   },
   {
-    token: "--text-subtitle",
+    token: "--typography-subtitle",
     tracking: "-0.01em",
     trackingLabel: "-0.01em",
     role: "Dialog title, drawer header, sheet header, section headings",
     sample: "Section heading",
     weight: 600,
-    fontSize: "var(--text-subtitle)",
+    fontSize: "var(--typography-subtitle)",
     uppercase: false,
   },
   {
-    token: "--text-body",
+    token: "--typography-body",
     tracking: "0",
     trackingLabel: "0",
     role: "Default body text, table cell prose",
     sample: "The quick brown fox jumps over the lazy dog",
     weight: 400,
-    fontSize: "var(--text-body)",
+    fontSize: "var(--typography-body)",
     uppercase: false,
   },
 ];
@@ -524,7 +524,7 @@ export const TabularFigures: StoryObj = {
                 padding: "7px 16px",
                 borderBottom: "1px solid var(--color-border)",
                 fontFamily: "var(--font-sans)",
-                fontSize: "var(--text-body)",
+                fontSize: "var(--typography-body)",
                 fontWeight: 400,
                 color: "var(--color-foreground)",
               }}
@@ -557,7 +557,7 @@ export const TabularFigures: StoryObj = {
                 padding: "7px 16px",
                 borderBottom: "1px solid var(--color-border)",
                 fontFamily: "var(--font-sans)",
-                fontSize: "var(--text-body)",
+                fontSize: "var(--typography-body)",
                 fontWeight: 400,
                 color: "var(--color-foreground)",
                 fontFeatureSettings: "'tnum' 1, 'lnum' 1",

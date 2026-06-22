@@ -22,7 +22,7 @@ const filterChipVariants = cva(
     "transition-colors duration-150",
     "disabled:cursor-not-allowed disabled:text-text-disabled",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
-    "h-8 px-3 py-0 text-body font-medium rounded-lg gap-1.5",
+    "h-8 px-3 py-0 typography-body font-medium rounded-lg gap-1.5",
     "border border-form-field-border bg-transparent text-foreground",
     "hover:bg-secondary-surface",
     "active:bg-primary-soft",
@@ -84,11 +84,11 @@ const FilterChip = React.forwardRef<HTMLButtonElement, FilterChipProps>(
             <span className="sr-only">, </span>
             {/* inline-flex + leading-none collapses the line-box to the glyph height,
                 so the flex parent's items-center aligns glyph centers rather than
-                box centers (text-meta 10px inside 14px line-box vs text-body 14px
+                box centers (typography-meta 10px inside 14px line-box vs typography-body 14px
                 inside 22px line-box produces a visible optical offset otherwise). */}
             <span
               className={cn(
-                "inline-flex items-center leading-none font-mono text-meta tabular-nums",
+                "inline-flex items-center leading-none font-mono typography-meta tabular-nums",
                 selected ? "text-foreground" : "text-muted-foreground",
               )}
             >

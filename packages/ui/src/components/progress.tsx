@@ -122,7 +122,7 @@ const Progress = React.forwardRef<
         {(label != null || valueLabel != null) && (
           <div
             data-slot="progress-label-row"
-            className="mb-1.5 flex justify-between font-mono text-meta"
+            className="mb-1.5 flex justify-between font-mono typography-meta"
           >
             <span className="text-muted-foreground">{label}</span>
             <span className="font-semibold text-foreground">{valueLabel}</span>

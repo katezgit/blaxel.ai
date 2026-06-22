@@ -43,11 +43,11 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex w-72 flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">sm — 4px (default)</span>
+        <span className="typography-caption text-muted-foreground">sm — 4px (default)</span>
         <Progress value={60} size="sm" />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">md — 6px</span>
+        <span className="typography-caption text-muted-foreground">md — 6px</span>
         <Progress value={60} size="md" />
       </div>
     </div>
@@ -60,23 +60,23 @@ export const States: Story = {
   render: () => (
     <div className="flex w-72 flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">default — teal gradient</span>
+        <span className="typography-caption text-muted-foreground">default — teal gradient</span>
         <Progress value={60} state="default" />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">success — state-scored</span>
+        <span className="typography-caption text-muted-foreground">success — state-scored</span>
         <Progress value={60} state="success" />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">warning — state-warning</span>
+        <span className="typography-caption text-muted-foreground">warning — state-warning</span>
         <Progress value={60} state="warning" />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">error — state-errored</span>
+        <span className="typography-caption text-muted-foreground">error — state-errored</span>
         <Progress value={60} state="error" />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">neutral — #B3BFCE pinned (passive reading, no glow)</span>
+        <span className="typography-caption text-muted-foreground">neutral — #B3BFCE pinned (passive reading, no glow)</span>
         <Progress value={18} state="neutral" label="MoE" valueLabel="18%" />
       </div>
     </div>
@@ -106,7 +106,7 @@ export const WithLabels: Story = {
 export const Indeterminate: Story = {
   render: () => (
     <div className="flex w-72 flex-col gap-4">
-      <span className="text-caption text-muted-foreground">Indeterminate sweep (teal gradient)</span>
+      <span className="typography-caption text-muted-foreground">Indeterminate sweep (teal gradient)</span>
       <Progress indeterminate />
       <Progress indeterminate size="md" label="Loading…" />
     </div>
@@ -119,11 +119,11 @@ export const CompleteVsInProgress: Story = {
   render: () => (
     <div className="flex w-72 flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">In-progress — teal gradient</span>
+        <span className="typography-caption text-muted-foreground">In-progress — teal gradient</span>
         <Progress value={60} />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-caption text-muted-foreground">Complete — teal flat + glow bump</span>
+        <span className="typography-caption text-muted-foreground">Complete — teal flat + glow bump</span>
         <Progress value={100} />
       </div>
     </div>

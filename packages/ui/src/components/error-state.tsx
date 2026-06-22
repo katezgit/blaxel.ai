@@ -75,11 +75,11 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
 
         {/* Text block */}
         <div className="flex flex-col items-center gap-1">
-          <p className="text-body font-medium text-foreground">
+          <p className="typography-body font-medium text-foreground">
             {title}
           </p>
           {subtitle != null && (
-            <p className="text-caption text-muted-foreground">
+            <p className="typography-caption text-muted-foreground">
               {subtitle}
             </p>
           )}

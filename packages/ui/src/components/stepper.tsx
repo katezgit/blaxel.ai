@@ -51,14 +51,14 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
             aria-label={ariaLabel}
             className="flex flex-col gap-1 md:hidden"
           >
-            <p className="text-meta text-meta-foreground">
+            <p className="typography-meta text-meta-foreground">
               Step {activeIndex + 1} of {steps.length}
             </p>
-            <p className="text-subtitle font-semibold text-foreground">
+            <p className="typography-subtitle font-semibold text-foreground">
               {currentStepDef.label}
             </p>
             {currentStepDef.description && (
-              <p className="text-body text-muted-foreground">
+              <p className="typography-body text-muted-foreground">
                 {currentStepDef.description}
               </p>
             )}
@@ -105,7 +105,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "inline-flex size-8 shrink-0 items-center justify-center rounded-full text-body font-semibold",
+                      "inline-flex size-8 shrink-0 items-center justify-center rounded-full typography-body font-semibold",
                       isActive && "bg-primary text-primary-foreground",
                       isCompleted &&
                         "border-2 border-primary bg-panel text-primary",
@@ -123,7 +123,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
 
                   <span
                     className={cn(
-                      "whitespace-nowrap text-subtitle font-semibold",
+                      "whitespace-nowrap typography-subtitle font-semibold",
                       isActive ? "text-foreground" : "text-meta-foreground",
                     )}
                   >
@@ -143,7 +143,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
 
                 {/* ml-10 = size-8 (32px) + gap-2 (8px) — aligns left edge under step label */}
                 {step.description && (
-                  <span className="ml-10 mt-0 text-body text-muted-foreground">
+                  <span className="ml-10 mt-0 typography-body text-muted-foreground">
                     {step.description}
                   </span>
                 )}

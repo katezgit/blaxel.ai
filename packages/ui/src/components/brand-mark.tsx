@@ -26,8 +26,8 @@ const wordmarkVariants = cva(
   {
     variants: {
       size: {
-        default: "text-[14px]", // eslint-disable-line no-restricted-syntax -- brand wordmark 14px; text-body also 14px but carries line-height that breaks the mark layout
-        sm:      "text-[12px]", // eslint-disable-line no-restricted-syntax -- brand wordmark sm 12px; text-code/caption also 12px but carry line-height that breaks the mark layout
+        default: "text-[14px]", // eslint-disable-line no-restricted-syntax -- brand wordmark 14px; typography-body also 14px but carries line-height that breaks the mark layout
+        sm:      "text-[12px]", // eslint-disable-line no-restricted-syntax -- brand wordmark sm 12px; typography-code/caption also 12px but carry line-height that breaks the mark layout
       },
     },
     defaultVariants: { size: "default" },
