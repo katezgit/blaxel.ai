@@ -178,30 +178,31 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
         </p>
       </header>
 
-      <div
-        className={cn(
-          "hidden sm:grid gap-4 rounded-md border border-border bg-field-rest px-4 py-2",
-          GRID_COLS,
-        )}
-      >
-        <span className="typography-label font-medium text-muted-foreground">
-          Tier
-        </span>
-        <span className="typography-label font-medium text-muted-foreground">
-          Key quotas
-        </span>
-        <span className="typography-label font-medium text-muted-foreground">
-          Key limits &amp; features
-        </span>
-        <span className="typography-label font-medium text-muted-foreground">
-          Requirement
-        </span>
-      </div>
+      <div className="flex flex-col gap-1.5">
+        <div
+          className={cn(
+            "hidden sm:grid gap-4 rounded-md border border-border bg-field-rest px-4 py-2",
+            GRID_COLS,
+          )}
+        >
+          <span className="typography-label font-medium text-muted-foreground">
+            Tier
+          </span>
+          <span className="typography-label font-medium text-muted-foreground">
+            Key quotas
+          </span>
+          <span className="typography-label font-medium text-muted-foreground">
+            Key limits &amp; features
+          </span>
+          <span className="typography-label font-medium text-muted-foreground">
+            Requirement
+          </span>
+        </div>
 
-      <div
-        className="flex max-h-[640px] flex-col gap-2 overflow-y-auto pt-3"
-        style={{ scrollbarGutter: "stable" }}
-      >
+        <div
+          className="flex max-h-[640px] flex-col gap-2 overflow-y-auto"
+          style={{ scrollbarGutter: "stable" }}
+        >
         {showTier0 ? null : (
           <button
             type="button"
@@ -227,6 +228,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
             }
           />
         ))}
+        </div>
       </div>
     </section>
   );
@@ -247,7 +249,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
         "group relative flex flex-col gap-3 rounded-md border px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
         GRID_COLS,
         isCurrent
-          ? "border-primary"
+          ? "border-2 border-primary"
           : "border-border hover:bg-hover-surface",
       )}
     >
