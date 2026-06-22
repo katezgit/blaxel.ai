@@ -41,7 +41,7 @@
   --ink-900: oklch(.20 .004 285.823);    /* v2-gray-4  — foreground light    ↔ ink-50 dark  */
   --ink-50:  oklch(1 0 0);               /* v2-gray-100 — foreground dark     ↔ ink-900 light */
   --ink-800: oklch(.480 .035 284.997);   /* v2-gray-40 — muted-fg light      ↔ ink-100 dark  */
-  --ink-100: oklch(.900 .009 286.208);   /* v2-gray-88 — muted-fg dark       ↔ ink-800 light */
+  --ink-100: #c6c6c6;                    /* gray-200 reference — muted-fg dark ↔ ink-800 light */
   --ink-700: oklch(.579 .041 285.042);   /* v2-gray-52 — meta-fg light       ↔ ink-200 dark  */
   --ink-200: oklch(.796 .020 285.946);   /* v2-gray-76 — meta-fg dark        ↔ ink-700 light */
   --ink-600: oklch(.654 .032 285.468);   /* v2-gray-60 — reserved            ↔ ink-300 dark  */
@@ -60,7 +60,7 @@
   --surface-panel-light:     #FFFFFF;
   --surface-panel-dark:      #121217;
   --surface-page-light:      #FFFFFF;
-  --surface-page-dark:       #1a1a19;
+  --surface-page-dark:       #1a1a1a;
   --surface-elevated-light:  #FFFFFF;
   --surface-elevated-dark:   #191924;
   --surface-muted-light:     #FFFFFF;
