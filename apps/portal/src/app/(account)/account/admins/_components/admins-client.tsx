@@ -159,10 +159,8 @@ export default function AdminsClient() {
                 <TableRow key={admin.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Avatar size="sm">
-                        <AvatarFallback
-                          className={cn(isPending && "bg-muted-surface")}
-                        >
+                      <Avatar size="sm" className={cn(isPending && "opacity-50")}>
+                        <AvatarFallback>
                           {getInitials(admin.name)}
                         </AvatarFallback>
                       </Avatar>
