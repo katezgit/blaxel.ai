@@ -41,7 +41,7 @@ export default function OAuthConnectionsCard({
       columnHelper.accessor("createdAt", {
         header: "Connected",
         cell: (info) => DATE_FMT.format(new Date(info.getValue())),
-        meta: { cellClassName: "font-mono text-label text-muted-foreground" },
+        meta: { cellClassName: "font-mono typography-label text-muted-foreground" },
       }),
       ...(canDisconnect
         ? [
@@ -77,7 +77,7 @@ export default function OAuthConnectionsCard({
   return (
     <Panel title="Sign-in providers">
       {lastUsedProviderLabel ? (
-        <p className="mb-4 text-body text-muted-foreground">
+        <p className="mb-4 typography-body text-muted-foreground">
           You most recently signed in with{" "}
           <span className="font-medium text-foreground">
             {lastUsedProviderLabel}

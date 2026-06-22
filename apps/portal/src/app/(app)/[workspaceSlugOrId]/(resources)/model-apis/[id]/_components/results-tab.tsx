@@ -37,7 +37,7 @@ export function ResultsTab({ rows }: ResultsTabProps) {
   return (
     <section className="py-4">
       {rows.length === 0 && (
-        <div className="py-12 text-center text-body text-muted-foreground">
+        <div className="py-12 text-center typography-body text-muted-foreground">
           No tasksets yet. Add one to start evaluating.
         </div>
       )}
@@ -65,10 +65,10 @@ function ResultsTable({ rows }: { rows: ReadonlyArray<TasksetResult> }) {
         return (
           <div className="flex flex-col">
             <span className="text-foreground">{row.tasksetName}</span>
-            <span className="text-body text-muted-foreground">
+            <span className="typography-body text-muted-foreground">
               {row.description}
             </span>
-            <span className="font-mono text-meta text-meta-foreground">
+            <span className="font-mono typography-meta text-meta-foreground">
               {row.taskCount} tasks
             </span>
           </div>
@@ -202,7 +202,7 @@ function ProgressCell({ row }: { row: TasksetResult }) {
       <div className="flex-1">
         <Progress value={pct} aria-label={`Progress ${pct}%`} />
       </div>
-      <span className="font-mono text-meta text-foreground tabular-nums">{pct}%</span>
+      <span className="font-mono typography-meta text-foreground tabular-nums">{pct}%</span>
     </div>
   );
 }

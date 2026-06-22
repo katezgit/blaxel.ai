@@ -20,7 +20,7 @@ export default function SpeedBar({ tokensPerSecond, max }: SpeedBarProps) {
       aria-label={`${tokensPerSecond} tokens per second`}
       className="flex w-24 flex-col gap-1"
     >
-      <span className="font-mono text-label tabular-nums text-foreground">
+      <span className="font-mono typography-label tabular-nums text-foreground">
         {tokensPerSecond}
         <span className="text-meta-foreground"> t/s</span>
       </span>

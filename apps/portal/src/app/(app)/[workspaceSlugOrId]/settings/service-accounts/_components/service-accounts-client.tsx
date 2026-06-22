@@ -85,7 +85,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => (
-          <span className="text-label font-medium text-foreground">
+          <span className="typography-label font-medium text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -94,7 +94,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         header: "Client ID",
         cell: (info) => (
           <span className="inline-flex items-center gap-1.5">
-            <code className="font-mono text-caption text-muted-foreground">
+            <code className="font-mono typography-caption text-muted-foreground">
               {info.getValue()}
             </code>
             <CopyButton
@@ -110,7 +110,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           const role = info.getValue();
           const Icon = ROLE_ICON[role];
           return (
-            <span className="inline-flex items-center gap-1.5 text-label text-foreground">
+            <span className="inline-flex items-center gap-1.5 typography-label text-foreground">
               <Icon aria-hidden="true" className="size-3.5 shrink-0 text-meta-foreground" />
               <span>{ROLE_LABEL[role]}</span>
             </span>
@@ -120,7 +120,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
       columnHelper.accessor("createdAt", {
         header: "Created at (UTC-7)",
         cell: (info) => (
-          <span className="font-mono text-label text-muted-foreground">
+          <span className="font-mono typography-label text-muted-foreground">
             {DATE_FMT.format(new Date(info.getValue()))}
           </span>
         ),
@@ -156,7 +156,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
     <section className="flex flex-col gap-6">
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
-          <h1 className="text-display font-semibold text-foreground">
+          <h1 className="typography-display font-semibold text-foreground">
             Service accounts
           </h1>
           <p className="text-muted-foreground">
@@ -235,7 +235,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         }
         details={
           <div className="rounded-md border border-border bg-secondary-surface p-3">
-            <p className="flex items-center gap-2 text-caption text-muted-foreground">
+            <p className="flex items-center gap-2 typography-caption text-muted-foreground">
               <KeyRound aria-hidden="true" className="size-3.5" />
               <span>Mock: this would also revoke linked workspace API keys.</span>
             </p>

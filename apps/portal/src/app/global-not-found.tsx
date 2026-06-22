@@ -58,13 +58,13 @@ export default async function GlobalNotFound() {
             />
 
             <div className="flex flex-col items-center gap-3">
-              <span className="text-display font-bold tracking-tight text-foreground">
+              <span className="typography-display font-bold tracking-tight text-foreground">
                 404
               </span>
               <h1 className="text-title font-semibold text-foreground">
                 Page not found
               </h1>
-              <p className="max-w-[480px] text-body text-muted-foreground">
+              <p className="max-w-[480px] typography-body text-muted-foreground">
                 We couldn&apos;t find that page.
               </p>
             </div>
@@ -87,7 +87,7 @@ export default async function GlobalNotFound() {
             <div className="h-px w-full bg-border" />
 
             <div className="flex flex-col items-center gap-4">
-              <p className="text-body text-muted-foreground">
+              <p className="typography-body text-muted-foreground">
                 {workspaceHref
                   ? "Or explore these popular pages:"
                   : "Or read the docs:"}
@@ -100,19 +100,19 @@ export default async function GlobalNotFound() {
                   <>
                     <a
                       href={workspaceHref("sandboxes")}
-                      className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                      className="typography-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
                     >
                       Sandboxes
                     </a>
                     <a
                       href={workspaceHref("agents")}
-                      className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                      className="typography-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
                     >
                       Agents
                     </a>
                     <a
                       href={workspaceHref("settings/api-keys")}
-                      className="text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                      className="typography-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
                     >
                       API Keys
                     </a>
@@ -123,7 +123,7 @@ export default async function GlobalNotFound() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Documentation, opens in new tab"
-                  className="inline-flex items-baseline gap-0.5 text-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                  className="inline-flex items-baseline gap-0.5 typography-body text-muted-foreground hover:text-foreground hover:underline transition-colors"
                 >
                   Docs
                   <ArrowUpRightIcon

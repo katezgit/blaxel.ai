@@ -25,23 +25,23 @@ export default function AddOnRow({ addon }: AddOnRowProps) {
           <Icon className="size-4" aria-hidden="true" />
         </span>
         <div className="flex flex-col gap-1">
-          <h2 className="text-body font-semibold text-foreground">
+          <h2 className="typography-body font-semibold text-foreground">
             {addon.name}
           </h2>
-          <p className="text-body text-muted-foreground">{addon.description}</p>
+          <p className="typography-body text-muted-foreground">{addon.description}</p>
           {addon.secondaryDescription ? (
-            <p className="text-caption text-muted-foreground">
+            <p className="typography-caption text-muted-foreground">
               {addon.secondaryDescription}
             </p>
           ) : null}
-          <p className="text-caption text-meta-foreground">
+          <p className="typography-caption text-meta-foreground">
             Billed monthly to your account, separate from credit balance.
           </p>
         </div>
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-1 md:gap-2">
-        <span className="font-mono text-body font-semibold tabular-nums text-foreground">
+        <span className="font-mono typography-body font-semibold tabular-nums text-foreground">
           {formatUsd(addon.priceUsd)}
           <span className="font-normal text-muted-foreground">/mo</span>
         </span>

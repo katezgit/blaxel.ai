@@ -35,10 +35,10 @@ export default function PreferenceToggleRow({
     >
       <div className="flex flex-col gap-1">
         <span className="flex flex-wrap items-center gap-2">
-          <span className="text-body font-semibold text-foreground">{label}</span>
+          <span className="typography-body font-semibold text-foreground">{label}</span>
           {forced ? <Badge variant="neutral">Required</Badge> : null}
         </span>
-        <span className="text-body text-muted-foreground">
+        <span className="typography-body text-muted-foreground">
           {description}
         </span>
       </div>

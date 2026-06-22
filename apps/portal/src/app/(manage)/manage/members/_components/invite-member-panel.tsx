@@ -91,7 +91,7 @@ export function InviteMemberPanel({ open, onOpenChange }: InviteMemberPanelProps
               aria-label="Invite emails"
             />
             <div className="flex items-center gap-2">
-              <span className="text-label text-foreground">Role</span>
+              <span className="typography-label text-foreground">Role</span>
               <Select value={role} onValueChange={(value) => setRole(value as Role)}>
                 <SelectTrigger size="sm" aria-label="Invite role">
                   <SelectValue />

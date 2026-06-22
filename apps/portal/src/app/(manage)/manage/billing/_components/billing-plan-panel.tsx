@@ -26,12 +26,12 @@ export function BillingPlanPanel() {
       }
     >
       <div className="flex items-baseline gap-3">
-        <span className="text-display font-semibold text-foreground">Team</span>
-        <span className="text-body text-muted-foreground">$0 base · pay per credit</span>
+        <span className="typography-display font-semibold text-foreground">Team</span>
+        <span className="typography-body text-muted-foreground">$0 base · pay per credit</span>
       </div>
 
       <div className="mt-6">
-        <div className="mb-1.5 flex items-baseline justify-between font-mono text-label text-muted-foreground">
+        <div className="mb-1.5 flex items-baseline justify-between font-mono typography-label text-muted-foreground">
           <span>credits remaining</span>
           <span className="font-medium text-foreground tabular-nums">
             {NUMBER.format(creditState.balance)} / {NUMBER.format(creditState.total)}
@@ -44,7 +44,7 @@ export function BillingPlanPanel() {
         />
       </div>
 
-      <div className="mt-6 flex items-center justify-between font-mono text-label">
+      <div className="mt-6 flex items-center justify-between font-mono typography-label">
         <span className="uppercase tracking-widest text-muted-foreground">payment method</span>
         <span className="inline-flex items-center gap-1.5 text-foreground">
           <CreditCard aria-hidden="true" className="size-3.5 shrink-0" />

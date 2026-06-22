@@ -47,7 +47,7 @@ export default function MembershipRow({
         <div className="flex items-start gap-3">
           <span
             aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft font-mono text-body font-semibold text-primary"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft font-mono typography-body font-semibold text-primary"
           >
             {initial}
           </span>
@@ -55,14 +55,14 @@ export default function MembershipRow({
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={`/${membership.workspaceSlug}/sandboxes`}
-                className="inline-flex items-center gap-1 rounded-sm font-mono text-body font-medium text-foreground transition-colors duration-fast ease-out-standard hover:text-primary hover:underline focus-visible:shadow-focus-ring"
+                className="inline-flex items-center gap-1 rounded-sm font-mono typography-body font-medium text-foreground transition-colors duration-fast ease-out-standard hover:text-primary hover:underline focus-visible:shadow-focus-ring"
               >
                 {membership.workspaceName}
                 <ArrowRight aria-hidden="true" className="size-3.5" />
               </Link>
               <Badge variant="neutral">{membership.role}</Badge>
             </div>
-            <span className="text-caption text-muted-foreground">
+            <span className="typography-caption text-muted-foreground">
               Joined {DATE_FMT.format(new Date(membership.joinedAt))} ·
               {" "}Last active {relativeFromNow(membership.lastAccessedAt)}
             </span>

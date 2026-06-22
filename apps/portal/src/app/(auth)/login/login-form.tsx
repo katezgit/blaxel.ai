@@ -103,11 +103,11 @@ export default function LoginForm() {
           <h2
             ref={headingRef}
             tabIndex={-1}
-            className="text-subtitle font-semibold text-foreground"
+            className="typography-subtitle font-semibold text-foreground"
           >
             Check your email
           </h2>
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             We sent a sign-in link to{" "}
             <span className="text-foreground font-medium">{sentEmail}</span>.
             Open it on this device to continue.
@@ -185,7 +185,7 @@ export default function LoginForm() {
 
       <div className="flex items-center gap-3">
         <Separator className="flex-1" />
-        <span aria-hidden="true" className="text-caption text-muted-foreground">
+        <span aria-hidden="true" className="typography-caption text-muted-foreground">
           or
         </span>
         <Separator className="flex-1" />

@@ -29,7 +29,7 @@ export function MobileNavBody({
       {header}
       {groups.map((group) => (
         <div key={group.label} className="flex flex-col gap-0.5">
-          <div className="px-2 pb-1 font-mono text-meta uppercase text-meta-foreground">
+          <div className="px-2 pb-1 font-mono typography-meta uppercase text-meta-foreground">
             {group.label}
           </div>
           <ul className="flex flex-col gap-0.5">

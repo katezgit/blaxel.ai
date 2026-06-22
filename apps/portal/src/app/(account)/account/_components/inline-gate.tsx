@@ -26,7 +26,7 @@ export default function InlineGate({
   return (
     <p
       className={cn(
-        "text-caption text-muted-foreground",
+        "typography-caption text-muted-foreground",
         className,
       )}
     >

@@ -76,7 +76,7 @@ function AccountTopbarSkeleton({ mobileNavId }: AccountTopbarSkeletonProps) {
 // last-visited workspace — the workspace name + Org context isn't available
 // at the loading boundary, so we render the arrow + a name-shape skeleton
 // that matches SubShellSidebarReturnHeader's row dimensions (h aligning
-// with text-label + border-bottom).
+// with typography-label + border-bottom).
 function ReturnHeaderSkeleton() {
   const isRail = useIsSidebarRail();
   return (
@@ -85,7 +85,7 @@ function ReturnHeaderSkeleton() {
       aria-hidden="true"
       className={cn(
         "flex items-center gap-2 border-b border-border px-2 pt-3 pb-1.5",
-        "text-label font-medium text-muted-foreground",
+        "typography-label font-medium text-muted-foreground",
       )}
     >
       <ArrowLeft

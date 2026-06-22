@@ -16,7 +16,7 @@ export default async function AgentsPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Agents</h1>
+        <h1 className="typography-display font-semibold text-foreground">Agents</h1>
         <p className="text-muted-foreground">Hosted agents running on the platform.</p>
       </header>
       <HydrationBoundary state={dehydrate(queryClient)}>

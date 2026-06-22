@@ -53,9 +53,9 @@ export function RevokeKeyButton({ name, onRevoke }: RevokeKeyButtonProps) {
             </DialogDescription>
           </DialogHeader>
           <DialogBody>
-            <p className="text-body text-foreground">
+            <p className="typography-body text-foreground">
               This permanently revokes the key{" "}
-              <code className="font-mono text-label text-foreground">
+              <code className="font-mono typography-label text-foreground">
                 {name}
               </code>
               . Any SDK still using it will stop authenticating. This action

@@ -126,7 +126,7 @@ function CreateConnectionForm({
             <AvatarFallback>{provider.logoInitial}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-1">
-            <DrawerTitle className="text-subtitle">
+            <DrawerTitle className="typography-subtitle">
               Create {provider.name} integration
             </DrawerTitle>
             <DrawerDescription>
@@ -233,7 +233,7 @@ function EditConnectionForm({
             <AvatarFallback>{provider.logoInitial}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-1">
-            <DrawerTitle className="text-subtitle">
+            <DrawerTitle className="typography-subtitle">
               Edit {connection.id}
             </DrawerTitle>
             <DrawerDescription>

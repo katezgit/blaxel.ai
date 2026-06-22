@@ -24,7 +24,7 @@ export default async function IntegrationsPage() {
   return (
     <div className="mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 px-4 pb-16 pt-6 md:px-6 lg:px-8 xl:px-20">
       <header className="page-header shrink-0">
-        <h1 className="text-display font-semibold text-foreground">
+        <h1 className="typography-display font-semibold text-foreground">
           Integrations
         </h1>
         <p className="text-muted-foreground">

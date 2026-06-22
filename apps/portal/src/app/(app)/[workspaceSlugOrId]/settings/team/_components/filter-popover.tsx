@@ -47,14 +47,14 @@ export default function FilterPopover<T extends string>({
         <button
           type="button"
           className={cn(
-            "inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-label text-foreground",
+            "inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 typography-label text-foreground",
             "hover:bg-secondary-surface focus-visible:shadow-focus-ring",
           )}
         >
           <ListFilter aria-hidden="true" className="size-3.5 text-meta-foreground" />
           <span>{label}</span>
           {selectedCount > 0 && (
-            <span className="font-mono text-meta text-meta-foreground">
+            <span className="font-mono typography-meta text-meta-foreground">
               {selectedCount}
             </span>
           )}
@@ -67,14 +67,14 @@ export default function FilterPopover<T extends string>({
             const checked = selected.has(option);
             return (
               <li key={option}>
-                <label className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-label text-foreground hover:bg-secondary-surface">
+                <label className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 typography-label text-foreground hover:bg-secondary-surface">
                   <Checkbox
                     size="sm"
                     checked={checked}
                     onCheckedChange={() => toggle(option)}
                   />
                   <span className="flex-1 truncate">{optionLabel(option)}</span>
-                  <span className="font-mono text-meta text-meta-foreground tabular-nums">
+                  <span className="font-mono typography-meta text-meta-foreground tabular-nums">
                     {counts[option] ?? 0}
                   </span>
                 </label>

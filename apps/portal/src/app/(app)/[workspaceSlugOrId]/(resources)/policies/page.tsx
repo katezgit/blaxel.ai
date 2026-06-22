@@ -16,7 +16,7 @@ export default async function PoliciesPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Policies</h1>
+        <h1 className="typography-display font-semibold text-foreground">Policies</h1>
         <p className="text-muted-foreground">Guardrails applied to agents and sandboxes in this workspace.</p>
       </header>
       <HydrationBoundary state={dehydrate(queryClient)}>

@@ -12,7 +12,7 @@ export default function ModelsPage() {
     <div className="page-shell">
       <header className="page-header">
         <div className="flex items-center gap-2">
-          <h1 className="text-display font-semibold text-foreground">Models</h1>
+          <h1 className="typography-display font-semibold text-foreground">Models</h1>
           <a
             href="https://docs.hud.ai/platform/models"
             target="_blank"

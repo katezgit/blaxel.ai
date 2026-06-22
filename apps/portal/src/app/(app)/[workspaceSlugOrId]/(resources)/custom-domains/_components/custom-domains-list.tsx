@@ -30,7 +30,7 @@ const columns = [
   columnHelper.accessor("domain", {
     header: "Domain",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono text-label" },
+    meta: { cellClassName: "font-mono typography-label" },
   }),
   columnHelper.accessor("status", {
     header: "Status",
@@ -43,7 +43,7 @@ const columns = [
   columnHelper.accessor("target", {
     header: "Target",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono text-label text-muted-foreground" },
+    meta: { cellClassName: "font-mono typography-label text-muted-foreground" },
   }),
 ];
 

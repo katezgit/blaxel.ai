@@ -119,7 +119,7 @@ export default function HelpMenu() {
 
         <DropdownMenuSeparator />
 
-        <div className="flex items-center justify-center gap-2 px-2 py-1.5 text-caption text-muted-foreground">
+        <div className="flex items-center justify-center gap-2 px-2 py-1.5 typography-caption text-muted-foreground">
           <a
             href="https://blaxel.ai/privacy"
             target="_blank"

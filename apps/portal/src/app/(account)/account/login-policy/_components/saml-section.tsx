@@ -75,10 +75,10 @@ export default function SamlSection() {
             ) : (
               <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
             )}
-            <span className="text-body font-medium text-foreground">
+            <span className="typography-body font-medium text-foreground">
               Enterprise SSO (SAML)
             </span>
-            <span className="text-caption text-muted-foreground">
+            <span className="typography-caption text-muted-foreground">
               Connect a SAML identity provider.
             </span>
           </span>
@@ -103,24 +103,24 @@ export default function SamlSection() {
         {!isTierZero && !isConfigured ? (
           <form onSubmit={onSave} noValidate className="mt-6 flex flex-col gap-4 pl-6">
             <section className="flex flex-col gap-3">
-              <h3 className="text-body font-semibold text-foreground">
+              <h3 className="typography-body font-semibold text-foreground">
                 Service Provider details
               </h3>
               <div className="flex flex-col gap-2">
-                <span className="text-caption text-muted-foreground">SSO URL</span>
+                <span className="typography-caption text-muted-foreground">SSO URL</span>
                 <div className="flex items-center gap-2 rounded-md border border-border bg-secondary-surface px-3 py-2">
-                  <span className="flex-1 truncate font-mono text-caption text-foreground">
+                  <span className="flex-1 truncate font-mono typography-caption text-foreground">
                     {SP_SSO_URL}
                   </span>
                   <CopyButton value={SP_SSO_URL} tooltipLabel="Copy SSO URL" />
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <span className="text-caption text-muted-foreground">
+                <span className="typography-caption text-muted-foreground">
                   Entity ID (Audience URI)
                 </span>
                 <div className="flex items-center gap-2 rounded-md border border-border bg-secondary-surface px-3 py-2">
-                  <span className="flex-1 truncate font-mono text-caption text-foreground">
+                  <span className="flex-1 truncate font-mono typography-caption text-foreground">
                     {SP_ENTITY_ID}
                   </span>
                   <CopyButton value={SP_ENTITY_ID} tooltipLabel="Copy Entity ID" />
@@ -129,7 +129,7 @@ export default function SamlSection() {
             </section>
 
             <section className="flex flex-col gap-3">
-              <h3 className="text-body font-semibold text-foreground">
+              <h3 className="typography-body font-semibold text-foreground">
                 Identity Provider details
               </h3>
               <FieldRow cols={1}>
@@ -150,7 +150,7 @@ export default function SamlSection() {
                   error={errors.certificate?.message}
                 >
                   <Textarea
-                    className="min-h-32 font-mono text-caption"
+                    className="min-h-32 font-mono typography-caption"
                     placeholder="Paste certificate here..."
                     aria-invalid={errors.certificate ? true : undefined}
                     {...register("certificate")}
@@ -173,23 +173,23 @@ export default function SamlSection() {
 
         {!isTierZero && isConfigured ? (
           <div className="mt-6 flex flex-col gap-3 pl-6">
-            <p className="text-body text-foreground">
+            <p className="typography-body text-foreground">
               SAML is configured for this account.
             </p>
-            <dl className="flex flex-col gap-2 text-body">
+            <dl className="flex flex-col gap-2 typography-body">
               <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-caption text-muted-foreground">
+                <dt className="typography-caption text-muted-foreground">
                   IdP SSO URL
                 </dt>
-                <dd className="font-mono text-caption text-foreground">
+                <dd className="font-mono typography-caption text-foreground">
                   {state.saml.idpSsoUrl}
                 </dd>
               </div>
               <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-caption text-muted-foreground">
+                <dt className="typography-caption text-muted-foreground">
                   Certificate expires
                 </dt>
-                <dd className="font-mono text-caption text-foreground">
+                <dd className="font-mono typography-caption text-foreground">
                   {state.saml.certificateExpiresOn}
                 </dd>
               </div>

@@ -48,10 +48,10 @@ export default function TwoFactorRecoveryStep({
   return (
     <div className="flex flex-col gap-6 pt-2">
       <div className="flex flex-col gap-2">
-        <p className="text-body font-medium text-foreground">
+        <p className="typography-body font-medium text-foreground">
           Save your recovery codes
         </p>
-        <p className="text-body text-muted-foreground">
+        <p className="typography-body text-muted-foreground">
           Keep these somewhere safe. Each code can be used once if you lose
           access to your authenticator or phone.
         </p>
@@ -64,7 +64,7 @@ export default function TwoFactorRecoveryStep({
           {codes.map((code) => (
             <li
               key={code}
-              className="font-mono text-body tracking-wider text-foreground"
+              className="font-mono typography-body tracking-wider text-foreground"
             >
               {code}
             </li>
@@ -85,7 +85,7 @@ export default function TwoFactorRecoveryStep({
           onCheckedChange={(value) => setAcknowledged(value === true)}
           aria-label="I have saved my recovery codes"
         />
-        <span className="text-body text-foreground">
+        <span className="typography-body text-foreground">
           I&rsquo;ve saved these recovery codes somewhere safe.
         </span>
       </label>

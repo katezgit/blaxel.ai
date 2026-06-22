@@ -15,7 +15,7 @@ export default function StripeRedirectPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">
+        <h1 className="typography-display font-semibold text-foreground">
           Payment method
         </h1>
         <p className="text-muted-foreground">
@@ -25,7 +25,7 @@ export default function StripeRedirectPage() {
       </header>
       <Link
         href="/account/billing/credits#payment-method"
-        className="inline-flex w-fit items-center gap-1 text-body font-medium text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
+        className="inline-flex w-fit items-center gap-1 typography-body font-medium text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
       >
         <ArrowLeft className="size-3.5" aria-hidden="true" />
         Back to Billing

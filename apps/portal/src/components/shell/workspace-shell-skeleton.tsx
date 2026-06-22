@@ -138,7 +138,7 @@ function WorkspaceSwitcherSkeleton({ isRail }: WorkspaceSwitcherSkeletonProps) {
     <div
       role="presentation"
       className={cn(
-        "flex min-w-0 max-w-full items-center rounded-md border text-label font-medium text-foreground",
+        "flex min-w-0 max-w-full items-center rounded-md border typography-label font-medium text-foreground",
         isRail
           ? "border-transparent p-1"
           : "w-full gap-1.5 border-border px-2 py-1 max-md:gap-1 max-md:px-1.5 max-md:py-0.5",
@@ -170,7 +170,7 @@ function SearchTriggerSkeleton() {
     <div
       role="presentation"
       data-slot="search"
-      className="flex h-8 w-full max-w-sm items-center gap-2 rounded-lg border border-form-field-border bg-field-rest px-2.5 text-body text-muted-foreground max-md:size-8 max-md:justify-center max-md:border-transparent max-md:bg-transparent max-md:px-0"
+      className="flex h-8 w-full max-w-sm items-center gap-2 rounded-lg border border-form-field-border bg-field-rest px-2.5 typography-body text-muted-foreground max-md:size-8 max-md:justify-center max-md:border-transparent max-md:bg-transparent max-md:px-0"
     >
       <Search className="size-4 shrink-0" aria-hidden="true" />
       <Skeleton className="hidden h-3 flex-1 rounded-sm md:block" />

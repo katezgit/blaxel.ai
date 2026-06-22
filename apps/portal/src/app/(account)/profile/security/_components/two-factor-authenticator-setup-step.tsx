@@ -26,7 +26,7 @@ export default function TwoFactorAuthenticatorSetupStep({
 }: TwoFactorAuthenticatorSetupStepProps) {
   return (
     <div className="flex flex-col gap-6 pt-2">
-      <p className="text-body text-muted-foreground">
+      <p className="typography-body text-muted-foreground">
         Scan this code with your authenticator app, then enter the 6-digit code
         in the next step.
       </p>
@@ -35,14 +35,14 @@ export default function TwoFactorAuthenticatorSetupStep({
           <QRMosaic />
         </div>
         <div className="flex w-full flex-col gap-3 sm:flex-1">
-          <p className="text-body font-medium text-foreground">
+          <p className="typography-body font-medium text-foreground">
             Can&rsquo;t scan it?
           </p>
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             Enter this setup key into your app manually.
           </p>
           <div className="flex items-center gap-2 rounded-md border border-border bg-muted-surface p-2">
-            <code className="flex-1 truncate font-mono text-body tracking-wider text-foreground">
+            <code className="flex-1 truncate font-mono typography-body tracking-wider text-foreground">
               {MOCK_SECRET}
             </code>
             <CopyButton value={MOCK_SECRET} tooltipLabel="Copy setup key" />

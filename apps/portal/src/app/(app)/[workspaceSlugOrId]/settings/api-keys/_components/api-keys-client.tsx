@@ -78,7 +78,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => (
-          <span className="text-label font-medium text-foreground">
+          <span className="typography-label font-medium text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -91,7 +91,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("masked", {
         header: "Key prefix",
         cell: (info) => (
-          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono text-caption text-muted-foreground">
+          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono typography-caption text-muted-foreground">
             {info.getValue()}
           </code>
         ),
@@ -102,14 +102,14 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
           const value = info.getValue();
           if (!value) {
             return (
-              <span className="text-label text-muted-foreground">Never</span>
+              <span className="typography-label text-muted-foreground">Never</span>
             );
           }
           const days = Math.round(
             (new Date(value).getTime() - Date.now()) / 86400000,
           );
           return (
-            <span className="font-mono text-label text-muted-foreground">
+            <span className="font-mono typography-label text-muted-foreground">
               {days <= 0 ? "Expired" : `${days} days`}
             </span>
           );
@@ -118,7 +118,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("createdAt", {
         header: "Created at (UTC-7)",
         cell: (info) => (
-          <span className="font-mono text-label text-muted-foreground">
+          <span className="font-mono typography-label text-muted-foreground">
             {DATE_FMT.format(new Date(info.getValue()))}
           </span>
         ),
@@ -152,7 +152,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
     <section className="flex flex-col gap-6">
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
-          <h1 className="text-display font-semibold text-foreground">API keys</h1>
+          <h1 className="typography-display font-semibold text-foreground">API keys</h1>
           <p className="text-muted-foreground">
             Workspace-scoped credentials for the API and CLI. Issued to a member
             or a service account; the holder&apos;s role decides what the key can
@@ -239,14 +239,14 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
 
 function IssuedToCell({ apiKey }: { apiKey: ApiKey }) {
   if (!apiKey.issuedTo) {
-    return <span className="text-label text-meta-foreground">—</span>;
+    return <span className="typography-label text-meta-foreground">—</span>;
   }
   const Icon = apiKey.issuedTo.kind === "member" ? User : UserCog;
   return (
-    <span className="inline-flex items-center gap-1.5 text-label text-foreground">
+    <span className="inline-flex items-center gap-1.5 typography-label text-foreground">
       <Icon aria-hidden="true" className="size-3.5 shrink-0 text-meta-foreground" />
       <span>{apiKey.issuedTo.name}</span>
-      <span className="font-mono text-meta text-meta-foreground">
+      <span className="font-mono typography-meta text-meta-foreground">
         {apiKey.issuedTo.kind === "member" ? "member" : "service"}
       </span>
     </span>

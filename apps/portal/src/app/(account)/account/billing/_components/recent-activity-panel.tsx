@@ -47,12 +47,12 @@ export default function RecentActivityPanel() {
 
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-subtitle font-semibold text-foreground">
+      <h2 className="typography-subtitle font-semibold text-foreground">
         Recent activity
       </h2>
       <Card className="p-4">
         {entries.length === 0 ? (
-          <p className="text-body text-muted-foreground">
+          <p className="typography-body text-muted-foreground">
             No billing activity yet.
           </p>
         ) : (
@@ -60,7 +60,7 @@ export default function RecentActivityPanel() {
             {entries.map((entry) => (
               <li
                 key={entry.id}
-                className="flex items-center justify-between gap-3 text-body"
+                className="flex items-center justify-between gap-3 typography-body"
               >
                 <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-muted-foreground">
                   <span className="text-foreground">

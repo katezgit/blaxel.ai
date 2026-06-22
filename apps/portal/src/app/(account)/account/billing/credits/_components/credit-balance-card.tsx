@@ -41,18 +41,18 @@ export default function CreditBalanceCard() {
       className="flex flex-col gap-4 bg-elevated-surface px-6 py-6 sm:flex-row sm:items-center sm:justify-between"
     >
       <div className="flex flex-col gap-2">
-        <span className="text-meta font-mono uppercase tracking-[0.16em] text-meta-foreground">
+        <span className="typography-meta font-mono uppercase tracking-[0.16em] text-meta-foreground">
           Available credits
         </span>
         <output
           aria-live="polite"
           aria-atomic="true"
-          className="block font-mono text-display font-bold tabular-nums leading-none text-foreground"
+          className="block font-mono typography-display font-bold tabular-nums leading-none text-foreground"
         >
           {formatUsd(state.balanceUsd)}
         </output>
-        <p className="text-caption text-muted-foreground">{lastFundedLine}</p>
-        <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
+        <p className="typography-caption text-muted-foreground">{lastFundedLine}</p>
+        <p className="flex items-center gap-1.5 typography-caption text-muted-foreground">
           <CreditCard aria-hidden="true" className="size-3.5" />
           {paymentSummary}
         </p>

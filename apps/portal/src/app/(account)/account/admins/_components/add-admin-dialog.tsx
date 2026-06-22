@@ -97,9 +97,9 @@ export default function AddAdminDialog({ open, onOpenChange }: AddAdminDialogPro
               </Field>
             </FieldRow>
             <div className="mt-4 flex flex-col gap-1">
-              <span className="text-caption text-muted-foreground">Role</span>
-              <span className="text-body text-foreground">Admin</span>
-              <span className="text-caption text-muted-foreground">
+              <span className="typography-caption text-muted-foreground">Role</span>
+              <span className="typography-body text-foreground">Admin</span>
+              <span className="typography-caption text-muted-foreground">
                 Owner cannot be reassigned.
               </span>
             </div>

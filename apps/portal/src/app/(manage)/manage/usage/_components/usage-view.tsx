@@ -87,11 +87,11 @@ export function UsageView() {
             const percent = Math.round((limit.current / limit.max) * 100);
             return (
               <div key={limit.name} className="flex items-center gap-3">
-                <span className="w-44 shrink-0 text-body text-foreground">{limit.name}</span>
+                <span className="w-44 shrink-0 typography-body text-foreground">{limit.name}</span>
                 <div className="flex-1">
                   <Progress value={percent} state="neutral" aria-label={limit.name} />
                 </div>
-                <span className="w-24 text-right font-mono text-label text-muted-foreground tabular-nums">
+                <span className="w-24 text-right font-mono typography-label text-muted-foreground tabular-nums">
                   {limit.current} / {limit.max}
                 </span>
               </div>
@@ -113,14 +113,14 @@ interface StatCardProps {
 function StatCard({ label, value, sub, children }: StatCardProps) {
   return (
     <Card className="px-4 py-4">
-      <span className="font-mono text-caption uppercase tracking-widest text-meta-foreground">
+      <span className="font-mono typography-caption uppercase tracking-widest text-meta-foreground">
         {label}
       </span>
-      <span className="mt-1 block text-display font-semibold text-foreground tabular-nums">
+      <span className="mt-1 block typography-display font-semibold text-foreground tabular-nums">
         {value}
       </span>
       {sub ? (
-        <span className="mt-1 block font-mono text-caption text-meta-foreground">
+        <span className="mt-1 block font-mono typography-caption text-meta-foreground">
           {sub}
         </span>
       ) : null}

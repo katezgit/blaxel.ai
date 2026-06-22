@@ -16,7 +16,7 @@ export default async function SandboxesPage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Sandboxes</h1>
+        <h1 className="typography-display font-semibold text-foreground">Sandboxes</h1>
         <p className="text-muted-foreground">Secure compute on standby.</p>
       </header>
       <HydrationBoundary state={dehydrate(queryClient)}>

@@ -120,7 +120,7 @@ export function OrganizationAdminView() {
             </Field>
           </FieldRow>
 
-          <div className="mt-4 flex items-center gap-2 font-mono text-caption text-meta-foreground">
+          <div className="mt-4 flex items-center gap-2 font-mono typography-caption text-meta-foreground">
             <span>Organization ID: {currentOrg.id}</span>
             <CopyButton value={currentOrg.id} ariaLabel="Copy organization ID" />
           </div>
@@ -138,10 +138,10 @@ export function OrganizationAdminView() {
       <Card className="mb-4 px-4 py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <h3 className="text-body font-semibold text-foreground">
+            <h3 className="typography-body font-semibold text-foreground">
               Allow new API keys in default workspace
             </h3>
-            <p className="mt-1 text-caption text-muted-foreground">
+            <p className="mt-1 typography-caption text-muted-foreground">
               Lets members mint keys in the default workspace. Disabling won&rsquo;t affect existing keys.
             </p>
           </div>

@@ -33,11 +33,11 @@ export default function BillingProfile() {
         <div className="flex flex-col gap-0.5">
           <h2
             id="billing-profile-label"
-            className="text-subtitle font-semibold text-foreground"
+            className="typography-subtitle font-semibold text-foreground"
           >
             Billing profile
           </h2>
-          <p className="text-caption text-muted-foreground">
+          <p className="typography-caption text-muted-foreground">
             Synced from Stripe.
           </p>
         </div>
@@ -49,7 +49,7 @@ export default function BillingProfile() {
         </Button>
       </div>
 
-      <dl className="grid grid-cols-1 gap-y-2 rounded-md border border-border bg-card px-4 py-4 text-body sm:grid-cols-[160px_minmax(0,1fr)] sm:gap-x-6 sm:gap-y-3">
+      <dl className="grid grid-cols-1 gap-y-2 rounded-md border border-border bg-card px-4 py-4 typography-body sm:grid-cols-[160px_minmax(0,1fr)] sm:gap-x-6 sm:gap-y-3">
         <dt className="text-muted-foreground">Primary payment</dt>
         <dd className="text-foreground">{paymentLabel}</dd>
 

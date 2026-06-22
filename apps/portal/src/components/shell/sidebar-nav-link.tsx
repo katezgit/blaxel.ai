@@ -31,7 +31,7 @@ export function SidebarNavLink({ href, label, icon, count, badge }: SidebarNavLi
       href={href}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "group relative flex h-8 w-full items-center gap-2.5 rounded-md text-body",
+        "group relative flex h-8 w-full items-center gap-2.5 rounded-md typography-body",
         collapsed ? "justify-center px-0" : "px-2",
         isActive
           ? "bg-primary-glow text-primary font-medium"
@@ -49,12 +49,12 @@ export function SidebarNavLink({ href, label, icon, count, badge }: SidebarNavLi
       </span>
       <span className={cn("truncate", collapsed && "sr-only")}>{label}</span>
       {!collapsed && badge && (
-        <span className="ml-auto rounded-full bg-primary-glow px-1.5 py-0.5 font-mono text-meta uppercase text-primary">
+        <span className="ml-auto rounded-full bg-primary-glow px-1.5 py-0.5 font-mono typography-meta uppercase text-primary">
           {badge}
         </span>
       )}
       {!collapsed && badge === undefined && typeof count === "number" && (
-        <span className="ml-auto font-mono text-meta text-meta-foreground tabular-nums">
+        <span className="ml-auto font-mono typography-meta text-meta-foreground tabular-nums">
           {count}
         </span>
       )}

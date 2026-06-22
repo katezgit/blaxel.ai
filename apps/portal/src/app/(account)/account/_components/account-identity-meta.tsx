@@ -13,7 +13,7 @@ export default function AccountIdentityMeta() {
   const accountId = state.identity.accountId;
 
   return (
-    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-muted-foreground">
+    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 typography-caption text-muted-foreground">
       <span>Owner</span>
       <span aria-hidden="true">·</span>
       <span className="font-mono text-foreground">

@@ -17,7 +17,7 @@ export default async function WorkspaceGeneralPage({ params }: PageProps) {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">General</h1>
+        <h1 className="typography-display font-semibold text-foreground">General</h1>
         <p className="text-muted-foreground">
           Manage this workspace&rsquo;s identity, identifiers, and account
           context.

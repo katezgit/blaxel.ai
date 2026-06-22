@@ -21,13 +21,13 @@ const columns = [
   columnHelper.accessor("name", {
     header: "Name",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono text-label" },
+    meta: { cellClassName: "font-mono typography-label" },
   }),
   columnHelper.display({
     id: "value",
     header: "Value",
     cell: () => (
-      <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono text-caption text-muted-foreground">
+      <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono typography-caption text-muted-foreground">
         ••••••••
       </code>
     ),

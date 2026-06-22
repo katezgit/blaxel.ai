@@ -20,13 +20,13 @@ function SummaryTile({ label, used, limit, unit }: SummaryTileProps) {
   const unitSuffix = unit ? ` ${unit}` : "";
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4">
-      <span className="text-caption text-muted-foreground">{label}</span>
+      <span className="typography-caption text-muted-foreground">{label}</span>
       <div className="flex items-baseline justify-between gap-2">
-        <span className="font-mono text-display tabular-nums text-foreground">
+        <span className="font-mono typography-display tabular-nums text-foreground">
           {used} / {limit}
           {unitSuffix}
         </span>
-        <span className="font-mono text-meta text-muted-foreground">{percent}%</span>
+        <span className="font-mono typography-meta text-muted-foreground">{percent}%</span>
       </div>
       <Progress value={percent} state={state} aria-label={`${label}: ${percent}% used`} />
     </div>

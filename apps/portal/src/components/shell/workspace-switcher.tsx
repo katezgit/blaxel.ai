@@ -55,7 +55,7 @@ export default function WorkspaceSwitcher({
       <DropdownMenuTrigger
         aria-label={triggerAriaLabel}
         className={cn(
-          "flex min-w-0 max-w-full items-center rounded-md border text-label font-medium text-foreground",
+          "flex min-w-0 max-w-full items-center rounded-md border typography-label font-medium text-foreground",
           "hover:bg-secondary-surface focus-visible:shadow-focus-ring",
           isRail
             ? "border-transparent p-1"
@@ -88,7 +88,7 @@ export default function WorkspaceSwitcher({
                 </Avatar>
                 <span className="flex-1 truncate">{ws.name}</span>
                 {isCurrent ? (
-                  <span className="font-mono text-meta text-meta-foreground">
+                  <span className="font-mono typography-meta text-meta-foreground">
                     current
                   </span>
                 ) : null}

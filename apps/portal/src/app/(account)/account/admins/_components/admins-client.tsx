@@ -88,7 +88,7 @@ export default function AdminsClient() {
     <>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
-          <h1 className="text-display font-semibold text-foreground">Admins</h1>
+          <h1 className="typography-display font-semibold text-foreground">Admins</h1>
           <p className="text-muted-foreground">
             Admins can manage this billing account and its workspaces.
           </p>
@@ -173,7 +173,7 @@ export default function AdminsClient() {
                         >
                           {admin.name}
                         </span>
-                        <span className="font-mono text-caption text-muted-foreground">
+                        <span className="font-mono typography-caption text-muted-foreground">
                           {admin.email}
                         </span>
                       </div>
@@ -187,7 +187,7 @@ export default function AdminsClient() {
                           Pending invite
                         </Badge>
                         {admin.invitedAt ? (
-                          <span className="text-caption text-muted-foreground">
+                          <span className="typography-caption text-muted-foreground">
                             {formatSentAgo(admin.invitedAt, nowMs)}
                           </span>
                         ) : null}
@@ -311,7 +311,7 @@ function RowActionButton({
       onClick={onClick}
       aria-label={label}
       className={cn(
-        "rounded-sm text-body hover:underline focus-visible:shadow-focus-ring cursor-pointer",
+        "rounded-sm typography-body hover:underline focus-visible:shadow-focus-ring cursor-pointer",
         destructive
           ? "text-destructive hover:text-destructive-hover"
           : "text-foreground",

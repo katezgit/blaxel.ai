@@ -26,10 +26,10 @@ export function TwoFactorDisabledCard({ onSetup }: TwoFactorDisabledCardProps) {
         <div className="flex items-start gap-3">
           <ShieldBadge />
           <div className="flex flex-col gap-1">
-            <p className="text-body font-medium text-foreground">
+            <p className="typography-body font-medium text-foreground">
               Add a second verification step
             </p>
-            <p className="text-body text-muted-foreground">
+            <p className="typography-body text-muted-foreground">
               Protect your account with an authenticator app or text-message codes.
             </p>
           </div>
@@ -55,11 +55,11 @@ export function TwoFactorEnabledCard({ onDisable }: TwoFactorEnabledCardProps) {
         <div className="flex items-start gap-3">
           <ShieldBadge />
           <div className="flex flex-col gap-1">
-            <p className="inline-flex items-center gap-1.5 text-body font-medium text-state-scored-text">
+            <p className="inline-flex items-center gap-1.5 typography-body font-medium text-state-scored-text">
               <Check aria-hidden="true" className="size-4" />
               Two-factor authentication is on
             </p>
-            <p className="text-body text-muted-foreground">
+            <p className="typography-body text-muted-foreground">
               You&rsquo;ll be asked for a verification code each time you sign in.
             </p>
           </div>

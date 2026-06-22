@@ -39,23 +39,23 @@ export default function GlobalError({
       <body className="min-h-screen bg-background">
         <div className="flex min-h-screen w-full items-center justify-center">
           <div className="flex max-w-[480px] flex-col items-center gap-4 px-6 text-center">
-            <span className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1.5 font-mono text-label font-medium text-muted-foreground">
+            <span className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1.5 font-mono typography-label font-medium text-muted-foreground">
               FATAL
             </span>
 
-            <h1 className="text-subtitle font-semibold text-foreground">
+            <h1 className="typography-subtitle font-semibold text-foreground">
               Platform failed to initialize
             </h1>
 
             {hasDiagnosticBlock && (
               <div className="flex max-w-[440px] flex-col gap-1">
                 {diagnostic &&(
-                  <p className="line-clamp-2 font-mono text-code text-muted-foreground">
+                  <p className="line-clamp-2 font-mono typography-code text-muted-foreground">
                     {diagnostic}
                   </p>
                 )}
                 {digest && (
-                  <p className="font-mono text-code text-muted-foreground/60">
+                  <p className="font-mono typography-code text-muted-foreground/60">
                     digest: {digest}
                   </p>
                 )}

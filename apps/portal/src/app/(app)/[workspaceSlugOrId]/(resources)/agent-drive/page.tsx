@@ -16,7 +16,7 @@ export default async function AgentDrivePage() {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1 className="text-display font-semibold text-foreground">Agent Drive</h1>
+        <h1 className="typography-display font-semibold text-foreground">Agent Drive</h1>
         <p className="text-muted-foreground">Shared workspace file system for your agents.</p>
       </header>
       <HydrationBoundary state={dehydrate(queryClient)}>

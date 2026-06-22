@@ -13,12 +13,12 @@ export default function LoginPage() {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col items-center gap-3">
           <BrandMark size="sm" />
-          <h1 className="text-subtitle font-semibold text-foreground">
+          <h1 className="typography-subtitle font-semibold text-foreground">
             Sign in to HUD
           </h1>
         </div>
         <LoginForm />
-        <p className="text-center text-caption text-muted-foreground">
+        <p className="text-center typography-caption text-muted-foreground">
           Don&apos;t have an account?{" "}
           <Link
             href="/register"

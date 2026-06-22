@@ -53,7 +53,7 @@ export function RemoveMemberButton({ name, onRemove }: RemoveMemberButtonProps) 
             </DialogDescription>
           </DialogHeader>
           <DialogBody>
-            <p className="text-body text-foreground">
+            <p className="typography-body text-foreground">
               Remove{" "}
               <span className="font-medium text-foreground">{name}</span> from
               this organization. They&rsquo;ll lose access immediately. You can

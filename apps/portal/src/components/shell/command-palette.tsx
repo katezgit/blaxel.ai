@@ -64,7 +64,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       </div>
       <CommandList>
         <CommandEmpty>
-          <p className="px-4 py-8 text-center text-body text-muted-foreground">
+          <p className="px-4 py-8 text-center typography-body text-muted-foreground">
             No results for &ldquo;{query}&rdquo;.
           </p>
         </CommandEmpty>

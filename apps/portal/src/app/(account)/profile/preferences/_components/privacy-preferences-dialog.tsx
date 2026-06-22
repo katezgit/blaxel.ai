@@ -67,7 +67,7 @@ export function PrivacyPreferencesDialog({
       >
         <DialogHeader>
           <DialogTitle>Your privacy choices</DialogTitle>
-          <p className="text-body text-muted-foreground">
+          <p className="typography-body text-muted-foreground">
             Manage how your personal data is used. These choices apply across
             every workspace you belong to.
           </p>
@@ -111,7 +111,7 @@ export function PrivacyPreferencesDialog({
             href="https://blaxel.ai/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-0.5 self-start rounded-sm text-caption text-muted-foreground outline-hidden hover:text-foreground focus-visible:shadow-focus-ring sm:mr-auto"
+            className="inline-flex items-center gap-0.5 self-start rounded-sm typography-caption text-muted-foreground outline-hidden hover:text-foreground focus-visible:shadow-focus-ring sm:mr-auto"
           >
             View full privacy policy
             <ArrowUpRight aria-hidden="true" className="size-3.5" />

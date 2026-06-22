@@ -45,7 +45,7 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
           <div key={group.label} data-nav-group className="flex flex-col gap-0.5">
             <div
               data-group-label
-              className="px-2 pb-1 font-mono text-meta uppercase text-meta-foreground"
+              className="px-2 pb-1 font-mono typography-meta uppercase text-meta-foreground"
             >
               {group.label}
             </div>

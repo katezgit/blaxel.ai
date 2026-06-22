@@ -133,7 +133,7 @@ export default function CreateServiceAccountDialog({
               sensitive
             />
             {pendingClose && (
-              <p className="text-caption text-state-warning-text">
+              <p className="typography-caption text-state-warning-text">
                 Close without copying the secret? You will not see it again.
               </p>
             )}

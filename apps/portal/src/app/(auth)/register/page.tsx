@@ -13,12 +13,12 @@ export default function RegisterPage() {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col items-center gap-3">
           <BrandMark size="sm" />
-          <h1 className="text-subtitle font-semibold text-foreground">
+          <h1 className="typography-subtitle font-semibold text-foreground">
             Create your HUD account
           </h1>
         </div>
         <RegisterForm />
-        <p className="text-center text-caption text-muted-foreground">
+        <p className="text-center typography-caption text-muted-foreground">
           Already have an account?{" "}
           <Link
             href="/login"

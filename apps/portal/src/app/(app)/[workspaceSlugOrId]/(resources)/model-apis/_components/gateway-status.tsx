@@ -58,7 +58,7 @@ export default function GatewayStatus() {
               aria-hidden="true"
               className={cn("size-1.5 rounded-full", dotClassFor(state))}
             />
-            <span className={cn("text-body", statusWordClassFor(state))}>
+            <span className={cn("typography-body", statusWordClassFor(state))}>
               {statusWordFor(state)}
             </span>
           </span>
@@ -66,7 +66,7 @@ export default function GatewayStatus() {
         <TooltipContent>{tooltipFor(state)}</TooltipContent>
       </Tooltip>
       {state.kind === "ok" && (
-        <span className="text-body text-meta-foreground">
+        <span className="typography-body text-meta-foreground">
           v{state.data.version}
         </span>
       )}

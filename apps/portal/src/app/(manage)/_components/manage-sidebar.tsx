@@ -81,7 +81,7 @@ function ManageHeaderFull() {
     <div className="mt-2 pr-2">
       <Link
         href="/jobs"
-        className="sidebar-row-hover focus-inset flex h-8 items-center gap-1.5 rounded-md px-2 text-body font-medium text-foreground"
+        className="sidebar-row-hover focus-inset flex h-8 items-center gap-1.5 rounded-md px-2 typography-body font-medium text-foreground"
       >
         <ChevronLeftIcon aria-hidden="true" className="size-4 shrink-0" />
         Manage
@@ -124,7 +124,7 @@ function NavGroup({ label, items, isAdmin, className }: NavGroupProps) {
   return (
     <div className={cn("flex flex-col", className)}>
       {!collapsed && (
-        <div className="px-4 pt-2 pb-1 font-mono text-meta text-meta-foreground uppercase">
+        <div className="px-4 pt-2 pb-1 font-mono typography-meta text-meta-foreground uppercase">
           {label}
         </div>
       )}
@@ -145,7 +145,7 @@ function NavGroup({ label, items, isAdmin, className }: NavGroupProps) {
 
 function LockedNote() {
   return (
-    <div className="mx-3 mt-3 flex gap-2 rounded-md bg-muted-surface px-3 py-2 text-caption text-meta-foreground leading-snug">
+    <div className="mx-3 mt-3 flex gap-2 rounded-md bg-muted-surface px-3 py-2 typography-caption text-meta-foreground leading-snug">
       <Lock aria-hidden="true" className="mt-1 size-3 shrink-0" />
       <span>Billing, limits, and secrets are managed by an owner.</span>
     </div>
@@ -163,10 +163,10 @@ function UserFooterFull({ user }: UserFooterProps) {
         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
       </Avatar>
       <div className="flex min-w-0 flex-col leading-tight">
-        <span className="truncate text-label font-semibold text-foreground">
+        <span className="truncate typography-label font-semibold text-foreground">
           {user.name}
         </span>
-        <span className="truncate font-mono text-caption text-meta-foreground">
+        <span className="truncate font-mono typography-caption text-meta-foreground">
           {user.email}
         </span>
       </div>

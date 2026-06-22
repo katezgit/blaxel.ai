@@ -24,7 +24,7 @@ export default function TwoFactorSmsSetupStep({
 
   return (
     <div className="flex flex-col gap-6 pt-2">
-      <p className="text-body text-muted-foreground">
+      <p className="typography-body text-muted-foreground">
         We&rsquo;ll send a one-time code to this number whenever you sign in.
         Carrier message rates may apply.
       </p>

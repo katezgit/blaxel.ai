@@ -10,7 +10,7 @@ export function SystemDetailsSection({ model }: { model: Model }) {
       <div className="rounded-surface border border-border bg-panel px-5 py-4">
         <h2
           id="system-details-heading"
-          className="text-subtitle font-medium text-foreground"
+          className="typography-subtitle font-medium text-foreground"
         >
           System Details
         </h2>
@@ -28,7 +28,7 @@ export function SystemDetailsSection({ model }: { model: Model }) {
             />
           </Row>
           <Row label="Created">
-            <span className="text-body text-foreground" title={model.createdAt}>
+            <span className="typography-body text-foreground" title={model.createdAt}>
               {formatRelative(model.createdAt)}
             </span>
           </Row>

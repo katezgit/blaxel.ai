@@ -151,16 +151,16 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         cell: ({ row }) => (
           <div className="flex min-w-0 flex-col gap-0.5">
             <span className="flex items-center gap-2">
-              <span className="truncate text-label font-medium text-foreground">
+              <span className="truncate typography-label font-medium text-foreground">
                 {row.original.name}
               </span>
               {row.original.isYou && (
-                <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
+                <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
                   you
                 </span>
               )}
             </span>
-            <span className="truncate font-mono text-caption text-meta-foreground">
+            <span className="truncate font-mono typography-caption text-meta-foreground">
               {row.original.email}
             </span>
           </div>
@@ -266,7 +266,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
     <section className="flex flex-col gap-6">
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
-          <h1 className="text-display font-semibold text-foreground">
+          <h1 className="typography-display font-semibold text-foreground">
             Workspace team
           </h1>
           <p className="text-muted-foreground">
@@ -322,7 +322,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       {selectedIds.length > 0 && (
         <div className="flex items-center justify-between rounded-md border border-border bg-secondary-surface px-3 py-2">
           <div className="flex items-center gap-4">
-            <span className="text-label text-foreground">
+            <span className="typography-label text-foreground">
               {selectedIds.length} selected
             </span>
             <span aria-hidden="true" className="h-4 w-px bg-border" />
@@ -436,7 +436,7 @@ function SortHeader({ column, label }: SortHeaderProps) {
       type="button"
       onClick={() => column.toggleSorting(sorted === "asc")}
       className={cn(
-        "group inline-flex items-center gap-1.5 text-left text-label font-medium",
+        "group inline-flex items-center gap-1.5 text-left typography-label font-medium",
         "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
         sorted ? "text-foreground" : "text-meta-foreground hover:text-foreground",
       )}
@@ -464,7 +464,7 @@ function RoleCell({ role }: { role: Role }) {
   const meta = ROLE_META[role];
   const Icon = meta.icon;
   return (
-    <span className="inline-flex items-center gap-1.5 text-label text-foreground">
+    <span className="inline-flex items-center gap-1.5 typography-label text-foreground">
       <Icon aria-hidden="true" className="size-3.5 shrink-0 text-meta-foreground" />
       <span>{meta.label}</span>
     </span>
@@ -475,7 +475,7 @@ function SourceCell({ source }: { source: MemberSource }) {
   const meta = SOURCE_META[source];
   const Icon = meta.icon;
   return (
-    <span className="inline-flex items-center gap-1.5 text-label text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 typography-label text-muted-foreground">
       <Icon aria-hidden="true" className="size-3.5 shrink-0" />
       <span>{meta.label}</span>
     </span>
@@ -497,7 +497,7 @@ function StatusCell({ status }: { status: MemberStatus }) {
   } as const;
   const Icon = iconMap[status];
   return (
-    <span className={cn("inline-flex items-center gap-1.5 text-label text-foreground")}>
+    <span className={cn("inline-flex items-center gap-1.5 typography-label text-foreground")}>
       <Icon aria-hidden="true" className={cn("size-3.5 shrink-0", toneClass[meta.tone])} />
       <span>{meta.label}</span>
     </span>
