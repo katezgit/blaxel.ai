@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -10,7 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ChevronLeft, MoreHorizontal, Plus } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
 import { Button } from "@repo/ui/components/button";
@@ -18,11 +17,11 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@repo/ui/components/dialog";
+import { Breadcrumb } from "@/components/shell/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -147,44 +146,43 @@ export default function ConnectionsView({
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="flex items-center">
-        <Button variant="ghost" asChild>
-          <Link
-            href={`/${workspaceSlug}/settings/integrations`}
-            className="inline-flex items-center gap-1"
-          >
-            <ChevronLeft aria-hidden="true" className="size-4" />
-            <span>Integrations</span>
-          </Link>
-        </Button>
-      </div>
-
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-        <header className="flex items-start gap-3">
-          <Avatar size="lg" shape="square">
-            {integration.logoUrl && (
-              <AvatarImage src={integration.logoUrl} alt={integration.name} />
-            )}
-            <AvatarFallback>{integration.logoInitial}</AvatarFallback>
-          </Avatar>
-          <div className="page-header">
-            <h1 className="text-display font-semibold text-foreground">
-              {integration.name}
-            </h1>
-            <p className="text-muted-foreground">{integration.description}</p>
-            <p className="mt-1 text-meta text-meta-foreground">
-              {integration.category === "model" ? "Model" : "MCP server"}
-            </p>
+      <header className="flex flex-col gap-3">
+        <Breadcrumb
+          parent={{
+            href: `/${workspaceSlug}/settings/integrations`,
+            label: "Integrations",
+          }}
+          current={integration.name}
+        />
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="flex items-start gap-3">
+            <Avatar size="lg" shape="square">
+              {integration.logoUrl && (
+                <AvatarImage src={integration.logoUrl} alt={integration.name} />
+              )}
+              <AvatarFallback>{integration.logoInitial}</AvatarFallback>
+            </Avatar>
+            <div className="page-header">
+              <h1 className="text-display font-semibold text-foreground">
+                {integration.name}
+              </h1>
+              <p className="text-muted-foreground">{integration.description}</p>
+              <p className="mt-1 text-meta text-meta-foreground">
+                {integration.category === "model" ? "Model" : "MCP server"}
+              </p>
+            </div>
           </div>
-        </header>
-        <Button
-          variant="primary"
-          onClick={() => setDrawer({ mode: "create" })}
-        >
-          <Plus aria-hidden="true" />
-          <span>Create integration</span>
-        </Button>
-      </div>
+          {connections.length > 0 && (
+            <Button
+              variant="primary"
+              onClick={() => setDrawer({ mode: "create" })}
+            >
+              <Plus aria-hidden="true" />
+              <span>Create integration</span>
+            </Button>
+          )}
+        </div>
+      </header>
 
       {connections.length === 0 ? (
         <EmptyState
@@ -220,12 +218,13 @@ export default function ConnectionsView({
         <DialogContent size="sm">
           <DialogHeader>
             <DialogTitle>Remove {pendingRemove?.id}?</DialogTitle>
-            <DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <p className="text-body text-muted-foreground">
               Agents and CLI sessions using this connection will start receiving
               401 responses immediately. This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogBody />
+            </p>
+          </DialogBody>
           <DialogFooter>
             <Button
               variant="secondary"
