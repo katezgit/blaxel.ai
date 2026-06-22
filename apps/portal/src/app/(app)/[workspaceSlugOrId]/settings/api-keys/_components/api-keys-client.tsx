@@ -21,13 +21,14 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { toast } from "sonner";
+import { cn } from "@repo/ui/lib/cn";
 import type { ApiKey, Org } from "@/lib/mock/types";
 import { workspaceApiKeyQueries } from "@/lib/query/workspace-api-keys";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
+import ApiKeysTable from "./api-keys-table";
 import CreateApiKeyDialog from "./create-api-key-dialog";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", {
@@ -97,23 +98,8 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
         ),
       }),
       columnHelper.accessor("expiresAt", {
-        header: "Expires in",
-        cell: (info) => {
-          const value = info.getValue();
-          if (!value) {
-            return (
-              <span className="typography-label text-muted-foreground">Never</span>
-            );
-          }
-          const days = Math.round(
-            (new Date(value).getTime() - Date.now()) / 86400000,
-          );
-          return (
-            <span className="font-mono typography-label text-muted-foreground">
-              {days <= 0 ? "Expired" : `${days} days`}
-            </span>
-          );
-        },
+        header: "Expires",
+        cell: (info) => <ExpiresCell expiresAt={info.getValue()} />,
       }),
       columnHelper.accessor("createdAt", {
         header: "Created at (UTC-7)",
@@ -198,7 +184,15 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
           }
         />
       ) : (
-        <ResourceTable table={table} />
+        <ApiKeysTable
+          table={table}
+          getRowClassName={(row) =>
+            classifyExpiry(row.original.expiresAt) === "near"
+              // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+              ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
+              : undefined
+          }
+        />
       )}
 
       <CreateApiKeyDialog
@@ -234,6 +228,51 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
         }}
       />
     </section>
+  );
+}
+
+// Near-expiry window — Alex's rotation lookahead. Rows within this window get
+// the warning row treatment so the "which keys do I need to rotate?" question
+// is answerable in one glance. Mirrors the Open-invoice and expired-invite
+// rows shipping on the same branch.
+const NEAR_EXPIRY_DAYS = 7;
+
+type ExpiryClass = "never" | "expired" | "near" | "future";
+
+function classifyExpiry(expiresAt: string | null): ExpiryClass {
+  if (!expiresAt) return "never";
+  const days = daysUntil(expiresAt);
+  if (days <= 0) return "expired";
+  if (days <= NEAR_EXPIRY_DAYS) return "near";
+  return "future";
+}
+
+// Ceil so "1.2 days from now" shows "in 2d" rather than rounding down to 1d
+// while the key is still valid for more than a calendar day.
+function daysUntil(isoDate: string): number {
+  return Math.ceil((new Date(isoDate).getTime() - Date.now()) / 86400000);
+}
+
+function ExpiresCell({ expiresAt }: { expiresAt: string | null }) {
+  const kind = classifyExpiry(expiresAt);
+  if (kind === "never") {
+    return <span className="typography-label text-muted-foreground">Never</span>;
+  }
+  if (kind === "expired") {
+    return (
+      <span className="font-mono typography-label text-destructive">Expired</span>
+    );
+  }
+  const days = daysUntil(expiresAt as string);
+  return (
+    <span
+      className={cn(
+        "font-mono typography-label",
+        kind === "near" ? "text-state-warning" : "text-muted-foreground",
+      )}
+    >
+      in {days}d
+    </span>
   );
 }
 

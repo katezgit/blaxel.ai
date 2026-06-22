@@ -129,7 +129,7 @@ export default function AutoTopUpRule({
                 toast.success("Auto top-up disabled");
               }}
             />
-            <Button variant="secondary" onClick={onRequestEdit}>
+            <Button variant="ghost" onClick={onRequestEdit}>
               Edit
             </Button>
           </div>

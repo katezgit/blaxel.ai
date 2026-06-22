@@ -8,6 +8,7 @@ import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { Input } from "@repo/ui/components/input";
+import { Separator } from "@repo/ui/components/separator";
 import {
   Table,
   TableBody,
@@ -53,6 +54,7 @@ export default function AdminsClient() {
   const [pendingRemove, setPendingRemove] = useState<AccountAdmin | null>(null);
   const [search, setSearch] = useState("");
   const nowMs = Date.now();
+  const ownerEmail = state.identity.ownerEmail;
 
   // Owner row is always pinned visible — search only filters non-Owner rows.
   const visibleAdmins = useMemo(() => {
@@ -157,21 +159,26 @@ export default function AdminsClient() {
                 <TableRow key={admin.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Avatar size="sm">
-                        <AvatarFallback
-                          className={cn(isPending && "bg-muted-foreground")}
-                        >
+                      <Avatar size="sm" className={cn(isPending && "opacity-50")}>
+                        <AvatarFallback>
                           {getInitials(admin.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span
-                          className={cn(
-                            "font-medium",
-                            isPending && "text-muted-foreground",
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "font-medium",
+                              isPending && "text-muted-foreground",
+                            )}
+                          >
+                            {admin.name}
+                          </span>
+                          {admin.email === ownerEmail && (
+                            <span className="rounded-sm bg-secondary-surface px-1.5 py-px typography-meta font-mono text-meta-foreground">
+                              you
+                            </span>
                           )}
-                        >
-                          {admin.name}
                         </span>
                         <span className="font-mono typography-caption text-muted-foreground">
                           {admin.email}
@@ -254,23 +261,30 @@ function PendingRowActions({
   onRevoke,
 }: PendingRowActionsProps) {
   return (
-    <div className="inline-flex items-center gap-2">
-      <RowActionButton
+    <div className="inline-flex h-8 items-center">
+      <Button
+        variant="link"
         onClick={onResend}
-        label={`Resend invitation to ${admin.email}`}
+        aria-label={`Resend invitation to ${admin.email}`}
       >
         Resend
-      </RowActionButton>
-      <span aria-hidden="true" className="text-muted-foreground">
-        &middot;
-      </span>
-      <RowActionButton
+      </Button>
+      {/* h-3.5 / 14px aligns the divider to the cap-height of the adjacent
+          text-link buttons; spacing tokens snap to text-line height, which
+          would overshoot the glyph. Structural compensation, not a token
+          off-ramp. */}
+      <Separator
+        orientation="vertical"
+        decorative
+        className="mx-1 data-[orientation=vertical]:h-3.5"
+      />
+      <Button
+        variant="destructive-link"
         onClick={onRevoke}
-        label={`Revoke invitation to ${admin.email}`}
-        destructive
+        aria-label={`Revoke invitation to ${admin.email}`}
       >
         Revoke
-      </RowActionButton>
+      </Button>
     </div>
   );
 }
@@ -282,42 +296,14 @@ interface ActiveRowActionsProps {
 
 function ActiveRowActions({ admin, onRemove }: ActiveRowActionsProps) {
   return (
-    <RowActionButton
-      onClick={onRemove}
-      label={`Remove ${admin.name}`}
-      destructive
-    >
-      Remove
-    </RowActionButton>
-  );
-}
-
-interface RowActionButtonProps {
-  onClick: () => void;
-  label: string;
-  destructive?: boolean;
-  children: React.ReactNode;
-}
-
-function RowActionButton({
-  onClick,
-  label,
-  destructive,
-  children,
-}: RowActionButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className={cn(
-        "rounded-sm typography-body hover:underline focus-visible:shadow-focus-ring cursor-pointer",
-        destructive
-          ? "text-destructive hover:text-destructive-hover"
-          : "text-foreground",
-      )}
-    >
-      {children}
-    </button>
+    <div className="inline-flex h-8 items-center">
+      <Button
+        variant="destructive-link"
+        onClick={onRemove}
+        aria-label={`Remove ${admin.name}`}
+      >
+        Remove
+      </Button>
+    </div>
   );
 }

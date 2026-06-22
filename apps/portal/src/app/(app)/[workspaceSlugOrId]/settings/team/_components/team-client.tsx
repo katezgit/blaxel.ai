@@ -44,10 +44,10 @@ import type {
 } from "@/lib/mock/types";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
 import FilterPopover from "./filter-popover";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
+import TeamTable from "./team-table";
 import {
   ROLE_META,
   ROLE_VALUES,
@@ -368,7 +368,15 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           }
         />
       ) : (
-        <ResourceTable table={table} />
+        <TeamTable
+          table={table}
+          getRowClassName={(row) =>
+            row.original.status === "expired"
+              // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+              ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
+              : undefined
+          }
+        />
       )}
 
       <InviteUsersDialog

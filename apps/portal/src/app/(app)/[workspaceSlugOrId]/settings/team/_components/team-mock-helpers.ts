@@ -29,13 +29,15 @@ export const SOURCE_META: Record<
   local: { label: "Local", icon: User },
 };
 
+// Expired = action required (re-send / revoke), surfaced as warning.
+// Pending = in-flight invite, not alarming — muted neutral.
 export const STATUS_META: Record<
   MemberStatus,
   { label: string; tone: "success" | "warning" | "muted" }
 > = {
   accepted: { label: "Accepted", tone: "success" },
-  pending: { label: "Pending", tone: "warning" },
-  expired: { label: "Expired", tone: "muted" },
+  pending: { label: "Pending", tone: "muted" },
+  expired: { label: "Expired", tone: "warning" },
 };
 
 export const ROLE_VALUES: ReadonlyArray<Role> = ["owner", "admin", "member"];

@@ -21,7 +21,7 @@ export default function AddOnRow({ addon }: AddOnRowProps) {
   return (
     <article className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 md:flex-row md:items-start md:justify-between md:gap-6">
       <div className="flex flex-1 items-start gap-3">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-background text-foreground">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground">
           <Icon className="size-4" aria-hidden="true" />
         </span>
         <div className="flex flex-col gap-1">
