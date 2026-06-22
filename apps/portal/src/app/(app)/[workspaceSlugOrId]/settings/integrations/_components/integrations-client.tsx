@@ -257,13 +257,7 @@ function NameCell({ integration }: { integration: Integration }) {
     <div className="flex items-center gap-3">
       <Avatar size="sm" shape="square">
         {integration.logoUrl && (
-          <AvatarImage
-            src={integration.logoUrl}
-            alt={integration.name}
-            // simple-icons SVGs ship as black-on-transparent. Inverting in dark
-            // mode flips them to white so they remain legible on bg-card (dark).
-            className="dark:invert"
-          />
+          <AvatarImage src={integration.logoUrl} alt={integration.name} />
         )}
         <AvatarFallback>{integration.logoInitial}</AvatarFallback>
       </Avatar>
@@ -390,11 +384,7 @@ function ConfigureIntegrationDrawer({
               <div className="flex items-start gap-3">
                 <Avatar size="md" shape="square">
                   {integration.logoUrl && (
-                    <AvatarImage
-                      src={integration.logoUrl}
-                      alt={integration.name}
-                      className="dark:invert"
-                    />
+                    <AvatarImage src={integration.logoUrl} alt={integration.name} />
                   )}
                   <AvatarFallback>{integration.logoInitial}</AvatarFallback>
                 </Avatar>
