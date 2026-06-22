@@ -29,7 +29,7 @@
    *
    * Light assignments:
    *   ink-900 → foreground       = v2-gray-4  (~14% L)
-   *   ink-800 → muted-foreground = v2-gray-40 (~48% L)
+   *   ink-800 → muted-foreground = v2-gray-40 (~42% L, bumped from ~48% for ~6:1 contrast vs --surface-bg-light, matches Primer muted philosophy)
    *   ink-700 → meta-foreground  = v2-gray-52 (~58% L)
    *   ink-400 → text-disabled    = v2-gray-64 (~69% L)
    *
@@ -40,7 +40,7 @@
    *   ink-500 → text-disabled    = v2-gray-30  (~39% L) */
   --ink-900: oklch(.20 .004 285.823);    /* v2-gray-4  — foreground light    ↔ ink-50 dark  */
   --ink-50:  oklch(1 0 0);               /* v2-gray-100 — foreground dark     ↔ ink-900 light */
-  --ink-800: oklch(.480 .035 284.997);   /* v2-gray-40 — muted-fg light      ↔ ink-100 dark  */
+  --ink-800: oklch(.42 .035 284.997);    /* v2-gray-40 — muted-fg light      ↔ ink-100 dark  */
   --ink-100: #c6c6c6;                    /* gray-200 reference — muted-fg dark ↔ ink-800 light */
   --ink-700: oklch(.579 .041 285.042);   /* v2-gray-52 — meta-fg light       ↔ ink-200 dark  */
   --ink-200: oklch(.796 .020 285.946);   /* v2-gray-76 — meta-fg dark        ↔ ink-700 light */
