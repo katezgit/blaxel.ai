@@ -161,7 +161,7 @@ export default function AdminsClient() {
                     <div className="flex items-center gap-3">
                       <Avatar size="sm">
                         <AvatarFallback
-                          className={cn(isPending && "bg-muted-foreground")}
+                          className={cn(isPending && "bg-muted-surface")}
                         >
                           {getInitials(admin.name)}
                         </AvatarFallback>
@@ -177,7 +177,7 @@ export default function AdminsClient() {
                             {admin.name}
                           </span>
                           {admin.email === ownerEmail && (
-                            <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
+                            <span className="rounded-sm bg-secondary-surface px-1.5 py-px text-meta font-mono text-meta-foreground">
                               you
                             </span>
                           )}
@@ -271,6 +271,10 @@ function PendingRowActions({
       >
         Resend
       </Button>
+      {/* h-3.5 / 14px aligns the divider to the cap-height of the adjacent
+          text-link buttons; spacing tokens snap to text-line height, which
+          would overshoot the glyph. Structural compensation, not a token
+          off-ramp. */}
       <Separator
         orientation="vertical"
         decorative
