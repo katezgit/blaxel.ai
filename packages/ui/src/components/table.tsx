@@ -13,7 +13,7 @@ const DensityContext = React.createContext<TableDensity>("default")
 
 // ── CSS-only exports (legacy — backward-compat, consumed by TanStack Table) ──
 
-export const tableClass = "w-full caption-bottom border-collapse"
+export const tableClass = "w-full caption-bottom border-collapse typography-body"
 export const tableHeaderClass = "bg-field-rest"
 export const tableHeaderStickyClass = "bg-field-rest"
 export const tableBodyClass = "[&_tr:last-child]:border-b-0"
@@ -25,7 +25,7 @@ export const tableHeadVariants = cva(
   [
     "sticky top-0 z-table-header",
     "text-left align-middle whitespace-nowrap",
-    "typography-label font-medium",
+    "font-medium",
     "text-muted-foreground",
     "border-b border-border",
     // First/last inset aligns with surrounding container chrome (Card px-6, page-section px-6)
@@ -53,7 +53,7 @@ export const tableRowVariants = cva(
 
 export const tableCellVariants = cva(
   [
-    "align-middle typography-body font-normal text-foreground whitespace-nowrap",
+    "align-middle font-normal text-foreground whitespace-nowrap",
     // First/last inset aligns with surrounding container chrome (Card px-6, page-section px-6)
     "first:pl-6 last:pr-6",
   ].join(" "),
