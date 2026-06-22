@@ -52,8 +52,8 @@ const buttonVariants = cva(
         ],
 
         link: [
-          "bg-transparent text-foreground underline underline-offset-4",
-          "hover:text-primary",
+          "bg-transparent text-foreground",
+          "hover:bg-hover-surface",
           "disabled:bg-transparent",
         ],
 
