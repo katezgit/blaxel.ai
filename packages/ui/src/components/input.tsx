@@ -63,10 +63,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             data-slot="input"
             className={cn(
               "flex-1 min-w-0 bg-transparent border-none outline-none focus-visible:shadow-none",
-              // text-foreground must come AFTER text-body — both belong to the
-              // text-color group in tailwind-merge, last one wins. Otherwise the
-              // input value text inherits the shell's text-meta-foreground.
-              "font-sans font-normal text-body text-foreground",
+              "text-foreground font-sans font-normal text-body",
               "placeholder:text-meta-foreground",
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:text-muted-foreground",
               "disabled:placeholder:text-muted-foreground/70",
