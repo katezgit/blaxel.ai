@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { Card } from "@repo/ui/components/card";
 import { TIER_LIMITS } from "@/lib/mock/account";
 import { useAccountState } from "@/lib/mock/account-context";
@@ -7,6 +9,7 @@ import { useAccountState } from "@/lib/mock/account-context";
 interface SummaryRow {
   label: string;
   value: string;
+  href: string;
 }
 
 export default function AccountSummaryPanel() {
@@ -21,6 +24,7 @@ export default function AccountSummaryPanel() {
       : `${activeAdmins} active`;
 
   const workspaceLimit = TIER_LIMITS[state.tier].workspaces;
+  const planTierValue = `Tier ${state.tier} · ${workspaceLimit} workspaces included`;
   const workspacesValue = `${state.workspaces.length} / ${workspaceLimit} used`;
 
   const ssoEnabled = state.saml.idpSsoUrl !== null;
@@ -29,9 +33,22 @@ export default function AccountSummaryPanel() {
     : "SSO disabled · MFA optional";
 
   const rows: ReadonlyArray<SummaryRow> = [
-    { label: "Admins", value: adminsValue },
-    { label: "Workspaces", value: workspacesValue },
-    { label: "Login policy", value: policyValue },
+    { label: "Admins", value: adminsValue, href: "/account/admins" },
+    {
+      label: "Plan tier",
+      value: planTierValue,
+      href: "/account/billing/tier-quotas",
+    },
+    {
+      label: "Workspaces",
+      value: workspacesValue,
+      href: "/account/workspaces",
+    },
+    {
+      label: "Login policy",
+      value: policyValue,
+      href: "/account/login-policy",
+    },
   ];
 
   return (
@@ -39,15 +56,26 @@ export default function AccountSummaryPanel() {
       <h2 className="typography-subtitle font-semibold text-foreground">
         Account summary
       </h2>
-      <Card className="p-4">
-        <dl className="grid grid-cols-1 gap-y-2 typography-body sm:grid-cols-[140px_minmax(0,1fr)] sm:gap-x-6 sm:gap-y-3">
+      <Card className="p-0 overflow-hidden">
+        <ul className="flex flex-col divide-y divide-border">
           {rows.map((row) => (
-            <div key={row.label} className="contents">
-              <dt className="text-muted-foreground">{row.label}</dt>
-              <dd className="text-foreground">{row.value}</dd>
-            </div>
+            <li key={row.label}>
+              <Link
+                href={row.href}
+                className="sidebar-row-hover flex items-center gap-4 px-4 py-3 typography-body focus-visible:shadow-focus-ring focus-visible:outline-hidden"
+              >
+                <span className="w-32 shrink-0 text-muted-foreground">
+                  {row.label}
+                </span>
+                <span className="flex-1 text-foreground">{row.value}</span>
+                <ChevronRight
+                  className="size-4 shrink-0 text-muted-foreground"
+                  aria-hidden="true"
+                />
+              </Link>
+            </li>
           ))}
-        </dl>
+        </ul>
       </Card>
     </section>
   );
