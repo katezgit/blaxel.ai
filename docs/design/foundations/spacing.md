@@ -49,6 +49,27 @@ Tailwind ships `spacing-5` (20px), `spacing-7` (28px), `spacing-9` (36px), `spac
 - Badge ↔ dot or sibling badge: 8px / `gap-2`
 - Title ↔ description (single header unit): 4px / `gap-1`
 
+**Detail page header rhythm** (page with a breadcrumb)
+- Breadcrumb ↔ page heading block: 12px / `gap-3` — set inline on the outer `<header>`
+- H1 ↔ description (inside the heading block): 4px / `gap-1` — via the `.page-header` utility
+- Heading block ↔ page content (table, body): 24px / `gap-6` — set inline on the outer `<section>`
+
+Canonical shape:
+```tsx
+<section className="flex flex-col gap-6">       {/* heading → content */}
+  <header className="flex flex-col gap-3">       {/* breadcrumb → heading */}
+    <Breadcrumb parent={…} current={…} />
+    <div className="page-header">                {/* h1 → description */}
+      <h1>{title}</h1>
+      <p>{description}</p>
+    </div>
+  </header>
+  {/* content */}
+</section>
+```
+
+Index pages omit the `<header className="gap-3">` wrapper (no breadcrumb) and use `<header className="page-header">` directly — the section's `gap-6` then governs heading→content the same way.
+
 ---
 
 ## Relation to other foundations
