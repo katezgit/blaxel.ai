@@ -304,13 +304,13 @@
 
 
 /* ─── Typography ─────────────────────────────────────────────────────────────
- * Generates: font-{sans,mono}, text-{code,caption,label,body,subtitle,display,meta},
+ * Generates: font-{sans,mono}, typography-{display,subtitle,body,label,caption,code,meta,table-header},
  * font-{regular,medium,semibold,bold}, tracking-*, leading-*.
  *
  * USAGE NOTE: --typography-meta (10px) is designed for mono + uppercase + ≥0.14em tracking.
  * The token enforces none of this — apply font-mono + uppercase + tracking in the component. */
 @theme {
-  --text-*: initial; /* close namespace — only the named scale below generates text-{name} utilities */
+  --text-*: initial; /* wipe Tailwind's default text-{xs,sm,base,...} font-size utilities — our typography scale lives in the typography-* namespace below */
 
   /* Font families — IBM Plex suite */
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
