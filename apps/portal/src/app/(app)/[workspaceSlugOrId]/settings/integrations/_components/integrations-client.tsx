@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   createColumnHelper,
@@ -19,10 +19,18 @@ import { Card } from "@repo/ui/components/card";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { Input } from "@repo/ui/components/input";
 import { SegmentedControl } from "@repo/ui/components/segmented-control";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/components/select";
 import { cn } from "@repo/ui/lib/cn";
 import type { Integration } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
+import ConnectionDrawer from "../[provider]/_components/connection-drawer";
 import IntegrationsTable from "./integrations-table";
 
 // Flat one-click filter: a single category state covers status + type in one
@@ -38,7 +46,7 @@ interface CategoryItem {
 
 const CATEGORY_FILTERS: ReadonlyArray<CategoryItem> = [
   { value: "all", label: "All" },
-  { value: "enabled", label: "Enabled" },
+  { value: "enabled", label: "Connected providers" },
   { value: "model", label: "Model" },
   { value: "mcp-server", label: "MCP server" },
 ];
@@ -54,6 +62,7 @@ export default function IntegrationsClient() {
   const { accountId, workspaceId } = useCurrentTenancy();
   const params = useParams<{ workspaceSlugOrId: string }>();
   const workspaceSlug = params.workspaceSlugOrId;
+  const router = useRouter();
   const { data: integrations } = useSuspenseQuery(
     workspaceIntegrationQueries.list(accountId, workspaceId),
   );
@@ -66,6 +75,12 @@ export default function IntegrationsClient() {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "name", desc: false },
   ]);
+  // First-connection path: catalog opens the create drawer inline so the user
+  // doesn't bounce through an empty detail page just to click another CTA.
+  // `connectFor === null` = closed; otherwise the row whose Connect button was
+  // clicked. On successful create we route to that provider's detail page so
+  // the user lands where the freshly-created connection lives.
+  const [connectFor, setConnectFor] = useState<Integration | null>(null);
 
   const rows = useMemo<ReadonlyArray<IntegrationRow>>(() => {
     const counts = new Map<string, number>();
@@ -155,6 +170,7 @@ export default function IntegrationsClient() {
             integration={row.original.integration}
             connectionCount={row.original.connectionCount}
             workspaceSlug={workspaceSlug}
+            onConnect={setConnectFor}
           />
         ),
       }),
@@ -179,20 +195,20 @@ export default function IntegrationsClient() {
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-4">
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         <Input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search integrations"
           leading={<Search aria-hidden="true" className="size-3.5" />}
-          className="max-w-xs"
+          className="min-w-0 flex-1 md:max-w-xs"
           aria-label="Search integrations"
         />
         <SegmentedControl
           value={category}
           onValueChange={(v) => setCategory(v as CategoryFilter)}
           aria-label="Filter integrations by category"
-          className="ml-auto"
+          className="ml-auto hidden md:inline-flex"
         >
           {CATEGORY_FILTERS.map((item) => (
             <SegmentedControl.Item key={item.value} value={item.value}>
@@ -203,6 +219,27 @@ export default function IntegrationsClient() {
             </SegmentedControl.Item>
           ))}
         </SegmentedControl>
+        <Select
+          value={category}
+          onValueChange={(v) => setCategory(v as CategoryFilter)}
+        >
+          <SelectTrigger
+            aria-label="Filter integrations by category"
+            className="shrink-0 md:hidden"
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORY_FILTERS.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                <span>{item.label}</span>
+                <span className="ml-2 font-mono text-meta tabular-nums opacity-70">
+                  {categoryCounts[item.value]}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {filtered.length === 0 ? (
@@ -226,7 +263,7 @@ export default function IntegrationsClient() {
             <IntegrationsTable table={table} />
           </div>
           <ul
-            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto md:hidden"
+            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-px md:hidden"
             role="list"
           >
             {filtered.map((row) => (
@@ -235,11 +272,25 @@ export default function IntegrationsClient() {
                   integration={row.integration}
                   connectionCount={row.connectionCount}
                   workspaceSlug={workspaceSlug}
+                  onConnect={setConnectFor}
                 />
               </li>
             ))}
           </ul>
         </>
+      )}
+
+      {connectFor && (
+        <ConnectionDrawer
+          provider={connectFor}
+          state={{ mode: "create" }}
+          onClose={() => setConnectFor(null)}
+          onCreateSuccess={() =>
+            router.push(
+              `/${workspaceSlug}/settings/integrations/${connectFor.id}`,
+            )
+          }
+        />
       )}
     </section>
   );
@@ -266,7 +317,7 @@ function NameCell({ integration, connectionCount }: NameCellProps) {
           </span>
           {connectionCount > 0 && (
             <Badge variant="success" size="sm" showDot>
-              Enabled
+              Connected
             </Badge>
           )}
           {integration.comingSoon && (
@@ -287,12 +338,14 @@ interface RowActionProps {
   integration: Integration;
   connectionCount: number;
   workspaceSlug: string;
+  onConnect: (integration: Integration) => void;
 }
 
 function RowAction({
   integration,
   connectionCount,
   workspaceSlug,
+  onConnect,
 }: RowActionProps) {
   if (integration.comingSoon) {
     return (
@@ -305,8 +358,8 @@ function RowAction({
       </Button>
     );
   }
-  const base = `/${workspaceSlug}/settings/integrations/${integration.id}`;
   if (connectionCount > 0) {
+    const base = `/${workspaceSlug}/settings/integrations/${integration.id}`;
     return (
       <Button variant="ghost" asChild>
         <Link href={base}>Manage</Link>
@@ -314,8 +367,8 @@ function RowAction({
     );
   }
   return (
-    <Button variant="secondary" asChild>
-      <Link href={`${base}?action=create`}>Connect</Link>
+    <Button variant="secondary" onClick={() => onConnect(integration)}>
+      Connect
     </Button>
   );
 }
@@ -324,6 +377,7 @@ interface IntegrationCardProps {
   integration: Integration;
   connectionCount: number;
   workspaceSlug: string;
+  onConnect: (integration: Integration) => void;
 }
 
 interface SortHeaderProps {
@@ -378,6 +432,7 @@ function IntegrationCard({
   integration,
   connectionCount,
   workspaceSlug,
+  onConnect,
 }: IntegrationCardProps) {
   const label =
     connectionCount === 0
@@ -398,6 +453,7 @@ function IntegrationCard({
           integration={integration}
           connectionCount={connectionCount}
           workspaceSlug={workspaceSlug}
+          onConnect={onConnect}
         />
       </div>
     </Card>

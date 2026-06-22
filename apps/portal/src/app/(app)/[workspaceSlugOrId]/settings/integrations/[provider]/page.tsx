@@ -13,14 +13,12 @@ export const metadata: Metadata = {
 
 interface ProviderPageProps {
   params: Promise<{ workspaceSlugOrId: string; provider: string }>;
-  searchParams: Promise<{ action?: string }>;
 }
 
 export default async function ProviderConnectionsPage({
   params,
-  searchParams,
 }: ProviderPageProps) {
-  const [{ provider }, { action }] = await Promise.all([params, searchParams]);
+  const { provider } = await params;
   const { accountId, workspaceId } = await getCurrentTenancy();
 
   const integrations = await fetchWorkspaceIntegrations(accountId, workspaceId);
@@ -35,10 +33,7 @@ export default async function ProviderConnectionsPage({
   return (
     <div className="mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 px-4 pb-16 pt-6 md:px-6 lg:px-8 xl:px-20">
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <ConnectionsView
-          integration={integration}
-          autoOpenCreate={action === "create"}
-        />
+        <ConnectionsView integration={integration} />
       </HydrationBoundary>
     </div>
   );

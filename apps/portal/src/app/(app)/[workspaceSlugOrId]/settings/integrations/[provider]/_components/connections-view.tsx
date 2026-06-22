@@ -1,7 +1,7 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import { useMemo, useState } from "react";
 import {
   createColumnHelper,
   flexRender,
@@ -56,17 +56,14 @@ const columnHelper = createColumnHelper<IntegrationConnection>();
 
 interface ConnectionsViewProps {
   integration: Integration;
-  autoOpenCreate: boolean;
 }
 
 export default function ConnectionsView({
   integration,
-  autoOpenCreate,
 }: ConnectionsViewProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const params = useParams<{ workspaceSlugOrId: string }>();
   const workspaceSlug = params.workspaceSlugOrId;
-  const router = useRouter();
 
   const { data: allConnections } = useSuspenseQuery(
     workspaceIntegrationQueries.connections(accountId, workspaceId),
@@ -80,19 +77,6 @@ export default function ConnectionsView({
   const [drawer, setDrawer] = useState<DrawerState>(null);
   const [pendingRemove, setPendingRemove] =
     useState<IntegrationConnection | null>(null);
-
-  // Auto-open create on `?action=create` and strip the query so back/forward
-  // doesn't re-trigger the drawer. Runs once on mount because `autoOpenCreate`
-  // is bound to the server-rendered URL — by the time the user reopens, the
-  // searchParam is already gone.
-  useEffect(() => {
-    if (!autoOpenCreate) return;
-    setDrawer({ mode: "create" });
-    router.replace(
-      `/${workspaceSlug}/settings/integrations/${integration.id}`,
-      { scroll: false },
-    );
-  }, [autoOpenCreate, integration.id, router, workspaceSlug]);
 
   const columns = useMemo(
     () => [
