@@ -85,3 +85,74 @@
   font-weight:    var(--font-weight-medium);
   text-transform: uppercase;
 }
+
+/* ─── Typography composites (typography-* namespace) ─────────────────────────
+ * Parallel namespace to text-* above; avoids Tailwind v4 text-* collision
+ * with color / size / decoration utilities. Reads from the same --text-*
+ * primitive tokens — computed styles are identical to the text-* counterparts.
+ * Round 3 will remove the text-* utilities and the cn.ts extendTailwindMerge
+ * config once all consumers are migrated (Rounds 2a/2b). */
+@utility typography-display {
+  font-family:    var(--font-sans);
+  font-size:      var(--text-display);
+  line-height:    var(--text-display--line-height);
+  letter-spacing: var(--text-display--letter-spacing);
+  font-weight:    var(--font-weight-semibold);
+}
+
+@utility typography-subtitle {
+  font-family:    var(--font-sans);
+  font-size:      var(--text-subtitle);
+  line-height:    var(--text-subtitle--line-height);
+  letter-spacing: var(--text-subtitle--letter-spacing);
+  font-weight:    var(--font-weight-semibold);
+}
+
+@utility typography-body {
+  font-family:    var(--font-sans);
+  font-size:      var(--text-body);
+  line-height:    var(--text-body--line-height);
+  letter-spacing: var(--text-body--letter-spacing);
+  font-weight:    var(--font-weight-regular);
+}
+
+@utility typography-label {
+  font-family:    var(--font-sans);
+  font-size:      var(--text-label);
+  line-height:    var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight:    var(--font-weight-regular);
+}
+
+@utility typography-caption {
+  font-family:    var(--font-sans);
+  font-size:      var(--text-caption);
+  line-height:    var(--text-caption--line-height);
+  letter-spacing: var(--text-caption--letter-spacing);
+  font-weight:    var(--font-weight-regular);
+}
+
+@utility typography-meta {
+  font-family:    var(--font-mono);
+  font-size:      var(--text-meta);
+  line-height:    var(--text-meta--line-height);
+  letter-spacing: var(--text-meta--letter-spacing);
+  font-weight:    var(--font-weight-regular);
+}
+
+@utility typography-code {
+  font-family:    var(--font-mono);
+  font-size:      var(--text-code);
+  line-height:    var(--text-code--line-height);
+  letter-spacing: var(--text-code--letter-spacing);
+  font-weight:    var(--font-weight-regular);
+}
+
+@utility typography-table-header {
+  font-family:    var(--font-sans);
+  font-size:      var(--text-table-header);
+  line-height:    var(--text-table-header--line-height);
+  letter-spacing: var(--text-table-header--letter-spacing);
+  font-weight:    var(--font-weight-medium);
+  text-transform: uppercase;
+}
