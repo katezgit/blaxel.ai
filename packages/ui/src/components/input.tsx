@@ -44,7 +44,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "flex items-center gap-2",
             "w-full min-w-0",
             formFieldBoxVariants({ size: "md" }),
-            "text-meta-foreground",
             // focus-within: shell div is not focusable itself; only the inner input is.
             // shadow-focus-ring matches the global *:focus-visible halo+ring (base.css) so slotted inputs
             // read identically to plain inputs in both modes.
@@ -56,7 +55,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className
           )}
         >
-          {leading}
+          {/* Slot wrappers scope the muted icon color to themselves. The inner
+              input inherits ambient text-foreground from the surrounding page —
+              no cascade-and-override gymnastics. Consumers can pass an explicit
+              className on their icon to override (e.g., brand-tinted icons). */}
+          {leading != null && (
+            <span data-slot="input-leading" className="contents text-meta-foreground">
+              {leading}
+            </span>
+          )}
           <input
             ref={ref}
             type={type}
@@ -71,7 +78,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
             {...props}
           />
-          {trailing}
+          {trailing != null && (
+            <span data-slot="input-trailing" className="contents text-meta-foreground">
+              {trailing}
+            </span>
+          )}
         </div>
       )
     }
