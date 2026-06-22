@@ -12,9 +12,14 @@ export const metadata: Metadata = {
 export default async function IntegrationsPage() {
   const { accountId, workspaceId } = await getCurrentTenancy();
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery(
-    workspaceIntegrationQueries.list(accountId, workspaceId),
-  );
+  await Promise.all([
+    queryClient.prefetchQuery(
+      workspaceIntegrationQueries.list(accountId, workspaceId),
+    ),
+    queryClient.prefetchQuery(
+      workspaceIntegrationQueries.connections(accountId, workspaceId),
+    ),
+  ]);
 
   return (
     <div className="mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 px-4 pb-16 pt-6 md:px-6 lg:px-8 xl:px-20">

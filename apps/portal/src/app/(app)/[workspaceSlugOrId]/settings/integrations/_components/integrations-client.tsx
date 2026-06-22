@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   createColumnHelper,
@@ -7,26 +9,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { AlertTriangle, ExternalLink, Search } from "lucide-react";
-import { toast } from "sonner";
+import { Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
+import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@repo/ui/components/drawer";
 import { EmptyState } from "@repo/ui/components/empty-state";
-import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
 import { SegmentedControl } from "@repo/ui/components/segmented-control";
-import { cn } from "@repo/ui/lib/cn";
 import type { Integration } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
@@ -34,7 +24,8 @@ import IntegrationsTable from "./integrations-table";
 
 // Flat one-click filter: a single category state covers status + type in one
 // row, matching Blaxel's production vocabulary (status label is "Enabled", and
-// the four buckets sit side-by-side as a single selector).
+// the four buckets sit side-by-side as a single selector). "Enabled" derives
+// from connection count > 0; no separate stored flag.
 type CategoryFilter = "all" | "enabled" | "model" | "mcp-server";
 
 interface CategoryItem {
@@ -49,53 +40,79 @@ const CATEGORY_FILTERS: ReadonlyArray<CategoryItem> = [
   { value: "mcp-server", label: "MCP server" },
 ];
 
-const columnHelper = createColumnHelper<Integration>();
+interface IntegrationRow {
+  integration: Integration;
+  connectionCount: number;
+}
+
+const columnHelper = createColumnHelper<IntegrationRow>();
 
 export default function IntegrationsClient() {
   const { accountId, workspaceId } = useCurrentTenancy();
+  const params = useParams<{ workspaceSlugOrId: string }>();
+  const workspaceSlug = params.workspaceSlugOrId;
   const { data: integrations } = useSuspenseQuery(
     workspaceIntegrationQueries.list(accountId, workspaceId),
+  );
+  const { data: connections } = useSuspenseQuery(
+    workspaceIntegrationQueries.connections(accountId, workspaceId),
   );
 
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [search, setSearch] = useState("");
-  const [active, setActive] = useState<Integration | null>(null);
+
+  const rows = useMemo<ReadonlyArray<IntegrationRow>>(() => {
+    const counts = new Map<string, number>();
+    for (const c of connections) {
+      counts.set(c.providerId, (counts.get(c.providerId) ?? 0) + 1);
+    }
+    return integrations.map((integration) => ({
+      integration,
+      connectionCount: counts.get(integration.id) ?? 0,
+    }));
+  }, [integrations, connections]);
 
   const categoryCounts = useMemo(() => {
     return {
-      all: integrations.length,
-      enabled: integrations.filter((i) => i.enabled).length,
-      model: integrations.filter((i) => i.category === "model").length,
-      "mcp-server": integrations.filter((i) => i.category === "mcp-server").length,
+      all: rows.length,
+      enabled: rows.filter((r) => r.connectionCount > 0).length,
+      model: rows.filter((r) => r.integration.category === "model").length,
+      "mcp-server": rows.filter((r) => r.integration.category === "mcp-server")
+        .length,
     } satisfies Record<CategoryFilter, number>;
-  }, [integrations]);
+  }, [rows]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return integrations.filter((i) => {
-      if (category === "enabled" && !i.enabled) return false;
-      if (category === "model" && i.category !== "model") return false;
-      if (category === "mcp-server" && i.category !== "mcp-server") return false;
-      if (q && !i.name.toLowerCase().includes(q) && !i.description.toLowerCase().includes(q)) {
+    return rows.filter(({ integration, connectionCount }) => {
+      if (category === "enabled" && connectionCount === 0) return false;
+      if (category === "model" && integration.category !== "model") return false;
+      if (category === "mcp-server" && integration.category !== "mcp-server")
+        return false;
+      if (
+        q &&
+        !integration.name.toLowerCase().includes(q) &&
+        !integration.description.toLowerCase().includes(q)
+      ) {
         return false;
       }
       return true;
     });
-  }, [integrations, category, search]);
-
-  // Stable `now` for the lifetime of the view — every row computes against the
-  // same reference. Reloading the page (or remounting) re-anchors it. Matches
-  // the logs-tab pattern; tied to mount, not to filter changes.
-  const now = useMemo(() => Date.now(), []);
+  }, [rows, category, search]);
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("name", {
+      columnHelper.accessor((row) => row.integration.name, {
         id: "name",
         header: () => <span>Name</span>,
-        cell: ({ row }) => <NameCell integration={row.original} />,
+        cell: ({ row }) => (
+          <NameCell
+            integration={row.original.integration}
+            connectionCount={row.original.connectionCount}
+          />
+        ),
       }),
-      columnHelper.accessor("description", {
+      columnHelper.accessor((row) => row.integration.description, {
         id: "description",
         header: () => <span>Description</span>,
         meta: {
@@ -104,30 +121,18 @@ export default function IntegrationsClient() {
         },
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor("usedByCount", {
-        id: "serviceAccounts",
-        header: () => <span>Service accounts</span>,
-        meta: { cellClassName: "text-meta-foreground tabular-nums" },
+      columnHelper.accessor((row) => row.connectionCount, {
+        id: "connections",
+        header: () => <span>Connections</span>,
+        meta: { cellClassName: "font-mono tabular-nums" },
         cell: ({ row }) => {
-          const count = row.original.usedByCount ?? 0;
-          if (!row.original.enabled) {
-            return <span className="text-meta-foreground">—</span>;
-          }
+          const count = row.original.connectionCount;
+          if (count === 0) return <span className="text-meta-foreground">—</span>;
           return (
-            <span>
-              {count} {count === 1 ? "account" : "accounts"}
+            <span className="text-foreground">
+              {count} {count === 1 ? "connection" : "connections"}
             </span>
           );
-        },
-      }),
-      columnHelper.accessor("lastActivityAt", {
-        id: "lastActivity",
-        header: () => <span>Last activity</span>,
-        meta: { cellClassName: "text-meta-foreground" },
-        cell: ({ row }) => {
-          const iso = row.original.lastActivityAt;
-          if (!iso) return <span className="text-meta-foreground">—</span>;
-          return <span>{formatRelativeTime(iso, now)}</span>;
         },
       }),
       columnHelper.display({
@@ -136,20 +141,21 @@ export default function IntegrationsClient() {
         meta: { headerClassName: "w-32", cellClassName: "w-32 text-right" },
         cell: ({ row }) => (
           <RowAction
-            integration={row.original}
-            onActivate={() => setActive(row.original)}
+            integration={row.original.integration}
+            connectionCount={row.original.connectionCount}
+            workspaceSlug={workspaceSlug}
           />
         ),
       }),
     ],
-    [now],
+    [workspaceSlug],
   );
 
   const table = useReactTable({
-    data: filtered as Integration[],
+    data: filtered as IntegrationRow[],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.integration.id,
   });
 
   const onClearFilters = () => {
@@ -176,15 +182,7 @@ export default function IntegrationsClient() {
         >
           {CATEGORY_FILTERS.map((item) => (
             <SegmentedControl.Item key={item.value} value={item.value}>
-              <span className="flex items-center gap-1.5">
-                {item.value === "enabled" && (
-                  <span
-                    aria-hidden="true"
-                    className="size-1.5 shrink-0 rounded-full bg-state-scored"
-                  />
-                )}
-                {item.label}
-              </span>
+              <span>{item.label}</span>
               <span className="font-mono text-meta tabular-nums opacity-70">
                 {categoryCounts[item.value]}
               </span>
@@ -211,48 +209,34 @@ export default function IntegrationsClient() {
               visibility — keeps each layout's markup honest instead of
               jamming a layout prop through one component. */}
           <div className="hidden min-h-0 flex-1 md:flex md:flex-col">
-            <IntegrationsTable
-              table={table}
-              getRowClassName={(row) =>
-                row.original.statusWarning
-                  // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
-                  ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
-                  : undefined
-              }
-              renderRowExtra={(row) =>
-                row.original.statusWarning ? (
-                  <WarningBand message={row.original.statusWarning} />
-                ) : null
-              }
-            />
+            <IntegrationsTable table={table} />
           </div>
-          <ul className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto md:hidden" role="list">
-            {filtered.map((integration) => (
-              <li key={integration.id}>
+          <ul
+            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto md:hidden"
+            role="list"
+          >
+            {filtered.map((row) => (
+              <li key={row.integration.id}>
                 <IntegrationCard
-                  integration={integration}
-                  now={now}
-                  onActivate={() => setActive(integration)}
+                  integration={row.integration}
+                  connectionCount={row.connectionCount}
+                  workspaceSlug={workspaceSlug}
                 />
               </li>
             ))}
           </ul>
         </>
       )}
-
-      <ConfigureIntegrationDrawer
-        integration={active}
-        onClose={() => setActive(null)}
-      />
     </section>
   );
 }
 
-function NameCell({ integration }: { integration: Integration }) {
-  // Connected-state indicator: filled green dot inline with the name. Only
-  // appears for healthy connected rows — the warning row carries its own
-  // amber treatment, so a green dot there would conflict with the band.
-  const showConnectedDot = integration.enabled && !integration.statusWarning;
+interface NameCellProps {
+  integration: Integration;
+  connectionCount: number;
+}
+
+function NameCell({ integration, connectionCount }: NameCellProps) {
   return (
     <div className="flex items-center gap-3">
       <Avatar size="sm" shape="square">
@@ -263,15 +247,14 @@ function NameCell({ integration }: { integration: Integration }) {
       </Avatar>
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="flex items-center gap-2">
-          {showConnectedDot && (
-            <span
-              aria-hidden="true"
-              className="size-1.5 shrink-0 rounded-full bg-state-scored"
-            />
-          )}
           <span className="truncate text-body text-foreground">
             {integration.name}
           </span>
+          {connectionCount > 0 && (
+            <Badge variant="success" size="sm" showDot>
+              Enabled
+            </Badge>
+          )}
           {integration.comingSoon && (
             <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
               Coming soon
@@ -288,226 +271,73 @@ function NameCell({ integration }: { integration: Integration }) {
 
 interface RowActionProps {
   integration: Integration;
-  onActivate: () => void;
+  connectionCount: number;
+  workspaceSlug: string;
 }
 
-function RowAction({ integration, onActivate }: RowActionProps) {
+function RowAction({
+  integration,
+  connectionCount,
+  workspaceSlug,
+}: RowActionProps) {
   if (integration.comingSoon) {
     return (
-      <Button variant="secondary" disabled aria-label={`${integration.name} — coming soon`}>
+      <Button
+        variant="secondary"
+        disabled
+        aria-label={`${integration.name} — coming soon`}
+      >
         Connect
       </Button>
     );
   }
-  if (integration.enabled) {
+  const base = `/${workspaceSlug}/settings/integrations/${integration.id}`;
+  if (connectionCount > 0) {
     return (
-      <Button variant="ghost" onClick={onActivate}>
-        Configure
+      <Button variant="ghost" asChild>
+        <Link href={base}>Manage</Link>
       </Button>
     );
   }
   return (
-    <Button variant="secondary" onClick={onActivate}>
-      Connect
+    <Button variant="secondary" asChild>
+      <Link href={`${base}?action=create`}>Connect</Link>
     </Button>
-  );
-}
-
-function WarningBand({ message }: { message: string }) {
-  return (
-    <div className="flex items-start gap-2 text-caption text-state-warning-text">
-      <AlertTriangle
-        aria-hidden="true"
-        className="mt-0.5 size-3.5 shrink-0 text-state-warning"
-      />
-      <span>{message}</span>
-    </div>
   );
 }
 
 interface IntegrationCardProps {
   integration: Integration;
-  now: number;
-  onActivate: () => void;
+  connectionCount: number;
+  workspaceSlug: string;
 }
 
-function IntegrationCard({ integration, now, onActivate }: IntegrationCardProps) {
-  const metaLine = formatCardMeta(integration, now);
+function IntegrationCard({
+  integration,
+  connectionCount,
+  workspaceSlug,
+}: IntegrationCardProps) {
+  const label =
+    connectionCount === 0
+      ? "—"
+      : `${connectionCount} ${connectionCount === 1 ? "connection" : "connections"}`;
 
   return (
-    <Card
-      variant="elevated"
-      className={cn(
-        "flex flex-col gap-3 p-4",
-        integration.statusWarning &&
-          // eslint-disable-next-line no-restricted-syntax -- inset accent matches the table-row treatment; no @theme utility for inset-shadow position+width
-          "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)]",
-      )}
-    >
-      <NameCell integration={integration} />
+    <Card variant="elevated" className="flex flex-col gap-3 p-4">
+      <NameCell integration={integration} connectionCount={connectionCount} />
       <p className="text-caption text-muted-foreground">
         {integration.description}
       </p>
-      {integration.statusWarning && (
-        <WarningBand message={integration.statusWarning} />
-      )}
       <div className="flex items-center justify-between gap-2">
-        <span className="text-caption text-meta-foreground">{metaLine}</span>
-        <RowAction integration={integration} onActivate={onActivate} />
+        <span className="font-mono text-caption text-meta-foreground tabular-nums">
+          {label}
+        </span>
+        <RowAction
+          integration={integration}
+          connectionCount={connectionCount}
+          workspaceSlug={workspaceSlug}
+        />
       </div>
     </Card>
   );
-}
-
-interface ConfigureIntegrationDrawerProps {
-  integration: Integration | null;
-  onClose: () => void;
-}
-
-function ConfigureIntegrationDrawer({
-  integration,
-  onClose,
-}: ConfigureIntegrationDrawerProps) {
-  const open = integration !== null;
-  return (
-    <Drawer
-      direction="right"
-      open={open}
-      onOpenChange={(next) => {
-        if (!next) onClose();
-      }}
-    >
-      <DrawerContent size="md" aria-describedby={undefined}>
-        {integration && (
-          <>
-            <DrawerHeader className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <Avatar size="md" shape="square">
-                  {integration.logoUrl && (
-                    <AvatarImage src={integration.logoUrl} alt={integration.name} />
-                  )}
-                  <AvatarFallback>{integration.logoInitial}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col gap-1">
-                  <DrawerTitle className="text-subtitle">
-                    {integration.enabled ? "Configure" : "Connect"}{" "}
-                    {integration.name}
-                  </DrawerTitle>
-                  <DrawerDescription className="text-muted-foreground">
-                    {integration.description}
-                  </DrawerDescription>
-                </div>
-              </div>
-              <DrawerCloseButton />
-            </DrawerHeader>
-
-            <DrawerBody className="flex flex-col gap-4">
-              <FormField
-                id={`${integration.id}-name`}
-                label="Name"
-                helper="Identifier for this integration instance. Cannot be changed after creation."
-              >
-                <Input
-                  defaultValue={`${integration.id}-${randomSuffix()}`}
-                  className="font-mono"
-                />
-              </FormField>
-              <FormField
-                id={`${integration.id}-endpoint`}
-                label={
-                  integration.category === "model"
-                    ? "Base URL"
-                    : `${integration.name} Base URL`
-                }
-                helper={`Default: https://api.${integration.id}.com`}
-              >
-                <Input placeholder={`https://api.${integration.id}.com`} />
-              </FormField>
-              <FormField
-                id={`${integration.id}-api-key`}
-                label="API key"
-                helper="Stored in the workspace credential vault. Rotate any time from this drawer."
-              >
-                <Input
-                  type="password"
-                  placeholder="sk_…"
-                  className="font-mono"
-                />
-              </FormField>
-              <a
-                href={`https://docs.blaxel.ai/integrations/${integration.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(
-                  "inline-flex items-center gap-1 text-caption text-muted-foreground hover:text-foreground hover:underline",
-                )}
-              >
-                Get your API key
-                <ExternalLink className="size-3" aria-hidden="true" />
-              </a>
-            </DrawerBody>
-
-            <DrawerFooter className="flex justify-end gap-2">
-              <Button variant="secondary" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  toast.success(
-                    integration.enabled
-                      ? `${integration.name} integration updated.`
-                      : `${integration.name} integration created.`,
-                  );
-                  onClose();
-                }}
-              >
-                {integration.enabled ? "Save changes" : "Create"}
-              </Button>
-            </DrawerFooter>
-          </>
-        )}
-      </DrawerContent>
-    </Drawer>
-  );
-}
-
-function randomSuffix() {
-  return Math.random().toString(36).slice(2, 8);
-}
-
-// Card-meta line condenses the two table columns ("Service accounts" + "Last
-// activity") into a single muted line. Disabled integrations have no use count
-// and may have no activity timestamp — em-dash when both are absent.
-function formatCardMeta(integration: Integration, now: number): string {
-  const parts: string[] = [];
-  if (integration.enabled) {
-    const used = integration.usedByCount ?? 0;
-    parts.push(`${used} ${used === 1 ? "account" : "accounts"}`);
-  }
-  if (integration.lastActivityAt) {
-    parts.push(formatRelativeTime(integration.lastActivityAt, now));
-  }
-  if (parts.length === 0) return "—";
-  return parts.join(" · ");
-}
-
-// Compact relative-time formatter; identical shape to the logs-tab helper.
-// Local because integrations live on a different route and the model-apis
-// helper is colocated with its route's components.
-function formatRelativeTime(iso: string, now: number): string {
-  const then = Date.parse(iso);
-  if (Number.isNaN(then)) return iso;
-  const diffMs = now - then;
-  if (diffMs < 60_000) return "just now";
-  const minutes = Math.floor(diffMs / 60_000);
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hr ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months} mo ago`;
-  const years = Math.floor(months / 12);
-  return `${years} yr${years === 1 ? "" : "s"} ago`;
 }
