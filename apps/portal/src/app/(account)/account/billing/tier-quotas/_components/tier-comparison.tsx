@@ -178,10 +178,10 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
         </p>
       </header>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col overflow-hidden rounded-md border border-border">
         <div
           className={cn(
-            "hidden sm:grid gap-4 rounded-md border border-border bg-field-rest px-4 py-2",
+            "hidden sm:grid gap-4 border-b border-border bg-field-rest px-4 py-2",
             GRID_COLS,
           )}
         >
@@ -200,7 +200,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
         </div>
 
         <div
-          className="flex max-h-[640px] flex-col gap-2 overflow-y-auto"
+          className="flex max-h-[640px] flex-col divide-y divide-border overflow-y-auto"
           style={{ scrollbarGutter: "stable" }}
         >
         {showTier0 ? null : (
@@ -209,7 +209,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
             onClick={() => setTier0Open(true)}
             aria-expanded={false}
             aria-controls="tier-row-0"
-            className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-left typography-caption text-muted-foreground hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring transition-colors duration-fast ease-out-standard"
+            className="flex items-center gap-2 px-4 py-3 text-left typography-caption text-muted-foreground hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring transition-colors duration-fast ease-out-standard"
           >
             <ChevronRight className="size-4" aria-hidden="true" />
             Show Tier 0 — 0
@@ -246,11 +246,11 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       id={tier.tier === 0 ? "tier-row-0" : undefined}
       aria-current={isCurrent ? "true" : undefined}
       className={cn(
-        "group relative flex flex-col gap-3 rounded-md border px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
+        "group relative flex flex-col gap-3 px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
         GRID_COLS,
         isCurrent
-          ? "border-2 border-primary"
-          : "border-border hover:bg-hover-surface",
+          ? "rounded-md border border-primary"
+          : "hover:bg-hover-surface",
       )}
     >
       {isCurrent ? (
