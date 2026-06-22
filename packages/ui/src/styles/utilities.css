@@ -14,84 +14,13 @@
 
 /* ─── Typography composites ──────────────────────────────────────────────────
  * Bundle font-family + size + line-height + letter-spacing + weight into a
- * single utility. These OVERRIDE Tailwind v4's auto-generated text-* utilities
- * from primitive.css @theme — values mirror the primitive tokens.
+ * single utility. Named typography-* to avoid collision with Tailwind v4's
+ * text-* namespace (color, size, alignment, decoration).
  *
  * Override pattern: append a later utility (font-bold, leading-5, tracking-wide)
  * to override any single property — Tailwind's conflict resolution wins.
  *
  * Token source: primitive.css → @theme typography block. */
-@utility text-display {
-  font-family:    var(--font-sans);
-  font-size:      var(--typography-display);
-  line-height:    var(--typography-display--line-height);
-  letter-spacing: var(--typography-display--letter-spacing);
-  font-weight:    var(--font-weight-semibold);
-}
-
-@utility text-subtitle {
-  font-family:    var(--font-sans);
-  font-size:      var(--typography-subtitle);
-  line-height:    var(--typography-subtitle--line-height);
-  letter-spacing: var(--typography-subtitle--letter-spacing);
-  font-weight:    var(--font-weight-semibold);
-}
-
-@utility text-body {
-  font-family:    var(--font-sans);
-  font-size:      var(--typography-body);
-  line-height:    var(--typography-body--line-height);
-  letter-spacing: var(--typography-body--letter-spacing);
-  font-weight:    var(--font-weight-regular);
-}
-
-@utility text-label {
-  font-family:    var(--font-sans);
-  font-size:      var(--typography-label);
-  line-height:    var(--typography-label--line-height);
-  letter-spacing: var(--typography-label--letter-spacing);
-  font-weight:    var(--font-weight-regular);
-}
-
-@utility text-caption {
-  font-family:    var(--font-sans);
-  font-size:      var(--typography-caption);
-  line-height:    var(--typography-caption--line-height);
-  letter-spacing: var(--typography-caption--letter-spacing);
-  font-weight:    var(--font-weight-regular);
-}
-
-@utility text-code {
-  font-family:    var(--font-mono);
-  font-size:      var(--typography-code);
-  line-height:    var(--typography-code--line-height);
-  letter-spacing: var(--typography-code--letter-spacing);
-  font-weight:    var(--font-weight-regular);
-}
-
-@utility text-meta {
-  font-family:    var(--font-mono);
-  font-size:      var(--typography-meta);
-  line-height:    var(--typography-meta--line-height);
-  letter-spacing: var(--typography-meta--letter-spacing);
-  font-weight:    var(--font-weight-regular);
-}
-
-@utility text-table-header {
-  font-family:    var(--font-sans);
-  font-size:      var(--typography-table-header);
-  line-height:    var(--typography-table-header--line-height);
-  letter-spacing: var(--typography-table-header--letter-spacing);
-  font-weight:    var(--font-weight-medium);
-  text-transform: uppercase;
-}
-
-/* ─── Typography composites (typography-* namespace) ─────────────────────────
- * Parallel namespace to text-* above; avoids Tailwind v4 text-* collision
- * with color / size / decoration utilities. Reads from the same --text-*
- * primitive tokens — computed styles are identical to the text-* counterparts.
- * Round 3 will remove the text-* utilities and the cn.ts extendTailwindMerge
- * config once all consumers are migrated (Rounds 2a/2b). */
 @utility typography-display {
   font-family:    var(--font-sans);
   font-size:      var(--typography-display);
