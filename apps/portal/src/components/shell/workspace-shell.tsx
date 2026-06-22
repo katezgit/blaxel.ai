@@ -4,7 +4,6 @@ import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { IconButton } from "@repo/ui/components/icon-button";
-import { cn } from "@repo/ui/lib/cn";
 import { BrandMark } from "@/components/shell/brand-mark";
 import {
   CommandPaletteProvider,
@@ -104,7 +103,6 @@ export function WorkspaceShell({
             mobileNavId={mobileDrawerId}
             mobileNavOpen={drawerOpen}
             onOpenMobileNav={() => setDrawerOpen(true)}
-            className={cn(isSettings && "shell-topbar-sub")}
           />
         }
         sidebar={
@@ -149,7 +147,6 @@ interface WorkspaceShellTopbarProps {
   mobileNavId: string;
   mobileNavOpen: boolean;
   onOpenMobileNav: () => void;
-  className?: string;
 }
 
 function WorkspaceShellTopbar({
@@ -159,12 +156,11 @@ function WorkspaceShellTopbar({
   mobileNavId,
   mobileNavOpen,
   onOpenMobileNav,
-  className,
 }: WorkspaceShellTopbarProps) {
   const { setOpen: setPaletteOpen } = useCommandPaletteContext();
 
   return (
-    <header className={cn("shell-topbar", className)}>
+    <header className="shell-topbar">
       <div data-zone="left">
         <IconButton
           variant="ghost"

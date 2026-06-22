@@ -60,12 +60,7 @@ export function WorkspaceShellSkeleton() {
   return (
     <ShellFrame
       collapsed={collapsed}
-      topbar={
-        <WorkspaceTopbarSkeleton
-          isSettings={isSettings}
-          mobileNavId={mobileDrawerId}
-        />
-      }
+      topbar={<WorkspaceTopbarSkeleton mobileNavId={mobileDrawerId} />}
       sidebar={
         <Sidebar
           ariaLabel={sidebarLabel}
@@ -89,17 +84,15 @@ function extractWorkspaceSlug(pathname: string): string {
 }
 
 interface WorkspaceTopbarSkeletonProps {
-  isSettings: boolean;
   mobileNavId: string;
 }
 
 function WorkspaceTopbarSkeleton({
-  isSettings,
   mobileNavId,
 }: WorkspaceTopbarSkeletonProps) {
   const isRail = useIsSidebarRail();
   return (
-    <header className={cn("shell-topbar", isSettings && "shell-topbar-sub")}>
+    <header className="shell-topbar">
       <div data-zone="left">
         {/* Match the real IconButton size="md" nav-trigger so the mobile slot
             holds the same column width. */}
