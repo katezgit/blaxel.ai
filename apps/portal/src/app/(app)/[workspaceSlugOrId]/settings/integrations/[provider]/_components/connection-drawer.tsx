@@ -29,24 +29,22 @@ export type DrawerState =
   | { mode: "edit"; connection: IntegrationConnection }
   | null;
 
+// Close reason — distinguishes cancel/dismiss (no-op) from successful submit so
+// the caller can chain side-effects like router.push without a separate success
+// callback. Undefined reason = cancel/dismiss path (close button, escape, outside
+// click, Cancel button).
+export type CloseReason = "created" | "edited";
+
 interface ConnectionDrawerProps {
   provider: Integration;
   state: DrawerState;
-  onClose: () => void;
-  /**
-   * Fires after a successful create submit, just before the drawer closes.
-   * Lets the caller route the user somewhere (e.g. catalog → detail page) once
-   * the new connection exists. Edit-mode success has no equivalent hook — the
-   * caller is already on the right surface.
-   */
-  onCreateSuccess?: () => void;
+  onClose: (reason?: CloseReason) => void;
 }
 
 export default function ConnectionDrawer({
   provider,
   state,
   onClose,
-  onCreateSuccess,
 }: ConnectionDrawerProps) {
   const open = state !== null;
 
@@ -60,11 +58,7 @@ export default function ConnectionDrawer({
     >
       <DrawerContent size="md" aria-describedby={undefined}>
         {state?.mode === "create" && (
-          <CreateConnectionForm
-            provider={provider}
-            onClose={onClose}
-            onSuccess={onCreateSuccess}
-          />
+          <CreateConnectionForm provider={provider} onClose={onClose} />
         )}
         {state?.mode === "edit" && (
           <EditConnectionForm
@@ -96,14 +90,12 @@ type CreateValues = z.infer<typeof CREATE_SCHEMA>;
 
 interface CreateConnectionFormProps {
   provider: Integration;
-  onClose: () => void;
-  onSuccess?: () => void;
+  onClose: (reason?: CloseReason) => void;
 }
 
 function CreateConnectionForm({
   provider,
   onClose,
-  onSuccess,
 }: CreateConnectionFormProps) {
   const {
     control,
@@ -120,8 +112,7 @@ function CreateConnectionForm({
 
   const onSubmit = handleSubmit((values) => {
     toast.success(`${values.name} connected to ${provider.name}.`);
-    onSuccess?.();
-    onClose();
+    onClose("created");
   });
 
   return (
@@ -184,7 +175,7 @@ function CreateConnectionForm({
       </DrawerBody>
 
       <DrawerFooter className="flex justify-end gap-2">
-        <Button type="button" variant="secondary" onClick={onClose}>
+        <Button type="button" variant="secondary" onClick={() => onClose()}>
           Cancel
         </Button>
         <Button type="submit" variant="primary" disabled={!isValid}>
@@ -198,7 +189,7 @@ function CreateConnectionForm({
 interface EditConnectionFormProps {
   provider: Integration;
   connection: IntegrationConnection;
-  onClose: () => void;
+  onClose: (reason?: CloseReason) => void;
 }
 
 function EditConnectionForm({
@@ -228,7 +219,7 @@ function EditConnectionForm({
     event.preventDefault();
     if (!canSave) return;
     toast.success(`${connection.id} API key rotated.`);
-    onClose();
+    onClose("edited");
   };
 
   return (
@@ -299,7 +290,7 @@ function EditConnectionForm({
       </DrawerBody>
 
       <DrawerFooter className="flex justify-end gap-2">
-        <Button type="button" variant="secondary" onClick={onClose}>
+        <Button type="button" variant="secondary" onClick={() => onClose()}>
           Cancel
         </Button>
         <Button type="submit" variant="primary" disabled={!canSave}>

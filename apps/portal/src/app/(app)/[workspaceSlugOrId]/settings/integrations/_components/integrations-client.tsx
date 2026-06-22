@@ -284,12 +284,15 @@ export default function IntegrationsClient() {
         <ConnectionDrawer
           provider={connectFor}
           state={{ mode: "create" }}
-          onClose={() => setConnectFor(null)}
-          onCreateSuccess={() =>
-            router.push(
-              `/${workspaceSlug}/settings/integrations/${connectFor.id}`,
-            )
-          }
+          onClose={(reason) => {
+            const providerId = connectFor.id;
+            setConnectFor(null);
+            if (reason === "created") {
+              router.push(
+                `/${workspaceSlug}/settings/integrations/${providerId}`,
+              );
+            }
+          }}
         />
       )}
     </section>
