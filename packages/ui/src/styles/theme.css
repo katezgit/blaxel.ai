@@ -146,6 +146,14 @@
     color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
     color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
   );
+  /* Hover surface — scan aid for non-interactive rows.
+   * Half-intensity of --color-hover-surface (8% → 4%). Apply to tables whose
+   * rows are not clickable (actions sit in per-row buttons); the lighter tint
+   * aids horizontal scanning without implying click affordance. */
+  --color-hover-surface-subtle: light-dark(
+    color-mix(in srgb, var(--surface-elevated-light) 96%, var(--orange-800) 4%),
+    color-mix(in srgb, var(--surface-elevated-dark) 96%, white 4%)
+  );
   /* Sidebar hover — two variants for two shell surfaces.
    *
    * App shell sidebar (sits on bg-background):
