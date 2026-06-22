@@ -54,6 +54,7 @@ export default function AdminsClient() {
   const [pendingRemove, setPendingRemove] = useState<AccountAdmin | null>(null);
   const [search, setSearch] = useState("");
   const nowMs = Date.now();
+  const ownerEmail = state.identity.ownerEmail;
 
   // Owner row is always pinned visible — search only filters non-Owner rows.
   const visibleAdmins = useMemo(() => {
@@ -166,13 +167,20 @@ export default function AdminsClient() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span
-                          className={cn(
-                            "font-medium",
-                            isPending && "text-muted-foreground",
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "font-medium",
+                              isPending && "text-muted-foreground",
+                            )}
+                          >
+                            {admin.name}
+                          </span>
+                          {admin.email === ownerEmail && (
+                            <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 text-meta font-mono text-meta-foreground">
+                              you
+                            </span>
                           )}
-                        >
-                          {admin.name}
                         </span>
                         <span className="font-mono typography-caption text-muted-foreground">
                           {admin.email}
