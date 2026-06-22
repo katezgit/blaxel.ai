@@ -120,7 +120,7 @@ export default function MonthlyTopUpRule({
                 toast.success("Monthly top-up disabled");
               }}
             />
-            <Button variant="secondary" onClick={onRequestEdit}>
+            <Button variant="ghost" onClick={onRequestEdit}>
               Edit
             </Button>
           </div>
