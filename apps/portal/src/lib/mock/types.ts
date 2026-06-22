@@ -101,14 +101,27 @@ export interface Integration {
   logoInitial: string;
   /** Brand logo URL (simple-icons CDN). Falls back to `logoInitial` when absent. */
   logoUrl?: string;
-  enabled: boolean;
   comingSoon?: boolean;
-  /** Service accounts currently holding credentials for this integration. */
-  usedByCount?: number;
-  /** ISO date string — last time this integration was exercised by a service account. */
-  lastActivityAt?: string;
-  /** Active provider-side issue surfaced as an inline warning band under the row (e.g. "401 from /v1/models — rotate the workspace key"). */
-  statusWarning?: string;
+}
+
+/**
+ * A single workspace-scoped credential for an integration provider. Mirrors
+ * the eventual `integrations.blaxel.ai/v1/{provider}/connections/{name}`
+ * shape — `id` is the user-chosen `metadata.name`, surfaced verbatim in URLs
+ * and CLI commands. Enabled-state for a provider is derived from connection
+ * count > 0, not stored on the parent.
+ */
+export interface IntegrationConnection {
+  /** `metadata.name` — user-chosen, immutable after creation. */
+  id: string;
+  /** Parent provider id (e.g. "anthropic", "openai"). */
+  providerId: string;
+  /** Masked tail of the stored API key, e.g. "sk-••••••wAA". */
+  apiKeyPreview: string;
+  /** ISO date string — when the connection was created. */
+  createdAt: string;
+  /** Optional display name of the creator (member or service account). */
+  createdBy?: string;
 }
 
 export interface ApiKey {
