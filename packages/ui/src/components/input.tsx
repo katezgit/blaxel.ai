@@ -44,6 +44,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "flex items-center gap-2",
             "w-full min-w-0",
             formFieldBoxVariants({ size: "md" }),
+            "text-meta-foreground",
             // focus-within: shell div is not focusable itself; only the inner input is.
             // shadow-focus-ring matches the global *:focus-visible halo+ring (base.css) so slotted inputs
             // read identically to plain inputs in both modes.
