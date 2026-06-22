@@ -46,7 +46,7 @@ function DropdownMenuContent({
         sideOffset={sideOffset}
         className={cn(
           // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
-          "bg-popover text-popover-foreground shadow-popover rounded-lg",
+          "bg-popover text-popover-foreground shadow-popover rounded-lg typography-body",
           "z-overlay min-w-32 p-1",
           "max-h-(--radix-dropdown-menu-content-available-height)",
           "origin-(--radix-dropdown-menu-content-transform-origin)",
@@ -86,7 +86,7 @@ function DropdownMenuItem({
       data-variant={variant}
       className={cn(
         "relative flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5",
-        "typography-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer hover + keyboard nav — sidesteps the
         // Tailwind v4 :hover/:focus cascade issue. No font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
@@ -122,7 +122,7 @@ function DropdownMenuCheckboxItem({
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
         "relative flex cursor-default select-none items-center gap-2 rounded-md py-1.5 pr-2 pl-8",
-        "typography-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer + keyboard; no font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
         // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator.
@@ -168,7 +168,7 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       className={cn(
         "relative flex cursor-default select-none items-center gap-2 rounded-md py-1.5 pr-2 pl-8",
-        "typography-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer + keyboard; no font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
         // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator.
@@ -261,7 +261,7 @@ function DropdownMenuSubTrigger({
       data-inset={inset}
       className={cn(
         "flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5",
-        "typography-body text-popover-foreground outline-hidden",
+        "text-popover-foreground outline-hidden",
         // data-[highlighted] fires on both pointer + keyboard; no font-medium (weight shift jitters glyphs).
         "data-[highlighted]:bg-highlight-surface",
         // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator.

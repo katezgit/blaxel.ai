@@ -29,7 +29,7 @@ function Command({
       className={cn(
         "flex flex-col",
         // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
-        "rounded-lg bg-popover text-popover-foreground",
+        "rounded-lg bg-popover text-popover-foreground typography-body",
         "shadow-popover",
         className
       )}
@@ -196,7 +196,7 @@ function CommandItem({
         "group/item",
         "relative flex cursor-default select-none items-center gap-2",
         "rounded-md px-2 py-1.5",
-        "typography-body text-foreground",
+        "text-foreground",
         "outline-none",
         // cmdk unifies keyboard + pointer cursor into data-[selected=true] — no hover: variant needed.
         // bg-highlight-surface matches Select's data-[highlighted] — see --color-highlight in theme.css; no font-medium (weight shift jitters glyphs).

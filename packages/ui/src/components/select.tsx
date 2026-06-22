@@ -83,7 +83,7 @@ function SelectContent({
         position={position}
         className={cn(
           "relative z-overlay overflow-hidden",
-          "bg-popover text-foreground",
+          "bg-popover text-foreground typography-body",
           // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
           "rounded-lg",
           "shadow-popover",
@@ -146,7 +146,6 @@ function SelectItem({
       className={cn(
         "relative flex w-full cursor-default select-none items-center gap-2",
         "rounded-sm py-1.5 pr-8 pl-2",
-        "typography-body",
         "outline-hidden",
         // Radix's data-[highlighted] fires on both pointer hover + keyboard nav — sidesteps the
         // Tailwind v4 :hover/:focus cascade where focus: always wins. No font-medium on highlight
