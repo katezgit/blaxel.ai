@@ -23,7 +23,7 @@ const buttonVariants = cva(
 
         secondary: [
           "border border-border bg-transparent text-foreground",
-          "hover:bg-secondary-surface",
+          "hover:bg-hover-surface",
           "active:bg-selected-surface",
           "disabled:bg-transparent",
         ],
