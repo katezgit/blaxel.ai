@@ -18,12 +18,12 @@ const buttonVariants = cva(
           "font-mono bg-primary text-primary-foreground",
           "hover:bg-primary-hover",
           "active:bg-primary-hover",
-          "disabled:bg-muted-surface",
+          "disabled:bg-primary/15 disabled:text-muted-foreground",
         ],
 
         secondary: [
           "border border-border bg-transparent text-foreground",
-          "hover:bg-hover-surface",
+          "hover:bg-sidebar-hover",
           "active:bg-selected-surface",
           "disabled:bg-transparent",
         ],
@@ -53,7 +53,7 @@ const buttonVariants = cva(
 
         link: [
           "bg-transparent text-foreground",
-          "hover:bg-hover-surface",
+          "hover:bg-sidebar-hover",
           "disabled:bg-transparent",
         ],
 
