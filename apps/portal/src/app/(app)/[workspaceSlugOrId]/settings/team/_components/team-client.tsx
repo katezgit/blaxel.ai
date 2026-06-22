@@ -44,10 +44,10 @@ import type {
 } from "@/lib/mock/types";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
 import FilterPopover from "./filter-popover";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
+import TeamTable from "./team-table";
 import {
   ROLE_META,
   ROLE_VALUES,
@@ -368,7 +368,14 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           }
         />
       ) : (
-        <ResourceTable table={table} />
+        <TeamTable
+          table={table}
+          getRowClassName={(row) =>
+            row.original.status === "expired"
+              ? "bg-state-warning-subtle border-l-2 border-l-state-warning hover:bg-state-warning-subtle"
+              : undefined
+          }
+        />
       )}
 
       <InviteUsersDialog
