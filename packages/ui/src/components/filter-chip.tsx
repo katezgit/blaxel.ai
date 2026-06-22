@@ -23,7 +23,7 @@ const filterChipVariants = cva(
     "disabled:cursor-not-allowed disabled:text-text-disabled",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
     "h-8 px-3 py-0 text-body font-medium rounded-lg gap-1.5",
-    "border border-border bg-transparent text-foreground",
+    "border border-form-field-border bg-transparent text-foreground",
     "hover:bg-secondary-surface",
     "active:bg-primary-soft",
     "disabled:bg-transparent",

@@ -83,8 +83,8 @@ function useSlideIndicator(
 export const segmentedControlRootVariants = cva(
   [
     "inline-flex items-center justify-center",
-    "h-8 rounded-md border border-form-field-border p-0.5",
-    "bg-field-rest text-muted-foreground",
+    "h-8 rounded-md border border-form-field-border",
+    "text-muted-foreground",
   ],
   {
     variants: {
@@ -105,8 +105,8 @@ export const segmentedControlItemVariants = cva([
   "text-body font-medium select-none",
   "text-foreground/60",
   "hover:text-foreground",
-  // Active text color — thumb (indicator) now owns the background.
-  "data-[state=on]:text-foreground",
+  // Active text color — paired with bg-primary thumb (primary button pair).
+  "data-[state=on]:text-primary-foreground",
   "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
   // Text color fades simultaneously with the thumb slide.
@@ -215,7 +215,10 @@ const SegmentedControlRoot = React.forwardRef<
         <span
           aria-hidden
           data-slot="segmented-control-indicator"
-          className="absolute top-0.5 bottom-0.5 left-0 rounded-sm bg-control-raised shadow-chip pointer-events-none"
+          className={cn(
+            "absolute top-0 bottom-0 left-0 bg-primary pointer-events-none",
+            "rounded-[5px]", // eslint-disable-line no-restricted-syntax -- structural compensation: outer rounded-md (6px) minus 1px parent border so the thumb's corner sits flush inside the track's. No token expresses "outer-radius minus border-width".
+          )}
           style={thumbStyle}
         />
         {children}
