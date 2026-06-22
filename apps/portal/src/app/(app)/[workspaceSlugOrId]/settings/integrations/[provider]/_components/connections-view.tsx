@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -29,18 +28,10 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { IconButton } from "@repo/ui/components/icon-button";
-import {
-  tableBodyClass,
-  tableCellVariants,
-  tableClass,
-  tableHeaderClass,
-  tableHeadVariants,
-  tableRowVariants,
-} from "@repo/ui/components/table";
-import { cn } from "@repo/ui/lib/cn";
 import type { Integration, IntegrationConnection } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
+import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import ConnectionDrawer, {
   type DrawerState,
 } from "./connection-drawer";
@@ -173,8 +164,8 @@ export default function ConnectionsView({
       {connections.length === 0 ? (
         <div className="rounded-md border border-border bg-secondary-surface overflow-hidden">
           {/* Inline empty-state composition — uses tighter on-canon spacing
-              (py-8 / size-10 icon tile / size-5 inner) than the DS EmptyState
-              primitive ships with. DS refinement tracked separately. */}
+              (py-8 / size-10 icon tile / size-6 inner) than the DS EmptyState
+              primitive ships with. See blaxel.ai/blaxel.ai#50 for DS refinement. */}
           <div
             role="status"
             className="flex flex-col items-center justify-center gap-4 px-6 py-8 text-center"
@@ -201,7 +192,7 @@ export default function ConnectionsView({
           </div>
         </div>
       ) : (
-        <ConnectionsTable table={table} />
+        <ResourceTable table={table} />
       )}
 
       <ConnectionDrawer
@@ -247,61 +238,6 @@ export default function ConnectionsView({
         </DialogContent>
       </Dialog>
     </section>
-  );
-}
-
-interface ConnectionsTableProps {
-  table: ReturnType<typeof useReactTable<IntegrationConnection>>;
-}
-
-function ConnectionsTable({ table }: ConnectionsTableProps) {
-  return (
-    <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
-      <table className={tableClass}>
-        <thead className={tableHeaderClass}>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                const meta = header.column.columnDef.meta as
-                  | { headerClassName?: string }
-                  | undefined;
-                return (
-                  <th
-                    key={header.id}
-                    className={cn(tableHeadVariants(), meta?.headerClassName)}
-                  >
-                    {!header.isPlaceholder &&
-                      flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody className={tableBodyClass}>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className={tableRowVariants()}>
-              {row.getVisibleCells().map((cell) => {
-                const meta = cell.column.columnDef.meta as
-                  | { cellClassName?: string }
-                  | undefined;
-                return (
-                  <td
-                    key={cell.id}
-                    className={cn(tableCellVariants(), meta?.cellClassName)}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
   );
 }
 

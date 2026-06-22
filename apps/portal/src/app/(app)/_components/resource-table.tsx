@@ -1,6 +1,6 @@
 "use client";
 
-import { flexRender, type Table } from "@tanstack/react-table";
+import { flexRender, type Row, type Table } from "@tanstack/react-table";
 import {
   tableBodyClass,
   tableCellVariants,
@@ -13,6 +13,10 @@ import { cn } from "@repo/ui/lib/cn";
 
 interface ResourceTableProps<TData> {
   table: Table<TData>;
+  // Per-row className hook — used by surfaces that highlight rows on a domain
+  // state (api-keys near-expiry, team expired invite). Sibling to the
+  // Open-invoice highlight pattern on billing/invoices-payment.
+  getRowClassName?: (row: Row<TData>) => string | undefined;
 }
 
 /**
@@ -21,7 +25,10 @@ interface ResourceTableProps<TData> {
  * can diverge on chrome (selection bars, density, etc.) without forking a
  * shared component back.
  */
-export function ResourceTable<TData>({ table }: ResourceTableProps<TData>) {
+export function ResourceTable<TData>({
+  table,
+  getRowClassName,
+}: ResourceTableProps<TData>) {
   return (
     <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
       <table className={tableClass}>
@@ -47,7 +54,10 @@ export function ResourceTable<TData>({ table }: ResourceTableProps<TData>) {
         </thead>
         <tbody className={tableBodyClass}>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className={tableRowVariants()}>
+            <tr
+              key={row.id}
+              className={cn(tableRowVariants(), getRowClassName?.(row))}
+            >
               {row.getVisibleCells().map((cell) => {
                 const meta = cell.column.columnDef.meta as
                   | { cellClassName?: string }
