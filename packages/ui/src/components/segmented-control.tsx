@@ -215,6 +215,7 @@ const SegmentedControlRoot = React.forwardRef<
         <span
           aria-hidden
           data-slot="segmented-control-indicator"
+          // eslint-disable-next-line no-restricted-syntax -- rounded-[5px] = outer rounded-md (6px) minus 1px border; structural compensation so the thumb's rounded corner sits flush inside the track's rounded corner. No token expresses "outer-radius minus border-width".
           className="absolute top-0 bottom-0 left-0 rounded-[5px] bg-primary pointer-events-none"
           style={thumbStyle}
         />
