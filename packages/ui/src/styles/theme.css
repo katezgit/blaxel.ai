@@ -45,7 +45,7 @@
    * the brighter affordance. */
   --color-form-field-border: light-dark(
     rgb(var(--border-seed-light) / .165),
-    rgb(var(--border-seed-dark) / .18)
+    rgb(var(--border-seed-dark) / .07)
   );
 
   /* Typography — 3-tier reading hierarchy.
@@ -65,7 +65,7 @@
   /* Borders — alpha-tinted hairlines, compose on any surface.
    *   border:        default hairline
    *   border-strong: ~+10pp alpha for selected/active edges */
-  --color-border:        light-dark(rgb(var(--border-seed-light) / .1125), rgb(var(--border-seed-dark) / .045));
+  --color-border:        light-dark(rgb(var(--border-seed-light) / .1125), rgb(var(--border-seed-dark) / .07));
   --color-border-strong: light-dark(rgb(var(--border-seed-light) / .21),   rgb(var(--border-seed-dark) / .135));
   /* Progress track — dedicated token because muted-surface dark === card dark;
    * reusing muted-surface makes the track vanish on table rows. */
@@ -146,6 +146,24 @@
     color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
     color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
   );
+  /* Hover surface — scan aid for non-interactive rows.
+   * Half-intensity of --color-hover-surface (8% → 4%). Apply to tables whose
+   * rows are not clickable (actions sit in per-row buttons); the lighter tint
+   * aids horizontal scanning without implying click affordance. */
+  --color-hover-surface-subtle: light-dark(
+    color-mix(in srgb, var(--surface-elevated-light) 96%, var(--orange-800) 4%),
+    color-mix(in srgb, var(--surface-elevated-dark) 96%, white 4%)
+  );
+  /* Neutral hover — generic 8% mix primitive used by quiet interactive elements
+   * that need a hover affordance without the brand-orange tint of hover-surface.
+   * Consumers: Button link/secondary variants. The recipe is identical to
+   * --color-sidebar-hover; sidebar shipped first and the primitive was extracted
+   * later. Cleanup tracked: collapse --color-sidebar-hover into a consumer-side
+   * alias of this primitive (move declaration to apps/portal globals.css). */
+  --color-hover-neutral: light-dark(
+    color-mix(in srgb, var(--surface-bg-light) 92%, black 8%),
+    color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
+  );
   /* Sidebar hover — two variants for two shell surfaces.
    *
    * App shell sidebar (sits on bg-background):
@@ -158,10 +176,7 @@
    *
    * Manage shell sidebar (sits on bg-card / panel surface):
    *   Dark: 12% white mix → neutral lift; orange mix would clash on dark-navy elevated bg. */
-  --color-sidebar-hover:        light-dark(
-    color-mix(in srgb, var(--surface-bg-light) 92%, black 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
-  );
+  --color-sidebar-hover: var(--color-hover-neutral);
   --color-sidebar-hover-manage: light-dark(
     color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
     color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
