@@ -9,7 +9,7 @@ import {
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { AlertTriangle, ExternalLink, Search } from "lucide-react";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import {
@@ -39,7 +39,7 @@ import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations"
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import IntegrationsTable from "./integrations-table";
 
-type StatusFilter = "all" | "enabled";
+type StatusFilter = "all" | "connected";
 type TypeFilter = "all" | IntegrationCategory;
 
 interface StatusItem {
@@ -51,7 +51,7 @@ interface StatusItem {
 // New integration categories extend the dropdown only — the segment never grows.
 const STATUS_FILTERS: ReadonlyArray<StatusItem> = [
   { value: "all", label: "All" },
-  { value: "enabled", label: "Enabled" },
+  { value: "connected", label: "Connected" },
 ];
 
 const TYPE_OPTIONS: ReadonlyArray<{ value: TypeFilter; label: string }> = [
@@ -81,14 +81,14 @@ export default function IntegrationsClient() {
     );
     return {
       all: typeScoped.length,
-      enabled: typeScoped.filter((i) => i.enabled).length,
+      connected: typeScoped.filter((i) => i.enabled).length,
     } satisfies Record<StatusFilter, number>;
   }, [integrations, typeFilter]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return integrations.filter((i) => {
-      if (status === "enabled" && !i.enabled) return false;
+      if (status === "connected" && !i.enabled) return false;
       if (typeFilter !== "all" && i.category !== typeFilter) return false;
       if (q && !i.name.toLowerCase().includes(q) && !i.description.toLowerCase().includes(q)) {
         return false;
@@ -191,7 +191,15 @@ export default function IntegrationsClient() {
           >
             {STATUS_FILTERS.map((item) => (
               <SegmentedControl.Item key={item.value} value={item.value}>
-                <span>{item.label}</span>
+                <span className="flex items-center gap-1.5">
+                  {item.value === "connected" && (
+                    <span
+                      aria-hidden="true"
+                      className="size-1.5 shrink-0 rounded-full bg-state-scored"
+                    />
+                  )}
+                  {item.label}
+                </span>
                 <span className="font-mono text-meta tabular-nums opacity-70">
                   {statusCounts[item.value]}
                 </span>
@@ -238,7 +246,8 @@ export default function IntegrationsClient() {
               table={table}
               getRowClassName={(row) =>
                 row.original.statusWarning
-                  ? "bg-state-warning-subtle border-l-2 border-l-state-warning hover:bg-state-warning-subtle"
+                  // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+                  ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
                   : undefined
               }
               renderRowExtra={(row) =>
@@ -278,6 +287,9 @@ function NameCell({ integration }: { integration: Integration }) {
   return (
     <div className="flex items-center gap-3">
       <Avatar size="sm" shape="square">
+        {integration.logoUrl && (
+          <AvatarImage src={integration.logoUrl} alt={integration.name} />
+        )}
         <AvatarFallback>{integration.logoInitial}</AvatarFallback>
       </Avatar>
       <div className="flex min-w-0 flex-col gap-0.5">
@@ -359,7 +371,8 @@ function IntegrationCard({ integration, now, onActivate }: IntegrationCardProps)
       className={cn(
         "flex flex-col gap-3 p-4",
         integration.statusWarning &&
-          "border-l-2 border-l-state-warning bg-state-warning-subtle",
+          // eslint-disable-next-line no-restricted-syntax -- inset accent matches the table-row treatment; no @theme utility for inset-shadow position+width
+          "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)]",
       )}
     >
       <NameCell integration={integration} />
@@ -401,6 +414,12 @@ function ConfigureIntegrationDrawer({
             <DrawerHeader className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
                 <Avatar size="md" shape="square">
+                  {integration.logoUrl && (
+                    <AvatarImage
+                      src={integration.logoUrl}
+                      alt={integration.name}
+                    />
+                  )}
                   <AvatarFallback>{integration.logoInitial}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-1">

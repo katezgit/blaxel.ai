@@ -99,6 +99,8 @@ export interface Integration {
   category: IntegrationCategory;
   /** Single-letter monogram for the card avatar fallback. */
   logoInitial: string;
+  /** Brand logo URL (simple-icons CDN). Falls back to `logoInitial` when absent. */
+  logoUrl?: string;
   enabled: boolean;
   comingSoon?: boolean;
   /** Service accounts currently holding credentials for this integration. */

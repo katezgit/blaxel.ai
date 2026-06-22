@@ -24,20 +24,23 @@ interface IntegrationsTableProps<TData> {
 // inline warning band (`renderRowExtra`) rendered as a colSpanning `<tr>`
 // immediately below the offending row, matching the operator's screenshot.
 // (3) Per-row className hook lets rows with `statusWarning` carry the same
-// `bg-state-warning-subtle + border-l-2 border-l-state-warning` treatment used
-// by the Open-invoice row, the team expired-invite row, and the api-keys
-// near-expiry row.
+// `bg-state-warning-subtle + inset-shadow accent` treatment used by the
+// Open-invoice row, the team expired-invite row, and the api-keys near-expiry
+// row — the accent sits INSIDE the container border so the row's 2px guide
+// does not compete with the wrapper's 1px outline.
 const rowClass = cn(
   "border-b border-border",
   "transition-[background-color] duration-fast ease-out-standard",
   "[tbody_&]:hover:bg-hover-surface-subtle",
 );
 
-// Scroll container caps to the parent's available height (parent is a flex
-// column with `min-h-0 flex-1`); vertical overflow scrolls inside this div so
-// the page header + filter bar stay fixed. `sticky top-0` on thead (via
-// `tableHeadVariants`) pins headers to the top of *this* scroll container —
-// it's the nearest scrolling ancestor.
+// Height model: the wrapper shrinks to content when the list is short, and
+// caps at `max-h-[calc(100vh-18rem)]` (matches the models-catalog precedent —
+// same chrome shape: workspace topbar + page header + filter bar) so long
+// lists scroll inside the container instead of pushing the page. The 18rem
+// budget covers ~6rem topbar + ~6rem page header + ~3rem filter bar + ~3rem
+// breathing room. `sticky top-0` on thead pins headers to the top of *this*
+// scroll container — it's the nearest scrolling ancestor.
 //
 // `bg-field-rest` repeats on the `<th>` cells (not just the `<thead>`) because
 // HTML spec: `position: sticky` on a `<thead>` is a no-op — only the cells
@@ -50,7 +53,7 @@ export default function IntegrationsTable<TData>({
   getRowClassName,
 }: IntegrationsTableProps<TData>) {
   return (
-    <div className="relative w-full min-h-0 flex-1 overflow-x-auto overflow-y-auto rounded-md border border-border bg-card">
+    <div className="relative w-full max-h-[calc(100vh-18rem)] overflow-x-auto overflow-y-auto rounded-md border border-border bg-card">
       <table className={tableClass}>
         <thead className={tableHeaderClass}>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -133,7 +136,8 @@ function ExpandedRow<TData>({
   // continuation of the same logical row (single visual unit). The band keeps
   // its own bottom border to separate the unit from the next row. When the
   // parent row carries the warning treatment, the band inherits the same
-  // left-border-2 so the two `<tr>`s read as one warning unit.
+  // inset-shadow accent so the two `<tr>`s read as one warning unit (matches
+  // the inset treatment used on the parent row — see header comment).
   return (
     <>
       <tr className={cn(rowClass, "border-b-0", extraClass)} data-row-id={row.id}>
@@ -142,7 +146,8 @@ function ExpandedRow<TData>({
       <tr
         className={cn(
           "border-b border-border bg-state-warning-subtle",
-          extraClass && "border-l-2 border-l-state-warning",
+          // eslint-disable-next-line no-restricted-syntax -- inset accent matches the parent row treatment; no @theme utility expresses inset-shadow position+width for a color token
+          extraClass && "shadow-[inset_2px_0_0_var(--color-state-warning)]",
         )}
         data-row-extra-for={row.id}
       >
