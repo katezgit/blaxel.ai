@@ -372,7 +372,8 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           table={table}
           getRowClassName={(row) =>
             row.original.status === "expired"
-              ? "bg-state-warning-subtle border-l-2 border-l-state-warning hover:bg-state-warning-subtle"
+              // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+              ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
               : undefined
           }
         />

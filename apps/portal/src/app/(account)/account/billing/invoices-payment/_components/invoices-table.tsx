@@ -76,7 +76,8 @@ export default function InvoicesTable({ invoices }: InvoicesTableProps) {
       <TableBody>
         {invoices.map((invoice) => {
           const isOpen = invoice.status === "Open";
-          const rowHighlight = "bg-state-warning-subtle border-l-2 border-l-state-warning hover:bg-state-warning-subtle";
+          // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+          const rowHighlight = "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle";
           return (
             <TableRow
               key={invoice.id}
