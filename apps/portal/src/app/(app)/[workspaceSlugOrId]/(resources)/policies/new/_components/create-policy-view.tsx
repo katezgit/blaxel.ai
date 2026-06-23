@@ -862,7 +862,7 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
   return (
     <aside
       aria-labelledby="create-policy-reference-heading"
-      className="flex flex-col gap-3 lg:sticky lg:top-8 lg:h-fit"
+      className="flex min-w-0 flex-col gap-3 lg:sticky lg:top-8 lg:h-fit"
     >
       <div className="flex flex-col gap-1">
         <h2
@@ -1017,11 +1017,17 @@ function buildGoSnippet(ctx: SnippetBuildContext): string {
 
 function buildCurlSnippet(ctx: SnippetBuildContext): string {
   const body = buildPolicyObjectLiteral(ctx, { lang: "json" });
+  // Indent body so each subsequent line aligns under the opening `'{` of `-d '…'`.
+  // Bash single-quoted strings preserve embedded newlines — the JSON stays valid.
+  const bodyLines = body.split("\n");
+  const indentedBody = bodyLines
+    .map((line, i) => (i === 0 ? line : `     ${line}`))
+    .join("\n");
   return [
     `curl -X POST https://api.blaxel.ai/v0/policies \\`,
     `  -H "Authorization: Bearer $BLAXEL_API_KEY" \\`,
     `  -H "Content-Type: application/json" \\`,
-    `  -d '${body.replace(/\n\s*/g, " ")}'`,
+    `  -d '${indentedBody}'`,
   ].join("\n");
 }
 
