@@ -154,16 +154,6 @@
     color-mix(in srgb, var(--surface-elevated-light) 96%, var(--orange-800) 4%),
     color-mix(in srgb, var(--surface-elevated-dark) 96%, white 4%)
   );
-  /* Neutral hover — generic 8% mix primitive used by quiet interactive elements
-   * that need a hover affordance without the brand-orange tint of hover-surface.
-   * Consumers: Button link/secondary variants. The recipe is identical to
-   * --color-sidebar-hover; sidebar shipped first and the primitive was extracted
-   * later. Cleanup tracked: collapse --color-sidebar-hover into a consumer-side
-   * alias of this primitive (move declaration to apps/portal globals.css). */
-  --color-hover-neutral: light-dark(
-    color-mix(in srgb, var(--surface-bg-light) 92%, black 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
-  );
   /* Sidebar hover — two variants for two shell surfaces.
    *
    * App shell sidebar (sits on bg-background):
