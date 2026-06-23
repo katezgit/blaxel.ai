@@ -1,119 +1,42 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { AlertTriangle, Cpu, GaugeCircle, Globe, MapPin } from "lucide-react";
-import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import { CodeBlock } from "@repo/ui/components/code-block";
-import { Input } from "@repo/ui/components/input";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
-import { cn } from "@repo/ui/lib/cn";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
-import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { policyQueries } from "@/lib/query/policies";
 import type {
-  MaxTokenGranularity,
   Policy,
   PolicyResourceType,
   PolicyType,
 } from "@/lib/mock/policies";
-
-// ─── Policy type catalog ─────────────────────────────────────────────────────
-
-interface PolicyTypeOption {
-  value: PolicyType;
-  label: string;
-  hint: string;
-  icon: typeof MapPin;
-  disabled?: boolean;
-}
-
-const POLICY_TYPE_OPTIONS: ReadonlyArray<PolicyTypeOption> = [
-  {
-    value: "location",
-    label: "Location",
-    hint: "Continent or country allow-list.",
-    icon: MapPin,
-  },
-  {
-    value: "maxToken",
-    label: "Token usage",
-    hint: "Per-period token cap.",
-    icon: GaugeCircle,
-  },
-  {
-    value: "flavor",
-    label: "Flavor",
-    hint: "CPU type allow-list.",
-    icon: Cpu,
-    disabled: true,
-  },
-];
-
-const POLICY_TYPE_BY_VALUE: Record<PolicyType, PolicyTypeOption> =
-  POLICY_TYPE_OPTIONS.reduce(
-    (acc, option) => {
-      acc[option.value] = option;
-      return acc;
-    },
-    {} as Record<PolicyType, PolicyTypeOption>,
-  );
-
-const RESOURCE_TYPE_OPTIONS: ReadonlyArray<{
-  value: PolicyResourceType;
-  label: string;
-}> = [
-  { value: "agent", label: "Agents" },
-  { value: "model", label: "Model APIs" },
-  { value: "function", label: "MCP Servers" },
-  { value: "sandbox", label: "Sandboxes" },
-  { value: "application", label: "Applications" },
-];
-
-// ─── Form schema ─────────────────────────────────────────────────────────────
-
-const formSchema = z.object({
-  displayName: z
-    .string()
-    .trim()
-    .min(1, "Display name is required.")
-    .max(64, "Max 64 characters."),
-  name: z
-    .string()
-    .trim()
-    .min(1, "Policy name is required.")
-    .max(64, "Max 64 characters.")
-    .regex(/^[a-z0-9-]+$/, "Lowercase letters, digits, and hyphens only."),
-  resourceTypes: z
-    .array(z.enum(["agent", "model", "function", "sandbox", "application"]))
-    .min(1, "Select at least one target."),
-  policyType: z.enum(["location", "maxToken", "flavor"]),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-function readPolicyTypeParam(value: string | null): PolicyType | null {
-  if (value === "location" || value === "maxToken" || value === "flavor") {
-    return value;
-  }
-  if (value === "tokenusage" || value === "tokenUsage") return "maxToken";
-  return null;
-}
+import {
+  FlavorUnavailableNotice,
+  IdentityEditableFields,
+  LocationBody,
+  PolicyTypeSelectField,
+  ResourceTypesField,
+  StepHeading,
+  TokenUsageBody,
+} from "../../_components/policy-form/form-pieces";
+import {
+  POLICY_TYPE_BY_VALUE,
+  policyFormSchema,
+  readPolicyTypeParam,
+  slugify,
+  type LocationItem,
+  type PolicyFormValues,
+  type TokenLimits,
+} from "../../_components/policy-form/form-schema";
 
 // ─── View ────────────────────────────────────────────────────────────────────
 
@@ -203,14 +126,12 @@ function CreatePolicyForm({
   // surfaces a one-time notice explaining flavor is CLI-only.
   const flavorDeepLink = initialType === "flavor";
 
-  const defaultValues = useMemo<FormValues>(() => {
+  const defaultValues = useMemo<PolicyFormValues>(() => {
     if (duplicateFrom) {
       return {
         displayName: `${duplicateFrom.metadata.displayName} copy`,
         name: "",
         resourceTypes: [...duplicateFrom.spec.resourceTypes],
-        // Flavor source → user can duplicate the spec but UI keeps the form
-        // on Location; flavor in dropdown stays disabled.
         policyType:
           duplicateFrom.spec.type === "flavor"
             ? "location"
@@ -228,8 +149,8 @@ function CreatePolicyForm({
     };
   }, [duplicateFrom, initialType]);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<PolicyFormValues>({
+    resolver: zodResolver(policyFormSchema),
     defaultValues,
     mode: "onChange",
   });
@@ -292,17 +213,46 @@ function CreatePolicyForm({
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8">
         <ScrollArea className="min-h-0">
           <div className="flex flex-col gap-10 pr-4 pb-2">
-            <PolicyTypeSection form={form} />
-            <PolicyBodySection
-              policyType={policyType}
-              flavorDeepLink={flavorDeepLink}
-              locations={locations}
-              onLocationsChange={setLocations}
-              tokenLimits={tokenLimits}
-              onTokenLimitsChange={setTokenLimits}
-            />
-            <ResourceTypesSection form={form} />
-            <IdentitySection form={form} />
+            <section className="flex flex-col gap-4">
+              <StepHeading index={1} title="Choose a policy type" />
+              <PolicyTypeSelectField form={form} />
+            </section>
+
+            <section className="flex flex-col gap-4">
+              <StepHeading
+                index={2}
+                title="Configure the rule"
+                description={POLICY_TYPE_BY_VALUE[policyType].hint}
+              />
+              {flavorDeepLink ? <FlavorUnavailableNotice /> : null}
+              {policyType === "location" ? (
+                <LocationBody value={locations} onChange={setLocations} />
+              ) : null}
+              {policyType === "maxToken" ? (
+                <TokenUsageBody
+                  value={tokenLimits}
+                  onChange={setTokenLimits}
+                />
+              ) : null}
+            </section>
+
+            <section className="flex flex-col gap-4">
+              <StepHeading
+                index={3}
+                title="Choose target workloads"
+                description="Attaches only to the workload types selected here."
+              />
+              <ResourceTypesField form={form} />
+            </section>
+
+            <section className="flex flex-col gap-4">
+              <StepHeading
+                index={4}
+                title="Name the policy"
+                description="Display name is the dashboard label; the slug is auto-derived for CLI."
+              />
+              <IdentityEditableFields form={form} />
+            </section>
           </div>
         </ScrollArea>
 
@@ -325,510 +275,6 @@ function CreatePolicyForm({
         submitting={form.formState.isSubmitting}
       />
     </form>
-  );
-}
-
-// ─── Numbered section heading ────────────────────────────────────────────────
-
-function StepHeading({
-  index,
-  title,
-  description,
-  headingId,
-}: {
-  index: number;
-  title: string;
-  description?: string;
-  headingId?: string;
-}) {
-  return (
-    <header className="flex flex-col gap-1">
-      <h2
-        id={headingId}
-        className="typography-subtitle font-semibold text-foreground"
-      >
-        <span className="font-mono text-meta-foreground">{index}.</span> {title}
-      </h2>
-      {description ? (
-        <p className="text-muted-foreground">{description}</p>
-      ) : null}
-    </header>
-  );
-}
-
-// ─── Section 1: policy type ──────────────────────────────────────────────────
-
-function PolicyTypeSection({
-  form,
-}: {
-  form: ReturnType<typeof useForm<FormValues>>;
-}) {
-  const policyType = form.watch("policyType");
-  const helper = POLICY_TYPE_BY_VALUE[policyType].hint;
-  const helperId = useId();
-
-  return (
-    <section className="flex flex-col gap-4">
-      <StepHeading index={1} title="Choose a policy type" />
-      <div className="flex flex-col gap-1.5">
-        <Field label="Policy type">
-          <Controller
-            control={form.control}
-            name="policyType"
-            render={({ field }) => {
-              const current = POLICY_TYPE_BY_VALUE[field.value];
-              const CurrentIcon = current.icon;
-              return (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    aria-label="Policy type"
-                    aria-describedby={helperId}
-                    className="w-full"
-                  >
-                    <SelectValue>
-                      <span className="inline-flex items-center gap-2">
-                        <CurrentIcon
-                          aria-hidden="true"
-                          className="size-4 text-muted-foreground"
-                        />
-                        <span className="typography-body text-foreground">
-                          {current.label}
-                        </span>
-                      </span>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {POLICY_TYPE_OPTIONS.map((option) => (
-                      <PolicyTypeOptionRow key={option.value} option={option} />
-                    ))}
-                  </SelectContent>
-                </Select>
-              );
-            }}
-          />
-        </Field>
-        <p id={helperId} className="text-muted-foreground">
-          {helper}
-        </p>
-      </div>
-    </section>
-  );
-}
-
-function PolicyTypeOptionRow({ option }: { option: PolicyTypeOption }) {
-  const Icon = option.icon;
-  return (
-    <SelectItem
-      value={option.value}
-      textValue={option.label}
-      disabled={option.disabled}
-    >
-      {/* Icon belongs to the title row only — hint indents under the title at
-          icon-width + gap (16 + 8 = 24, i.e. pl-6). */}
-      <span className="flex flex-col gap-0.5">
-        <span className="inline-flex items-center gap-2">
-          <Icon
-            aria-hidden="true"
-            className={cn(
-              "size-4 shrink-0",
-              option.disabled ? "text-text-disabled" : "text-muted-foreground",
-            )}
-          />
-          <span
-            className={cn(
-              "typography-body",
-              option.disabled ? "text-text-disabled" : "text-foreground",
-            )}
-          >
-            {option.label}
-          </span>
-          {option.disabled ? (
-            <span className="typography-meta text-meta-foreground">
-              [coming soon]
-            </span>
-          ) : null}
-        </span>
-        <span
-          className={cn(
-            "typography-meta pl-6",
-            option.disabled ? "text-text-disabled" : "text-muted-foreground",
-          )}
-        >
-          {option.hint}
-        </span>
-      </span>
-    </SelectItem>
-  );
-}
-
-// ─── Section 2: policy body editor ───────────────────────────────────────────
-
-interface LocationItem {
-  type: "continent" | "country";
-  name: string;
-}
-
-interface TokenLimits {
-  input: number;
-  output: number;
-  total: number;
-  step: number;
-  granularity: MaxTokenGranularity;
-}
-
-interface PolicyBodySectionProps {
-  policyType: PolicyType;
-  flavorDeepLink: boolean;
-  locations: ReadonlyArray<LocationItem>;
-  onLocationsChange: (next: ReadonlyArray<LocationItem>) => void;
-  tokenLimits: TokenLimits;
-  onTokenLimitsChange: (next: TokenLimits) => void;
-}
-
-function PolicyBodySection({
-  policyType,
-  flavorDeepLink,
-  locations,
-  onLocationsChange,
-  tokenLimits,
-  onTokenLimitsChange,
-}: PolicyBodySectionProps) {
-  return (
-    <section className="flex flex-col gap-4">
-      <StepHeading
-        index={2}
-        title="Configure the rule"
-        description={POLICY_TYPE_BY_VALUE[policyType].hint}
-      />
-      {flavorDeepLink ? <FlavorDeepLinkNotice /> : null}
-      {policyType === "location" ? (
-        <LocationBody value={locations} onChange={onLocationsChange} />
-      ) : null}
-      {policyType === "maxToken" ? (
-        <TokenUsageBody value={tokenLimits} onChange={onTokenLimitsChange} />
-      ) : null}
-    </section>
-  );
-}
-
-function FlavorDeepLinkNotice() {
-  return (
-    <div className="flex items-start gap-2 rounded-md border border-state-warning/40 bg-state-warning-subtle px-4 py-3">
-      <AlertTriangle
-        aria-hidden="true"
-        className="mt-0.5 size-4 shrink-0 text-state-warning-text"
-      />
-      <p className="typography-body text-foreground">
-        Flavor policies are authorable via{" "}
-        <code className="font-mono">bl apply -f</code> only — the dashboard form
-        does not yet support them. We&apos;ve switched the form to Location;
-        change the type if you need a different one.
-      </p>
-    </div>
-  );
-}
-
-// Location body — toggle chips, mixed continent + country.
-// Option set mirrors production: 3 entries total, alphabetical within each group.
-const SAMPLE_LOCATIONS: ReadonlyArray<LocationItem> = [
-  { type: "continent", name: "Europe" },
-  { type: "continent", name: "North America" },
-  { type: "country", name: "United States of America" },
-];
-
-function LocationBody({
-  value,
-  onChange,
-}: {
-  value: ReadonlyArray<LocationItem>;
-  onChange: (next: ReadonlyArray<LocationItem>) => void;
-}) {
-  function toggle(item: LocationItem) {
-    const exists = value.some(
-      (s) => s.type === item.type && s.name === item.name,
-    );
-    onChange(
-      exists
-        ? value.filter((s) => !(s.type === item.type && s.name === item.name))
-        : [...value, item],
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-1.5">
-        {SAMPLE_LOCATIONS.map((item) => {
-          const checked = value.some(
-            (s) => s.type === item.type && s.name === item.name,
-          );
-          const Icon = item.type === "continent" ? Globe : MapPin;
-          const typeLabel = item.type === "continent" ? "Continent" : "Country";
-          return (
-            <button
-              type="button"
-              key={`${item.type}:${item.name}`}
-              onClick={() => toggle(item)}
-              aria-pressed={checked}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 typography-caption transition-colors duration-fast ease-out-standard",
-                checked
-                  ? "border-border-strong bg-muted-surface text-foreground"
-                  : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
-              )}
-            >
-              <Icon
-                aria-hidden="true"
-                className="size-3.5 shrink-0 text-muted-foreground"
-              />
-              <span className="sr-only">{typeLabel}: </span>
-              {item.name}
-            </button>
-          );
-        })}
-      </div>
-      <p className="typography-caption text-muted-foreground">
-        Continents and countries union — workloads may run in any selected region.
-      </p>
-    </div>
-  );
-}
-
-// Token-usage body — three caps + period selector.
-const GRANULARITY_OPTIONS: ReadonlyArray<{
-  value: MaxTokenGranularity;
-  label: string;
-}> = [
-  { value: "month", label: "Month" },
-  { value: "day", label: "Day" },
-  { value: "hour", label: "Hour" },
-  { value: "minute", label: "Minute" },
-];
-
-function TokenUsageBody({
-  value,
-  onChange,
-}: {
-  value: TokenLimits;
-  onChange: (next: TokenLimits) => void;
-}) {
-  function update<K extends keyof TokenLimits>(key: K, next: TokenLimits[K]) {
-    onChange({ ...value, [key]: next });
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      <FieldRow cols={3}>
-        <TokenCapField
-          label="Input"
-          value={value.input}
-          onChange={(v) => update("input", v)}
-        />
-        <TokenCapField
-          label="Output"
-          value={value.output}
-          onChange={(v) => update("output", v)}
-        />
-        <TokenCapField
-          label="Total"
-          value={value.total}
-          onChange={(v) => update("total", v)}
-        />
-      </FieldRow>
-      <div className="flex flex-col gap-1.5">
-        <span className="typography-label text-muted-foreground">
-          Per period
-        </span>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[120px_1fr]">
-          <Input
-            type="number"
-            min={1}
-            value={value.step}
-            onChange={(event) =>
-              update("step", Number(event.target.value) || 1)
-            }
-            className="font-mono tabular-nums"
-            aria-label="Period length"
-          />
-          <Select
-            value={value.granularity}
-            onValueChange={(next) =>
-              update("granularity", next as MaxTokenGranularity)
-            }
-          >
-            <SelectTrigger aria-label="Period unit" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {GRANULARITY_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <span className="typography-caption text-meta-foreground">
-          Leave any cap blank for Unlimited.
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function TokenCapField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  onChange: (next: number) => void;
-}) {
-  // 0 in the model means "unlimited"; surface as empty so the placeholder shows.
-  const display = value === 0 ? "" : String(value);
-  return (
-    <Field label={label}>
-      <Input
-        type="number"
-        min={0}
-        inputMode="numeric"
-        value={display}
-        placeholder="Unlimited"
-        onChange={(event) => {
-          const raw = event.target.value;
-          onChange(raw === "" ? 0 : Number(raw) || 0);
-        }}
-        className="font-mono tabular-nums"
-      />
-    </Field>
-  );
-}
-
-// ─── Section 3: workload targets ─────────────────────────────────────────────
-
-function ResourceTypesSection({
-  form,
-}: {
-  form: ReturnType<typeof useForm<FormValues>>;
-}) {
-  return (
-    <section className="flex flex-col gap-4">
-      <StepHeading
-        index={3}
-        title="Choose target workloads"
-        description="Attaches only to the workload types selected here."
-      />
-      <Controller
-        control={form.control}
-        name="resourceTypes"
-        render={({ field, fieldState }) => (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap gap-1.5">
-              {RESOURCE_TYPE_OPTIONS.map((option) => {
-                const checked = field.value.includes(option.value);
-                return (
-                  <button
-                    type="button"
-                    key={option.value}
-                    onClick={() => {
-                      field.onChange(
-                        checked
-                          ? field.value.filter((v) => v !== option.value)
-                          : [...field.value, option.value],
-                      );
-                    }}
-                    aria-pressed={checked}
-                    className={cn(
-                      "inline-flex items-center rounded-md border px-2.5 py-1 typography-caption transition-colors duration-fast ease-out-standard",
-                      checked
-                        ? "border-border-strong bg-muted-surface text-foreground"
-                        : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-            {fieldState.error ? (
-              <span
-                role="alert"
-                className="typography-caption font-medium text-state-errored-text"
-              >
-                {fieldState.error.message}
-              </span>
-            ) : null}
-          </div>
-        )}
-      />
-    </section>
-  );
-}
-
-// ─── Section 4: identity (display name → slug) ───────────────────────────────
-
-function IdentitySection({
-  form,
-}: {
-  form: ReturnType<typeof useForm<FormValues>>;
-}) {
-  const {
-    register,
-    watch,
-    formState: { errors },
-  } = form;
-  const slug = watch("name");
-  const displayHelperId = useId();
-  const nameHelperId = useId();
-
-  return (
-    <section className="flex flex-col gap-4">
-      <StepHeading
-        index={4}
-        title="Name the policy"
-        description="Display name is the dashboard label; the slug is auto-derived for CLI."
-      />
-      <FieldRow cols={1}>
-        <div className="flex flex-col gap-1.5">
-          <Field
-            label="Display name"
-            error={errors.displayName?.message}
-          >
-            <Input
-              placeholder="EU-only production"
-              aria-describedby={displayHelperId}
-              {...register("displayName")}
-            />
-          </Field>
-          <p id={displayHelperId} className="text-muted-foreground">
-            Shown in the dashboard.
-          </p>
-        </div>
-      </FieldRow>
-      <FieldRow cols={1}>
-        <div className="flex flex-col gap-1.5">
-          <Field label="Name" error={errors.name?.message}>
-            <Input
-              placeholder="eu-only-prod"
-              className="font-mono"
-              aria-describedby={nameHelperId}
-              {...register("name")}
-            />
-          </Field>
-          <p id={nameHelperId} className="text-muted-foreground">
-            Used in <code className="typography-code">bl</code> commands and{" "}
-            <code className="typography-code">spec.policies[]</code>.
-            Auto-derived; editable.
-          </p>
-        </div>
-      </FieldRow>
-      {slug ? (
-        <p className="typography-caption text-meta-foreground">
-          Slug preview:{" "}
-          <code className="font-mono text-foreground">{slug}</code>
-        </p>
-      ) : null}
-    </section>
   );
 }
 
@@ -942,11 +388,7 @@ function buildYamlBody(ctx: SnippetBuildContext): string {
       `    total: ${ctx.tokenLimits.total}`,
     );
   } else if (ctx.policyType === "flavor") {
-    lines.push(
-      "  flavors:",
-      "    - name: t4",
-      "      type: cpu",
-    );
+    lines.push("  flavors:", "    - name: t4", "      type: cpu");
   }
   return lines.join("\n");
 }
@@ -989,9 +431,7 @@ function buildGoSnippet(ctx: SnippetBuildContext): string {
   if (ctx.policyType === "location") {
     lines.push(`\t\tLocations: []blaxel.PolicyLocation{`);
     for (const loc of ctx.locations) {
-      lines.push(
-        `\t\t\t{Type: "${loc.type}", Name: "${loc.name}"},`,
-      );
+      lines.push(`\t\t\t{Type: "${loc.type}", Name: "${loc.name}"},`);
     }
     lines.push(`\t\t},`);
   } else if (ctx.policyType === "maxToken") {
@@ -1033,27 +473,20 @@ function buildCurlSnippet(ctx: SnippetBuildContext): string {
 
 function buildCliSnippet(ctx: SnippetBuildContext): string {
   const yaml = buildYamlBody(ctx);
-  return [
-    `cat <<'EOF' | bl apply -f -`,
-    yaml,
-    `EOF`,
-  ].join("\n");
+  return [`cat <<'EOF' | bl apply -f -`, yaml, `EOF`].join("\n");
 }
 
-// Object-literal builder shared by TS / Python / cURL — each language picks
-// the quote and key style it wants.
 function buildPolicyObjectLiteral(
   ctx: SnippetBuildContext,
   opts: { lang: "ts" | "py" | "json" },
 ): string {
   const quoteKey = (key: string) =>
     opts.lang === "ts" ? key : `"${key}"`;
-  const str = (value: string) =>
-    opts.lang === "py" ? `"${value}"` : `"${value}"`;
+  const str = (value: string) => `"${value}"`;
   const arr = (items: ReadonlyArray<string>) =>
     `[${items.map(str).join(", ")}]`;
-  const open = opts.lang === "py" ? "{" : "{";
-  const close = opts.lang === "py" ? "}" : "}";
+  const open = "{";
+  const close = "}";
 
   const lines: string[] = [`${open}`];
   lines.push(`  ${quoteKey("metadata")}: {`);
@@ -1124,14 +557,4 @@ function FormFooter({
       </Button>
     </div>
   );
-}
-
-// ─── Util ────────────────────────────────────────────────────────────────────
-
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
 }

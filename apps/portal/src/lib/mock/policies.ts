@@ -113,7 +113,7 @@ export interface PolicyUsages {
 // Fixtures
 // ─────────────────────────────────────────────────────────────────────────────
 
-const FIXTURES: ReadonlyArray<Policy> = [
+const FIXTURES: Array<Policy> = [
   {
     metadata: {
       name: "pol-7a3f",
@@ -298,6 +298,50 @@ export function deletePolicy(
   void _accountId;
   void _workspaceId;
   DELETED_NAMES.add(name);
+}
+
+// Mock-side patch. Mutates the fixture in place so subsequent reads see the
+// new values. Async + delay so the optimistic flow exercises a real loading
+// state on submit.
+export interface PolicyUpdatePatch {
+  displayName: string;
+  resourceTypes: ReadonlyArray<PolicyResourceType>;
+  locations?: ReadonlyArray<PolicyLocation>;
+  maxTokens?: PolicyMaxTokens;
+  updatedBy: string;
+}
+
+export async function updatePolicy(
+  _accountId: string,
+  _workspaceId: string,
+  name: string,
+  patch: PolicyUpdatePatch,
+): Promise<Policy | null> {
+  void _accountId;
+  void _workspaceId;
+  const idx = FIXTURES.findIndex(
+    (p) => p.metadata.name === name,
+  );
+  const current = FIXTURES[idx];
+  if (idx === -1 || current === undefined) return delay(null);
+  const nextSpec: PolicySpec = {
+    ...current.spec,
+    resourceTypes: patch.resourceTypes,
+    ...(patch.locations !== undefined ? { locations: patch.locations } : {}),
+    ...(patch.maxTokens !== undefined ? { maxTokens: patch.maxTokens } : {}),
+  };
+  const next: Policy = {
+    metadata: {
+      ...current.metadata,
+      displayName: patch.displayName,
+      updatedAt: new Date().toISOString(),
+      updatedBy: patch.updatedBy,
+    },
+    spec: nextSpec,
+    usage: current.usage,
+  };
+  FIXTURES[idx] = next;
+  return delay(next);
 }
 
 export async function fetchPolicyUsages(

@@ -1,32 +1,41 @@
 "use client";
 
+import { Pencil } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
 import { BandFrame } from "./band-frame";
 import type { PolicyLocation } from "@/lib/mock/policies";
 
 interface LocationClauseBandProps {
   locations: ReadonlyArray<PolicyLocation>;
+  onRequestEdit: () => void;
 }
 
-export function LocationClauseBand({ locations }: LocationClauseBandProps) {
+export function LocationClauseBand({
+  locations,
+  onRequestEdit,
+}: LocationClauseBandProps) {
   return (
     <BandFrame label="Clause">
-      <div className="flex flex-col gap-4">
-        <p className="typography-body text-foreground">
-          <span className="font-medium">Type:</span> location
-        </p>
+      <div className="group flex flex-col gap-4">
         <p className="typography-body text-muted-foreground">
           Workloads attached to this policy are deployed only in these
           locations. Requests routed to any other data center are denied.
         </p>
 
         <div className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <h3 className="typography-label font-medium text-foreground">
               Allowed locations
             </h3>
-            <span className="font-mono typography-meta text-meta-foreground">
-              spec.locations[]
-            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onRequestEdit}
+              className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            >
+              <Pencil aria-hidden="true" />
+              Edit
+            </Button>
           </div>
           {locations.length === 0 ? (
             <p className="typography-body text-muted-foreground">

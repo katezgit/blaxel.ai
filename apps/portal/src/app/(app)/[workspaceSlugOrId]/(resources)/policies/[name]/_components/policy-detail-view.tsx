@@ -22,6 +22,10 @@ import { PolicyProvenanceBand } from "./policy-provenance-band";
 import { PolicyCliBand } from "./policy-cli-band";
 import { PolicyDetailSkeleton } from "./policy-detail-skeleton";
 import { DeletePolicyDialog } from "./delete-policy-dialog";
+import {
+  EditPolicyDrawer,
+  type EditPolicyDrawerState,
+} from "./edit-policy-drawer";
 
 interface PolicyDetailViewProps {
   workspaceSlug: string;
@@ -33,7 +37,10 @@ function readStateSim(value: string | null): StateSim {
   return value === "loading" || value === "error" ? value : null;
 }
 
-export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailViewProps) {
+export function PolicyDetailView({
+  workspaceSlug,
+  policyName,
+}: PolicyDetailViewProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const searchParams = useSearchParams();
   const stateSim = readStateSim(searchParams.get("state"));
@@ -41,6 +48,7 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
   const router = useRouter();
   const queryClient = useQueryClient();
   const [policyToDelete, setPolicyToDelete] = useState<Policy | null>(null);
+  const [editState, setEditState] = useState<EditPolicyDrawerState>(null);
 
   const policyQuery = useQuery({
     ...policyQueries.detail(accountId, workspaceId, policyName),
@@ -54,8 +62,6 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
   async function handleConfirmDelete(target: Policy) {
     deletePolicy(accountId, workspaceId, target.metadata.name);
     setPolicyToDelete(null);
-    // Invalidate the workspace's policies list so the row disappears on
-    // navigation. Detail query is dropped to free the now-stale cache entry.
     await queryClient.invalidateQueries({
       queryKey: queryKeys.resources(accountId, workspaceId),
       predicate: (query) => query.queryKey.includes("policies"),
@@ -135,9 +141,7 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
           </p>
           <div className="mt-4 flex items-center gap-3">
             <Button asChild variant="primary">
-              <Link href={listHref}>
-                Back to Policies
-              </Link>
+              <Link href={listHref}>Back to Policies</Link>
             </Button>
             <code className="font-mono typography-meta text-muted-foreground">
               bl policy list
@@ -153,9 +157,15 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
       <PolicyDetailHeader
         policy={policy}
         workspaceSlug={workspaceSlug}
+        onRequestEdit={() =>
+          setEditState({ policy, focusTarget: "displayName" })
+        }
         onRequestDelete={() => setPolicyToDelete(policy)}
       />
-      <ClauseBand policy={policy} />
+      <ClauseBand
+        policy={policy}
+        onRequestEdit={() => setEditState({ policy, focusTarget: "clause" })}
+      />
       <PolicyUsageBand
         policy={policy}
         usages={usagesQuery.data ?? null}
@@ -169,21 +179,45 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
         onClose={() => setPolicyToDelete(null)}
         onConfirm={handleConfirmDelete}
       />
+      <EditPolicyDrawer
+        state={editState}
+        onClose={() => setEditState(null)}
+      />
     </div>
   );
 }
 
 // Clause band switches on spec.type into ONE of three sibling components —
 // composition, not configuration. Each clause owns its own copy and layout.
-function ClauseBand({ policy }: { policy: Policy }) {
+function ClauseBand({
+  policy,
+  onRequestEdit,
+}: {
+  policy: Policy;
+  onRequestEdit: () => void;
+}) {
   if (policy.spec.type === "location") {
-    return <LocationClauseBand locations={policy.spec.locations ?? []} />;
+    return (
+      <LocationClauseBand
+        locations={policy.spec.locations ?? []}
+        onRequestEdit={onRequestEdit}
+      />
+    );
   }
   if (policy.spec.type === "maxToken") {
-    return <MaxTokenClauseBand maxTokens={policy.spec.maxTokens ?? null} />;
+    return (
+      <MaxTokenClauseBand
+        maxTokens={policy.spec.maxTokens ?? null}
+        onRequestEdit={onRequestEdit}
+      />
+    );
   }
-  return <FlavorClauseBand flavors={policy.spec.flavors ?? []} />;
+  return (
+    <FlavorClauseBand
+      flavors={policy.spec.flavors ?? []}
+      onRequestEdit={onRequestEdit}
+    />
+  );
 }
 
-// Re-export Policy/PolicyUsages here for type narrowing in band components.
 export type { Policy, PolicyUsages };

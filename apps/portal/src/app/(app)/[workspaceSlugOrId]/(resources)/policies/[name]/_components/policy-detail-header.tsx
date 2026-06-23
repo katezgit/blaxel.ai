@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Copy, MoreHorizontal, Pencil, ShieldCheck } from "lucide-react";
+import { Copy, MoreHorizontal, Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
@@ -14,23 +14,25 @@ import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { DetailPageHeader } from "@/components/shell/detail-page-header";
 import { IconAvatar } from "@/components/shell/icon-avatar";
 import type { Policy } from "@/lib/mock/policies";
-import { policyTypeLabel, totalUsage } from "@/lib/mock/policies";
+import { POLICY_TYPE_BY_VALUE } from "../../_components/policy-form/form-schema";
 
 interface PolicyDetailHeaderProps {
   policy: Policy;
   workspaceSlug: string;
+  onRequestEdit: () => void;
   onRequestDelete: () => void;
 }
 
 export function PolicyDetailHeader({
   policy,
   workspaceSlug,
+  onRequestEdit,
   onRequestDelete,
 }: PolicyDetailHeaderProps) {
   const heading = policy.metadata.displayName || policy.metadata.name;
-  const total = totalUsage(policy.usage);
   const listHref = `/${workspaceSlug}/policies`;
   const duplicateHref = `/${workspaceSlug}/policies/new?duplicate=${encodeURIComponent(policy.metadata.name)}`;
+  const typeOption = POLICY_TYPE_BY_VALUE[policy.spec.type];
 
   return (
     <DetailPageHeader
@@ -40,17 +42,9 @@ export function PolicyDetailHeader({
           current={heading}
         />
       }
-      avatar={<IconAvatar icon={ShieldCheck} label="Policy" />}
+      avatar={<IconAvatar icon={typeOption.icon} label={`${typeOption.label} policy`} />}
       heading={heading}
-      description={
-        <>
-          <span>{policyTypeLabel(policy.spec.type)} policy</span>
-          <span aria-hidden="true"> · </span>
-          <span>
-            {total} {total === 1 ? "workload" : "workloads"} attached
-          </span>
-        </>
-      }
+      description={typeOption.narrative}
       action={
         <>
           <Button asChild variant="secondary">
@@ -59,7 +53,7 @@ export function PolicyDetailHeader({
               Duplicate
             </Link>
           </Button>
-          <Button variant="secondary">
+          <Button variant="secondary" onClick={onRequestEdit}>
             <Pencil aria-hidden="true" />
             Edit policy
           </Button>
@@ -70,15 +64,6 @@ export function PolicyDetailHeader({
               </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onSelect={() =>
-                  navigator.clipboard.writeText(
-                    `bl policy get ${policy.metadata.name}`,
-                  )
-                }
-              >
-                Copy bl command
-              </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => navigator.clipboard.writeText(window.location.href)}
               >

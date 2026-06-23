@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Copy } from "lucide-react";
-import { Button } from "@repo/ui/components/button";
 import { CodeBlock } from "@repo/ui/components/code-block";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { BandFrame } from "./band-frame";
 import type { Policy } from "@/lib/mock/policies";
 
@@ -12,49 +10,29 @@ interface PolicyCliBandProps {
 }
 
 export function PolicyCliBand({ policy }: PolicyCliBandProps) {
-  const blGetCommand = `bl policy get ${policy.metadata.name}`;
   const yaml = buildYamlManifest(policy);
-  const applyCommand = `bl apply -f - <<'EOF'\n${yaml}\nEOF`;
+  const blGetCommand = `bl policy get ${policy.metadata.name}`;
+  const blApplyCommand = `bl apply -f - <<'EOF'\n${yaml}\nEOF`;
 
   return (
     <BandFrame label="CLI">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <span className="font-mono typography-meta uppercase tracking-wider text-meta-foreground">
-            Read
-          </span>
-          <CodeBlock variant="block" code={blGetCommand} />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="font-mono typography-meta uppercase tracking-wider text-meta-foreground">
-            YAML manifest
-          </span>
+      <Tabs defaultValue="yaml" className="gap-3">
+        <TabsList variant="underline" aria-label="CLI view">
+          <TabsTrigger value="yaml">YAML</TabsTrigger>
+          <TabsTrigger value="bl-get">bl get</TabsTrigger>
+          <TabsTrigger value="bl-apply">bl apply</TabsTrigger>
+        </TabsList>
+        <TabsContent value="yaml" className="m-0">
           <CodeBlock variant="block" language="yaml" code={yaml} />
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <CopyValueButton label="Copy YAML" value={yaml} />
-          <CopyValueButton label="Copy bl policy get" value={blGetCommand} />
-          <CopyValueButton label="Copy bl apply" value={applyCommand} />
-        </div>
-      </div>
+        </TabsContent>
+        <TabsContent value="bl-get" className="m-0">
+          <CodeBlock variant="block" language="bash" code={blGetCommand} />
+        </TabsContent>
+        <TabsContent value="bl-apply" className="m-0">
+          <CodeBlock variant="block" language="bash" code={blApplyCommand} />
+        </TabsContent>
+      </Tabs>
     </BandFrame>
-  );
-}
-
-function CopyValueButton({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false);
-  async function onClick() {
-    await navigator.clipboard.writeText(value);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
-  return (
-    <Button variant="secondary" type="button" onClick={onClick}>
-      {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
-      {copied ? "Copied" : label}
-    </Button>
   );
 }
 

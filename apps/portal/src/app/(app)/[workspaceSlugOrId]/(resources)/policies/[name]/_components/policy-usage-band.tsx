@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
-import { cn } from "@repo/ui/lib/cn";
 import { Button } from "@repo/ui/components/button";
 import {
   Collapsible,
@@ -30,7 +29,6 @@ interface PolicyUsageBandProps {
 interface KindRow {
   key: keyof PolicyUsageCounts;
   label: string;
-  /** Workload route segment for linking out to the workload's detail page. */
   routeSegment: string;
 }
 
@@ -82,31 +80,48 @@ export function PolicyUsageBand({
     );
   }
 
+  const activeRows = KIND_ROWS.filter((row) => policy.usage[row.key] > 0);
+  const zeroRows = KIND_ROWS.filter((row) => policy.usage[row.key] === 0);
+
   return (
     <BandFrame label="Usage">
-      <div className="flex flex-col gap-2 rounded-md border border-border bg-background">
-        <div className="flex items-center justify-between border-b border-border px-4 py-2">
-          <h3 className="typography-label font-medium text-foreground">
-            Workloads referencing this policy
-          </h3>
-          <span className="font-mono typography-meta text-meta-foreground">
-            Policy.usage
-          </span>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col rounded-md border border-border bg-background">
+          <div className="border-b border-border px-4 py-2">
+            <h3 className="typography-label font-medium text-foreground">
+              Workloads referencing this policy
+            </h3>
+          </div>
+          <ul className="divide-y divide-border">
+            {activeRows.map((row) => (
+              <KindUsageRow
+                key={row.key}
+                row={row}
+                count={policy.usage[row.key]}
+                workloads={usages?.[row.key] ?? []}
+                workspaceSlug={workspaceSlug}
+              />
+            ))}
+          </ul>
         </div>
-        <ul className="divide-y divide-border">
-          {KIND_ROWS.map((row) => (
-            <KindUsageRow
-              key={row.key}
-              row={row}
-              count={policy.usage[row.key]}
-              workloads={usages?.[row.key] ?? []}
-              workspaceSlug={workspaceSlug}
-            />
-          ))}
-        </ul>
+        {zeroRows.length > 0 && (
+          <p className="typography-caption text-muted-foreground">
+            {buildZeroRowsSentence(zeroRows.map((r) => r.label))}
+          </p>
+        )}
       </div>
     </BandFrame>
   );
+}
+
+function buildZeroRowsSentence(labels: ReadonlyArray<string>): string {
+  if (labels.length === 1) return `No ${labels[0]} reference this policy.`;
+  if (labels.length === 2) {
+    return `No ${labels[0]} or ${labels[1]} reference this policy.`;
+  }
+  const head = labels.slice(0, -1).join(", ");
+  const tail = labels[labels.length - 1];
+  return `No ${head}, or ${tail} reference this policy.`;
 }
 
 interface KindUsageRowProps {
@@ -116,21 +131,22 @@ interface KindUsageRowProps {
   workspaceSlug: string;
 }
 
-function KindUsageRow({ row, count, workloads, workspaceSlug }: KindUsageRowProps) {
+function KindUsageRow({
+  row,
+  count,
+  workloads,
+  workspaceSlug,
+}: KindUsageRowProps) {
   const [open, setOpen] = useState(false);
-  const muted = count === 0;
-  const expandable = count > 0 && workloads.length > 0;
+  const expandable = workloads.length > 0;
 
   if (!expandable) {
     return (
-      <li
-        className={cn(
-          "grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-3",
-          muted && "text-muted-foreground",
-        )}
-      >
-        <span className="typography-body">{row.label}</span>
-        <span className="font-mono typography-body tabular-nums">{count}</span>
+      <li className="grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-3">
+        <span className="typography-body text-foreground">{row.label}</span>
+        <span className="font-mono typography-body tabular-nums text-foreground">
+          {count}
+        </span>
       </li>
     );
   }
@@ -145,9 +161,15 @@ function KindUsageRow({ row, count, workloads, workspaceSlug }: KindUsageRowProp
             aria-expanded={open}
           >
             {open ? (
-              <ChevronDown aria-hidden="true" className="size-4 text-muted-foreground" />
+              <ChevronDown
+                aria-hidden="true"
+                className="size-4 text-muted-foreground"
+              />
             ) : (
-              <ChevronRight aria-hidden="true" className="size-4 text-muted-foreground" />
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4 text-muted-foreground"
+              />
             )}
             <span className="typography-body text-foreground">{row.label}</span>
             <span className="font-mono typography-body tabular-nums text-foreground">

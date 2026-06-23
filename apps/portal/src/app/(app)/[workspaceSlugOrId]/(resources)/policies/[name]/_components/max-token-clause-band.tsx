@@ -1,15 +1,21 @@
 "use client";
 
+import { Pencil } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
 import { BandFrame } from "./band-frame";
 import type { PolicyMaxTokens } from "@/lib/mock/policies";
 
 interface MaxTokenClauseBandProps {
   maxTokens: PolicyMaxTokens | null;
+  onRequestEdit: () => void;
 }
 
 const NUMBER_FMT = new Intl.NumberFormat("en-US");
 
-export function MaxTokenClauseBand({ maxTokens }: MaxTokenClauseBandProps) {
+export function MaxTokenClauseBand({
+  maxTokens,
+  onRequestEdit,
+}: MaxTokenClauseBandProps) {
   if (maxTokens === null) {
     return (
       <BandFrame label="Clause">
@@ -27,10 +33,7 @@ export function MaxTokenClauseBand({ maxTokens }: MaxTokenClauseBandProps) {
 
   return (
     <BandFrame label="Clause">
-      <div className="flex flex-col gap-4">
-        <p className="typography-body text-foreground">
-          <span className="font-medium">Type:</span> maxToken
-        </p>
+      <div className="group flex flex-col gap-4">
         <p className="typography-body text-muted-foreground">
           Token consumption for attached workloads is capped per window.
           Requests exceeding the cap receive 429. All subsequent requests
@@ -38,50 +41,44 @@ export function MaxTokenClauseBand({ maxTokens }: MaxTokenClauseBandProps) {
         </p>
 
         <div className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="typography-label font-medium text-foreground">
-              Window
-            </h3>
-            <span className="font-mono typography-meta text-meta-foreground">
-              spec.maxTokens.granularity + step
-            </span>
-          </div>
+          <h3 className="typography-label font-medium text-foreground">
+            Window
+          </h3>
           <p className="typography-body text-foreground">
             <span className="font-mono">{windowLabel}</span>
-            <span className="ml-3 font-mono typography-meta text-muted-foreground">
-              granularity: {maxTokens.granularity} / step: {maxTokens.step}
-            </span>
           </p>
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <h3 className="typography-label font-medium text-foreground">
               Token limits
             </h3>
-            <span className="font-mono typography-meta text-meta-foreground">
-              spec.maxTokens.*
-            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onRequestEdit}
+              className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            >
+              <Pencil aria-hidden="true" />
+              Edit
+            </Button>
           </div>
           <dl className="divide-y divide-border rounded-md border border-border bg-background">
             <ThresholdRow
               label="Input tokens per window"
-              field="spec.maxTokens.input"
               value={maxTokens.input}
             />
             <ThresholdRow
               label="Output tokens per window"
-              field="spec.maxTokens.output"
               value={maxTokens.output}
             />
             <ThresholdRow
               label="Total tokens per window"
-              field="spec.maxTokens.total"
               value={maxTokens.total}
             />
             <ThresholdRow
               label="Input / output ratio cap"
-              field="spec.maxTokens.ratioInputOverOutput"
               value={maxTokens.ratioInputOverOutput}
             />
           </dl>
@@ -98,14 +95,13 @@ export function MaxTokenClauseBand({ maxTokens }: MaxTokenClauseBandProps) {
 
 interface ThresholdRowProps {
   label: string;
-  field: string;
   value: number;
 }
 
-function ThresholdRow({ label, field, value }: ThresholdRowProps) {
+function ThresholdRow({ label, value }: ThresholdRowProps) {
   const notEvaluated = value === 0;
   return (
-    <div className="grid grid-cols-1 items-center gap-1 px-4 py-3 sm:grid-cols-[1fr_auto_auto]">
+    <div className="grid grid-cols-1 items-center gap-1 px-4 py-3 sm:grid-cols-[1fr_auto]">
       <dt className="typography-body text-foreground">{label}</dt>
       <dd
         className={
@@ -116,10 +112,6 @@ function ThresholdRow({ label, field, value }: ThresholdRowProps) {
       >
         {notEvaluated ? "Not evaluated" : NUMBER_FMT.format(value)}
       </dd>
-      <span className="font-mono typography-meta text-meta-foreground sm:ml-3">
-        {field}
-        {notEvaluated && " = 0"}
-      </span>
     </div>
   );
 }

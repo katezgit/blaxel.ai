@@ -1,20 +1,22 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Pencil } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
 import { BandFrame } from "./band-frame";
 import type { PolicyFlavor } from "@/lib/mock/policies";
 
 interface FlavorClauseBandProps {
   flavors: ReadonlyArray<PolicyFlavor>;
+  onRequestEdit: () => void;
 }
 
-export function FlavorClauseBand({ flavors }: FlavorClauseBandProps) {
+export function FlavorClauseBand({
+  flavors,
+  onRequestEdit,
+}: FlavorClauseBandProps) {
   return (
     <BandFrame label="Clause">
-      <div className="flex flex-col gap-4">
-        <p className="typography-body text-foreground">
-          <span className="font-medium">Type:</span> flavor
-        </p>
+      <div className="group flex flex-col gap-4">
         <p className="typography-body text-muted-foreground">
           Workloads attached to this policy are deployed only on these
           hardware configurations. Requests scheduled on any other hardware
@@ -22,13 +24,19 @@ export function FlavorClauseBand({ flavors }: FlavorClauseBandProps) {
         </p>
 
         <div className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <h3 className="typography-label font-medium text-foreground">
               Allowed flavors
             </h3>
-            <span className="font-mono typography-meta text-meta-foreground">
-              spec.flavors[]
-            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onRequestEdit}
+              className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            >
+              <Pencil aria-hidden="true" />
+              Edit
+            </Button>
           </div>
           {flavors.length === 0 ? (
             <p className="typography-body text-muted-foreground">
@@ -38,7 +46,10 @@ export function FlavorClauseBand({ flavors }: FlavorClauseBandProps) {
           ) : (
             <div className="flex flex-wrap gap-2">
               {flavors.map((flavor) => (
-                <FlavorChip key={`${flavor.type}:${flavor.name}`} flavor={flavor} />
+                <FlavorChip
+                  key={`${flavor.type}:${flavor.name}`}
+                  flavor={flavor}
+                />
               ))}
             </div>
           )}
