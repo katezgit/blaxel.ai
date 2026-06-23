@@ -4,29 +4,9 @@ import Link from "next/link";
 import { ArrowRight, MapPin, GaugeCircle, Combine, BookOpen, Terminal } from "lucide-react";
 import { Card } from "@repo/ui/components/card";
 import { Button } from "@repo/ui/components/button";
+import { AddPaymentMethodDialog } from "@/components/billing/add-payment-method-dialog";
+import { CapabilityCard } from "@/components/paywall/capability-card";
 import { PoliciesPageHeader } from "./policies-page-header";
-
-const PAYMENT_HREF = "/account/billing/credits#payment-method";
-
-interface CapabilityCardProps {
-  icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
-  title: string;
-  description: string;
-}
-
-function CapabilityCard({ icon: Icon, title, description }: CapabilityCardProps) {
-  return (
-    <Card className="flex flex-col gap-2 p-4">
-      <div className="flex items-center gap-2">
-        <Icon aria-hidden="true" className="size-4 text-muted-foreground" />
-        <h3 className="typography-label font-medium text-foreground">
-          {title}
-        </h3>
-      </div>
-      <p className="typography-caption text-muted-foreground">{description}</p>
-    </Card>
-  );
-}
 
 interface ResourceCardProps {
   icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
@@ -111,12 +91,14 @@ export function PoliciesTierLockedView() {
           <p className="typography-caption text-muted-foreground">
             Add a payment method to unlock.
           </p>
-          <Button asChild variant="primary" className="mt-2 w-full">
-            <Link href={PAYMENT_HREF}>
-              Add payment method
-              <ArrowRight aria-hidden="true" />
-            </Link>
-          </Button>
+          <AddPaymentMethodDialog
+            trigger={
+              <Button variant="primary" className="mt-2 w-full">
+                Add payment method
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            }
+          />
         </aside>
       </div>
 

@@ -1,101 +1,65 @@
-import Link from "next/link";
-import { ArrowRight, CreditCard, Globe } from "lucide-react";
+import { ArrowRight, Asterisk, MapPin, Tag } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { Card, CardContent } from "@repo/ui/components/card";
-
-interface Feature {
-  title: string;
-  description: string;
-}
-
-const FEATURES: ReadonlyArray<Feature> = [
-  {
-    title: "Wildcard support",
-    description:
-      "One domain covers every subdomain — no per-subdomain registration.",
-  },
-  {
-    title: "Branded sandbox previews",
-    description: "Your users see your domain, not *.preview.bl.run.",
-  },
-  {
-    title: "Region-locked assignment",
-    description: "Each domain pins to one region for latency control.",
-  },
-];
+import { UpgradeTierDialog } from "@/components/billing/upgrade-tier-dialog";
+import { CapabilityCard } from "@/components/paywall/capability-card";
 
 export function TierLockedPanel() {
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]">
-      <Card>
-        <CardContent className="flex flex-col gap-6 p-6">
-          <div className="flex flex-col gap-4">
-            <span
-              aria-hidden="true"
-              className="flex h-12 w-12 items-center justify-center rounded-md bg-muted-surface text-muted-foreground"
-            >
-              <Globe className="size-6" />
-            </span>
-            <div className="flex flex-col gap-1">
-              <h2 className="typography-subtitle font-semibold text-foreground">
-                Bring your own identity to Blaxel
-              </h2>
-              <p className="typography-body text-muted-foreground">
-                Route Sandbox previews through your own domain names, with
-                automatic TLS via ACM.
-              </p>
-            </div>
-          </div>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+      <section
+        aria-labelledby="custom-domains-capabilities-heading"
+        className="flex flex-col gap-3"
+      >
+        <h2
+          id="custom-domains-capabilities-heading"
+          className="font-mono typography-meta uppercase tracking-wider text-meta-foreground"
+        >
+          Capabilities
+        </h2>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1">
+          <CapabilityCard
+            icon={Asterisk}
+            title="Wildcard support"
+            description="One domain covers every subdomain — no per-subdomain registration."
+          />
+          <CapabilityCard
+            icon={Tag}
+            title="Branded sandbox previews"
+            description="Your users see your domain, not *.preview.bl.run."
+          />
+          <CapabilityCard
+            icon={MapPin}
+            title="Region-locked assignment"
+            description="Each domain pins to one region for latency control."
+          />
+        </div>
+      </section>
 
-          <div className="flex flex-col gap-4 border-t border-border pt-6">
-            <span className="typography-label font-medium uppercase tracking-wider text-muted-foreground">
-              Features
-            </span>
-            <ul className="flex flex-col gap-4">
-              {FEATURES.map((f) => (
-                <li key={f.title} className="flex flex-col gap-1">
-                  <span className="typography-body font-medium text-foreground">
-                    {f.title}
-                  </span>
-                  <span className="typography-body text-muted-foreground">
-                    {f.description}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="flex flex-col gap-6 p-6">
-          <div className="flex flex-col gap-2">
-            <span className="typography-label font-medium uppercase tracking-wider text-muted-foreground">
-              Ready to ship?
-            </span>
-            <p className="typography-body text-foreground">
-              Upgrade to Tier 3 to register custom domains and map them to your
-              Sandbox preview URLs.
-            </p>
-          </div>
-
-          <Button asChild variant="primary">
-            <Link
-              href="/account/billing/credits"
-              className="inline-flex items-center gap-2"
-            >
-              <CreditCard className="size-4" aria-hidden="true" />
+      <aside
+        aria-labelledby="custom-domains-unlock-heading"
+        className="flex h-fit flex-col gap-3 rounded-lg border border-border bg-card p-5"
+      >
+        <h2
+          id="custom-domains-unlock-heading"
+          className="font-mono typography-meta uppercase tracking-wider text-meta-foreground"
+        >
+          Unlock Custom domains
+        </h2>
+        <p className="typography-body text-foreground">
+          Custom domains require Tier 3.
+        </p>
+        <p className="typography-caption text-muted-foreground">
+          A $200+ monthly top-up activates Tier 3.
+        </p>
+        <UpgradeTierDialog
+          trigger={
+            <Button variant="primary" className="mt-2 w-full">
               Upgrade tier
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
-
-          <p className="typography-caption text-muted-foreground">
-            Takes you to account billing — a $200+ monthly top-up activates
-            Tier 3.
-          </p>
-        </CardContent>
-      </Card>
+              <ArrowRight aria-hidden="true" />
+            </Button>
+          }
+        />
+      </aside>
     </div>
   );
 }
