@@ -11,12 +11,12 @@ export default function SecurityBand({ domain }: SecurityBandProps) {
   const labels = Object.entries(metadata.labels);
 
   return (
-    <Band title="Security">
-      <dl className="grid grid-cols-[160px_1fr] gap-x-6 gap-y-4 items-baseline">
-        <dt className="typography-body text-muted-foreground">Registered by</dt>
+    <Band title="Audit">
+      <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-4 items-baseline">
+        <dt className="typography-body text-muted-foreground">Added by</dt>
         <dd className="typography-body text-foreground">{metadata.createdBy}</dd>
 
-        <dt className="typography-body text-muted-foreground">Registered at</dt>
+        <dt className="typography-body text-muted-foreground">Added at</dt>
         <dd className="font-mono typography-body text-foreground">
           {formatAbsoluteUtc(metadata.createdAt)}
         </dd>

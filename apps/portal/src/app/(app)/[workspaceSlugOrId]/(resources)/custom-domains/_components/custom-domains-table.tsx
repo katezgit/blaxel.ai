@@ -109,8 +109,15 @@ export default function CustomDomainsTable({ domains }: CustomDomainsTableProps)
           value={statusFilter}
           onValueChange={(value) => setStatusFilter(value as StatusFilter)}
         >
+          {/* SelectValue children override the auto-bound text — preserves
+              the data-slot Radix layout while displaying "Status: X" so a
+              single token like "Failed" never reads as orphaned context. */}
           <SelectTrigger className="w-40" aria-label="Filter by status">
-            <SelectValue />
+            <SelectValue>
+              {statusFilter === "all"
+                ? "All statuses"
+                : `Status: ${STATUS_OPTIONS.find((o) => o.value === statusFilter)?.label}`}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {STATUS_OPTIONS.map((option) => (
@@ -212,7 +219,9 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
               href={href}
               className="flex flex-col gap-0.5 rounded-sm font-mono typography-label"
             >
-              <span className="text-foreground">{metadata.name}</span>
+              <span className="text-foreground underline-offset-4 group-hover:underline">
+                {metadata.name}
+              </span>
               {metadata.displayName && (
                 <span className="font-sans typography-caption text-muted-foreground">
                   {metadata.displayName}
@@ -231,7 +240,9 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
           <span className="inline-flex items-center gap-1.5">
             <span aria-hidden="true" className="text-base leading-none">{region.flag}</span>
             <span className="text-foreground">{region.label}</span>
-            <span className="font-mono text-muted-foreground">({region.slug})</span>
+            {region.label !== region.slug && (
+              <span className="font-mono text-muted-foreground">({region.slug})</span>
+            )}
           </span>
         </td>
         <td className={tableCellVariants()}>

@@ -75,7 +75,6 @@ const VERIFIED_DOMAIN: CustomDomain = {
     cnameRecords: "abcd1234.bl.run",
     txtRecords: {
       "_blaxel-verify.preview.acme.com": "bl-v=abc123xyz",
-      "_blaxel-ca.preview.acme.com": "bl-ca=xyz9pqr",
     },
     subjectAlternativeNames: [
       { value: "preview.acme.com" },
@@ -118,7 +117,7 @@ const PENDING_DOMAIN: CustomDomain = {
 const FAILED_DOMAIN: CustomDomain = {
   metadata: {
     name: "agents.acme.com",
-    displayName: "Agents API",
+    displayName: "Customer-facing demo previews",
     workspace: "acme",
     labels: { env: "prod", team: "platform" },
     createdAt: daysAgo(1),
@@ -132,7 +131,6 @@ const FAILED_DOMAIN: CustomDomain = {
     cnameRecords: "wxyz9876.bl.run",
     txtRecords: {
       "_blaxel-verify.agents.acme.com": "bl-v=fail789def",
-      "_blaxel-ca.agents.acme.com": "bl-ca=ca987mno",
     },
     subjectAlternativeNames: [
       { value: "agents.acme.com" },

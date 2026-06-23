@@ -1,15 +1,13 @@
+import { Loader2 } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { cn } from "@repo/ui/lib/cn";
 import type { CustomDomainStatus } from "@/lib/mock/custom-domains";
 
 interface DomainStatusBadgeProps {
   status: CustomDomainStatus;
-  /**
-   * personality.md §7 — failure outranks success. On the detail header the
-   * failed badge gets larger pixel area than verified/pending badges. The
-   * table rows stay at default weight so the row-level chrome (subtle bg +
-   * accent border) carries the elevation instead of the badge itself.
-   */
+  // personality.md §7 — failure outranks success. When true, the failed
+  // badge grows in pixel area (padding + body type) so it visually
+  // outranks the verified/pending sibling weights at the same surface.
   prominentOnFailure?: boolean;
   className?: string;
 }
@@ -27,8 +25,14 @@ export default function DomainStatusBadge({
     );
   }
   if (status === "pending") {
+    // Drop showDot in favor of an inline spinning Loader2 — verification is
+    // an in-flight check, the motion communicates "we're working on this"
+    // far better than a static dot. Same affordance as the inline
+    // "Checking…" label on the detail page so the language reads consistent
+    // across surfaces.
     return (
-      <Badge variant="warning" showDot className={className}>
+      <Badge variant="warning" className={className}>
+        <Loader2 className="size-3 animate-spin motion-reduce:animate-none" aria-hidden="true" />
         Pending
       </Badge>
     );

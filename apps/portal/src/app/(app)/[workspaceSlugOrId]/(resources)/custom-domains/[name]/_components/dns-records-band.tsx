@@ -1,5 +1,13 @@
 import { Check, X, Loader2 } from "lucide-react";
-import { CodeBlock } from "@repo/ui/components/code-block";
+import { CopyButton } from "@repo/ui/components/copy-button";
+import {
+  tableBodyClass,
+  tableCellVariants,
+  tableClass,
+  tableHeaderClass,
+  tableHeadVariants,
+  tableRowVariants,
+} from "@repo/ui/components/table";
 import { cn } from "@repo/ui/lib/cn";
 import type {
   CustomDomain,
@@ -7,178 +15,210 @@ import type {
 } from "@/lib/mock/custom-domains";
 import Band from "./band";
 
+function relativeFromNow(iso: string | null): string {
+  if (iso === null) return "—";
+  const then = Date.parse(iso);
+  if (Number.isNaN(then)) return iso;
+  const delta = Date.now() - then;
+  const MINUTE = 60_000;
+  const HOUR = 60 * MINUTE;
+  const DAY = 24 * HOUR;
+  const MONTH = 30 * DAY;
+  const YEAR = 365 * DAY;
+  if (delta < MINUTE) return "just now";
+  if (delta < HOUR) return `${Math.floor(delta / MINUTE)} min ago`;
+  if (delta < DAY) return `${Math.floor(delta / HOUR)}h ago`;
+  if (delta < MONTH) return `${Math.floor(delta / DAY)}d ago`;
+  if (delta < YEAR) return `${Math.floor(delta / MONTH)}mo ago`;
+  return `${Math.floor(delta / YEAR)}y ago`;
+}
+
 interface DnsRecordsBandProps {
   domain: CustomDomain;
+}
+
+interface RecordRow {
+  type: "CNAME" | "TXT";
+  host: string;
+  value: string;
+  isFailing: boolean;
 }
 
 export default function DnsRecordsBand({ domain }: DnsRecordsBandProps) {
   const { metadata, spec } = domain;
   const txtEntries = Object.entries(spec.txtRecords);
 
-  return (
-    <Band title="DNS records issued by Blaxel">
-      <div className="flex flex-col gap-4">
-        <RecordGroup label="CNAME">
-          <RecordRow
-            type="CNAME"
-            host={metadata.name}
-            value={spec.cnameRecords}
-            status={spec.status}
-            verificationError={spec.verificationError}
-          />
-        </RecordGroup>
+  // Anchor failure attribution on backtick-wrapped host in verificationError
+  // (e.g. "TXT record `_blaxel-verify.acme.com` not found"). Substring match
+  // without backticks would cross-trip (CNAME host's tail matches TXT host).
+  const failingFor = (host: string): boolean =>
+    spec.status === "failed" &&
+    spec.verificationError !== null &&
+    spec.verificationError.includes(`\`${host}\``);
 
-        <RecordGroup label="TXT">
-          <ul className="flex flex-col gap-2 list-none p-0 m-0">
-            {txtEntries.map(([host, value]) => (
-              <li key={host}>
-                <RecordRow
-                  type="TXT"
-                  host={host}
-                  value={value}
+  const rows: ReadonlyArray<RecordRow> = [
+    {
+      type: "CNAME",
+      host: metadata.name,
+      value: spec.cnameRecords,
+      isFailing: failingFor(metadata.name),
+    },
+    ...txtEntries.map(([host, value]) => ({
+      type: "TXT" as const,
+      host,
+      value,
+      isFailing: failingFor(host),
+    })),
+  ];
+
+  // Catch-all error: failures the per-record annotation can't attribute
+  // (CAA conflict, ACM issuance failure, etc.) — surfaced under the table
+  // so the page has a single "what's wrong with the DNS check" surface.
+  const showCatchAllError =
+    spec.status === "failed" &&
+    spec.verificationError !== null &&
+    !rows.some((r) => r.isFailing);
+
+  return (
+    <Band title="DNS records to publish at your provider">
+      <div className="flex flex-col gap-3">
+        {/* Invariant: lastVerifiedAt is null for pending (never checked) — so
+            the pending branch shows the propagation hint instead of an empty
+            "Last checked —". */}
+        <p className="typography-caption text-muted-foreground">
+          {spec.status === "pending" ? (
+            "DNS propagation can take up to 48 hours."
+          ) : (
+            <>
+              Last checked{" "}
+              <span className="text-foreground">
+                {relativeFromNow(spec.lastVerifiedAt)}
+              </span>
+              {showCatchAllError && (
+                <>
+                  <span aria-hidden="true"> · </span>
+                  <span className="text-state-errored-text">
+                    {spec.verificationError}
+                  </span>
+                </>
+              )}
+            </>
+          )}
+        </p>
+
+        <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
+          <table className={tableClass} aria-label="DNS records to publish">
+            <thead className={tableHeaderClass}>
+              <tr>
+                {/* Type pins at 80px ("CNAME"/"TXT" at typography-label fit
+                    in ~50px; 80 gives breathing room without pulling Host
+                    leftward as content lengths vary). Status pins at 140px
+                    to fit the longest label "× Not matched" without wrap. */}
+                <th className={cn(tableHeadVariants(), "w-[80px]")}>Type</th>
+                <th className={tableHeadVariants()}>Host</th>
+                <th className={tableHeadVariants()}>Value</th>
+                <th className={cn(tableHeadVariants(), "w-[140px]")}>
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody className={tableBodyClass}>
+              {rows.map((row) => (
+                <RecordTableRow
+                  key={`${row.type}-${row.host}`}
+                  row={row}
                   status={spec.status}
-                  verificationError={spec.verificationError}
                 />
-              </li>
-            ))}
-          </ul>
-        </RecordGroup>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </Band>
   );
 }
 
-interface RecordGroupProps {
-  label: string;
-  children: React.ReactNode;
-}
-
-function RecordGroup({ label, children }: RecordGroupProps) {
-  return (
-    <div className="flex flex-col gap-2">
-      <h3 className="typography-body font-semibold text-foreground">
-        {label}
-      </h3>
-      {children}
-    </div>
-  );
-}
-
-interface RecordRowProps {
-  type: "CNAME" | "TXT";
-  host: string;
-  value: string;
+interface RecordTableRowProps {
+  row: RecordRow;
   status: CustomDomainStatus;
-  verificationError: string | null;
 }
 
-function RecordRow({
-  type,
-  host,
-  value,
-  status,
-  verificationError,
-}: RecordRowProps) {
-  // Match the verificationError against THIS specific record to decide whether
-  // to expand the failure annotation on this row. The error string carries
-  // the exact failing record name in backticks (e.g. "TXT record
-  // `_blaxel-verify.agents.acme.com` not found"). Anchor on the backtick
-  // form so substring matches (e.g. CNAME `agents.acme.com` matching the TXT
-  // host's tail) don't cross-trip — only the named record lights up red.
-  const recordIsFailing =
-    status === "failed" &&
-    verificationError !== null &&
-    verificationError.includes(`\`${host}\``);
-
+function RecordTableRow({ row, status }: RecordTableRowProps) {
   return (
-    <div
+    <tr
       className={cn(
-        "flex flex-col gap-2",
-        recordIsFailing &&
-          "rounded-sm border-l-2 border-state-errored bg-state-errored-subtle pl-3 pr-3 py-2",
+        tableRowVariants(),
+        "group/row",
+        // personality.md §7 — failure outranks success. Failing row gets the
+        // wash + accent the rest of the system uses for failed entries; CNAME
+        // (matched) and other TXT rows stay default.
+        row.isFailing && "bg-dns-record-error-bg hover:bg-dns-record-error-bg",
       )}
     >
-      <RecordOutcomeLabel
-        type={type}
-        status={status}
-        recordIsFailing={recordIsFailing}
+      <td
+        className={cn(
+          tableCellVariants(),
+          "font-mono typography-label text-foreground",
+          row.isFailing && "relative",
+        )}
+      >
+        {row.isFailing && (
+          <span
+            aria-hidden="true"
+            className="absolute inset-y-0 left-0 w-0.5 bg-state-errored"
+          />
+        )}
+        {row.type}
+      </td>
+      <td className={tableCellVariants()}>
+        <HoverCopyCell value={row.host} label="Copy host" />
+      </td>
+      <td className={tableCellVariants()}>
+        <HoverCopyCell value={row.value} label="Copy value" />
+      </td>
+      <td className={tableCellVariants()}>
+        <RowStatusCell row={row} status={status} />
+      </td>
+    </tr>
+  );
+}
+
+function HoverCopyCell({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="inline-flex items-center gap-1.5">
+      <span className="font-mono typography-label text-foreground whitespace-nowrap">
+        {value}
+      </span>
+      <CopyButton
+        value={value}
+        tooltipLabel={label}
+        className="opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
       />
-      <div className="grid grid-cols-[60px_1fr] gap-x-3 gap-y-1 items-baseline">
-        <span className="typography-meta uppercase tracking-wider text-meta-foreground">
-          Host
-        </span>
-        <span className="font-mono typography-body text-foreground break-all">
-          {host}
-        </span>
-        <span className="typography-meta uppercase tracking-wider text-meta-foreground">
-          Value
-        </span>
-        <div className="min-w-0">
-          <CodeBlock variant="inline" code={value} className="break-all" />
-        </div>
-      </div>
-      {recordIsFailing && <RecordOutcomeDetail expectedValue={value} />}
     </div>
   );
 }
 
-interface RecordOutcomeLabelProps {
-  type: "CNAME" | "TXT";
-  status: CustomDomainStatus;
-  recordIsFailing: boolean;
-}
-
-function RecordOutcomeLabel({
-  type,
-  status,
-  recordIsFailing,
-}: RecordOutcomeLabelProps) {
-  if (status === "verified") {
-    return (
-      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-scored-text">
-        <Check className="size-3" aria-hidden="true" />
-        Matched
-      </span>
-    );
-  }
+function RowStatusCell({ row, status }: RecordTableRowProps) {
   if (status === "pending") {
     return (
-      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-warning-text">
-        <Loader2 className="size-3 animate-spin" aria-hidden="true" />
-        Checking…
+      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-warning-text whitespace-nowrap">
+        <Loader2 className="size-3 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+        Checking
       </span>
     );
   }
-  if (recordIsFailing) {
+  if (row.isFailing) {
     return (
-      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-errored-text">
+      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-errored-text whitespace-nowrap">
         <X className="size-3" aria-hidden="true" />
-        {type === "CNAME" ? "Not matched" : "Not found"}
+        {row.type === "CNAME" ? "Not matched" : "Not found"}
       </span>
     );
   }
-  // Failed-status domain, but this record matched — quiet success.
   return (
-    <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-scored-text">
+    <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-scored-text whitespace-nowrap">
       <Check className="size-3" aria-hidden="true" />
       Matched
     </span>
-  );
-}
-
-interface RecordOutcomeDetailProps {
-  expectedValue: string;
-}
-
-function RecordOutcomeDetail({ expectedValue }: RecordOutcomeDetailProps) {
-  return (
-    <div className="flex flex-col gap-1">
-      <p className="font-mono typography-caption text-muted-foreground">
-        expected: <span className="text-foreground">{expectedValue}</span>
-      </p>
-      <p className="font-mono typography-caption text-muted-foreground">
-        observed: <span className="text-foreground">not present in DNS</span>
-      </p>
-    </div>
   );
 }
