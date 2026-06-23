@@ -77,9 +77,13 @@ const dialogContentVariants = cva(
   {
     variants: {
       size: {
-        sm: "w-[400px]",
-        md: "w-[560px]",
-        lg: "w-[720px]",
+        // min() caps each variant at its target width on large viewports and at
+        // (100vw − 2rem) on small viewports, keeping a 1rem gutter on each side.
+        // No consumer workaround needed; the close button and panel edge are
+        // always reachable without horizontal scrolling.
+        sm: "w-[min(400px,calc(100vw-2rem))]",
+        md: "w-[min(560px,calc(100vw-2rem))]",
+        lg: "w-[min(720px,calc(100vw-2rem))]",
       },
     },
     defaultVariants: {

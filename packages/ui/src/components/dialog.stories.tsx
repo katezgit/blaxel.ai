@@ -328,6 +328,45 @@ export const Variants: Story = {
   parameters: { layout: "padded" },
 }
 
+// ── NarrowViewport ────────────────────────────────────────────────────────────
+// Confirms that each size variant caps at (100vw − 2rem) on narrow viewports
+// rather than overflowing the screen edge. Resize the Storybook canvas to
+// ≤ 400 px to observe all three sizes collapsing to the same constrained width.
+// At desktop widths the dialog reverts to its target px value.
+
+export const NarrowViewport: Story = {
+  render: () => (
+    <div className="flex flex-wrap items-center gap-3">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <Dialog key={size} defaultOpen>
+          <DialogContent size={size}>
+            <DialogHeader>
+              <DialogTitle>size=&quot;{size}&quot; viewport test</DialogTitle>
+              <DialogDescription>
+                At {size === "sm" ? "400" : size === "md" ? "560" : "720"}px target width. On narrow
+                viewports this panel must stay within the screen gutter — no horizontal overflow,
+                close button fully visible.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogBody>
+              <p className="text-muted-foreground">Resize the canvas to ≤ 375 px to verify capping.</p>
+            </DialogBody>
+            <DialogFooter>
+              <DialogCancelButton />
+              <DialogConfirmButton />
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ))}
+    </div>
+  ),
+  parameters: {
+    layout: "fullscreen",
+    // Chromatic snapshot at narrow viewport to catch regressions
+    chromatic: { viewports: [375, 768, 1280] },
+  },
+}
+
 // ── Form helpers ──────────────────────────────────────────────────────────────
 
 const MODEL_OPTIONS = [

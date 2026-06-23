@@ -59,11 +59,9 @@ export function PrivacyPreferencesDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="lg"
-        // size="lg" pins a fixed 720px; cap to viewport on phones so the
-        // dialog stays inside the gutter. max-h-[90vh] gives narrow-viewport
-        // dialogs more vertical room than the DS default 80vh — three rows +
-        // footer otherwise crowd against the 80vh cap on short phones.
-        className="max-h-[90vh] max-w-[calc(100vw-2rem)]"
+        // max-h-[90vh]: three toggle rows + footer crowd against the DS default
+        // 80vh cap on short phones — override for more vertical room.
+        className="max-h-[90vh]"
       >
         <DialogHeader>
           <DialogTitle>Your privacy choices</DialogTitle>
