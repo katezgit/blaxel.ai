@@ -1,6 +1,7 @@
 "use client";
 
-import { MoreHorizontal, Pencil, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { Copy, MoreHorizontal, Pencil, ShieldCheck } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
@@ -24,6 +25,7 @@ export function PolicyDetailHeader({ policy, workspaceSlug }: PolicyDetailHeader
   const heading = policy.metadata.displayName || policy.metadata.name;
   const total = totalUsage(policy.usage);
   const listHref = `/${workspaceSlug}/policies`;
+  const duplicateHref = `/${workspaceSlug}/policies/new?duplicate=${encodeURIComponent(policy.metadata.name)}`;
 
   return (
     <DetailPageHeader
@@ -46,6 +48,12 @@ export function PolicyDetailHeader({ policy, workspaceSlug }: PolicyDetailHeader
       }
       action={
         <>
+          <Button asChild variant="secondary">
+            <Link href={duplicateHref}>
+              <Copy aria-hidden="true" />
+              Duplicate
+            </Link>
+          </Button>
           <Button variant="secondary">
             <Pencil aria-hidden="true" />
             Edit policy

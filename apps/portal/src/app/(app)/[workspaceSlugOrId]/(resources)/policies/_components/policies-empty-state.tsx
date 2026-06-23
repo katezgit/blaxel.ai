@@ -1,11 +1,10 @@
-"use client";
-
+import Link from "next/link";
 import { MapPin, GaugeCircle, Combine } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { CapabilityCard } from "@/components/paywall/capability-card";
 
 interface PoliciesEmptyStateProps {
-  onCreate: () => void;
+  createHref: string;
 }
 
 const capabilities = [
@@ -29,7 +28,7 @@ const capabilities = [
   },
 ] as const;
 
-export function PoliciesEmptyState({ onCreate }: PoliciesEmptyStateProps) {
+export function PoliciesEmptyState({ createHref }: PoliciesEmptyStateProps) {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
       <section
@@ -80,12 +79,8 @@ export function PoliciesEmptyState({ onCreate }: PoliciesEmptyStateProps) {
             <span className="font-mono text-foreground">bl apply -f policy.yaml</span>
           </p>
         </div>
-        <Button
-          variant="primary"
-          className="w-full"
-          onClick={onCreate}
-        >
-          Create policy
+        <Button asChild variant="primary" className="w-full">
+          <Link href={createHref}>Create policy</Link>
         </Button>
       </aside>
     </div>

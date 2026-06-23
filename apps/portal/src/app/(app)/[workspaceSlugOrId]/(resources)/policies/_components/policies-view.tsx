@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { useAccountState } from "@/lib/mock/account-context";
@@ -13,7 +12,6 @@ import { PoliciesTable } from "./policies-table";
 import { PoliciesTableSkeleton } from "./policies-table-skeleton";
 import { PoliciesErrorBand } from "./policies-error-band";
 import { PoliciesEmptyState } from "./policies-empty-state";
-import { CreatePolicyDrawer } from "./create-policy-drawer";
 
 // Dev simulation harness — `?state=loading|error|empty` overrides the live
 // fetch state so each wireframe state can be visually verified without
@@ -28,8 +26,9 @@ export function PoliciesView() {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { state } = useAccountState();
   const searchParams = useSearchParams();
+  const params = useParams<{ workspaceSlugOrId: string }>();
   const stateSim = readStateSim(searchParams.get("state"));
-  const [createOpen, setCreateOpen] = useState(false);
+  const createHref = `/${params.workspaceSlugOrId}/policies/new`;
 
   // Tier-1 locked surface — independent of fetch state. The list is still
   // prefetched at the route boundary; tier is the gate, not the data.
@@ -38,18 +37,12 @@ export function PoliciesView() {
   }
 
   return (
-    <>
-      <PoliciesViewUnlocked
-        accountId={accountId}
-        workspaceId={workspaceId}
-        stateSim={stateSim}
-        onCreate={() => setCreateOpen(true)}
-      />
-      <CreatePolicyDrawer
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-      />
-    </>
+    <PoliciesViewUnlocked
+      accountId={accountId}
+      workspaceId={workspaceId}
+      stateSim={stateSim}
+      createHref={createHref}
+    />
   );
 }
 
@@ -57,14 +50,14 @@ interface PoliciesViewUnlockedProps {
   accountId: string;
   workspaceId: string;
   stateSim: StateSim;
-  onCreate: () => void;
+  createHref: string;
 }
 
 function PoliciesViewUnlocked({
   accountId,
   workspaceId,
   stateSim,
-  onCreate,
+  createHref,
 }: PoliciesViewUnlockedProps) {
   const query = useQuery({
     ...policyQueries.list(accountId, workspaceId),
@@ -80,7 +73,7 @@ function PoliciesViewUnlocked({
     const policies = (stateSim === "empty" ? [] : query.data ?? []) as ReadonlyArray<Policy>;
     body =
       policies.length === 0 ? (
-        <PoliciesEmptyState onCreate={onCreate} />
+        <PoliciesEmptyState createHref={createHref} />
       ) : (
         <PoliciesTable policies={policies} />
       );
@@ -88,7 +81,7 @@ function PoliciesViewUnlocked({
 
   return (
     <div className="page-shell">
-      <PoliciesPageHeader showCreate onCreate={onCreate} />
+      <PoliciesPageHeader createHref={createHref} />
       {body}
     </div>
   );

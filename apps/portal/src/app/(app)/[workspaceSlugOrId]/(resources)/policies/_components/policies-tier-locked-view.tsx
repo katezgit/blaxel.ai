@@ -24,7 +24,7 @@ const CAPABILITIES = [
 export function PoliciesTierLockedView() {
   return (
     <div className="page-shell">
-      <PoliciesPageHeader showCreate={false} tierLocked />
+      <PoliciesPageHeader tierLocked />
 
       <section
         aria-labelledby="policies-locked-heading"

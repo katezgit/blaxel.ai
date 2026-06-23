@@ -1,18 +1,16 @@
-"use client";
-
+import Link from "next/link";
 import { ArrowUpRightIcon, Plus } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 
 interface PoliciesPageHeaderProps {
-  /** Whether to render the `+ Create Policy` action. Absent in the Tier-1-locked state. */
-  showCreate: boolean;
-  onCreate?: () => void;
+  /** Href the `+ Create Policy` action navigates to. Omit to hide the CTA (Tier-1-locked state). */
+  createHref?: string;
   /** When true, surfaces a Tier-1 badge next to the heading. */
   tierLocked?: boolean;
 }
 
-export function PoliciesPageHeader({ showCreate, onCreate, tierLocked = false }: PoliciesPageHeaderProps) {
+export function PoliciesPageHeader({ createHref, tierLocked = false }: PoliciesPageHeaderProps) {
   return (
     <header className="page-header">
       <div className="flex items-start justify-between gap-4">
@@ -26,10 +24,12 @@ export function PoliciesPageHeader({ showCreate, onCreate, tierLocked = false }:
             </Badge>
           )}
         </div>
-        {showCreate && (
-          <Button variant="primary" onClick={onCreate}>
-            <Plus aria-hidden="true" />
-            Create Policy
+        {createHref && (
+          <Button asChild variant="primary">
+            <Link href={createHref}>
+              <Plus aria-hidden="true" />
+              Create Policy
+            </Link>
           </Button>
         )}
       </div>
