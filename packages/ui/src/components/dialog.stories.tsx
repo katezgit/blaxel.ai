@@ -191,8 +191,8 @@ function ScrollBodyExample() {
           </FormField>
         </form>
         <div className="mb-3 rounded-md border border-border bg-card px-3 py-2">
-          <p className="text-sm font-medium text-foreground">eval-run-042</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="typography-body font-medium text-foreground">eval-run-042</p>
+          <p className="typography-caption text-muted-foreground">
             claude-3-7-sonnet · step 36 of 200 · sandbox-env-007
           </p>
         </div>
@@ -313,8 +313,8 @@ export const Variants: Story = {
           </DialogHeader>
           <DialogBody>
             <div className="rounded-md border border-border bg-card p-3">
-              <p className="text-sm font-medium text-foreground">eval-run-007</p>
-              <p className="text-xs text-muted-foreground mt-0.5">claude-3-5-sonnet · 128 steps</p>
+              <p className="typography-body font-medium text-foreground">eval-run-007</p>
+              <p className="typography-caption text-muted-foreground">claude-3-5-sonnet · 128 steps</p>
             </div>
           </DialogBody>
           <DialogFooter>
@@ -334,16 +334,28 @@ export const Variants: Story = {
 // ≤ 400 px to observe all three sizes collapsing to the same constrained width.
 // At desktop widths the dialog reverts to its target px value.
 
-export const NarrowViewport: Story = {
-  render: () => (
+const WIDTH_FOR_SIZE = { sm: "400", md: "560", lg: "720" } as const
+
+type DialogSize = keyof typeof WIDTH_FOR_SIZE
+
+function NarrowViewportExample() {
+  const [activeSize, setActiveSize] = React.useState<DialogSize | null>(null)
+  return (
     <div className="flex flex-wrap items-center gap-3">
       {(["sm", "md", "lg"] as const).map((size) => (
-        <Dialog key={size} defaultOpen>
+        <Dialog
+          key={size}
+          open={activeSize === size}
+          onOpenChange={(open) => setActiveSize(open ? size : null)}
+        >
+          <DialogTrigger asChild>
+            <Button variant="secondary">size=&quot;{size}&quot;</Button>
+          </DialogTrigger>
           <DialogContent size={size}>
             <DialogHeader>
               <DialogTitle>size=&quot;{size}&quot; viewport test</DialogTitle>
               <DialogDescription>
-                At {size === "sm" ? "400" : size === "md" ? "560" : "720"}px target width. On narrow
+                At {WIDTH_FOR_SIZE[size]}px target width. On narrow
                 viewports this panel must stay within the screen gutter — no horizontal overflow,
                 close button fully visible.
               </DialogDescription>
@@ -359,7 +371,11 @@ export const NarrowViewport: Story = {
         </Dialog>
       ))}
     </div>
-  ),
+  )
+}
+
+export const NarrowViewport: Story = {
+  render: () => <NarrowViewportExample />,
   parameters: {
     layout: "fullscreen",
     // Chromatic snapshot at narrow viewport to catch regressions
@@ -405,9 +421,9 @@ function MobileFullscreenExample() {
                   key={tier}
                   className="flex items-center justify-between rounded-md border border-border px-4 py-3"
                 >
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{label}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{credits} / month</p>
+                  <div className="flex flex-col gap-0.5">
+                    <p className="typography-body font-medium text-foreground">{label}</p>
+                    <p className="typography-caption text-muted-foreground">{credits} / month</p>
                   </div>
                   <Button variant="secondary">Select</Button>
                 </div>

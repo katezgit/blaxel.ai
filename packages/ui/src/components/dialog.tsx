@@ -62,18 +62,13 @@ function DialogOverlay({
 
 const dialogContentVariants = cva(
   [
-    // ── Mobile (< sm): fullscreen sheet ──────────────────────────────────────
-    // Fills the viewport edge-to-edge: no inset, no rounded corners, no shadow.
-    // Slides in from the bottom edge; native body scroll handles overflow.
     "fixed inset-0 z-overlay",
     "flex flex-col w-full",
     "bg-popover",
     // outline-none: focus managed by Radix; panel itself is not a focus target
     "outline-none",
-    // Mobile animation: full-height slide up from bottom
     "data-[state=open]:animate-slide-up-from-bottom",
     "data-[state=closed]:animate-slide-down-to-bottom",
-    // ── Desktop (≥ sm): top-anchored centered modal ───────────────────────────
     // Restore panel chrome: rounded corners, drop shadow (no border — shadow alone
     // defines the panel edge; a 1px border next to a soft halo reads as double edge).
     // max-h-[80vh] scoped to sm+ so mobile fullscreen is not height-capped.
@@ -81,17 +76,13 @@ const dialogContentVariants = cva(
     "sm:max-h-[80vh]",
     "sm:shadow-modal",
     "sm:rounded-lg",
-    // Desktop animation: subtle fade-up (8px) replaces the full-height slide
     "sm:data-[state=open]:animate-slide-up-in",
     "sm:data-[state=closed]:animate-slide-down-out",
   ],
   {
     variants: {
       size: {
-        // min() caps each variant at its target width on large viewports and at
-        // (100vw − 2rem) on small viewports, keeping a 1rem gutter on each side.
-        // No consumer workaround needed; the close button and panel edge are
-        // always reachable without horizontal scrolling.
+        // min() caps at target width above sm, and at (100vw − 2rem) below sm — 1rem gutter each side.
         // Width variants only apply at sm+ (mobile is always 100vw via inset-0).
         sm: "sm:w-[min(400px,calc(100vw-2rem))]",
         md: "sm:w-[min(560px,calc(100vw-2rem))]",
