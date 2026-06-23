@@ -226,8 +226,10 @@
   --animate-row-reveal:     row-reveal       var(--duration-subtle) var(--ease-out-standard) both; /* streaming table row arrival — 4px translate, fill-mode both for staggered reveal */
   --animate-shimmer:        shimmer          1800ms                  var(--ease-linear) infinite;
   --animate-running-pulse:  running-pulse    1600ms                  var(--ease-linear) infinite;
-  --animate-slide-right-in: slide-right-in  var(--duration-base)   var(--ease-out-emphasized);   /* Trace panel enters from right */
-  --animate-slide-left-out: slide-left-out  var(--duration-fast)   var(--ease-in-accelerated);   /* Trace panel exits to right */
+  --animate-slide-right-in:         slide-right-in         var(--duration-base)   var(--ease-out-emphasized);   /* Trace panel enters from right */
+  --animate-slide-left-out:         slide-left-out         var(--duration-fast)   var(--ease-in-accelerated);   /* Trace panel exits to right */
+  --animate-slide-up-from-bottom:   slide-up-from-bottom   var(--duration-base)   var(--ease-out-emphasized);   /* Mobile sheet enters from bottom edge */
+  --animate-slide-down-to-bottom:   slide-down-to-bottom   var(--duration-fast)   var(--ease-in-accelerated);   /* Mobile sheet exits to bottom edge */
 }
 
 @keyframes fade-in {
@@ -282,6 +284,16 @@
 @keyframes slide-left-out {
   from { opacity: 1; transform: translateX(0); }
   to   { opacity: 0; transform: translateX(12px); }
+}
+
+@keyframes slide-up-from-bottom {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down-to-bottom {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(100%); }
 }
 
 @keyframes table-head-scroll-cue {

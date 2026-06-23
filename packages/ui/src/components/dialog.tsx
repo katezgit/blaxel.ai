@@ -62,17 +62,28 @@ function DialogOverlay({
 
 const dialogContentVariants = cva(
   [
-    "fixed top-[10vh] left-1/2 z-overlay -translate-x-1/2",
+    // ── Mobile (< sm): fullscreen sheet ──────────────────────────────────────
+    // Fills the viewport edge-to-edge: no inset, no rounded corners, no shadow.
+    // Slides in from the bottom edge; native body scroll handles overflow.
+    "fixed inset-0 z-overlay",
     "flex flex-col w-full",
-    "max-h-[80vh]",
     "bg-popover",
-    // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
-    "shadow-modal",
-    "rounded-lg",
     // outline-none: focus managed by Radix; panel itself is not a focus target
     "outline-none",
-    "data-[state=open]:animate-slide-up-in",
-    "data-[state=closed]:animate-slide-down-out",
+    // Mobile animation: full-height slide up from bottom
+    "data-[state=open]:animate-slide-up-from-bottom",
+    "data-[state=closed]:animate-slide-down-to-bottom",
+    // ── Desktop (≥ sm): top-anchored centered modal ───────────────────────────
+    // Restore panel chrome: rounded corners, drop shadow (no border — shadow alone
+    // defines the panel edge; a 1px border next to a soft halo reads as double edge).
+    // max-h-[80vh] scoped to sm+ so mobile fullscreen is not height-capped.
+    "sm:inset-auto sm:top-[10vh] sm:left-1/2 sm:-translate-x-1/2",
+    "sm:max-h-[80vh]",
+    "sm:shadow-modal",
+    "sm:rounded-lg",
+    // Desktop animation: subtle fade-up (8px) replaces the full-height slide
+    "sm:data-[state=open]:animate-slide-up-in",
+    "sm:data-[state=closed]:animate-slide-down-out",
   ],
   {
     variants: {
@@ -81,9 +92,10 @@ const dialogContentVariants = cva(
         // (100vw − 2rem) on small viewports, keeping a 1rem gutter on each side.
         // No consumer workaround needed; the close button and panel edge are
         // always reachable without horizontal scrolling.
-        sm: "w-[min(400px,calc(100vw-2rem))]",
-        md: "w-[min(560px,calc(100vw-2rem))]",
-        lg: "w-[min(720px,calc(100vw-2rem))]",
+        // Width variants only apply at sm+ (mobile is always 100vw via inset-0).
+        sm: "sm:w-[min(400px,calc(100vw-2rem))]",
+        md: "sm:w-[min(560px,calc(100vw-2rem))]",
+        lg: "sm:w-[min(720px,calc(100vw-2rem))]",
       },
     },
     defaultVariants: {
@@ -100,7 +112,11 @@ export interface DialogContentProps
 }
 
 /**
- * Top-anchored modal panel (~10vh from viewport top). Spreads through Radix Dialog.Content props.
+ * Responsive modal panel.
+ * - **Mobile (< sm):** fullscreen sheet — fills viewport edge-to-edge, slides up from bottom.
+ *   Body scrolls natively; no height cap so all content is reachable.
+ * - **Desktop (≥ sm):** top-anchored centered modal at the size variant width
+ *   with rounded corners, shadow halo, and fade-up entrance.
  *
  * @example Disable overlay click-to-close (keep Escape working):
  * <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>

@@ -329,8 +329,10 @@
   --animate-row-reveal:     var(--animate-row-reveal);
   --animate-shimmer:         var(--animate-shimmer);
   --animate-running-pulse:   var(--animate-running-pulse);
-  --animate-slide-right-in:  var(--animate-slide-right-in);
-  --animate-slide-left-out:  var(--animate-slide-left-out);
+  --animate-slide-right-in:          var(--animate-slide-right-in);
+  --animate-slide-left-out:          var(--animate-slide-left-out);
+  --animate-slide-up-from-bottom:    var(--animate-slide-up-from-bottom);
+  --animate-slide-down-to-bottom:    var(--animate-slide-down-to-bottom);
 }
 
 

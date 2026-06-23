@@ -367,6 +367,73 @@ export const NarrowViewport: Story = {
   },
 }
 
+// ── MobileFullscreen ──────────────────────────────────────────────────────────
+// At < 640px (Tailwind sm breakpoint) DialogContent switches to a fullscreen
+// sheet presentation: fills viewport edge-to-edge, no rounded corners, no shadow,
+// slides up from the bottom. Body scrolls natively against the viewport so any
+// amount of content is reachable and the action row stays accessible.
+//
+// Set the Storybook canvas to 375 px wide to observe the sheet mode.
+// At ≥ 640 px the panel reverts to the centered desktop modal presentation.
+
+const MOBILE_TIER_ROWS = Array.from({ length: 8 }, (_, i) => ({
+  tier: i + 1,
+  label: `Tier ${i + 1}`,
+  credits: `$${(i + 1) * 100}`,
+}))
+
+function MobileFullscreenExample() {
+  const [open, setOpen] = React.useState(true)
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <Button variant="secondary" onClick={() => setOpen(true)}>Open sheet</Button>
+      </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent size="lg">
+          <DialogHeader>
+            <DialogTitle>Choose your target tier</DialogTitle>
+            <DialogDescription>
+              Select a target quota tier to determine your monthly top-up.
+              All topped-up funds go directly toward your Blaxel usage.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <div className="flex flex-col gap-3">
+              {MOBILE_TIER_ROWS.map(({ tier, label, credits }) => (
+                <div
+                  key={tier}
+                  className="flex items-center justify-between rounded-md border border-border px-4 py-3"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{credits} / month</p>
+                  </div>
+                  <Button variant="secondary">Select</Button>
+                </div>
+              ))}
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <DialogCancelButton />
+            <DialogConfirmButton>Continue</DialogConfirmButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+export const MobileFullscreen: Story = {
+  render: () => <MobileFullscreenExample />,
+  parameters: {
+    layout: "fullscreen",
+    // Chromatic: capture at 375px (mobile sheet) and 768px (desktop modal) to
+    // verify both presentation modes and catch regressions.
+    chromatic: { viewports: [375, 768] },
+  },
+}
+
 // ── Form helpers ──────────────────────────────────────────────────────────────
 
 const MODEL_OPTIONS = [
