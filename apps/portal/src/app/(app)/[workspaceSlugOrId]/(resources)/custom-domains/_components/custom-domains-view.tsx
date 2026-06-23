@@ -30,7 +30,7 @@ export function CustomDomainsView() {
   return (
     <div className={cn("page-shell", tierLocked && "gap-8")}>
       <CustomDomainsHeader
-        action={<AddDomainButton disabled={tierLocked} />}
+        action={tierLocked ? null : <AddDomainButton />}
         tierLocked={tierLocked}
         description={tierLocked ? LOCKED_DESCRIPTION : LIST_DESCRIPTION}
       />
