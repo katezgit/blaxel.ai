@@ -255,7 +255,7 @@ function CreatePolicyForm({
   // Body-editor state lives below RHF so the code-reference panel can read it.
   const [locations, setLocations] = useState<ReadonlyArray<LocationItem>>([
     { type: "continent", name: "North America" },
-    { type: "country", name: "United States" },
+    { type: "country", name: "United States of America" },
   ]);
   const [tokenLimits, setTokenLimits] = useState<TokenLimits>({
     input: 1_000_000,
@@ -529,14 +529,11 @@ function FlavorDeepLinkNotice() {
 }
 
 // Location body — toggle chips, mixed continent + country.
+// Option set mirrors production: 3 entries total, alphabetical within each group.
 const SAMPLE_LOCATIONS: ReadonlyArray<LocationItem> = [
-  { type: "continent", name: "North America" },
   { type: "continent", name: "Europe" },
-  { type: "continent", name: "Asia Pacific" },
-  { type: "country", name: "United States" },
-  { type: "country", name: "Germany" },
-  { type: "country", name: "France" },
-  { type: "country", name: "Japan" },
+  { type: "continent", name: "North America" },
+  { type: "country", name: "United States of America" },
 ];
 
 function LocationBody({
@@ -578,7 +575,7 @@ function LocationBody({
               )}
             >
               <span className="font-medium">
-                {item.type === "continent" ? "Continent" : "Country"}:
+                {item.type === "continent" ? "Continent" : "Country"} :
               </span>{" "}
               {item.name}
             </button>
