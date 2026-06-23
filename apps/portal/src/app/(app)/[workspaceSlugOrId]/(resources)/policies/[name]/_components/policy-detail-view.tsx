@@ -130,13 +130,13 @@ export function PolicyDetailView({
     // event in the content area, no card chrome, ~360px column, vertically +
     // horizontally centered. Breadcrumb stays as normal page chrome above.
     return (
-      <div className="page-shell">
+      <div className="page-shell min-h-full">
         <Breadcrumb
           parent={{ href: listHref, label: "Policies" }}
           current={policyName}
         />
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <div className="flex w-full max-w-[360px] flex-col gap-4">
+        <div className="flex flex-1 items-center justify-center">
+          <div className="flex w-full max-w-(--inline-empty-column-w) flex-col gap-4">
             <h2 className="typography-subtitle font-semibold text-foreground">
               Policy <code className="font-mono">{policyName}</code>{" "}
               isn&apos;t available.

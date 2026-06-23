@@ -136,6 +136,11 @@
    * cleanly; 1280 (max-w-7xl) clips dense tables on 1440 laptops. */
   --page-max-width: 1536px;
 
+  /* Centered column for inline content events (resource not-found, empty
+   * landing states) per docs/design/guidelines/resource-not-found.md §7 —
+   * a soft halt in the middle of the content slot, not a top-loaded block. */
+  --inline-empty-column-w: 360px;
+
   /* Near-subliminal alpha — grid is ambient texture, not measurement
    * scaffolding. */
   --color-grid-line: light-dark(

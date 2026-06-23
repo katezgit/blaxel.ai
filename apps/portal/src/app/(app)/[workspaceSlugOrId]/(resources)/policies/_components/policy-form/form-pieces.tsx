@@ -227,16 +227,12 @@ export function PolicyTypeReadOnlyField({
 }: PolicyTypeReadOnlyFieldProps) {
   const option = POLICY_TYPE_BY_VALUE[policyType];
   const Icon = option.icon;
-  const labelId = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <span id={labelId} className="typography-label text-muted-foreground">
+      <span className="typography-label text-muted-foreground">
         Policy type
       </span>
-      <span
-        aria-labelledby={labelId}
-        className="inline-flex w-fit items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 typography-caption text-foreground"
-      >
+      <span className="inline-flex w-fit items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 typography-caption text-foreground">
         <Icon
           aria-hidden="true"
           className="size-3.5 shrink-0 text-muted-foreground"

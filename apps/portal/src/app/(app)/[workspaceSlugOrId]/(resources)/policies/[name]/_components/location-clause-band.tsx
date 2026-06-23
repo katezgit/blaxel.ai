@@ -68,8 +68,7 @@ export default function LocationClauseBand({
   );
 }
 
-// Read-only mirror of the create-form Location chip — icon + name only, no
-// `Continent:` / `Country:` prefix, no aria-pressed (this is display, not toggle).
+// No aria-pressed — display chip, not a toggle.
 function LocationChip({ location }: { location: PolicyLocation }) {
   const Icon = location.type === "continent" ? Globe : MapPin;
   const typeLabel = location.type === "continent" ? "Continent" : "Country";
