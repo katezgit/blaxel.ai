@@ -158,8 +158,8 @@ This wireframe covers five distinct page states in order:
 
 - **Name** — two-line: `metadata.displayName` (row 1, standard weight) + `metadata.name` truncated to 12 chars (row 2, monospace, muted). The canonical ID is pasteable from the row per personality.md sacrificial choice #2. Clicking the name row navigates to the policy detail page (`/policies/{name}`).
 - **Type** — `spec.type` value rendered as a human label: `location` | `maxToken` | `flavor`. Label, not a chip — no decorative color for category (interaction principle #4: color carries state, not category). A `flavor` row shows a muted `[coming soon]` label if production gates it.
-- **Targets** — `spec.resourceTypes[]` rendered as a joined list of workload-kind labels using canonical names: `Agents` (for `agent`), `Sandboxes` (for `sandbox`), `Model APIs` (for `model`), `MCP Servers` (for `function`), `Jobs` (for `job`). Multiple values joined with `·`. Field binding: `spec.resourceTypes[]`.
-- **Usage** — per-kind usage counts from `usage.{agents, functions, models, jobs, sandboxes}`. Rendered as a compact joined list of non-zero counts. Example: `3 · 1` means 3 Agents + 1 Sandbox attach this policy. Zero across all kinds renders as `0` — the cleanup signal (Scenario 5). Field binding: `usage.*` from the list-resources-using-a-policy endpoint. Footnote C (usage returns names, not live state).
+- **Targets** — `spec.resourceTypes[]` rendered as a joined list of workload-kind labels using canonical names: `Agents` (for `agent`), `Sandboxes` (for `sandbox`), `Model APIs` (for `model`), `MCP Servers` (for `function`), `Applications` (for `application`). Multiple values joined with `·`. Field binding: `spec.resourceTypes[]`.
+- **Usage** — per-kind usage counts from `Policy.usage.{agents, functions, models, jobs, sandboxes}` (`PolicyUsageCounts` — integer counts on the Policy resource itself). Rendered as a compact joined list of non-zero counts. Example: `3 · 1` means 3 Agents + 1 Sandbox attach this policy. Zero across all kinds renders as `0` — the cleanup signal (Scenario 5). Field binding: `Policy.usage.*` (count integers, not names). Footnote C (count source vs names source distinction).
 - **Updated** — `metadata.updatedAt` rendered as a relative date for scanning. Full timestamp on hover (tooltip). Field binding: `metadata.updatedAt`.
 
 **Failure row visual weight — interaction principle #5 (Failure outranks success):**
@@ -177,7 +177,7 @@ Rendered as a single muted footer line below the table. This surfaces the UNION/
 **Filters:**
 
 - **Type filter** — `[Type: All ▼]` — options: All / location / maxToken / flavor. Filters on `spec.type`. Client-side or server `q` param.
-- **Targets filter** — `[Targets: All ▼]` — options: All / Agents / Model APIs / MCP Servers / Jobs / Sandboxes. Filters on `spec.resourceTypes[]`.
+- **Targets filter** — `[Targets: All ▼]` — options: All / Agents / Model APIs / MCP Servers / Sandboxes / Applications. Filters on `spec.resourceTypes[]`. (5 options matching the API enum: `agent | model | function | sandbox | application` — no `job` value in this enum.)
 - **Sort** — `[Sort: Updated ▼]` — options: Updated (default, descending by `metadata.updatedAt`) / Name (ascending `metadata.displayName`) / Usage (descending total usage count). Scenario 2 (Sam audit): sort by Updated to find recently changed policies. Scenario 5 (Alex cleanup): sort by Usage ascending, then filter visually for 0-usage rows.
 - **Search** — `[🔍 Search…]` — filters by `metadata.displayName` or `metadata.name`. Full-text or prefix match against `q` param.
 
@@ -189,7 +189,13 @@ Each row carries a `⋯` overflow menu on hover:
 - `Delete` — inline confirmation: `Delete policy {name}? This removes it from all attached workloads.` Confirm / Cancel. No modal stack — inline.
 - `Copy bl command` — copies `bl policy get {name}` or the equivalent `bl apply` command to clipboard
 
-**Footnote C — usage counts, not live state.** The `usage.*` fields from the list-resources-using-a-policy endpoint return names-only arrays, not live workload state. The Usage column shows counts derived from those arrays (`usage.agents.length`, etc.). A count of `3` means 3 Agents have `spec.policies` referencing this policy — it does not mean those Agents are currently running. A joined `3 · 1` display is schema-accurate; a "3 active, 0 errored" breakdown is not (requires a live-state join not available from the Policy API). Screens phase resolves whether to add a live-state join or keep counts-only.
+**Footnote C — two distinct usage data sources.** There are two different endpoints and two different shapes:
+
+1. **`Policy.usage.*` — `PolicyUsageCounts` (integer counts)** — returned on the Policy resource itself (`GET /policies` list response and individual Policy object). Fields: `agents: integer`, `functions: integer`, `jobs: integer`, `models: integer`, `sandboxes: integer`. **This is the source for the index page Usage column.** A count of `3` means 3 Agents have `spec.policies` referencing this policy — it does not mean those Agents are currently running.
+
+2. **`GET /policies/{name}/usages` → `PolicyUsages` (arrays of objects)** — a separate endpoint that returns arrays of workload name objects per kind. Fields: `agents: object[]`, `functions: object[]`, `jobs: object[]`, `models: object[]`, `sandboxes: object[]`. **This is the source for the detail page Band 3 expanded name rows.**
+
+The two must not be conflated. The index Usage column reads counts from the Policy resource (`Policy.usage.agents: integer`); the detail page expand reads names from the `/usages` endpoint (`PolicyUsages.agents: object[]`). Screens phase wires them to their respective endpoints accordingly. Neither source reflects live workload running state — a joined `3 · 1` display is schema-accurate; a "3 active, 0 errored" breakdown is not (requires a live-state join not available from the Policy API).
 
 ---
 
@@ -288,9 +294,10 @@ Clicking `+ Create Policy` (header action, or the inline link in the empty state
 │                                                             │
 │  Target workload types                                      │
 │  [✓] Agents    [✓] Model APIs    [ ] MCP Servers            │
-│  [ ] Jobs      [ ] Sandboxes                                │
+│  [ ] Sandboxes [ ] Applications                             │
 │  spec.resourceTypes[] — which workload kinds this policy    │
-│  can be attached to.                                        │
+│  can be attached to. Enum: agent | model | function |       │
+│  sandbox | application (no "job" value in this enum).       │
 │                                                             │
 │  [Continue →]                                               │
 │                                                             │
@@ -451,4 +458,4 @@ After `[Create Policy]` is submitted successfully:
 5. **All three spec.type values in create flow** — location (Step 2a), maxToken (Step 2b), flavor (Step 2c with coming-soon label + footnote). PASS.
 6. **YAML manifest in create flow** — present as "OR" peer below the form in Step 1. PASS.
 7. **Failure outranks success (visual hierarchy)** — zero-usage rows amber, active rows default. Token spec deferred to design-token phase; hierarchy is specified. PASS.
-8. **Schema-uncertain items footnoted** — Footnote A (tier gate), Footnote B (flavor), Footnote C (usage counts not live state), Footnote D (screens phase flavor decision). PASS.
+8. **Schema-uncertain items footnoted** — Footnote A (tier gate), Footnote B (flavor), Footnote C (two distinct usage endpoints: `Policy.usage.*` counts on the Policy resource vs `GET /policies/{name}/usages` names — disambiguated for screens phase), Footnote D (screens phase flavor decision). PASS.

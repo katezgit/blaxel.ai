@@ -22,7 +22,7 @@ Rendered inside the workspace shell (see `docs/design/wireframe/app-shell.md` §
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │  Policies / eu-only-prod                                                     │
 │                                                                              │
-│  eu-only-prod                                   ● enforced  [Edit]  [⋯]    │
+│  eu-only-prod                                            [Edit]  [⋯]       │
 │  pol-7a3f                          ← metadata.name, monospace, muted        │
 │                                                                              │
 │  Type: location         Targets: Agents · Model APIs · Sandboxes             │
@@ -34,13 +34,12 @@ Rendered inside the workspace shell (see `docs/design/wireframe/app-shell.md` §
 
 - `eu-only-prod` — `metadata.displayName`. Primary identity; the human label used in Slack threads, tickets, and audit lines. Standard weight, prominent size.
 - `pol-7a3f` — `metadata.name` (canonical ID). Monospace, muted foreground, second line. Pasteable into `bl` commands and `spec.policies[]` on workloads. Clicking copies to clipboard (copy icon on hover).
-- `● enforced` — Policy mode state pill. **Domain states for Policy mode:** `enforced` · `audit-only` · `draft` (per personality.md § "States the surface must express"). Color carries state (interaction principle #4). `enforced` = primary foreground; `audit-only` = amber; `draft` = muted. Field binding: policy mode is *not* explicitly enumerated in the current Policy API schema — Footnote E.
 - `[Edit]` — navigates to (or opens inline panel for) the edit form pre-populated with this policy's spec. Equivalent to the create panel in edit mode.
 - `[⋯]` — overflow: Delete / Copy bl command / Copy link (URL-addressability per interaction principle #8).
 - **Type** — `spec.type` value: `location` / `flavor` / `maxToken`. Rendered as a label-value pair, not a chip. The type declares the clause kind on first glance — audit question 1 and 6 both require this.
-- **Targets** — `spec.resourceTypes[]` joined list using canonical display names (agent → `Agents`, model → `Model APIs`, function → `MCP Servers`, sandbox → `Sandboxes`, job → `Jobs`). Audit question 2 requires this visible on first paint.
+- **Targets** — `spec.resourceTypes[]` joined list using canonical display names (agent → `Agents`, model → `Model APIs`, function → `MCP Servers`, sandbox → `Sandboxes`, application → `Applications`). API enum: `model | function | agent | sandbox | application` — `job` is not a valid `spec.resourceTypes[]` value. Audit question 2 requires this visible on first paint.
 
-**Footnote E — Policy mode (`enforced` / `audit-only` / `draft`).** The personality.md states list explicitly, but the Policy API schema as documented does not expose a `mode` or `status` field. This may be (a) a product-aspirational state that hasn't shipped yet, (b) encoded in a label or annotation, or (c) always `enforced` once created. Wireframe shows the state pill as a header element; screens phase confirms the field name or removes the pill if it doesn't exist in the API. Fallback design: if no mode field exists, the pill is omitted and the header has two identity lines only.
+**Footnote E — Policy mode pill dropped.** The `enforced / audit-only / draft` state pill is absent from the header on first paint. The Policy API schema (`https://docs.blaxel.ai/api-reference/policies`) exposes no `mode` or `status` field — only `metadata`, `spec`, and `usage`. The states listed in `personality.md` are product-aspirational and not yet implemented. Designing the pill as a default-present header element would invent a data field that the API does not surface — the same failure mode as the Custom Domains prior gate. **Decision: pill is omitted from the header.** If a `mode` or `status` field materialises in the API at screens phase, the pill is added then. The fallback design (two identity lines only) IS the default design. No further fallback needed — this IS the ship state.
 
 ---
 
@@ -182,12 +181,12 @@ Live consumption against the cap (e.g. "you are at 78% of the per-minute total")
 ```
 ── USAGE ──────────────────────────────────────────────────────────────────────
 
-  Workloads referencing this policy     usage.* from list-resources-using-a-policy
+  Workloads referencing this policy
 
-  Agents           3     ▼              usage.agents (array of names, length = 3)
-  ─────────────────────────────────────────────────────────────────────────
-  cubic-prod-agent                      (workload name, links to Agent detail)
-  webflow-content-agent                 ← names from usage.agents[]
+  Agents           3     ▼              Policy.usage.agents: 3 (integer count)
+  ─────────────────────────────────────────────────────────────────────────────
+  cubic-prod-agent                      ← names from GET /policies/{name}/usages
+  webflow-content-agent                    → PolicyUsages.agents: object[]
   staging-v2-agent
 
   Each of these Agents also attaches:   Footnote G (peer-policy adjacency)
@@ -195,22 +194,23 @@ Live consumption against the cap (e.g. "you are at 78% of the per-minute total")
   webflow-content-agent → [token-cap-gpt4]
   staging-v2-agent   → (only this policy)
 
-  ─────────────────────────────────────────────────────────────────────────
+  ─────────────────────────────────────────────────────────────────────────────
 
-  Model APIs        0                   usage.models (empty array)
-  MCP Servers       0                   usage.functions (empty array)
-  Jobs              0                   usage.jobs (empty array)
-  Sandboxes         1     ▼             usage.sandboxes (array, length = 1)
-  ─────────────────────────────────────────────────────────────────────────
-  sbx-9c1e                              names from usage.sandboxes[]
+  Model APIs        0                   Policy.usage.models: 0 (integer count)
+  MCP Servers       0                   Policy.usage.functions: 0 (integer count)
+  Jobs              0                   Policy.usage.jobs: 0 (integer count)
+  Sandboxes         1     ▼             Policy.usage.sandboxes: 1 (integer count)
+  ─────────────────────────────────────────────────────────────────────────────
+  sbx-9c1e                              ← names from GET /policies/{name}/usages
+                                           → PolicyUsages.sandboxes: object[]
 
 ───────────────────────────────────────────────────────────────────────────────
 ```
 
 **Anatomy:**
 
-- **Per-kind rows** — five rows, one per resource kind in `usage.*`: Agents / Model APIs / MCP Servers / Jobs / Sandboxes. Each shows count (integer) drawn from `usage.{agents, functions, models, jobs, sandboxes}` array lengths. Rows with count 0 render in muted foreground — present but not dominant. Rows with count > 0 render in default foreground and are expandable (▼ expander).
-- **Expanded name list** — when expanded, the workload names from the `usage.agents[]` (or equivalent) array appear as rows. Each name is a link to the workload's detail page (e.g. `/agents/{name}`). This satisfies interaction principle #7 (every aggregate links to its primitives).
+- **Per-kind rows** — five rows, one per resource kind: Agents / Model APIs / MCP Servers / Jobs / Sandboxes. Each shows an integer count drawn from `Policy.usage.{agents, functions, models, jobs, sandboxes}` (`PolicyUsageCounts` — returned on the Policy resource itself). Rows with count 0 render in muted foreground — present but not dominant. Rows with count > 0 render in default foreground and are expandable (▼ expander).
+- **Expanded name list** — when expanded, workload names are fetched from `GET /policies/{name}/usages` → `PolicyUsages.{agents|functions|models|sandboxes}[]` (arrays of objects, one entry per workload). Each name is a link to the workload's detail page (e.g. `/agents/{name}`). This is a **separate API call** from the count; the count on the collapsed row comes from `Policy.usage.*` (integer), the names in the expanded view come from the `/usages` endpoint. Screens phase wires these to their respective endpoints. This satisfies interaction principle #7 (every aggregate links to its primitives).
 - **Zero-usage state (all five counts = 0):** The entire band reads:
 
   ```
@@ -229,7 +229,10 @@ Scenario 4 requires seeing which *other* policies are attached to the same workl
 
 **Schema-uncertain — adjacency requires a join (Footnote G).** The `list-resources-using-a-policy` endpoint returns workload names per kind. Each workload's `spec.policies` field contains the list of policy names attached to it — but this requires a separate read of each workload's spec (one API call per workload). The wireframe designs the adjacency inline as the default-visible content because it answers Scenario 4's audit question. Screens phase resolves whether to (a) denormalize this data at the API layer, (b) perform the join client-side on page load (N+1 reads — acceptable if workload counts are small), or (c) defer adjacency to a "expand to see peer policies" action. **Fallback design:** if the join is too expensive or not implemented at screens phase, the adjacency sub-row is replaced with a muted link: `See peer policies on {workload name} →` that navigates to the workload detail page's security band.
 
-**Field bindings:** `usage.agents[]`, `usage.functions[]`, `usage.models[]`, `usage.jobs[]`, `usage.sandboxes[]` — all from the list-resources-using-a-policy endpoint (`PolicyUsages` shape). Count = `array.length`. Names = array values. Peer-policy adjacency = each workload's `spec.policies[]` (join — see Footnote G).
+**Field bindings:**
+- **Counts (collapsed rows):** `Policy.usage.agents`, `Policy.usage.functions`, `Policy.usage.models`, `Policy.usage.jobs`, `Policy.usage.sandboxes` — integers on the Policy resource itself (`PolicyUsageCounts`). These are the numbers rendered in the count column.
+- **Names (expanded rows):** `GET /policies/{name}/usages` → `PolicyUsages.agents[]`, `PolicyUsages.functions[]`, `PolicyUsages.models[]`, `PolicyUsages.jobs[]`, `PolicyUsages.sandboxes[]` — arrays of objects. These are fetched on expand, not on page load.
+- **Peer-policy adjacency:** each workload's `spec.policies[]` (join — see Footnote G).
 
 ---
 
@@ -369,7 +372,7 @@ Read-through of all five bands for a populated location policy. This is the view
 ```
 Policies / eu-only-prod
 
-eu-only-prod                                    ● enforced  [Edit]  [⋯]
+eu-only-prod                                               [Edit]  [⋯]
 pol-7a3f
 
 Type: location         Targets: Agents · Model APIs · Sandboxes
@@ -439,7 +442,7 @@ Read-through for Scenario 3 (Alex investigates Model API throttle). All audit qu
 ```
 Policies / token-cap-gpt4
 
-token-cap-gpt4                                  ● enforced  [Edit]  [⋯]
+token-cap-gpt4                                             [Edit]  [⋯]
 pol-2c1e
 
 Type: maxToken         Targets: Model APIs · Agents · MCP Servers
@@ -514,7 +517,7 @@ Read-through for a flavor policy (Scenario 1 — which clause blocked the deploy
 ```
 Policies / gpu-flavor-staging
 
-gpu-flavor-staging                              ● enforced  [Edit]  [⋯]
+gpu-flavor-staging                                         [Edit]  [⋯]
 pol-9b4d
 
 Type: flavor           Targets: Agents
@@ -579,7 +582,7 @@ Type: flavor           Targets: Agents
 ```
 Policies / ...
 
-████████████████                                ████████  [Edit]  [⋯]
+████████████████                                          [Edit]  [⋯]
 ████████████
 
 Type: ████████      Targets: ████████████████
@@ -603,7 +606,7 @@ Type: ████████      Targets: ███████████�
   █████████████████████████████████████
 ```
 
-Skeleton fills each band at the same density as the populated state. Header skeleton includes the state pill and action buttons as skeletons. No spinner. The `[×]` close / breadcrumb navigation renders immediately (not skeletonized) — the user can leave even while loading.
+Skeleton fills each band at the same density as the populated state. Header skeleton includes the action buttons as skeletons; no mode pill skeleton (pill is absent per Footnote E). No spinner. The `[×]` close / breadcrumb navigation renders immediately (not skeletonized) — the user can leave even while loading.
 
 ### Error state
 
@@ -653,11 +656,11 @@ Per `docs/design/guidelines/resource-not-found.md` pattern. Names the resource t
 ## Verification gate self-check
 
 1. **All scenarios trace to at least one band** — Scenarios 1–6 each map to specific bands in the scenario verification gate table above. PASS.
-2. **Every band element binds to a real API field** — all field names cited inline in each band's anatomy section. Schema-uncertain items footnoted (E, F, G, H) with fallback designs and "screens phase resolves" stamps. PASS.
+2. **Every band element binds to a real API field** — all field names cited inline in each band's anatomy section. Schema-uncertain items footnoted (F, G, H) with fallback designs and "screens phase resolves" stamps. Mode pill (formerly Footnote E) dropped entirely — no `mode`/`status` field in the API, pill is absent from the header. PASS.
 3. **All three `spec.type` values designed** — Band 2A (location), Band 2B (flavor, with coming-soon footnote), Band 2C (maxToken). Three full-page assemblies provided. PASS.
 4. **Failure outranks success** — zero-usage rows muted; active-usage rows default weight; `not evaluated` maxToken fields muted vs active caps in default foreground. Visual hierarchy specified; token assignments deferred to design-token phase. PASS.
 5. **CLI parity visible** — `bl policy get {name}` + YAML manifest in Band 5, always visible, not behind a toggle. PASS.
-6. **Header contract from scenarios.md satisfied** — `metadata.displayName` + `metadata.name` + `spec.type` + `spec.resourceTypes[]` all in the header, visible on first paint. PASS.
+6. **Header contract from scenarios.md satisfied** — `metadata.displayName` + `metadata.name` + `spec.type` + `spec.resourceTypes[]` all in the header, visible on first paint. Mode pill absent (API field does not exist — Footnote E). PASS.
 7. **Default-content contract from scenarios.md satisfied** — clause band (full fidelity, no collapsed view), usage counts by type (Band 3), `bl` command (Band 5), provenance (Band 4) — all default-visible. PASS.
 8. **Combination semantics addressed** — location clause Band 2A notes UNION within type inline. Adjacency in Band 3 shows peer policies so Sam can read INTERSECTION across types. PASS.
 9. **Schema-uncertain items footnoted with fallback + screens phase stamp** — Footnotes E, F, G, H each define a fallback design and name the screens phase as the resolver. PASS.
@@ -667,7 +670,7 @@ Per `docs/design/guidelines/resource-not-found.md` pattern. Names the resource t
 
 ## Decisions for operator review
 
-1. **Policy mode state pill (Footnote E).** The `enforced / audit-only / draft` states are in `personality.md` but not confirmed in the Policy API schema. Confirm whether a mode field exists before the screens phase. If it does not, the pill is dropped from the header.
+1. **Policy mode state pill — resolved.** The pill is dropped. The Policy API (`https://docs.blaxel.ai/api-reference/policies`) has no `mode` or `status` field. The header renders two identity lines only (`metadata.displayName` + `metadata.name`) with `[Edit]` and `[⋯]` actions. If a mode field appears in a future API version, add the pill at screens phase — no wireframe revision required. (Domain review FAIL #3 resolved.)
 
 2. **Flavor type — screens phase decision (Footnote B/D).** The wireframe includes flavor with a `[coming soon]` label in the create flow and a `⚠` note in the clause band. Operator to confirm at screens phase: (a) expose flavor fully, (b) expose with coming-soon label as designed, (c) hide from dashboard and route to CLI only.
 
