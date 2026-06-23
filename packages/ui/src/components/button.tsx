@@ -18,7 +18,11 @@ const buttonVariants = cva(
           "font-mono bg-primary text-primary-foreground",
           "hover:bg-primary-hover",
           "active:bg-primary-hover",
-          "disabled:bg-primary/15 disabled:text-muted-foreground",
+          // Dim background only — text inherits the base `disabled:text-text-disabled`
+          // (dim grey in both themes). The bg drops the primary tint entirely and uses
+          // a neutral muted surface so the disabled state reads as "off" rather than
+          // "soft primary" — orange-tinted disabled bgs read as tinted secondaries.
+          "disabled:bg-muted-surface",
         ],
 
         secondary: [
