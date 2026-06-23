@@ -27,8 +27,9 @@ export default function PolicyDetailSkeleton({ workspaceSlug }: { workspaceSlug:
         </div>
       </header>
 
-      {/* Clause band */}
-      <section className="flex flex-col gap-4 border-t border-border pt-6">
+      {/* Clause band — first sibling under the heading, no top divider so
+       * the polished/skeleton states match (see ClauseBand suppression). */}
+      <section className="flex flex-col gap-4">
         <Skeleton className="h-5 w-20 rounded-sm" />
         <Skeleton className="h-4 w-full max-w-2xl rounded-sm" />
         <div className="flex flex-col gap-3">

@@ -229,23 +229,16 @@ export function PolicyTypeReadOnlyField({
   const Icon = option.icon;
   return (
     <div className="flex flex-col gap-1.5">
-      <Field label="Policy type">
-        <div
-          role="textbox"
-          aria-readonly="true"
-          className={cn(
-            "flex w-full items-center gap-2 rounded-md border border-border bg-muted-surface px-3 py-2",
-          )}
-        >
-          <Icon
-            aria-hidden="true"
-            className="size-4 text-muted-foreground"
-          />
-          <span className="typography-body text-foreground">
-            {option.label}
-          </span>
-        </div>
-      </Field>
+      <span className="typography-label text-muted-foreground">
+        Policy type
+      </span>
+      <span className="inline-flex w-fit items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 typography-caption text-foreground">
+        <Icon
+          aria-hidden="true"
+          className="size-3.5 shrink-0 text-muted-foreground"
+        />
+        {option.label}
+      </span>
       <p className="typography-caption text-meta-foreground">
         Policy type is fixed at creation. Create a new policy to change it.
       </p>

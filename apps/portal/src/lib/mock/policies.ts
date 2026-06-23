@@ -117,7 +117,7 @@ const FIXTURES: Array<Policy> = [
   {
     metadata: {
       name: "pol-7a3f",
-      displayName: "eu-only-prod",
+      displayName: "EU-only production",
       createdAt: "2026-06-20T14:33:00Z",
       createdBy: "kate@cubic.dev",
       updatedAt: "2026-06-21T09:12:00Z",
@@ -140,7 +140,7 @@ const FIXTURES: Array<Policy> = [
   {
     metadata: {
       name: "pol-2c1e",
-      displayName: "token-cap-gpt4",
+      displayName: "GPT-4 token cap",
       createdAt: "2026-06-18T11:00:00Z",
       createdBy: "alex@cubic.dev",
       updatedAt: "2026-06-18T11:00:00Z",
@@ -165,7 +165,7 @@ const FIXTURES: Array<Policy> = [
   {
     metadata: {
       name: "pol-9b4d",
-      displayName: "gpu-flavor-staging",
+      displayName: "Staging GPU flavor",
       createdAt: "2026-06-15T08:45:00Z",
       createdBy: "sam@webflow.com",
       updatedAt: "2026-06-15T08:45:00Z",
@@ -186,7 +186,7 @@ const FIXTURES: Array<Policy> = [
   {
     metadata: {
       name: "pol-4d2a",
-      displayName: "us-only-sandboxes",
+      displayName: "US-only sandboxes",
       createdAt: "2026-05-02T10:15:00Z",
       createdBy: "alex@cubic.dev",
       updatedAt: "2026-05-02T10:15:00Z",
@@ -209,11 +209,11 @@ const USAGES: Record<string, PolicyUsages> = {
     agents: [
       {
         name: "cubic-prod-agent",
-        peerPolicies: ["token-cap-gpt4"],
+        peerPolicies: ["pol-2c1e"],
       },
       {
         name: "webflow-content-agent",
-        peerPolicies: ["token-cap-gpt4"],
+        peerPolicies: ["pol-2c1e"],
       },
       {
         name: "staging-v2-agent",
@@ -227,7 +227,7 @@ const USAGES: Record<string, PolicyUsages> = {
   },
   "pol-2c1e": {
     agents: [
-      { name: "cubic-prod-agent", peerPolicies: ["eu-only-prod"] },
+      { name: "cubic-prod-agent", peerPolicies: ["pol-7a3f"] },
       { name: "staging-v2-agent", peerPolicies: [] },
     ],
     functions: [],

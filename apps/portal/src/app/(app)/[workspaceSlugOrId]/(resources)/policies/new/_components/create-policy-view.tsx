@@ -308,7 +308,7 @@ function CreatePolicyForm({
         </div>
       </ScrollArea>
 
-      <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[3fr_2fr] lg:gap-8">
+      <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-8">
         <ScrollArea className="min-h-0">
           <div className="flex flex-col gap-10 pr-4 pb-2">{formSections}</div>
         </ScrollArea>
@@ -650,7 +650,7 @@ function FormFooter({
     <div
       role="region"
       aria-label="Create policy actions"
-      className="shrink-0 border-t border-border pt-3 lg:grid lg:grid-cols-[3fr_2fr] lg:gap-8"
+      className="shrink-0 border-t border-border pt-3 lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-8"
     >
       {/* Buttons anchor under the form column on lg+ (3fr cell), keeping the
           primary CTA on the form's F-reading axis. Code panel (2fr cell on the
