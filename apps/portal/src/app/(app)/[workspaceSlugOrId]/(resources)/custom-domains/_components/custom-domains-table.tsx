@@ -1,10 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { CopyButton } from "@repo/ui/components/copy-button";
+import { SearchInput } from "@repo/ui/components/search-input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/components/select";
 import {
   tableBodyClass,
   tableCellVariants,
@@ -45,33 +53,108 @@ function sortDomains(domains: ReadonlyArray<CustomDomain>): ReadonlyArray<Custom
   });
 }
 
+type StatusFilter = "all" | CustomDomainStatus;
+
+const STATUS_OPTIONS: ReadonlyArray<{ value: StatusFilter; label: string }> = [
+  { value: "all", label: "All statuses" },
+  { value: "failed", label: "Failed" },
+  { value: "pending", label: "Pending" },
+  { value: "verified", label: "Verified" },
+];
+
+function filterDomains(
+  domains: ReadonlyArray<CustomDomain>,
+  search: string,
+  statusFilter: StatusFilter,
+): ReadonlyArray<CustomDomain> {
+  const normalized = search.trim().toLowerCase();
+  return domains.filter((domain) => {
+    if (statusFilter !== "all" && domain.spec.status !== statusFilter) {
+      return false;
+    }
+    if (normalized.length > 0) {
+      const inName = domain.metadata.name.toLowerCase().includes(normalized);
+      const inDisplay = domain.metadata.displayName
+        ?.toLowerCase()
+        .includes(normalized) ?? false;
+      if (!inName && !inDisplay) return false;
+    }
+    return true;
+  });
+}
+
 export function CustomDomainsTable({ domains }: CustomDomainsTableProps) {
-  const sorted = useMemo(() => sortDomains(domains), [domains]);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const params = useParams<{ workspaceSlugOrId: string }>();
   const workspaceSlug = params.workspaceSlugOrId;
 
+  const filteredAndSorted = useMemo(
+    () => sortDomains(filterDomains(domains, search, statusFilter)),
+    [domains, search, statusFilter],
+  );
+
   return (
-    <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
-      <table className={tableClass}>
-        <thead className={tableHeaderClass}>
-          <tr>
-            <th className={tableHeadVariants()}>Domain</th>
-            <th className={tableHeadVariants()}>Region</th>
-            <th className={tableHeadVariants()}>Status</th>
-            <th className={tableHeadVariants()}>Last verified</th>
-            <th className={cn(tableHeadVariants(), "w-10")} aria-hidden="true" />
-          </tr>
-        </thead>
-        <tbody className={tableBodyClass}>
-          {sorted.map((domain) => (
-            <DomainRow
-              key={domain.metadata.name}
-              domain={domain}
-              workspaceSlug={workspaceSlug}
-            />
-          ))}
-        </tbody>
-      </table>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="w-full sm:max-w-xs">
+          <SearchInput
+            defaultValue=""
+            onLiveChange={setSearch}
+            placeholder="Search domains…"
+            aria-label="Search domains"
+          />
+        </div>
+        <Select
+          value={statusFilter}
+          onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+        >
+          <SelectTrigger className="w-40" aria-label="Filter by status">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {STATUS_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
+        <table className={tableClass}>
+          <thead className={tableHeaderClass}>
+            <tr>
+              <th className={tableHeadVariants()}>Domain</th>
+              <th className={tableHeadVariants()}>Region</th>
+              <th className={tableHeadVariants()}>Status</th>
+              <th className={tableHeadVariants()}>Last verified</th>
+              <th className={cn(tableHeadVariants(), "w-10")} aria-hidden="true" />
+            </tr>
+          </thead>
+          <tbody className={tableBodyClass}>
+            {filteredAndSorted.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-4 py-10 text-center typography-body text-muted-foreground"
+                >
+                  No domains match these filters.
+                </td>
+              </tr>
+            ) : (
+              filteredAndSorted.map((domain) => (
+                <DomainRow
+                  key={domain.metadata.name}
+                  domain={domain}
+                  workspaceSlug={workspaceSlug}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

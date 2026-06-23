@@ -17,11 +17,6 @@ export function DnsRecordsBand({ domain }: DnsRecordsBandProps) {
 
   return (
     <Band title="DNS records issued by Blaxel">
-      <p className="typography-body text-muted-foreground">
-        Publish these records to your DNS provider, then verify the domain.
-        Records below come straight from the resource — copy from here.
-      </p>
-
       <div className="flex flex-col gap-4">
         <RecordGroup label="CNAME">
           <RecordRow
