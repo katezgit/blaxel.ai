@@ -144,6 +144,9 @@ const TableHeaderCell = React.forwardRef<HTMLTableCellElement, TableHeaderCellPr
         scope="col"
         className={cn(
           tableHeadVariants({ density, numeric: !!numeric }),
+          // Top-only sticky: paint own bg so body rows don't bleed through the lifted <th>.
+          // tableHeaderStickyClass (bg-field-rest) wired here; left/right corners keep bg-elevated-surface.
+          !isLeft && !isRight && tableHeaderStickyClass,
           (isLeft || isRight) && "bg-elevated-surface",
           isLeft && "left-0 z-table-corner",
           isRight && "right-0 z-table-corner",

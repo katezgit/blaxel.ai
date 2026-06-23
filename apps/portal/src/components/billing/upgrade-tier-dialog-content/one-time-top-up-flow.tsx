@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/button";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
-import { type DisplayTier } from "@/lib/mock/billing-tiers";
+import { type DisplayTier, type SelectableTier } from "@/lib/mock/billing-tiers";
 import SelectedTierSummary from "./selected-tier-summary";
 import TierPicker from "./tier-picker";
 import TierContextBanner from "./tier-context-banner";
@@ -22,19 +22,27 @@ type StepIndex = 1 | 2;
 
 interface OneTimeTopUpFlowProps {
   currentTier: DisplayTier;
+  /** Tier the launching surface needs — preselected, marked Recommended. */
+  recommendedTier?: SelectableTier;
   onCancel: () => void;
   onCheckout: (amountUsd: number) => void;
 }
 
 export default function OneTimeTopUpFlow({
   currentTier,
+  recommendedTier,
   onCancel,
   onCheckout,
 }: OneTimeTopUpFlowProps) {
   const [step, setStep] = useState<StepIndex>(1);
   const form = useForm<TopUpFormValues>({
     resolver: zodResolver(topUpSchema),
-    defaultValues: INITIAL_VALUES,
+    defaultValues: {
+      ...INITIAL_VALUES,
+      ...(recommendedTier
+        ? { selectedTier: String(recommendedTier) as `${SelectableTier}` }
+        : null),
+    },
     mode: "onChange",
   });
   const {
@@ -89,6 +97,7 @@ export default function OneTimeTopUpFlow({
                     shouldDirty: true,
                   })
                 }
+                recommendedTier={recommendedTier}
               />
               <SelectedTierSummary
                 targetTier={targetTier}

@@ -90,7 +90,7 @@ export default function SelectedTierSummary({ targetTier, currentTier }: Selecte
           onClick={() => setExpanded((prev) => !prev)}
           aria-expanded={expanded}
           className={cn(
-            "inline-flex items-center gap-1 self-start rounded-sm typography-caption text-primary",
+            "inline-flex cursor-pointer items-center gap-1 self-start rounded-sm typography-caption text-primary",
             "hover:underline focus-visible:outline-none focus-visible:shadow-focus-ring",
           )}
         >

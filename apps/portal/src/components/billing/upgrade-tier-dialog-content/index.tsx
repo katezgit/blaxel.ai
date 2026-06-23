@@ -11,7 +11,7 @@ import {
 } from "@repo/ui/components/dialog";
 import { SegmentedControl } from "@repo/ui/components/segmented-control";
 import { useAccountState } from "@/lib/mock/account-context";
-import type { DisplayTier } from "@/lib/mock/billing-tiers";
+import type { DisplayTier, SelectableTier } from "@/lib/mock/billing-tiers";
 import OneTimeTopUpFlow from "./one-time-top-up-flow";
 import MonthlyTopUpFlow from "./monthly-top-up-flow";
 
@@ -23,6 +23,8 @@ const QUOTAS_DOC_URL =
 interface UpgradeTierDialogContentProps {
   /** Called when the dialog should close — e.g. on Cancel or after Checkout. */
   onClose: () => void;
+  /** Tier the launching surface needs — pre-selected and marked Recommended. */
+  recommendedTier?: SelectableTier;
 }
 
 const formatUsd = (n: number): string =>
@@ -32,7 +34,10 @@ const formatUsd = (n: number): string =>
     maximumFractionDigits: 0,
   }).format(n);
 
-export default function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentProps) {
+export default function UpgradeTierDialogContent({
+  onClose,
+  recommendedTier,
+}: UpgradeTierDialogContentProps) {
   const [mode, setMode] = useState<Mode>("monthly");
   const { state } = useAccountState();
   // `state.tier` is 0|1|2|3 in the existing fixture. Cast to the wider
@@ -94,6 +99,7 @@ export default function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogC
           <OneTimeTopUpFlow
             key="one-time"
             currentTier={currentTier}
+            recommendedTier={recommendedTier}
             onCancel={onClose}
             onCheckout={handleCheckout}
           />
@@ -101,6 +107,7 @@ export default function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogC
           <MonthlyTopUpFlow
             key="monthly"
             currentTier={currentTier}
+            recommendedTier={recommendedTier}
             onCancel={onClose}
             onCheckout={handleCheckout}
           />

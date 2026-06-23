@@ -1,7 +1,6 @@
 "use client";
 
-import CreditBalanceCard from "./credit-balance-card";
-import TopUpSettingsCard from "./top-up-settings-card";
+import CreditsViewInner from "./credits-view-inner";
 
 export default function CreditsView() {
   return (
@@ -15,10 +14,7 @@ export default function CreditsView() {
         </p>
       </header>
 
-      <div className="flex flex-col gap-8">
-        <CreditBalanceCard />
-        <TopUpSettingsCard />
-      </div>
+      <CreditsViewInner />
     </div>
   );
 }
