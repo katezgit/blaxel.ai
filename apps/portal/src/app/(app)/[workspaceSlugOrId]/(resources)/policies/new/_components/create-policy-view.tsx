@@ -13,6 +13,7 @@ import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
 import { CodeBlock } from "@repo/ui/components/code-block";
 import { Input } from "@repo/ui/components/input";
+import { ScrollArea } from "@repo/ui/components/scroll-area";
 import {
   Select,
   SelectContent,
@@ -136,7 +137,7 @@ export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
 
   if (duplicateName != null && duplicateQuery.isPending) {
     return (
-      <div className="page-shell">
+      <div className={PAGE_SHELL_CLASS}>
         <Header listHref={listHref} />
         <p className="typography-body text-muted-foreground">
           Loading source policy…
@@ -146,7 +147,7 @@ export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
   }
 
   return (
-    <div className="page-shell">
+    <div className={PAGE_SHELL_CLASS}>
       <Header listHref={listHref} />
       <CreatePolicyForm
         listHref={listHref}
@@ -156,6 +157,13 @@ export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
     </div>
   );
 }
+
+// Height-bound shell: fills `<main>` so the form column owns its own scroll
+// region (sections 1–5) and the footer sits below it as a natural flex sibling.
+// Page itself does not scroll — overflow-hidden prevents the whole route from
+// scrolling when sections overflow.
+const PAGE_SHELL_CLASS =
+  "mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 overflow-hidden px-4 pb-6 pt-8 md:px-6 lg:px-8 xl:px-20";
 
 function Header({ listHref }: { listHref: string }) {
   return (
@@ -275,33 +283,45 @@ function CreatePolicyForm({
     <form
       onSubmit={onSubmit}
       noValidate
-      className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8"
+      className="flex min-h-0 flex-1 flex-col gap-4"
     >
-      <div className="flex flex-col gap-10">
-        <PolicyTypeSection form={form} />
-        <PolicyBodySection
-          policyType={policyType}
-          flavorDeepLink={flavorDeepLink}
-          locations={locations}
-          onLocationsChange={setLocations}
-          tokenLimits={tokenLimits}
-          onTokenLimitsChange={setTokenLimits}
-        />
-        <ResourceTypesSection form={form} />
-        <IdentitySection form={form} />
-        <FinalNoteSection />
+      {/* Scroll region: form column scrolls independently; code panel rides
+          alongside on lg+ inside the same bounded grid. Footer below stays
+          visible without sticky positioning because this row is height-capped
+          by `min-h-0 flex-1`. */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8">
+        <ScrollArea className="min-h-0">
+          <div className="flex flex-col gap-10 pr-4 pb-2">
+            <PolicyTypeSection form={form} />
+            <PolicyBodySection
+              policyType={policyType}
+              flavorDeepLink={flavorDeepLink}
+              locations={locations}
+              onLocationsChange={setLocations}
+              tokenLimits={tokenLimits}
+              onTokenLimitsChange={setTokenLimits}
+            />
+            <ResourceTypesSection form={form} />
+            <IdentitySection form={form} />
+            <FinalNoteSection />
+          </div>
+        </ScrollArea>
+
+        <ScrollArea className="min-h-0">
+          <div className="pr-4 pb-2">
+            <CodeReferencePanel
+              policyType={policyType}
+              name={cleanName}
+              displayName={cleanDisplayName}
+              resourceTypes={resourceTypes}
+              locations={locations}
+              tokenLimits={tokenLimits}
+            />
+          </div>
+        </ScrollArea>
       </div>
 
-      <CodeReferencePanel
-        policyType={policyType}
-        name={cleanName}
-        displayName={cleanDisplayName}
-        resourceTypes={resourceTypes}
-        locations={locations}
-        tokenLimits={tokenLimits}
-      />
-
-      <StickyFooter
+      <FormFooter
         onCancel={onCancel}
         submitting={form.formState.isSubmitting}
       />
@@ -549,7 +569,7 @@ function LocationBody({
               className={cn(
                 "rounded-md border px-3 py-1.5 typography-meta transition-colors duration-fast ease-out-standard",
                 checked
-                  ? "border-primary bg-primary-soft text-foreground"
+                  ? "border-border-strong bg-muted-surface text-foreground"
                   : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
               )}
             >
@@ -705,12 +725,7 @@ function ResourceTypesSection({
                 return (
                   <label
                     key={option.value}
-                    className={cn(
-                      "flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 transition-colors duration-fast ease-out-standard",
-                      checked
-                        ? "border-primary bg-primary-soft"
-                        : "border-border bg-background hover:border-border-strong",
-                    )}
+                    className="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 py-2 transition-colors duration-fast ease-out-standard hover:border-border-strong"
                   >
                     <Checkbox
                       checked={checked}
@@ -862,7 +877,7 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
   return (
     <aside
       aria-labelledby="create-policy-reference-heading"
-      className="flex min-w-0 flex-col gap-3 lg:sticky lg:top-8 lg:h-fit"
+      className="flex min-w-0 flex-col gap-3"
     >
       <div className="flex flex-col gap-1">
         <h2
@@ -1101,9 +1116,9 @@ function indent(text: string, spaces: number): string {
     .join("\n");
 }
 
-// ─── Sticky footer ───────────────────────────────────────────────────────────
+// ─── Form footer — natural sibling below the bounded scroll region ───────────
 
-function StickyFooter({
+function FormFooter({
   onCancel,
   submitting,
 }: {
@@ -1114,7 +1129,7 @@ function StickyFooter({
     <div
       role="region"
       aria-label="Create policy actions"
-      className="sticky bottom-0 z-overlay -mx-4 mt-2 flex items-center justify-end gap-2 border-t border-border bg-panel/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6 lg:col-span-2 lg:-mx-8 lg:px-8 xl:-mx-20 xl:px-20"
+      className="flex shrink-0 items-center justify-end gap-2 border-t border-border bg-panel/95 -mx-4 px-4 py-3 backdrop-blur md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 xl:-mx-20 xl:px-20"
     >
       <Button type="button" variant="ghost" onClick={onCancel}>
         Cancel
