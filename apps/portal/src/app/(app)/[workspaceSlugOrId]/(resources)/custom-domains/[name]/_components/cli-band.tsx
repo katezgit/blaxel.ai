@@ -3,13 +3,13 @@
 import { CodeBlock } from "@repo/ui/components/code-block";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import type { CustomDomain } from "@/lib/mock/custom-domains";
-import { Band } from "./band";
+import Band from "./band";
 
 interface CliBandProps {
   domain: CustomDomain;
 }
 
-export function CliBand({ domain }: CliBandProps) {
+export default function CliBand({ domain }: CliBandProps) {
   const { metadata, spec } = domain;
   const registerCommand = `bl domain register ${metadata.name} --region ${spec.region}`;
   const verifyCommand = `bl domain verify ${metadata.name}`;

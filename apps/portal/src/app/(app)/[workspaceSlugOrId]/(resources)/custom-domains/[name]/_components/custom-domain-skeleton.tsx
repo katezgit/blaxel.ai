@@ -10,7 +10,7 @@ interface CustomDomainSkeletonProps {
 // Security) in the same flat `border-t pt-6` rhythm, each pre-shaped enough
 // that the swap to populated content is layout-neutral. First band drops the
 // top divider to match `Band`'s `first-of-type:border-t-0` rule.
-export function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkeletonProps) {
+export default function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkeletonProps) {
   const listHref = `/${workspaceSlug}/custom-domains`;
   return (
     <>
@@ -28,7 +28,6 @@ export function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkeletonProp
         </div>
       </header>
 
-      {/* DNS records band — first band, no top divider */}
       <section className="flex flex-col gap-4">
         <Skeleton className="h-5 w-56 rounded-sm" />
         <Skeleton className="h-4 w-full max-w-xl rounded-sm" />
@@ -36,20 +35,17 @@ export function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkeletonProp
         <RecordGroupSkeleton groupWidth="w-10" records={2} />
       </section>
 
-      {/* Verification band */}
       <section className="flex flex-col gap-4 border-t border-border pt-6">
         <Skeleton className="h-5 w-28 rounded-sm" />
         <DlSkeleton rows={["w-32", "w-20"]} />
       </section>
 
-      {/* Certificate band */}
       <section className="flex flex-col gap-4 border-t border-border pt-6">
         <Skeleton className="h-5 w-24 rounded-sm" />
         <Skeleton className="h-4 w-56 rounded-sm" />
         <Skeleton className="h-4 w-full max-w-md rounded-sm" />
       </section>
 
-      {/* Routing band — fallback preview row + right-aligned action link */}
       <section className="flex flex-col gap-4 border-t border-border pt-6">
         <Skeleton className="h-5 w-20 rounded-sm" />
         <div className="flex items-start justify-between gap-3">
@@ -62,7 +58,6 @@ export function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkeletonProp
         </div>
       </section>
 
-      {/* CLI band — underline tab row + tall code block */}
       <section className="flex flex-col gap-4 border-t border-border pt-6">
         <Skeleton className="h-5 w-10 rounded-sm" />
         <div className="flex items-center gap-4">
@@ -73,7 +68,6 @@ export function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkeletonProp
         <Skeleton className="h-16 w-full rounded-md" />
       </section>
 
-      {/* Security band — multi-row dl */}
       <section className="flex flex-col gap-4 border-t border-border pt-6">
         <Skeleton className="h-5 w-20 rounded-sm" />
         <DlSkeleton rows={["w-48", "w-56", "w-48", "w-56", "w-40"]} />

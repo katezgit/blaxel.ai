@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { CustomDomain } from "@/lib/mock/custom-domains";
-import { Band } from "./band";
+import Band from "./band";
 
 interface RoutingBandProps {
   workspaceSlug: string;
   domain: CustomDomain;
 }
 
-export function RoutingBand({ workspaceSlug, domain }: RoutingBandProps) {
+export default function RoutingBand({ workspaceSlug, domain }: RoutingBandProps) {
   const { spec } = domain;
   return (
     <Band title="Routing">
@@ -26,7 +26,7 @@ export function RoutingBand({ workspaceSlug, domain }: RoutingBandProps) {
         </div>
         <Link
           href={`/${workspaceSlug}/sandboxes/${spec.fallbackPreviewId}`}
-          className="inline-flex items-center gap-1 typography-body text-primary hover:underline"
+          className="inline-flex items-center gap-1 rounded-sm typography-body text-primary outline-hidden hover:underline focus-visible:shadow-focus-ring"
         >
           View preview
           <ArrowRight className="size-3.5" aria-hidden="true" />

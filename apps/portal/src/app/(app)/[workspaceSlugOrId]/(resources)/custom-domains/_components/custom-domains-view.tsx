@@ -5,10 +5,10 @@ import { ArrowUpRightIcon } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import { useAccountState } from "@/lib/mock/account-context";
 import { parseCustomDomainsFixture } from "@/lib/mock/custom-domains";
-import { TierLockedPanel } from "./tier-locked-panel";
-import { CustomDomainsHeader } from "./custom-domains-header";
-import { CustomDomainsLoaded } from "./custom-domains-loaded";
-import { AddDomainButton } from "./add-domain-button";
+import TierLockedPanel from "./tier-locked-panel";
+import CustomDomainsHeader from "./custom-domains-header";
+import CustomDomainsLoaded from "./custom-domains-loaded";
+import AddDomainButton from "./add-domain-button";
 
 /**
  * Top-level branch for the Custom Domains list page.
@@ -21,7 +21,7 @@ import { AddDomainButton } from "./add-domain-button";
  * context, fixture preview comes from `?fixture=empty|error`. Rendering server-
  * side would lose both signals on initial paint.
  */
-export function CustomDomainsView() {
+export default function CustomDomainsView() {
   const { state } = useAccountState();
   const searchParams = useSearchParams();
   const fixture = parseCustomDomainsFixture(searchParams.get("fixture"));
@@ -48,7 +48,7 @@ const LIST_DESCRIPTION = (
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Custom domains documentation, opens in new tab"
-      className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
+      className="inline-flex items-baseline gap-0.5 rounded-sm text-muted-foreground outline-hidden hover:text-foreground hover:underline focus-visible:shadow-focus-ring"
     >
       Docs
       <ArrowUpRightIcon aria-hidden="true" className="size-3 self-center" />
@@ -59,7 +59,7 @@ const LIST_DESCRIPTION = (
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Custom domains API reference, opens in new tab"
-      className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
+      className="inline-flex items-baseline gap-0.5 rounded-sm text-muted-foreground outline-hidden hover:text-foreground hover:underline focus-visible:shadow-focus-ring"
     >
       API reference
       <ArrowUpRightIcon aria-hidden="true" className="size-3 self-center" />

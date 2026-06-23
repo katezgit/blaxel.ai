@@ -9,13 +9,13 @@ import type {
   CustomDomainStatus,
 } from "@/lib/mock/custom-domains";
 import { formatRelative } from "../../_lib/relative-time";
-import { Band } from "./band";
+import Band from "./band";
 
 interface VerificationBandProps {
   domain: CustomDomain;
 }
 
-export function VerificationBand({ domain }: VerificationBandProps) {
+export default function VerificationBand({ domain }: VerificationBandProps) {
   const { metadata, spec } = domain;
   const [isRetrying, setIsRetrying] = useState(false);
 
@@ -76,10 +76,7 @@ interface VerificationStatusIndicatorProps {
   status: CustomDomainStatus;
 }
 
-// Inline status indicator — visually mirrors the per-record check outcomes in
-// DnsRecordsBand (`✓ Matched`, `○ Checking…`, `✕ Not found`) so every diagnostic
-// surface on the page uses the same icon + colored text rhythm. The formal
-// pill badge stays in the page header as the page-level headline.
+// The formal pill badge stays in the page header as the page-level headline.
 function VerificationStatusIndicator({ status }: VerificationStatusIndicatorProps) {
   if (status === "verified") {
     return (

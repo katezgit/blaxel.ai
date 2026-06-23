@@ -6,9 +6,7 @@ interface CapabilityCardProps {
   description: string;
 }
 
-// Feature-tile used on tier-locked paywalls. Icon + title row, description below.
-// One row per capability; consumers compose 2–3 of these in a grid.
-export function CapabilityCard({ icon: Icon, title, description }: CapabilityCardProps) {
+export default function CapabilityCard({ icon: Icon, title, description }: CapabilityCardProps) {
   return (
     <Card className="flex flex-col gap-1 p-4">
       <div className="flex items-center gap-2">

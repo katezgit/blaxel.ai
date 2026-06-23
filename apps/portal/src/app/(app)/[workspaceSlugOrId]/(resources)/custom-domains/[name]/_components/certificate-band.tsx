@@ -1,12 +1,12 @@
 import { CodeBlock } from "@repo/ui/components/code-block";
 import type { CustomDomain, CustomDomainSAN } from "@/lib/mock/custom-domains";
-import { Band } from "./band";
+import Band from "./band";
 
 interface CertificateBandProps {
   domain: CustomDomain;
 }
 
-export function CertificateBand({ domain }: CertificateBandProps) {
+export default function CertificateBand({ domain }: CertificateBandProps) {
   const { spec } = domain;
   const isIssued = spec.status === "verified";
 
@@ -14,9 +14,9 @@ export function CertificateBand({ domain }: CertificateBandProps) {
     <Band title="Certificate">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-2">
-          <span className="typography-body font-semibold text-foreground">
+          <h3 className="typography-body font-semibold text-foreground">
             Subject alternative names (SANs)
-          </span>
+          </h3>
           {isIssued ? (
             <ul className="flex flex-col gap-1.5">
               {spec.subjectAlternativeNames.map((san, index) => (

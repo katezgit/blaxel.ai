@@ -1,12 +1,12 @@
 import type { CustomDomain } from "@/lib/mock/custom-domains";
 import { formatAbsoluteUtc } from "../../_lib/relative-time";
-import { Band } from "./band";
+import Band from "./band";
 
 interface SecurityBandProps {
   domain: CustomDomain;
 }
 
-export function SecurityBand({ domain }: SecurityBandProps) {
+export default function SecurityBand({ domain }: SecurityBandProps) {
   const { metadata } = domain;
   const labels = Object.entries(metadata.labels);
 

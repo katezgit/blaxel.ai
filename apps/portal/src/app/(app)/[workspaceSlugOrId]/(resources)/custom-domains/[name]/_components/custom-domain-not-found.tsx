@@ -7,7 +7,7 @@ interface CustomDomainNotFoundProps {
   name: string;
 }
 
-export function CustomDomainNotFound({
+export default function CustomDomainNotFound({
   workspaceSlug,
   name,
 }: CustomDomainNotFoundProps) {
@@ -25,7 +25,7 @@ export function CustomDomainNotFound({
         </p>
         <Link
           href={listHref}
-          className="inline-flex items-center gap-1 typography-label text-primary hover:underline"
+          className="inline-flex items-center gap-1 rounded-sm typography-label text-primary outline-hidden hover:underline focus-visible:shadow-focus-ring"
         >
           <ArrowLeft className="size-3.5" aria-hidden="true" />
           Back to Custom domains

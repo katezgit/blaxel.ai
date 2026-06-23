@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MapPin, GaugeCircle, Combine } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { CapabilityCard } from "@/components/paywall/capability-card";
+import CapabilityCard from "@/components/paywall/capability-card";
 
 interface PoliciesEmptyStateProps {
   createHref: string;

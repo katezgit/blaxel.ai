@@ -1,18 +1,18 @@
 import type { CustomDomain } from "@/lib/mock/custom-domains";
-import { DetailHeader } from "./detail-header";
-import { DnsRecordsBand } from "./dns-records-band";
-import { VerificationBand } from "./verification-band";
-import { CertificateBand } from "./certificate-band";
-import { RoutingBand } from "./routing-band";
-import { CliBand } from "./cli-band";
-import { SecurityBand } from "./security-band";
+import DetailHeader from "./detail-header";
+import DnsRecordsBand from "./dns-records-band";
+import VerificationBand from "./verification-band";
+import CertificateBand from "./certificate-band";
+import RoutingBand from "./routing-band";
+import CliBand from "./cli-band";
+import SecurityBand from "./security-band";
 
 interface CustomDomainDetailProps {
   workspaceSlug: string;
   domain: CustomDomain;
 }
 
-export function CustomDomainDetail({
+export default function CustomDomainDetail({
   workspaceSlug,
   domain,
 }: CustomDomainDetailProps) {

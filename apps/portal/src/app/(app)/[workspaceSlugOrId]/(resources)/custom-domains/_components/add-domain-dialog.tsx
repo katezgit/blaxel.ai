@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@repo/ui/components/dialog";
+import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
 import {
   Select,
@@ -23,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { REGION_SLUGS, formatRegion } from "../_lib/region";
 
 const DEFAULT_REGION = REGION_SLUGS[0];
@@ -49,7 +49,7 @@ interface AddDomainDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function AddDomainDialog({ open, onOpenChange }: AddDomainDialogProps) {
+export default function AddDomainDialog({ open, onOpenChange }: AddDomainDialogProps) {
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { name: "", region: DEFAULT_REGION },
@@ -90,54 +90,62 @@ export function AddDomainDialog({ open, onOpenChange }: AddDomainDialogProps) {
               verify.
             </DialogDescription>
           </DialogHeader>
-          <DialogBody>
-            <FieldRow cols={1}>
-              <Field label="Domain name" error={errors.name?.message}>
-                <Input
-                  type="text"
-                  autoComplete="off"
-                  placeholder="preview.acme.com"
-                  aria-invalid={errors.name ? true : undefined}
-                  {...register("name")}
-                />
-              </Field>
-            </FieldRow>
-            <FieldRow cols={1}>
-              <Field label="Region" error={errors.region?.message}>
-                <Controller
-                  control={control}
-                  name="region"
-                  render={({ field }) => (
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
+          <DialogBody className="flex flex-col gap-4">
+            <FormField
+              id="add-domain-name"
+              label="Domain name"
+              error={errors.name?.message}
+              required
+            >
+              <Input
+                type="text"
+                autoComplete="off"
+                placeholder="preview.acme.com"
+                aria-required="true"
+                {...register("name")}
+              />
+            </FormField>
+            <FormField
+              id="add-domain-region"
+              label="Region"
+              error={errors.region?.message}
+              required
+            >
+              <Controller
+                control={control}
+                name="region"
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      id="add-domain-region"
+                      aria-label="Region"
+                      aria-required="true"
+                      aria-invalid={errors.region ? true : undefined}
                     >
-                      <SelectTrigger
-                        id="add-domain-region"
-                        aria-invalid={errors.region ? true : undefined}
-                      >
-                        <SelectValue placeholder="Select a region" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {REGION_SLUGS.map((slug) => {
-                          const { flag, label } = formatRegion(slug);
-                          return (
-                            <SelectItem key={slug} value={slug}>
-                              <span aria-hidden="true">{flag}</span>{" "}
-                              <span>{label}</span>{" "}
-                              <span className="font-mono text-muted-foreground">
-                                ({slug})
-                              </span>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </Field>
-            </FieldRow>
-            <p className="mt-4 typography-caption text-muted-foreground">
+                      <SelectValue placeholder="Select a region" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REGION_SLUGS.map((slug) => {
+                        const { flag, label } = formatRegion(slug);
+                        return (
+                          <SelectItem key={slug} value={slug}>
+                            <span aria-hidden="true">{flag}</span>{" "}
+                            <span>{label}</span>{" "}
+                            <span className="font-mono text-muted-foreground">
+                              ({slug})
+                            </span>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormField>
+            <p className="typography-caption text-muted-foreground">
               Registering covers every subdomain (e.g.{" "}
               <span className="font-mono">*.preview.acme.com</span>). Region is
               permanent — to move a domain to another region, delete and

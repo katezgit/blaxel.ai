@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@repo/ui/components/button";
-import { AddDomainDialog } from "./add-domain-dialog";
+import AddDomainDialog from "./add-domain-dialog";
 
-export function AddDomainButton() {
+export default function AddDomainButton() {
   const [open, setOpen] = useState(false);
 
   return (

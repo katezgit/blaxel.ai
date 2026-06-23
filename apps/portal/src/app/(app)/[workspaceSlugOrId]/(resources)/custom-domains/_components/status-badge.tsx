@@ -14,7 +14,7 @@ interface DomainStatusBadgeProps {
   className?: string;
 }
 
-export function DomainStatusBadge({
+export default function DomainStatusBadge({
   status,
   prominentOnFailure = false,
   className,

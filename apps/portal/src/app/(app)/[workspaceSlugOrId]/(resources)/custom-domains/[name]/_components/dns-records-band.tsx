@@ -5,13 +5,13 @@ import type {
   CustomDomain,
   CustomDomainStatus,
 } from "@/lib/mock/custom-domains";
-import { Band } from "./band";
+import Band from "./band";
 
 interface DnsRecordsBandProps {
   domain: CustomDomain;
 }
 
-export function DnsRecordsBand({ domain }: DnsRecordsBandProps) {
+export default function DnsRecordsBand({ domain }: DnsRecordsBandProps) {
   const { metadata, spec } = domain;
   const txtEntries = Object.entries(spec.txtRecords);
 
@@ -29,18 +29,19 @@ export function DnsRecordsBand({ domain }: DnsRecordsBandProps) {
         </RecordGroup>
 
         <RecordGroup label="TXT">
-          <div className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-2 list-none p-0 m-0">
             {txtEntries.map(([host, value]) => (
-              <RecordRow
-                key={host}
-                type="TXT"
-                host={host}
-                value={value}
-                status={spec.status}
-                verificationError={spec.verificationError}
-              />
+              <li key={host}>
+                <RecordRow
+                  type="TXT"
+                  host={host}
+                  value={value}
+                  status={spec.status}
+                  verificationError={spec.verificationError}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         </RecordGroup>
       </div>
     </Band>
@@ -55,9 +56,9 @@ interface RecordGroupProps {
 function RecordGroup({ label, children }: RecordGroupProps) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="typography-body font-semibold text-foreground">
+      <h3 className="typography-body font-semibold text-foreground">
         {label}
-      </span>
+      </h3>
       {children}
     </div>
   );
@@ -127,10 +128,6 @@ interface RecordOutcomeLabelProps {
   recordIsFailing: boolean;
 }
 
-// Short status label rendered at the top of each record block. The expanded
-// expected/observed diagnostic for a failing record renders separately at the
-// bottom of the block via RecordOutcomeDetail so it sits beneath the host /
-// value it refers to.
 function RecordOutcomeLabel({
   type,
   status,

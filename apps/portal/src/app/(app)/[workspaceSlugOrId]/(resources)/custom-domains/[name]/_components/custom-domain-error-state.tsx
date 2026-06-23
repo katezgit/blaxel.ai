@@ -7,7 +7,7 @@ interface CustomDomainErrorStateProps {
   name: string;
 }
 
-export function CustomDomainErrorState({
+export default function CustomDomainErrorState({
   workspaceSlug,
   name,
 }: CustomDomainErrorStateProps) {
@@ -18,7 +18,7 @@ export function CustomDomainErrorState({
         <Breadcrumb parent={{ href: listHref, label: "Custom domains" }} current={name} />
         <Link
           href={listHref}
-          className="inline-flex items-center gap-1 self-start typography-label text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center gap-1 self-start rounded-sm typography-label text-muted-foreground outline-hidden transition-colors hover:text-foreground focus-visible:shadow-focus-ring"
         >
           <ArrowLeft aria-hidden="true" className="size-3.5" />
           Custom domains

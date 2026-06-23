@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Asterisk, Tag, MapPin } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { CapabilityCard } from "@/components/paywall/capability-card";
-import { AddDomainDialog } from "./add-domain-dialog";
+import CapabilityCard from "@/components/paywall/capability-card";
+import AddDomainDialog from "./add-domain-dialog";
 
 const capabilities = [
   {
@@ -26,7 +26,7 @@ const capabilities = [
   },
 ] as const;
 
-export function CustomDomainsEmpty() {
+export default function CustomDomainsEmpty() {
   const [open, setOpen] = useState(false);
 
   return (
@@ -47,16 +47,17 @@ export function CustomDomainsEmpty() {
             your product&apos;s branding.
           </p>
         </header>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1">
+        <ul className="grid grid-cols-1 gap-3 list-none p-0 m-0 md:grid-cols-2 lg:grid-cols-1">
           {capabilities.map(({ icon, title, description }) => (
-            <CapabilityCard
-              key={title}
-              icon={icon}
-              title={title}
-              description={description}
-            />
+            <li key={title}>
+              <CapabilityCard
+                icon={icon}
+                title={title}
+                description={description}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       <aside

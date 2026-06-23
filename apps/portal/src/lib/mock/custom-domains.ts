@@ -7,8 +7,8 @@
  *
  * `subjectAlternativeNames` is `array of objects` with `additionalProperties: true`
  * in the schema (no defined sub-fields). The runtime shape isn't enumerated, so
- * fixtures use `{ value: string }` and the renderer reads any string-valued key
- * — see `_components/sans-list.tsx` for the bind.
+ * fixtures use `{ value: string }` and the renderer falls back to any
+ * string-valued key.
  *
  * Fixture toggling: the URL search params drive which fixture set the page
  * renders, so the demo can exercise every state without re-seeding state. See

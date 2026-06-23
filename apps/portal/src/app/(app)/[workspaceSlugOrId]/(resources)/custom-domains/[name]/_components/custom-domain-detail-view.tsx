@@ -5,17 +5,17 @@ import { useSearchParams } from "next/navigation";
 import { parseCustomDomainStatusOverride } from "@/lib/mock/custom-domains";
 import { customDomainQueries } from "@/lib/query/custom-domains";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import { CustomDomainNotFound } from "./custom-domain-not-found";
-import { CustomDomainErrorState } from "./custom-domain-error-state";
-import { CustomDomainSkeleton } from "./custom-domain-skeleton";
-import { CustomDomainDetail } from "./custom-domain-detail";
+import CustomDomainNotFound from "./custom-domain-not-found";
+import CustomDomainErrorState from "./custom-domain-error-state";
+import CustomDomainSkeleton from "./custom-domain-skeleton";
+import CustomDomainDetail from "./custom-domain-detail";
 
 interface CustomDomainDetailViewProps {
   workspaceSlug: string;
   name: string;
 }
 
-export function CustomDomainDetailView({
+export default function CustomDomainDetailView({
   workspaceSlug,
   name,
 }: CustomDomainDetailViewProps) {

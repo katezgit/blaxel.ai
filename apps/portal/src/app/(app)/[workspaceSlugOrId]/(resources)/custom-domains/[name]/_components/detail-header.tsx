@@ -14,7 +14,7 @@ import {
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { DetailPageHeader } from "@/components/shell/detail-page-header";
 import type { CustomDomain } from "@/lib/mock/custom-domains";
-import { DeleteDomainDialog } from "./delete-domain-dialog";
+import DeleteDomainDialog from "./delete-domain-dialog";
 
 interface DetailHeaderProps {
   domain: CustomDomain;
@@ -37,7 +37,7 @@ const STATUS_DESCRIPTION_CLASS = {
   failed: "font-medium text-state-errored-text",
 } as const;
 
-export function DetailHeader({ domain, workspaceSlug }: DetailHeaderProps) {
+export default function DetailHeader({ domain, workspaceSlug }: DetailHeaderProps) {
   const { metadata, spec } = domain;
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);

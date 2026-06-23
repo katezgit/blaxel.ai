@@ -29,21 +29,16 @@ const CAPABILITIES: ReadonlyArray<Capability> = [
   },
 ];
 
-export function TierLockedPanel() {
+export default function TierLockedPanel() {
   return (
     <section aria-labelledby="custom-domains-locked-heading">
       <h2 id="custom-domains-locked-heading" className="sr-only">
         Custom domains — Tier 3 upgrade
       </h2>
 
-      {/* One unified Card hosts both regions — capabilities on the left,
-          warm-tinted CTA region on the right share an edge instead of
-          floating as separate panels. The right region carries a subtle
-          primary-glow backdrop so the eye lands on "ship it" without copy
-          shouting. On narrow viewports the divider rotates to horizontal. */}
       <Card className="overflow-hidden p-0">
         <div className="grid lg:grid-cols-[2fr_1fr]">
-          <div className="flex flex-col gap-5 p-6 lg:p-8">
+          <div className="flex flex-col gap-6 p-6 lg:p-8">
             <div className="flex flex-col gap-2">
               <h3 className="typography-subtitle font-semibold text-foreground">
                 What you can do with Custom domains
@@ -85,7 +80,7 @@ export function TierLockedPanel() {
                 tier-locked panel so every locked-tier CTA shares one mark. */}
             <span
               aria-hidden="true"
-              className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-primary"
+              className="flex size-10 items-center justify-center rounded-full bg-primary-soft text-primary"
             >
               <Rocket className="size-5" />
             </span>

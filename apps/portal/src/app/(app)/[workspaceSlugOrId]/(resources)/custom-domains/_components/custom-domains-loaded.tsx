@@ -4,16 +4,16 @@ import { useQuery } from "@tanstack/react-query";
 import type { CustomDomainsFixture } from "@/lib/mock/custom-domains";
 import { customDomainQueries } from "@/lib/query/custom-domains";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import { CustomDomainsTable } from "./custom-domains-table";
-import { CustomDomainsTableSkeleton } from "./custom-domains-table-skeleton";
-import { CustomDomainsErrorRow } from "./custom-domains-error-row";
-import { CustomDomainsEmpty } from "./custom-domains-empty";
+import CustomDomainsTable from "./custom-domains-table";
+import CustomDomainsTableSkeleton from "./custom-domains-table-skeleton";
+import CustomDomainsErrorRow from "./custom-domains-error-row";
+import CustomDomainsEmpty from "./custom-domains-empty";
 
 interface CustomDomainsLoadedProps {
   fixture: CustomDomainsFixture;
 }
 
-export function CustomDomainsLoaded({ fixture }: CustomDomainsLoadedProps) {
+export default function CustomDomainsLoaded({ fixture }: CustomDomainsLoadedProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const query = useQuery(customDomainQueries.list(accountId, workspaceId, fixture));
 

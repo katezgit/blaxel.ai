@@ -10,7 +10,7 @@ interface CustomDomainsHeaderProps {
   tierLocked?: boolean;
 }
 
-export function CustomDomainsHeader({
+export default function CustomDomainsHeader({
   description,
   action,
   tierLocked = false,

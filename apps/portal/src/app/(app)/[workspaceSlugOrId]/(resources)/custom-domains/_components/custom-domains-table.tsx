@@ -25,7 +25,7 @@ import { cn } from "@repo/ui/lib/cn";
 import type { CustomDomain, CustomDomainStatus } from "@/lib/mock/custom-domains";
 import { formatRegion } from "../_lib/region";
 import { formatRelative } from "../_lib/relative-time";
-import { DomainStatusBadge } from "./status-badge";
+import DomainStatusBadge from "./status-badge";
 
 interface CustomDomainsTableProps {
   domains: ReadonlyArray<CustomDomain>;
@@ -83,7 +83,7 @@ function filterDomains(
   });
 }
 
-export function CustomDomainsTable({ domains }: CustomDomainsTableProps) {
+export default function CustomDomainsTable({ domains }: CustomDomainsTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const params = useParams<{ workspaceSlugOrId: string }>();
@@ -123,7 +123,7 @@ export function CustomDomainsTable({ domains }: CustomDomainsTableProps) {
       </div>
 
       <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
-        <table className={tableClass}>
+        <table className={tableClass} aria-label="Custom domains">
           <thead className={tableHeaderClass}>
             <tr>
               <th className={tableHeadVariants()}>Domain</th>
@@ -191,11 +191,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
         className={cn(
           tableRowVariants(),
           "group cursor-pointer",
-          // personality.md §7 — failure outranks success: failed rows carry a
-          // subtle background tint + left-border accent to lift them off the
-          // baseline rhythm without crossing into alarm-fatigue territory.
-          // Drop the standard between-row divider so the failed row visually
-          // merges into the error band beneath it as one bound group.
+          // personality.md §7 — failure outranks success.
           isFailed && "bg-state-errored-subtle hover:bg-state-errored-subtle border-b-0",
         )}
       >
@@ -214,7 +210,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
           <div className="flex items-start gap-1.5">
             <Link
               href={href}
-              className="flex flex-col gap-0.5 font-mono typography-label outline-hidden focus-visible:shadow-focus-ring rounded-sm"
+              className="flex flex-col gap-0.5 rounded-sm font-mono typography-label"
             >
               <span className="text-foreground">{metadata.name}</span>
               {metadata.displayName && (
@@ -269,7 +265,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
             </span>{" "}
             <Link
               href={href}
-              className="font-medium underline-offset-2 hover:underline"
+              className="rounded-sm font-medium underline-offset-2 outline-hidden hover:underline focus-visible:shadow-focus-ring"
             >
               View record to publish →
             </Link>

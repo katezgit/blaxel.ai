@@ -15,10 +15,10 @@ const ROWS = 3;
 // populated render (Domain cell stacks name + display name + label chips;
 // Region cell pairs a flag-glyph dot with city + mono slug; Status is a pill;
 // Last verified is a tight relative-time bar) so the swap-in is layout-neutral.
-export function CustomDomainsTableSkeleton() {
+export default function CustomDomainsTableSkeleton() {
   return (
     <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
-      <table className={tableClass}>
+      <table className={tableClass} aria-label="Custom domains">
         <thead className={tableHeaderClass}>
           <tr>
             <th className={tableHeadVariants()}>Domain</th>

@@ -7,10 +7,10 @@ import {
 } from "@repo/ui/components/table";
 import { cn } from "@repo/ui/lib/cn";
 
-export function CustomDomainsErrorRow() {
+export default function CustomDomainsErrorRow() {
   return (
     <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
-      <table className={tableClass}>
+      <table className={tableClass} aria-label="Custom domains">
         <thead className={tableHeaderClass}>
           <tr>
             <th className={tableHeadVariants()}>Domain</th>

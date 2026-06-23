@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CustomDomainDetailView } from "./_components/custom-domain-detail-view";
+import CustomDomainDetailView from "./_components/custom-domain-detail-view";
 
 export const metadata: Metadata = {
   title: "Custom domain",

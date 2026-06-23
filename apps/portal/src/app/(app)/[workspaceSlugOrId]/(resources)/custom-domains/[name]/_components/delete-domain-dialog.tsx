@@ -20,7 +20,7 @@ interface DeleteDomainDialogProps {
   domainName: string;
 }
 
-export function DeleteDomainDialog({
+export default function DeleteDomainDialog({
   open,
   onOpenChange,
   domainName,
