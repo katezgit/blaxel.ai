@@ -2,8 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react"
 import { fn } from "storybook/test"
 import { Stepper } from "./stepper"
 
-/* ─── Meta ─────────────────────────────────────────────────────────────────── */
-
 const FOUR_STEPS = [
   { label: "Model",   description: "Choose the model checkpoint to train." },
   { label: "Taskset", description: "Select the taskset to train against." },
@@ -28,14 +26,12 @@ const meta: Meta<typeof Stepper> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/* ─── Playground ───────────────────────────────────────────────────────────── */
 // Default args: currentStep=2 on a 4-step sequence — shows completed (step 1),
 // active (step 2), and pending (steps 3–4) simultaneously.
 // Use the currentStep control to reach boundary states (1 = no completed, 4 = all completed).
 
 export const Playground: Story = {}
 
-/* ─── WithoutDescriptions ──────────────────────────────────────────────────── */
 // Steps with no description prop — the description row is omitted entirely,
 // collapsing the layout to a single-row indicator. Not reachable from Playground
 // controls because the steps array is fixed in meta args.
@@ -52,7 +48,6 @@ export const WithoutDescriptions: Story = {
   },
 }
 
-/* ─── WithBackwardNav ──────────────────────────────────────────────────────── */
 // Wizard at step 3 — steps 1 and 2 are completed and clickable.
 // Click "Model" or "Taskset" to see onStepClick fire in the Actions panel.
 // Active step ("Tasks") and pending step ("Review") produce no callback.
