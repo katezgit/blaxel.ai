@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { AlertTriangle, Cpu, GaugeCircle, MapPin } from "lucide-react";
+import { AlertTriangle, Cpu, GaugeCircle, Globe, MapPin } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
@@ -177,7 +177,7 @@ function Header({ listHref }: { listHref: string }) {
           Create policy
         </h1>
         <p className="typography-body text-muted-foreground">
-          Define the policy type and the workload kinds it can be attached to.
+          Define a rule and the workloads it attaches to.
         </p>
       </div>
     </header>
@@ -369,7 +369,7 @@ function PolicyTypeSection({
 
   return (
     <section className="flex flex-col gap-4">
-      <StepHeading index={1} title="What is your policy on?" />
+      <StepHeading index={1} title="Choose a policy type" />
       <div className="flex flex-col gap-1.5">
         <Field label="Policy type">
           <Controller
@@ -497,7 +497,7 @@ function PolicyBodySection({
     <section className="flex flex-col gap-4">
       <StepHeading
         index={2}
-        title="Configure your policy"
+        title="Configure the rule"
         description={POLICY_TYPE_BY_VALUE[policyType].hint}
       />
       {flavorDeepLink ? <FlavorDeepLinkNotice /> : null}
@@ -556,11 +556,13 @@ function LocationBody({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {SAMPLE_LOCATIONS.map((item) => {
           const checked = value.some(
             (s) => s.type === item.type && s.name === item.name,
           );
+          const Icon = item.type === "continent" ? Globe : MapPin;
+          const typeLabel = item.type === "continent" ? "Continent" : "Country";
           return (
             <button
               type="button"
@@ -568,23 +570,24 @@ function LocationBody({
               onClick={() => toggle(item)}
               aria-pressed={checked}
               className={cn(
-                "rounded-md border px-3 py-1.5 typography-meta transition-colors duration-fast ease-out-standard",
+                "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 typography-caption transition-colors duration-fast ease-out-standard",
                 checked
                   ? "border-border-strong bg-muted-surface text-foreground"
                   : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
               )}
             >
-              <span className="font-medium">
-                {item.type === "continent" ? "Continent" : "Country"} :
-              </span>{" "}
+              <Icon
+                aria-hidden="true"
+                className="size-3.5 shrink-0 text-muted-foreground"
+              />
+              <span className="sr-only">{typeLabel}: </span>
               {item.name}
             </button>
           );
         })}
       </div>
       <p className="typography-caption text-muted-foreground">
-        Mixed granularity allowed. Continents and countries OR together — the
-        workload can run anywhere in the union.
+        Continents and countries union — workloads may run in any selected region.
       </p>
     </div>
   );
@@ -633,7 +636,7 @@ function TokenUsageBody({
       </FieldRow>
       <div className="flex flex-col gap-1.5">
         <span className="typography-label text-muted-foreground">
-          Over which period?
+          Per period
         </span>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[120px_1fr]">
           <Input
@@ -712,8 +715,8 @@ function ResourceTypesSection({
     <section className="flex flex-col gap-4">
       <StepHeading
         index={3}
-        title="Pick the workload kinds"
-        description="The policy will only attach to workloads of these kinds."
+        title="Choose target workloads"
+        description="Attaches only to the workload types selected here."
       />
       <Controller
         control={form.control}
@@ -782,8 +785,8 @@ function IdentitySection({
     <section className="flex flex-col gap-4">
       <StepHeading
         index={4}
-        title="Confirm display name"
-        description="The display name is the human label; we derive a canonical slug for bl commands."
+        title="Name the policy"
+        description="Display name is the dashboard label; the slug is auto-derived for CLI."
       />
       <FieldRow cols={1}>
         <div className="flex flex-col gap-1.5">
@@ -798,7 +801,7 @@ function IdentitySection({
             />
           </Field>
           <p id={displayHelperId} className="text-muted-foreground">
-            Human label. Shown in the dashboard.
+            Shown in the dashboard.
           </p>
         </div>
       </FieldRow>
@@ -813,8 +816,7 @@ function IdentitySection({
             />
           </Field>
           <p id={nameHelperId} className="text-muted-foreground">
-            Canonical id used in{" "}
-            <code className="typography-code">bl</code> commands and{" "}
+            Used in <code className="typography-code">bl</code> commands and{" "}
             <code className="typography-code">spec.policies[]</code>.
             Auto-derived; editable.
           </p>
@@ -837,8 +839,7 @@ function FinalNoteSection() {
     <section className="flex flex-col gap-2">
       <StepHeading index={5} title="Create policy" />
       <p className="text-muted-foreground">
-        Review the artifact in any of the supported clients on the right, then
-        hit Create policy.
+        Preview the artifact in any client on the right, then create.
       </p>
     </section>
   );
