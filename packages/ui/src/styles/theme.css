@@ -200,23 +200,25 @@
   --color-state-not-run:        light-dark(var(--ink-800), var(--ink-100)); /* status text must be readable → READ tier */
   --color-state-not-run-subtle: light-dark(var(--surface-muted-light), var(--surface-muted-dark));
 
-  /* Alert backgrounds — quieter than state-*-subtle (3%/4% vs 10–12%) to compensate
-   * for warm-hue perceived intensity at equal alpha. */
+  /* Alert backgrounds. Dark uses solid-mix into the panel bg, not alpha on
+   * transparent — pure alpha at ≤8% on near-black amplifies hue perceptually and
+   * reads as "outlined with a faint cast." Light's 10% alpha sits at the floor of
+   * the state-*-subtle range so the pill / alert hierarchy is preserved. */
   --color-alert-destructive-bg: light-dark(
-    color-mix(in srgb, var(--errored-600)  3%, transparent),
-    color-mix(in srgb, var(--errored-400)  4%, transparent)
+    color-mix(in srgb, var(--errored-600) 10%, transparent),
+    color-mix(in srgb, var(--errored-400) 20%, var(--surface-bg-dark))
   );
   --color-alert-warning-bg:     light-dark(
-    color-mix(in srgb, var(--warning-600)  3%, transparent),
-    color-mix(in srgb, var(--warning-400)  4%, transparent)
+    color-mix(in srgb, var(--warning-600) 10%, transparent),
+    color-mix(in srgb, var(--warning-400) 20%, var(--surface-bg-dark))
   );
   --color-alert-success-bg:     light-dark(
-    color-mix(in srgb, var(--scored-600)   3%, transparent),
-    color-mix(in srgb, var(--scored-400)   4%, transparent)
+    color-mix(in srgb, var(--scored-600)  10%, transparent),
+    color-mix(in srgb, var(--scored-400)  20%, var(--surface-bg-dark))
   );
   --color-alert-info-bg:        light-dark(
-    color-mix(in srgb, var(--running-600)  3%, transparent),
-    color-mix(in srgb, var(--running-400)  4%, transparent)
+    color-mix(in srgb, var(--running-600) 10%, transparent),
+    color-mix(in srgb, var(--running-400) 20%, var(--surface-bg-dark))
   );
 
   /* ═══════════════════════════════════════════════════════════════════════════
