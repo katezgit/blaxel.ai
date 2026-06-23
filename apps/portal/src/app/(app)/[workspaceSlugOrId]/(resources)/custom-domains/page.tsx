@@ -6,9 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function CustomDomainsPage() {
-  return (
-    <div className="page-shell">
-      <CustomDomainsView />
-    </div>
-  );
+  return <CustomDomainsView />;
 }

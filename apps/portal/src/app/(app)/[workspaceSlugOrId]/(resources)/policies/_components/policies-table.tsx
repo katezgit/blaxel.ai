@@ -192,8 +192,8 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
   });
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-3 shrink-0">
         <div className="w-full sm:max-w-xs">
           <SearchInput
             defaultValue=""
@@ -234,7 +234,11 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
         </div>
       </div>
 
-      <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
+      {/* Scroll container — owns the only overflow boundary so the sticky
+        * column header (declared on tableHeadVariants) stays pinned to the
+        * top of this region while the body scrolls. The page chrome above
+        * (filter row) and below (count line) sit outside this container. */}
+      <div className="relative w-full min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
         <table className={tableClass}>
           <thead className={tableHeaderClass}>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -273,7 +277,7 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
         </table>
       </div>
 
-      <p className="typography-caption text-muted-foreground">
+      <p className="typography-caption text-muted-foreground shrink-0">
         {rows.length} {rows.length === 1 ? "policy" : "policies"}
       </p>
     </div>

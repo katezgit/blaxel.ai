@@ -2,6 +2,7 @@
 
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { cn } from "@repo/ui/lib/cn";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { useAccountState } from "@/lib/mock/account-context";
 import { policyQueries } from "@/lib/query/policies";
@@ -21,6 +22,13 @@ function readStateSim(value: string | null): StateSim {
   if (value === "loading" || value === "error" || value === "empty") return value;
   return null;
 }
+
+const LIST_DESCRIPTION = (
+  <p className="max-w-2xl typography-body text-muted-foreground">
+    Control where workloads run, which hardware they use, and token limits for
+    governed deployments.
+  </p>
+);
 
 export function PoliciesView() {
   const { accountId, workspaceId } = useCurrentTenancy();
@@ -64,6 +72,14 @@ function PoliciesViewUnlocked({
     enabled: stateSim !== "loading" && stateSim !== "error",
   });
 
+  const showsTable =
+    stateSim !== "loading" &&
+    stateSim !== "error" &&
+    stateSim !== "empty" &&
+    !query.isPending &&
+    !query.isError &&
+    (query.data?.length ?? 0) > 0;
+
   let body: React.ReactNode;
   if (stateSim === "loading" || query.isPending) {
     body = <PoliciesTableSkeleton />;
@@ -79,17 +95,22 @@ function PoliciesViewUnlocked({
       );
   }
 
-  // PARALLEL-WORK MARKER (policies-list-inventory, 2026-06-22):
-  // The list page intro copy should read:
-  //   "Control where workloads run, which hardware they use, and token limits
-  //    for governed deployments."
-  // The description is hardcoded inside `policies-page-header.tsx`, which a
-  // parallel engineer is currently modifying. Wire a `description` prop on
-  // that shared component and pass the string above from this consumer.
+  // Populated list bounds the page-shell to the viewport so chrome (H1,
+  // description, filter row, table column header) stays fixed and only the
+  // table body scrolls. Other states keep the natural page-shell scroll.
   return (
-    <div className="page-shell">
-      <PoliciesPageHeader createHref={createHref} />
-      {body}
+    <div
+      className={cn(
+        "page-shell",
+        showsTable && "h-full overflow-hidden pb-0",
+      )}
+    >
+      <PoliciesPageHeader createHref={createHref} description={LIST_DESCRIPTION} />
+      {showsTable ? (
+        <div className="flex min-h-0 flex-1 flex-col">{body}</div>
+      ) : (
+        body
+      )}
     </div>
   );
 }
