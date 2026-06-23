@@ -74,28 +74,30 @@ function AccountTopbarSkeleton({ mobileNavId }: AccountTopbarSkeletonProps) {
 
 // Sidebar return header in account/profile sub-shells points back to the
 // last-visited workspace — the workspace name + Org context isn't available
-// at the loading boundary, so we render the arrow + a name-shape skeleton
-// that matches SubShellSidebarReturnHeader's row dimensions (h aligning
-// with typography-label + border-bottom).
+// at the loading boundary, so we render the arrow + a label-shape skeleton
+// matching SubShellSidebarReturnHeader's row geometry (pt-1 wrapper +
+// h-8 rounded row inside the parent nav's px-2 gutter) so hydration
+// doesn't shift the row.
 function ReturnHeaderSkeleton() {
   const isRail = useIsSidebarRail();
   return (
-    <div
-      data-sub-shell-return
-      aria-hidden="true"
-      className={cn(
-        "flex items-center gap-2 border-b border-border px-2 pt-3 pb-1.5",
-        "typography-label font-medium text-muted-foreground",
-      )}
-    >
-      <ArrowLeft
-        data-sub-shell-return-icon
+    <div className="pt-1">
+      <div
+        data-sub-shell-return
         aria-hidden="true"
-        className="size-4 shrink-0"
-      />
-      {!isRail && (
-        <Skeleton className="-translate-y-0.5 h-3 w-24 rounded-sm" />
-      )}
+        className={cn(
+          "flex h-8 items-center gap-2 rounded-md",
+          isRail ? "justify-center px-0" : "px-2",
+          "typography-body text-muted-foreground",
+        )}
+      >
+        <ArrowLeft
+          data-sub-shell-return-icon
+          aria-hidden="true"
+          className="size-4 shrink-0"
+        />
+        {!isRail && <Skeleton className="h-3 w-12 rounded-sm" />}
+      </div>
     </div>
   );
 }
