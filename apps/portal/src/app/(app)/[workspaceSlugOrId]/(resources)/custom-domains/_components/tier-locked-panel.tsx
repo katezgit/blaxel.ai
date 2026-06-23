@@ -2,7 +2,7 @@ import { Asterisk, Globe, MapPin, Rocket } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
-import { UpgradeTierDialog } from "@/components/billing/upgrade-tier-dialog";
+import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
 
 interface Capability {
   icon: LucideIcon;

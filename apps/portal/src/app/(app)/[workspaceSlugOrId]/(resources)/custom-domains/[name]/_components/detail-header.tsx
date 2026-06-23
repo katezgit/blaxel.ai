@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
-import { DetailPageHeader } from "@/components/shell/detail-page-header";
+import DetailPageHeader from "@/components/shell/detail-page-header";
 import type { CustomDomain } from "@/lib/mock/custom-domains";
 import DeleteDomainDialog from "./delete-domain-dialog";
 
