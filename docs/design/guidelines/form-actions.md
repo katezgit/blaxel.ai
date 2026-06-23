@@ -99,3 +99,77 @@ This pattern applies unchanged. When a form targets a resource whose edits are d
 | **Multi-step wizard forms** | Back and Next replace Save/Cancel in the step footer. A Save or Finish button may appear only on the final step. The dirty/clean logic does not apply to in-progress multi-step state. |
 | **Inline cell editing (tables)** | Confirm (✓) and discard (✕) icon buttons are the right affordance at that density. The full Save/Cancel pattern is too heavy for a cell-level edit. |
 | **Forms inside command palette or popover** | These surfaces close on Escape; no explicit Cancel button is needed. Save (or equivalent) submits and closes. |
+
+---
+
+## 7. Dismiss confirmation — when to guard a container close
+
+This section covers the discard-changes prompt that fires when a form **container** is dismissed (Esc key, overlay click, drawer close button, browser Back, route change) — as distinct from the footer Cancel button, which is covered in §1–3.
+
+### The two-condition gate
+
+A dismiss confirmation dialog must fire **only when both conditions hold simultaneously:**
+
+1. **The form is dirty** — at least one field's current value differs from its loaded state (same definition as §3).
+2. **The data entry is high-stakes** — defined as any of:
+   - Irreversible save (the resource cannot be reconstructed once submitted — e.g. an API key whose token is shown once)
+   - Complex multi-field resource creation where reconstructing the input is non-trivial (Policy, API key with permission scopes, Network config, Volume region + attachment config)
+   - A paid action (upgrade, add-on activation, credit purchase)
+   - Any form where the user would need more than 30 seconds to re-enter what they typed
+
+If **either** condition is absent, dismiss silently with no prompt.
+
+### What counts as low-stakes (silent dismiss even when dirty)
+
+| Context | Treatment |
+|---|---|
+| Single-field inline rename | Silent dismiss — trivial to retype |
+| Toggle or boolean setting (e.g. standby enabled, email notifications) | Silent dismiss — one click to revert |
+| Theme or display preference | Silent dismiss — no data loss risk |
+| Sandbox TTL edit (one numeric field) | Silent dismiss — single field, easily reset |
+| Member invite (email + role — 2 fields, low reconstruction cost) | Silent dismiss |
+| Any form where dirty state is < 2 fields of work | Silent dismiss |
+
+### What counts as high-stakes (confirm when dirty)
+
+| Context | Why it qualifies |
+|---|---|
+| **Policy create / edit** | ≥ 8 fields; region + flavor + token-limit rules are non-trivial to reconstruct; applies governance to live workloads | 
+| **API key create** | The API key token is shown exactly once on submit — dismissing mid-create means re-creating and revoking a previous key if the user was editing permissions |
+| **Network / Custom domains config** | Misconfiguration has production routing consequences; multi-field, non-trivial reconstruction |
+| **Volume create** | Region mismatch breaks Agent attachment; reconstruction requires knowing the correct region + attachment target |
+| **Agent deploy / config with custom environment or entrypoint** | Multi-section form; deploy config is non-trivial |
+
+### Confirmation dialog copy
+
+```
+Discard changes?
+
+Your unsaved changes will be lost.
+
+[Keep editing]   [Discard]
+```
+
+- **Primary action (right):** "Discard" — destructive-secondary button weight.
+- **Cancel action (left):** "Keep editing" — returns the user to the form exactly as they left it.
+- Do not say "Are you sure?" — it is a question the user has already answered by trying to dismiss.
+- Do not say "You have unsaved changes" as the body — the heading already states the consequence. Body is the one-line cost: what will be lost.
+
+### Cautionary example — the lazy implementation
+
+The Policy create flow (as of the initial release) fires a discard-changes confirmation on **every** dismiss — including when the form has never been touched. This trains users to click through the prompt as a reflex, defeating the guard entirely. When the confirm fires on a genuinely high-stakes dirty form, the user dismisses it without reading because the prompt has been noise every other time.
+
+**The failure mode:** condition (1) missing — the gate fires on clean forms.
+
+The fix is not to remove the guard — it is to evaluate both conditions before showing it.
+
+### FAIL trigger for reviewers
+
+> **FAIL: dismiss confirmation fires on a clean (non-dirty) form** — the two-condition gate is required; firing on clean state trains reflexive dismissal and defeats the guard on dirty high-stakes forms.
+
+> **FAIL: dismiss confirmation omitted on a dirty high-stakes form** — both conditions are met; the guard is required.
+
+### Cross-references
+
+- `container-choice.md` §5 — each container's dismiss wiring; dismiss handler must read dirty + stakes, never assume
+- `form-actions.md` §3 — canonical "dirty" definition (field value differs from loaded state; resets on successful save or explicit Cancel revert)

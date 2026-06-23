@@ -39,7 +39,8 @@ If the scenarios file does not exist for a detail/diagnostic screen, stop and re
 Tactical rules that constrain HOW the design choices land in any screen / component / pattern. Browse [`docs/design/guidelines/`](../../docs/design/guidelines/) for the full set; load the relevant file when its topic appears in your task:
 
 - [`card-usage.md`](../../docs/design/guidelines/card-usage.md) — **anti-pattern: cards-as-default container.** A `<Card>` is only valid when content is (a) a discrete object with stable identity, (b) actionable as a unit, and (c) sitting alongside peers of the same shape. Default answer is *no card*. Read before specifying any surface that groups content.
-- [`form-actions.md`](../../docs/design/guidelines/form-actions.md) — Save always visible/enabled, Cancel rendered only when dirty.
+- [`container-choice.md`](../../docs/design/guidelines/container-choice.md) — page vs drawer vs dialog. Decision matrix keyed on deep-link need, task duration, surrounding-context need, field count, multi-step. Read before specifying any new resource create / edit / confirm surface.
+- [`form-actions.md`](../../docs/design/guidelines/form-actions.md) — Save always visible/enabled, Cancel rendered only when dirty. **§7:** dismiss confirmation fires only when BOTH form is dirty AND the data entry is high-stakes (irreversible save, complex multi-field create, paid action). Low-stakes edits dismiss silently.
 - [`empty-and-error-states.md`](../../docs/design/guidelines/empty-and-error-states.md) — state copy + structure for empty/error views.
 - [`resource-not-found.md`](../../docs/design/guidelines/resource-not-found.md) — 404 / missing-resource handling.
 - [`app-shell-layout.md`](../../docs/design/guidelines/app-shell-layout.md) — top-level dashboard shell.
