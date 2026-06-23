@@ -2,6 +2,25 @@
 
 ---
 
+## 2026-06-23 — refactor(portal): align custom domains UI with documented API ([#84](https://github.com/katezgit/blaxel.ai/pull/84))
+
+### Changed
+
+- Custom Domains list header: replaced marketing copy with factual capability + tier sentence.
+- Custom Domains detail header: description now surfaces display name, region, and status inline.
+- Add Domain dialog: `displayName` (Label) field added between Name and Region.
+- DNS records band: failing TXT shown in soft error callout with `--color-dns-record-error-bg` token.
+- Retry verification button tooltip: "Re-check DNS records now."
+- `formatRegion` fallback: no longer duplicates slug when label matches slug.
+
+### Removed
+
+- `cli-band.tsx`: undocumented surface dropped.
+- `_blaxel-ca` TXT records: removed from mock fixtures (undocumented by platform).
+- Certificate band: hidden when domain is not yet verified.
+
+---
+
 ## 2026-06-20 — feat(portal): consolidate workspace shells and add loading skeletons ([#43](https://github.com/katezgit/blaxel.ai/pull/43))
 
 ### Added
