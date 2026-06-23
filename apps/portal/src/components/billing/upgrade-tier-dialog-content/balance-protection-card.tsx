@@ -90,8 +90,6 @@ export function BalanceProtectionCard({
         ) : null}
       </div>
 
-      <div className="border-t border-border" />
-
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4">
           <label

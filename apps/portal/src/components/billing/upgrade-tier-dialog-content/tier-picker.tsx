@@ -30,7 +30,7 @@ export function TierPicker({
     <div
       role="radiogroup"
       aria-label="Target quota tier"
-      className="flex flex-col gap-1.5"
+      className="grid grid-cols-1 gap-2 sm:grid-cols-2"
     >
       {SELECTABLE_TIERS.map((tier) => {
         const tierKey = String(tier) as `${SelectableTier}`;
@@ -47,7 +47,7 @@ export function TierPicker({
             aria-checked={selected}
             onClick={() => onChange(tierKey)}
             className={cn(
-              "group flex items-center justify-between gap-4 rounded-md border px-4 py-2.5 text-left",
+              "group flex cursor-pointer items-center justify-between gap-4 rounded-md border px-4 py-2.5 text-left",
               "transition-colors prop-(--motion-state-change)",
               "focus-visible:outline-none focus-visible:shadow-focus-ring",
               selected

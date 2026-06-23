@@ -1,4 +1,4 @@
-import { ArrowRight, CreditCard, GitMerge, Globe, Gauge } from "lucide-react";
+import { GitMerge, Globe, Gauge } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
@@ -16,29 +16,27 @@ const CAPABILITIES: ReadonlyArray<Capability> = [
   {
     icon: Globe,
     title: "Location policies",
-    description: "Country and continent restrictions for data residency.",
+    description: "Control where your workloads run by country or continent.",
   },
   {
     icon: Gauge,
     title: "Token usage policies",
-    description: "Per-workload model API consumption caps.",
+    description: "Set rate limits for model API token consumption.",
   },
   {
     icon: GitMerge,
     title: "Multi-policy combinations",
-    description: "UNION within a type, INTERSECTION across types.",
+    description: "Combine policies with union and intersection logic.",
   },
 ];
 
+// Inline metadata style — matches the above-Tier-0 list header so the page
+// chrome stays consistent across locked/unlocked states. Marketing energy
+// lives in the card below; the header is just orientation.
 const LOCKED_DESCRIPTION = (
-  <div className="flex flex-col gap-1">
-    <p className="typography-body font-semibold text-foreground">
-      Take control of your deployments
-    </p>
-    <p className="typography-body text-muted-foreground">
-      Define where and how your AI workloads run.
-    </p>
-  </div>
+  <p className="max-w-2xl typography-body text-muted-foreground">
+    Take control of your deployments. Define where and how your AI workloads run.
+  </p>
 );
 
 export function PoliciesTierLockedView() {
@@ -46,64 +44,76 @@ export function PoliciesTierLockedView() {
     <div className={cn("page-shell", "gap-8")}>
       <PoliciesPageHeader tierLocked description={LOCKED_DESCRIPTION} />
 
-      <section
-        aria-labelledby="policies-locked-heading"
-        className="grid gap-4 lg:grid-cols-3"
-      >
+      <section aria-labelledby="policies-locked-heading">
         <h2 id="policies-locked-heading" className="sr-only">
           Policies — Tier 1 upgrade
         </h2>
 
-        <Card className="flex flex-col gap-4 p-6 lg:col-span-2">
-          <h3 className="typography-subtitle font-semibold text-foreground">
-            What you unlock
-          </h3>
-          <ul className="flex flex-col gap-4">
-            {CAPABILITIES.map(({ icon: Icon, title, description }) => (
-              <li key={title} className="flex items-start gap-3">
-                <span
-                  aria-hidden="true"
-                  className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground"
-                >
-                  <Icon className="size-4" />
-                </span>
-                <div className="flex flex-col gap-1">
-                  <p className="typography-body font-semibold text-foreground">
-                    {title}
-                  </p>
-                  <p className="typography-body text-muted-foreground">
-                    {description}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
+        {/* One unified Card hosts both regions — capabilities on the left,
+            warm-tinted CTA region on the right share an edge instead of
+            floating as separate panels. The right region carries a subtle
+            primary-glow backdrop so the eye lands on "ship it" without copy
+            shouting. On narrow viewports the divider rotates to horizontal. */}
+        <Card className="overflow-hidden p-0">
+          <div className="grid lg:grid-cols-[2fr_1fr]">
+            <div className="flex flex-col gap-5 p-6 lg:p-8">
+              <div className="flex flex-col gap-2">
+                <h3 className="typography-subtitle font-semibold text-foreground">
+                  What you can do with Policies
+                </h3>
+                <p className="typography-body text-muted-foreground">
+                  Take control of how and where your AI workloads are deployed
+                  within the Blaxel platform. Define policies as code to
+                  customize your Global Agents Network.
+                </p>
+              </div>
+              <ul className="flex flex-col gap-4">
+                {CAPABILITIES.map(({ icon: Icon, title, description }) => (
+                  <li key={title} className="flex items-start gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground"
+                    >
+                      <Icon className="size-4" />
+                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <p className="typography-body font-semibold text-foreground">
+                        {title}
+                      </p>
+                      <p className="typography-body text-muted-foreground">
+                        {description}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-        <Card className="flex flex-col gap-4 p-6 lg:col-span-1">
-          <div className="flex items-center gap-3">
-            <span
-              aria-hidden="true"
-              className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground"
-            >
-              <CreditCard className="size-4" />
-            </span>
-            <h3 className="typography-subtitle font-semibold text-foreground">
-              Ready to ship?
-            </h3>
+            <div className="relative flex flex-col items-center justify-center gap-4 overflow-hidden border-t border-border bg-primary-glow p-6 text-center lg:border-t-0 lg:border-l lg:p-8">
+              {/* Decorative tier-progress glyph — three stacked bars with the
+                  bottom one lit to read as "you are entering Tier 1." Pure
+                  visual chrome, no payload text, scales with type. */}
+              <span aria-hidden="true" className="flex flex-col items-center gap-1">
+                <span className="h-1 w-4 rounded-full bg-border" />
+                <span className="h-1 w-7 rounded-full bg-border" />
+                <span className="h-1 w-10 rounded-full bg-primary" />
+              </span>
+              <h3 className="typography-subtitle font-semibold text-foreground">
+                Ready to ship?
+              </h3>
+              <p className="typography-body text-muted-foreground">
+                Add a payment method to start creating policies and unlock
+                higher platform limits.
+              </p>
+              <UpgradeTierDialog
+                trigger={
+                  <Button variant="primary" className="min-w-[180px]">
+                    Upgrade tier
+                  </Button>
+                }
+              />
+            </div>
           </div>
-          <p className="typography-body text-muted-foreground">
-            Upgrade to Tier 1 to start creating Policies and binding them to
-            your workloads.
-          </p>
-          <UpgradeTierDialog
-            trigger={
-              <Button variant="primary" className="self-start">
-                Upgrade tier
-                <ArrowRight aria-hidden="true" />
-              </Button>
-            }
-          />
         </Card>
       </section>
     </div>

@@ -5,10 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/button";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
-import { Stepper, type StepperStep } from "@repo/ui/components/stepper";
 import { type DisplayTier } from "@/lib/mock/billing-tiers";
-import { AboutTierPanel } from "./about-tier-panel";
+import { SelectedTierSummary } from "./selected-tier-summary";
 import { TierPicker } from "./tier-picker";
+import { TierContextBanner } from "./tier-context-banner";
 import { BalanceProtectionCard } from "./balance-protection-card";
 import {
   INITIAL_VALUES,
@@ -17,11 +17,6 @@ import {
   topUpSchema,
   type TopUpFormValues,
 } from "./wizard-state";
-
-const STEPS: ReadonlyArray<StepperStep> = [
-  { label: "Choose target tier" },
-  { label: "Balance protection" },
-];
 
 type StepIndex = 1 | 2;
 
@@ -60,30 +55,28 @@ export function OneTimeTopUpFlow({
   });
 
   return (
-    // flex-1 min-h-0: form fills DialogBody (its inner is a flex column —
-    // configured at the index.tsx callsite) so the internal ScrollArea can be
-    // bounded — keeps the action row visible at the dialog bottom.
+    // Single-column flow — no right-rail About panel. Step 1 surfaces the
+    // tier grid + selected-tier summary; step 2 leads with a one-line tier
+    // banner so the user keeps context while configuring protection.
     <form
       onSubmit={onSubmit}
       noValidate
-      className="flex min-h-0 flex-1 flex-col gap-4"
+      className="flex min-h-0 flex-1 flex-col gap-6"
     >
-      <Stepper steps={STEPS} currentStep={step} />
+      {step === 1 ? (
+        <div className="flex min-h-0 flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <h3 className="typography-subtitle font-semibold text-foreground">
+              Choose your target tier
+            </h3>
+            <p className="typography-body text-muted-foreground">
+              Credits will be added to your Blaxel balance immediately after
+              checking out.
+            </p>
+          </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
-        {step === 1 ? (
-          <div className="flex min-h-0 flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <h3 className="typography-subtitle font-semibold text-foreground">
-                Step 1: Choose the top-up for your target tier
-              </h3>
-              <p className="typography-body text-muted-foreground">
-                Credits will be added to your Blaxel balance immediately after
-                checking out.
-              </p>
-            </div>
-
-            <ScrollArea className="-mr-3 flex-1 pr-3">
+          <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
+            <div className="flex flex-col gap-4">
               <TierPicker
                 value={values.selectedTier}
                 onChange={(next) =>
@@ -93,21 +86,32 @@ export function OneTimeTopUpFlow({
                   })
                 }
               />
-            </ScrollArea>
-          </div>
-        ) : (
-          <div className="flex min-h-0 flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <h3 className="typography-subtitle font-semibold text-foreground">
-                Step 2: Configure balance protection
-              </h3>
-              <p className="typography-body text-muted-foreground">
-                Optional settings that keep your balance above a floor and help
-                avoid downgrades.
-              </p>
+              <SelectedTierSummary
+                targetTier={targetTier}
+                currentTier={currentTier}
+              />
             </div>
+          </ScrollArea>
+        </div>
+      ) : (
+        <div className="flex min-h-0 flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <h3 className="typography-subtitle font-semibold text-foreground">
+              Configure balance protection
+            </h3>
+            <p className="typography-body text-muted-foreground">
+              Optional settings that keep your balance above a floor and help
+              avoid downgrades.
+            </p>
+          </div>
 
-            <ScrollArea className="-mr-3 flex-1 pr-3">
+          <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
+            <div className="flex flex-col gap-4">
+              <TierContextBanner
+                targetTier={targetTier}
+                amountUsd={amountUsd}
+                cadence="one-time"
+              />
               <BalanceProtectionCard
                 register={register}
                 setValue={setValue}
@@ -115,12 +119,10 @@ export function OneTimeTopUpFlow({
                 autoTopUpEnabled={values.autoTopUpEnabled}
                 monthlyLimitEnabled={values.monthlyLimitEnabled}
               />
-            </ScrollArea>
-          </div>
-        )}
-
-        <AboutTierPanel targetTier={targetTier} currentTier={currentTier} />
-      </div>
+            </div>
+          </ScrollArea>
+        </div>
+      )}
 
       {step === 1 ? (
         <div className="flex shrink-0 items-center justify-end gap-2">

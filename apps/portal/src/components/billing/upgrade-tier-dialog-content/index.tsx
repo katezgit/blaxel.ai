@@ -55,11 +55,11 @@ export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentPr
 
   return (
     <>
-      {/* gap-4 + pb-2: tightened header chrome to give the dialog breathing
-          room — title-unit → mode toggle = 16px; pb-2 + body pt-2 yields a
-          16px segmented→stepper section gap. Title↔description stays 4px via
-          the inner gap-1 wrapper. */}
-      <DialogHeader className="gap-4 pb-2">
+      {/* gap-4 + pb-4: header-block rhythm. title-unit → mode toggle = 16px
+          (blocks within a section). pb-4 + DialogBody pt-2 = 24px between
+          header region and step body (section-within-region per spacing.md).
+          Title↔description stays 4px via the inner gap-1 wrapper. */}
+      <DialogHeader className="gap-4 pb-4">
         <div className="flex flex-col gap-1">
           <DialogTitle>Top up your account</DialogTitle>
           <DialogDescription>
