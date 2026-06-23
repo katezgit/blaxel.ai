@@ -2,8 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react"
 import { fn } from "storybook/test"
 import { Stepper } from "./stepper"
 
-/* ─── Meta ─────────────────────────────────────────────────────────────────── */
-
 const FOUR_STEPS = [
   { label: "Model",   description: "Choose the model checkpoint to train." },
   { label: "Taskset", description: "Select the taskset to train against." },
@@ -17,6 +15,7 @@ const meta: Meta<typeof Stepper> = {
   parameters: { layout: "padded" },
   argTypes: {
     currentStep: { control: { type: "number", min: 1 } },
+    onStepClick: { action: "stepClick" },
     "aria-label": { control: "text" },
   },
   args: {
@@ -28,17 +27,16 @@ const meta: Meta<typeof Stepper> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/* ─── Playground ───────────────────────────────────────────────────────────── */
-// Default args: currentStep=2 on a 4-step sequence — shows completed (step 1),
-// active (step 2), and pending (steps 3–4) simultaneously.
-// Use the currentStep control to reach boundary states (1 = no completed, 4 = all completed).
+/* ─── Playground ─────────────────────────────────────────────────────────────
+   currentStep=2 renders completed (step 1), active (step 2), and pending
+   (steps 3–4) simultaneously. Adjust currentStep control to reach boundary
+   states: 1 = no completed steps, 4 = all completed.                        */
 
 export const Playground: Story = {}
 
-/* ─── WithoutDescriptions ──────────────────────────────────────────────────── */
-// Steps with no description prop — the description row is omitted entirely,
-// collapsing the layout to a single-row indicator. Not reachable from Playground
-// controls because the steps array is fixed in meta args.
+/* ─── WithoutDescriptions ────────────────────────────────────────────────────
+   Steps without a description prop — description row is omitted, collapsing
+   the layout to a single indicator row.                                      */
 
 export const WithoutDescriptions: Story = {
   args: {
@@ -52,14 +50,26 @@ export const WithoutDescriptions: Story = {
   },
 }
 
-/* ─── WithBackwardNav ──────────────────────────────────────────────────────── */
-// Wizard at step 3 — steps 1 and 2 are completed and clickable.
-// Click "Model" or "Taskset" to see onStepClick fire in the Actions panel.
-// Active step ("Tasks") and pending step ("Review") produce no callback.
+/* ─── WithBackwardNav ─────────────────────────────────────────────────────────
+   Steps 1–2 are completed and clickable; click either to see onStepClick fire
+   in the Actions panel. Active step (Tasks) and pending step (Review) produce
+   no callback.                                                                */
 
 export const WithBackwardNav: Story = {
   args: {
     currentStep: 3,
     onStepClick: fn(),
+  },
+}
+
+/* ─── MobileView ──────────────────────────────────────────────────────────────
+   Spec §4: on narrow viewports the full step row collapses to a single-step
+   summary — "Step N of M" counter, current label, and current description.
+   The desktop list is hidden at this width.                                  */
+
+export const MobileView: Story = {
+  parameters: {
+    viewport: { defaultViewport: "mobile1" },
+    layout: "padded",
   },
 }
