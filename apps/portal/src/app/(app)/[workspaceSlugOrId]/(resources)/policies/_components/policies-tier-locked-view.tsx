@@ -49,7 +49,7 @@ export function PoliciesTierLockedView() {
             shouting. On narrow viewports the divider rotates to horizontal. */}
         <Card className="overflow-hidden border-0 p-0 sm:border">
           <div className="grid lg:grid-cols-[2fr_1fr]">
-            <div className="flex flex-col gap-5 p-6 lg:p-8">
+            <div className="flex flex-col gap-6 p-6 lg:p-8">
               <div className="flex flex-col gap-2">
                 <h3 className="typography-subtitle font-semibold text-foreground">
                   What you can do with Policies

@@ -32,13 +32,6 @@ const formatUsd = (n: number): string =>
     maximumFractionDigits: 0,
   }).format(n);
 
-/**
- * The full body of the rebuilt UpgradeTierDialog. Owns the mode toggle; each
- * mode mounts its own flow component (no `variant=` / `mode=` props shared).
- * Switching modes resets the flow's internal step state via `key={mode}`.
- *
- * Self-contained — no imports from `apps/portal/src/app/(account)/**`.
- */
 export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentProps) {
   const [mode, setMode] = useState<Mode>("monthly");
   const { state } = useAccountState();

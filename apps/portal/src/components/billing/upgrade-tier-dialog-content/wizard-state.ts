@@ -1,11 +1,3 @@
-/**
- * Shared schema + types for the One-time and Monthly flow forms.
- * Step 1 is a tier-picker — the user selects a target tier (1-6) and the
- * effective USD amount is derived from `TIER_SUGGESTED_MONTHLY_USD`. Step 2
- * configures optional balance protection. Single `useForm` per flow,
- * validated incrementally.
- */
-
 import { z } from "zod";
 import {
   SELECTABLE_TIERS,

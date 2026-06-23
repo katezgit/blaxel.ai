@@ -1,6 +1,7 @@
 "use client";
 
 import { Skeleton } from "@repo/ui/components/skeleton";
+import { cn } from "@repo/ui/lib/cn";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 
 // Silhouette mirror of the live PolicyDetailView: heading row without an
@@ -75,7 +76,7 @@ export function PolicyDetailSkeleton({ workspaceSlug }: { workspaceSlug: string 
           ].map((valueWidth, idx) => (
             <div key={idx} className="contents">
               <Skeleton className="h-4 w-24 rounded-sm" />
-              <Skeleton className={`h-4 ${valueWidth} rounded-sm`} />
+              <Skeleton className={cn("h-4 rounded-sm", valueWidth)} />
             </div>
           ))}
         </dl>

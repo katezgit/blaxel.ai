@@ -20,8 +20,6 @@ import { resourceTypeLabel } from "@/lib/mock/policies";
 // fixtures live in mid-2026, notifications fixtures in mid-2026 too).
 const MOCK_NOW = new Date("2026-06-22T15:30:00Z");
 
-// ── Column 2: Rule ─────────────────────────────────────────────────────────
-
 export function ruleSummary(policy: Policy): string {
   const { spec } = policy;
   if (spec.type === "location") {
@@ -79,16 +77,12 @@ function formatWindow(
   return `${step} ${granularity}`;
 }
 
-// ── Column 3: Applies to ───────────────────────────────────────────────────
-
 export function appliesToLabel(
   resourceTypes: ReadonlyArray<PolicyResourceType>,
 ): string {
   if (resourceTypes.length === 0) return "—";
   return resourceTypes.map(resourceTypeLabel).join(" · ");
 }
-
-// ── Column 4: Attached resources ───────────────────────────────────────────
 
 export interface AttachedResourcesSummary {
   /** `Unused` flag — render as a single muted word. */
@@ -127,8 +121,6 @@ export function attachedResourcesLabel(
 function pluralize(count: number, singular: string): string {
   return `${count} ${count === 1 ? singular : `${singular}s`}`;
 }
-
-// ── Column 5: Updated ──────────────────────────────────────────────────────
 
 export function relativeUpdated(iso: string): string {
   const diffMs = MOCK_NOW.getTime() - new Date(iso).getTime();

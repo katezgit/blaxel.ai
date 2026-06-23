@@ -50,8 +50,6 @@ import {
   DialogTitle,
 } from "@repo/ui/components/dialog";
 
-// ─── View ────────────────────────────────────────────────────────────────────
-
 interface CreatePolicyViewProps {
   workspaceSlug: string;
 }
@@ -118,8 +116,6 @@ function Header({ listHref }: { listHref: string }) {
     </header>
   );
 }
-
-// ─── Form orchestration ──────────────────────────────────────────────────────
 
 interface CreatePolicyFormProps {
   listHref: string;
@@ -375,8 +371,6 @@ function CreatePolicyForm({
   );
 }
 
-// ─── Section 5: code reference panel — language-tabbed, reflects form state ──
-
 interface CodeReferencePanelProps {
   policyType: PolicyType;
   name: string;
@@ -465,8 +459,6 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
     </aside>
   );
 }
-
-// ─── Snippet builders ────────────────────────────────────────────────────────
 
 type SnippetBuildContext = CodeReferencePanelProps;
 
@@ -646,8 +638,6 @@ function indent(text: string, spaces: number): string {
     .map((line) => `${pad}${line}`)
     .join("\n");
 }
-
-// ─── Form footer — pinned at the bottom of the form column ───────────────────
 
 function FormFooter({
   onCancel,

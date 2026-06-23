@@ -75,6 +75,10 @@ export function OneTimeTopUpFlow({
             </p>
           </div>
 
+          {/* -mr-3 pr-3: ScrollArea's overlay scrollbar floats inside the
+              content box; without negative-margin compensation it overlaps
+              right-edge fields. Net effect — scrollbar sits in the dialog
+              gutter, content keeps its 12px right padding. */}
           <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
             <div className="flex flex-col gap-4">
               <TierPicker
@@ -105,6 +109,10 @@ export function OneTimeTopUpFlow({
             </p>
           </div>
 
+          {/* -mr-3 pr-3: ScrollArea's overlay scrollbar floats inside the
+              content box; without negative-margin compensation it overlaps
+              right-edge fields. Net effect — scrollbar sits in the dialog
+              gutter, content keeps its 12px right padding. */}
           <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
             <div className="flex flex-col gap-4">
               <TierContextBanner

@@ -9,7 +9,7 @@ interface PoliciesErrorBandProps {
 export function PoliciesErrorBand({ onRetry }: PoliciesErrorBandProps) {
   return (
     <div className="relative w-full overflow-hidden rounded-md border border-border bg-card">
-      <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr_1fr] gap-4 border-b border-border px-4 py-3 font-mono typography-meta uppercase tracking-wider text-meta-foreground">
+      <div className="grid grid-cols-[2fr_1fr_1.5fr_1fr_1fr] gap-4 border-b border-border px-4 py-3 typography-table-header text-muted-foreground">
         <span>Name</span>
         <span>Type</span>
         <span>Targets</span>

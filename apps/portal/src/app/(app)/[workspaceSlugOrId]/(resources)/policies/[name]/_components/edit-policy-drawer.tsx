@@ -49,14 +49,8 @@ import {
   type TokenLimits,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
 
-// Drawer state mirrors the delete-dialog shape: `policy: null` = closed,
-// `policy: Policy` = open with that policy's data. `focusTarget` decides which
-// field to land focus on after mount — header click lands on display-name,
-// clause-band hover Edit lands on the clause body (the section the user was
-// reading).
-export type EditPolicyDrawerState =
-  | { policy: Policy; focusTarget: "displayName" | "clause" }
-  | null;
+// Drawer state mirrors the delete-dialog shape: null = closed, Policy = open.
+export type EditPolicyDrawerState = Policy | null;
 
 interface EditPolicyDrawerProps {
   state: EditPolicyDrawerState;
@@ -75,9 +69,8 @@ export function EditPolicyDrawer({ state, onClose }: EditPolicyDrawerProps) {
       <DrawerContent size="lg" aria-describedby={undefined}>
         {state !== null && (
           <EditPolicyForm
-            key={state.policy.metadata.name}
-            policy={state.policy}
-            focusTarget={state.focusTarget}
+            key={state.metadata.name}
+            policy={state}
             onClose={onClose}
           />
         )}
@@ -88,12 +81,10 @@ export function EditPolicyDrawer({ state, onClose }: EditPolicyDrawerProps) {
 
 interface EditPolicyFormProps {
   policy: Policy;
-  focusTarget: "displayName" | "clause";
   onClose: () => void;
 }
 
-function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
-  void focusTarget;
+function EditPolicyForm({ policy, onClose }: EditPolicyFormProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const queryClient = useQueryClient();
 

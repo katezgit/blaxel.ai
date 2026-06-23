@@ -159,15 +159,13 @@ export function PolicyDetailView({
       <PolicyDetailHeader
         policy={policy}
         workspaceSlug={workspaceSlug}
-        onRequestEdit={() =>
-          setEditState({ policy, focusTarget: "displayName" })
-        }
+        onRequestEdit={() => setEditState(policy)}
         onRequestDuplicate={() => setDuplicateSource(policy)}
         onRequestDelete={() => setPolicyToDelete(policy)}
       />
       <ClauseBand
         policy={policy}
-        onRequestEdit={() => setEditState({ policy, focusTarget: "clause" })}
+        onRequestEdit={() => setEditState(policy)}
       />
       <PolicyUsageBand
         policy={policy}

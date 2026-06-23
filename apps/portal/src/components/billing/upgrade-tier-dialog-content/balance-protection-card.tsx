@@ -108,7 +108,7 @@ export function BalanceProtectionCard({
           />
         </div>
         {monthlyLimitEnabled ? (
-          <label className="flex flex-col gap-1.5 typography-label sm:max-w-[50%]">
+          <label className="flex flex-col gap-1.5 typography-label sm:max-w-sm">
             <span className="text-muted-foreground">
               Maximum spend per month
             </span>

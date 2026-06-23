@@ -1,6 +1,7 @@
 "use client";
 
 import { Skeleton } from "@repo/ui/components/skeleton";
+import { cn } from "@repo/ui/lib/cn";
 
 const ROW_COUNT = 4;
 const COL_TEMPLATE = "grid-cols-[2fr_1fr_1.5fr_1fr_1fr]";
@@ -23,7 +24,10 @@ export function PoliciesTableSkeleton() {
 
       <div className="relative w-full overflow-hidden rounded-md border border-border bg-card">
         <div
-          className={`grid ${COL_TEMPLATE} gap-4 border-b border-border bg-field-rest px-4 py-3 typography-table-header text-muted-foreground`}
+          className={cn(
+            "grid gap-4 border-b border-border bg-field-rest px-4 py-3 typography-table-header text-muted-foreground",
+            COL_TEMPLATE,
+          )}
         >
           <span>Policy</span>
           <span>Rule</span>
@@ -35,7 +39,7 @@ export function PoliciesTableSkeleton() {
           {Array.from({ length: ROW_COUNT }).map((_, idx) => (
             <div
               key={idx}
-              className={`grid ${COL_TEMPLATE} items-center gap-4 px-4 py-3`}
+              className={cn("grid items-center gap-4 px-4 py-3", COL_TEMPLATE)}
             >
               {/* Policy: displayName (typography-body 14px) over slug
                 * (typography-meta 10px mono) — matches the stacked cell. */}

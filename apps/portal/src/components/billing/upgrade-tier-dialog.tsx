@@ -13,25 +13,16 @@ interface UpgradeTierDialogProps {
   trigger: ReactNode;
 }
 
-/**
- * Workspace-level top-up dialog. Self-contained — no imports from
- * `apps/portal/src/app/(account)/**`. The body is the rebuilt two-step
- * top-up flow (`UpgradeTierDialogContent`), not the account credits page.
- */
 export function UpgradeTierDialog({ trigger }: UpgradeTierDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent
-        // size="lg" pins 720px; widen to host the two-column Monthly layout
-        // (form + About-Tier panel) without crowding either column. max-h
-        // beyond the DS default 80vh keeps the stepper + form + footer from
-        // crowding on shorter laptops.
-        size="lg"
-        className="max-h-[85vh] max-w-[860px]"
-      >
+      {/* DS default max-h is 80vh; lift to 85vh so the header + stepper +
+          two-step body + footer all fit on 13" laptops without inner scroll
+          stacking against the dialog scroll. */}
+      <DialogContent size="lg" className="max-h-[85vh]">
         <UpgradeTierDialogContent onClose={() => setOpen(false)} />
       </DialogContent>
     </Dialog>

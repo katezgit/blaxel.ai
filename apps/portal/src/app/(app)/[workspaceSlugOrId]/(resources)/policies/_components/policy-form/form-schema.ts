@@ -6,8 +6,6 @@ import type {
   PolicyType,
 } from "@/lib/mock/policies";
 
-// ─── Policy type catalog ─────────────────────────────────────────────────────
-
 export interface PolicyTypeOption {
   value: PolicyType;
   label: string;
@@ -55,8 +53,6 @@ export const POLICY_TYPE_BY_VALUE: Record<PolicyType, PolicyTypeOption> =
     {} as Record<PolicyType, PolicyTypeOption>,
   );
 
-// ─── Resource type catalog ───────────────────────────────────────────────────
-
 export const RESOURCE_TYPE_OPTIONS: ReadonlyArray<{
   value: PolicyResourceType;
   label: string;
@@ -68,8 +64,6 @@ export const RESOURCE_TYPE_OPTIONS: ReadonlyArray<{
   { value: "application", label: "Applications" },
 ];
 
-// ─── Granularity catalog (for maxToken body) ─────────────────────────────────
-
 export const GRANULARITY_OPTIONS: ReadonlyArray<{
   value: MaxTokenGranularity;
   label: string;
@@ -79,8 +73,6 @@ export const GRANULARITY_OPTIONS: ReadonlyArray<{
   { value: "hour", label: "Hour" },
   { value: "minute", label: "Minute" },
 ];
-
-// ─── Form schema — shared between Create and Edit wrappers ───────────────────
 
 // Labels — Record<string, string> on the wire; the form holds them as an
 // ordered array so add/remove/reorder stay stable and useFieldArray can drive
@@ -128,8 +120,6 @@ export const policyFormSchema = z.object({
 
 export type PolicyFormValues = z.infer<typeof policyFormSchema>;
 
-// ─── Labels helpers — Record<->Array conversion at the form boundary ─────────
-
 export function labelsRecordToEntries(
   record: Record<string, string> | undefined,
 ): ReadonlyArray<LabelEntry> {
@@ -149,8 +139,7 @@ export function labelsEntriesToRecord(
   return out;
 }
 
-// ─── Body-editor types (local component state, not part of RHF schema) ───────
-
+// Body-editor types — local component state, not part of the RHF schema.
 export interface LocationItem {
   type: "continent" | "country";
   name: string;
@@ -170,8 +159,6 @@ export const SAMPLE_LOCATIONS: ReadonlyArray<LocationItem> = [
   { type: "continent", name: "North America" },
   { type: "country", name: "United States of America" },
 ];
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 export function readPolicyTypeParam(value: string | null): PolicyType | null {
   if (value === "location" || value === "maxToken" || value === "flavor") {
