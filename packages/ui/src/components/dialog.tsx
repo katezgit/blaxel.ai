@@ -128,14 +128,25 @@ function DialogContent({
         className={cn(dialogContentVariants({ size }), className)}
         {...props}
       >
+        <DialogScrollTopContext.Provider value={top}>
+          <DialogScrollBottomContext.Provider value={bottom}>
+            <DialogBodyRefContext.Provider value={bodyCallbackRef}>
+              {children}
+            </DialogBodyRefContext.Provider>
+          </DialogScrollBottomContext.Provider>
+        </DialogScrollTopContext.Provider>
         {showCloseButton && (
+          // Rendered AFTER children so that (a) DialogHeader's z-sticky stacking
+          // context doesn't cover the button (header DOM is now before button,
+          // hit-testing reaches button), and (b) Radix FocusScope's "first
+          // focusable" auto-focus lands on the form input, not this close button.
           <DialogPrimitive.Close
             data-slot="dialog-close-button"
             className={cn(
               // top-[18px]: structural compensation — aligns button optical center with DialogTitle optical center
               // Inter cap-height ≈ 0.73em; at typography-subtitle 16px → cap = 11.68px, optical center = 5.84px above cap top
               // DialogHeader pt-6 (24px) + 5.84 = 29.84px; button size-6 center = top + 12px → top = 17.84px ≈ 18px
-              "absolute top-[18px] right-4",
+              "absolute top-[18px] right-4 z-sticky",
               "size-6",
               "inline-flex items-center justify-center shrink-0",
               "bg-transparent hover:bg-hover-surface",
@@ -151,13 +162,6 @@ function DialogContent({
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}
-        <DialogScrollTopContext.Provider value={top}>
-          <DialogScrollBottomContext.Provider value={bottom}>
-            <DialogBodyRefContext.Provider value={bodyCallbackRef}>
-              {children}
-            </DialogBodyRefContext.Provider>
-          </DialogScrollBottomContext.Provider>
-        </DialogScrollTopContext.Provider>
       </DialogPrimitive.Content>
     </DialogPortal>
   )
