@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
+import { Button } from "@repo/ui/components/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@repo/ui/components/collapsible";
+import { CopyButton } from "@repo/ui/components/copy-button";
 import { BandFrame } from "./band-frame";
 import type {
   Policy,
@@ -22,6 +24,7 @@ interface PolicyUsageBandProps {
   policy: Policy;
   usages: PolicyUsages | null;
   workspaceSlug: string;
+  onRequestDelete: () => void;
 }
 
 interface KindRow {
@@ -43,10 +46,12 @@ export function PolicyUsageBand({
   policy,
   usages,
   workspaceSlug,
+  onRequestDelete,
 }: PolicyUsageBandProps) {
   const total = totalUsage(policy.usage);
 
   if (total === 0) {
+    const deleteCommand = `bl policy delete ${policy.metadata.name}`;
     return (
       <BandFrame label="Usage">
         <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-background px-5 py-5">
@@ -56,9 +61,22 @@ export function PolicyUsageBand({
           <p className="typography-body text-muted-foreground">
             Safe to delete — no attached workloads will be affected.
           </p>
-          <code className="font-mono typography-body text-foreground">
-            bl policy delete {policy.metadata.name}
-          </code>
+          <div className="group flex items-center gap-1 rounded-md">
+            <code className="font-mono typography-body text-foreground">
+              {deleteCommand}
+            </code>
+            <span className="opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+              <CopyButton value={deleteCommand} tooltipLabel="Copy command" />
+            </span>
+          </div>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={onRequestDelete}
+          >
+            <Trash2 aria-hidden="true" />
+            Delete policy
+          </Button>
         </div>
       </BandFrame>
     );

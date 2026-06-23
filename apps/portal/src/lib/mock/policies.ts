@@ -261,13 +261,18 @@ function delay<T>(value: T): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), NETWORK_LATENCY_MS));
 }
 
+// In-memory set of policy names removed via `deletePolicy`. Mock-side only —
+// resets on full reload. `fetchPolicies` and `fetchPolicy` consult this set so
+// optimistic invalidation actually sees the row drop out.
+const DELETED_NAMES = new Set<string>();
+
 export async function fetchPolicies(
   _accountId: string,
   _workspaceId: string,
 ): Promise<ReadonlyArray<Policy>> {
   void _accountId;
   void _workspaceId;
-  return delay(FIXTURES);
+  return delay(FIXTURES.filter((policy) => !DELETED_NAMES.has(policy.metadata.name)));
 }
 
 export async function fetchPolicy(
@@ -277,8 +282,22 @@ export async function fetchPolicy(
 ): Promise<Policy | null> {
   void _accountId;
   void _workspaceId;
+  if (DELETED_NAMES.has(name)) return delay(null);
   const match = FIXTURES.find((policy) => policy.metadata.name === name);
   return delay(match ?? null);
+}
+
+// Mock-side delete. Sync return (no `delay`) keeps the caller's optimistic flow
+// uncluttered — the round-trip illusion belongs to the *read* refetch, not the
+// write itself.
+export function deletePolicy(
+  _accountId: string,
+  _workspaceId: string,
+  name: string,
+): void {
+  void _accountId;
+  void _workspaceId;
+  DELETED_NAMES.add(name);
 }
 
 export async function fetchPolicyUsages(

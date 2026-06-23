@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { policyQueries } from "@/lib/query/policies";
+import { queryKeys } from "@/lib/query/keys";
+import { deletePolicy } from "@/lib/mock/policies";
 import type { Policy, PolicyUsages } from "@/lib/mock/policies";
 import { PolicyDetailHeader } from "./policy-detail-header";
 import { LocationClauseBand } from "./location-clause-band";
@@ -17,6 +21,7 @@ import { PolicyUsageBand } from "./policy-usage-band";
 import { PolicyProvenanceBand } from "./policy-provenance-band";
 import { PolicyCliBand } from "./policy-cli-band";
 import { PolicyDetailSkeleton } from "./policy-detail-skeleton";
+import { DeletePolicyDialog } from "./delete-policy-dialog";
 
 interface PolicyDetailViewProps {
   workspaceSlug: string;
@@ -33,6 +38,9 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
   const searchParams = useSearchParams();
   const stateSim = readStateSim(searchParams.get("state"));
   const listHref = `/${workspaceSlug}/policies`;
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [policyToDelete, setPolicyToDelete] = useState<Policy | null>(null);
 
   const policyQuery = useQuery({
     ...policyQueries.detail(accountId, workspaceId, policyName),
@@ -42,6 +50,23 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
     ...policyQueries.usages(accountId, workspaceId, policyName),
     enabled: stateSim === null,
   });
+
+  async function handleConfirmDelete(target: Policy) {
+    deletePolicy(accountId, workspaceId, target.metadata.name);
+    setPolicyToDelete(null);
+    // Invalidate the workspace's policies list so the row disappears on
+    // navigation. Detail query is dropped to free the now-stale cache entry.
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.resources(accountId, workspaceId),
+      predicate: (query) => query.queryKey.includes("policies"),
+    });
+    const tierParam = searchParams.get("tier");
+    const successHref = tierParam ? `${listHref}?tier=${tierParam}` : listHref;
+    router.push(successHref);
+    toast.success(
+      `Policy '${target.metadata.displayName || target.metadata.name}' deleted.`,
+    );
+  }
 
   if (stateSim === "loading" || policyQuery.isPending) {
     return (
@@ -125,15 +150,25 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
 
   return (
     <div className="page-shell">
-      <PolicyDetailHeader policy={policy} workspaceSlug={workspaceSlug} />
+      <PolicyDetailHeader
+        policy={policy}
+        workspaceSlug={workspaceSlug}
+        onRequestDelete={() => setPolicyToDelete(policy)}
+      />
       <ClauseBand policy={policy} />
       <PolicyUsageBand
         policy={policy}
         usages={usagesQuery.data ?? null}
         workspaceSlug={workspaceSlug}
+        onRequestDelete={() => setPolicyToDelete(policy)}
       />
       <PolicyProvenanceBand metadata={policy.metadata} />
       <PolicyCliBand policy={policy} />
+      <DeletePolicyDialog
+        policy={policyToDelete}
+        onClose={() => setPolicyToDelete(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

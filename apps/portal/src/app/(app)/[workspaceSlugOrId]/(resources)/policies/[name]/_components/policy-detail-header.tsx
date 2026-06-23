@@ -19,9 +19,14 @@ import { policyTypeLabel, totalUsage } from "@/lib/mock/policies";
 interface PolicyDetailHeaderProps {
   policy: Policy;
   workspaceSlug: string;
+  onRequestDelete: () => void;
 }
 
-export function PolicyDetailHeader({ policy, workspaceSlug }: PolicyDetailHeaderProps) {
+export function PolicyDetailHeader({
+  policy,
+  workspaceSlug,
+  onRequestDelete,
+}: PolicyDetailHeaderProps) {
   const heading = policy.metadata.displayName || policy.metadata.name;
   const total = totalUsage(policy.usage);
   const listHref = `/${workspaceSlug}/policies`;
@@ -79,7 +84,15 @@ export function PolicyDetailHeader({ policy, workspaceSlug }: PolicyDetailHeader
               >
                 Copy link
               </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={(event) => {
+                  event.preventDefault();
+                  onRequestDelete();
+                }}
+              >
+                Delete
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </>
