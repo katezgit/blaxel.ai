@@ -19,8 +19,6 @@ const THREE_STEPS = [
 ]
 
 describe("Stepper", () => {
-  // ── Rendering ───────────────────────────────────────────────────────────────
-
   it("renders all step labels", () => {
     render(<Stepper steps={THREE_STEPS} currentStep={2} />)
     const [alpha, beta, gamma] = getStepItems()
@@ -28,8 +26,6 @@ describe("Stepper", () => {
     expect(within(beta!).getByText("Beta")).toBeInTheDocument()
     expect(within(gamma!).getByText("Gamma")).toBeInTheDocument()
   })
-
-  // ── Active step (aria-current) ──────────────────────────────────────────────
 
   it("marks the current step's listitem with aria-current=step", () => {
     render(<Stepper steps={THREE_STEPS} currentStep={2} />)
@@ -44,7 +40,6 @@ describe("Stepper", () => {
     expect(gamma).not.toHaveAttribute("aria-current")
   })
 
-  // ── Completed vs pending discriminator ─────────────────────────────────────
   // Completed steps render a <Check> SVG icon (no numeral).
   // Pending and active steps render a numeral (no SVG inside the circle).
 
@@ -71,8 +66,6 @@ describe("Stepper", () => {
     expect(gamma!.querySelector("svg")).toBeNull()
   })
 
-  // ── Boundary: first step active ────────────────────────────────────────────
-
   it("marks first step active and all others pending when currentStep=1", () => {
     render(<Stepper steps={THREE_STEPS} currentStep={1} />)
     const [alpha, beta, gamma] = getStepItems()
@@ -85,8 +78,6 @@ describe("Stepper", () => {
     expect(gamma!.querySelector("svg")).toBeNull()
   })
 
-  // ── Boundary: last step active ─────────────────────────────────────────────
-
   it("marks last step active and all prior steps completed when currentStep=steps.length", () => {
     render(<Stepper steps={THREE_STEPS} currentStep={3} />)
     const [alpha, beta, gamma] = getStepItems()
@@ -98,8 +89,6 @@ describe("Stepper", () => {
     expect(gamma!.querySelector("svg")).toBeNull()
     expect(within(gamma!).getByText("3")).toBeInTheDocument()
   })
-
-  // ── Description ────────────────────────────────────────────────────────────
 
   it("renders the description when provided", () => {
     render(
@@ -125,8 +114,6 @@ describe("Stepper", () => {
     expect(within(beta!).queryByText(/desc/i)).toBeNull()
   })
 
-  // ── className passthrough ──────────────────────────────────────────────────
-
   it("merges custom className onto the root element", () => {
     render(<Stepper steps={THREE_STEPS} currentStep={1} className="custom-stepper" />)
     // Root is the wrapping <div>; locate it as the closest ancestor of the list
@@ -134,7 +121,6 @@ describe("Stepper", () => {
     expect(list.closest("div.custom-stepper")).not.toBeNull()
   })
 
-  // ── Edge: currentStep < 1 (out of lower bound) ────────────────────────────
   // Source: activeIndex = 0 - 1 = -1. isActive never true; isCompleted (idx < -1)
   // never true → all steps are pending, none active.
 
@@ -147,7 +133,6 @@ describe("Stepper", () => {
     })
   })
 
-  // ── Edge: currentStep > steps.length (out of upper bound) ─────────────────
   // Source: activeIndex = steps.length (e.g. 3 for a 3-step array).
   // isActive (idx === 3) never true; isCompleted (idx < 3) true for all → all completed.
 
@@ -159,8 +144,6 @@ describe("Stepper", () => {
       expect(item.querySelector("svg")).not.toBeNull()
     })
   })
-
-  // ── onStepClick — backward navigation ──────────────────────────────────────
 
   describe("onStepClick", () => {
     it("renders completed step rows as buttons when onStepClick is provided", () => {
@@ -233,7 +216,6 @@ describe("Stepper", () => {
       expect(within(list).queryAllByRole("button")).toHaveLength(0)
     })
 
-    // ── Mobile mode — no clickability ──────────────────────────────────────────
     // The mobile section is a <div role="group"> showing only the active step
     // summary. It renders no buttons regardless of onStepClick.
 
