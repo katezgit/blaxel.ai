@@ -39,8 +39,7 @@ function deriveActions(
   const { enabled: autoOn, thresholdUsd, amountUsd } = state.autoTopUp;
   const openInvoices = state.invoices.filter((inv) => inv.status === "Open");
 
-  // Paid resources won't run without a payment method — account-blocking.
-  // Tier 0 = trial; no payment expected.
+  // Tier 0 is trial; no payment expected.
   if (!hasPaymentMethod && state.tier > 0) {
     actions.push({
       severity: "destructive",
@@ -54,8 +53,6 @@ function deriveActions(
     });
   }
 
-  // Auto top-up is enabled but balance crossed the threshold — the configured
-  // safety rule isn't protecting the account as expected.
   if (autoOn && state.balanceUsd < thresholdUsd) {
     actions.push({
       severity: "warning",
@@ -65,8 +62,7 @@ function deriveActions(
     });
   }
 
-  // Open invoices with payment on file are an FYI, not a risk —
-  // info severity so the band doesn't overstate stakes.
+  // Open invoices with payment on file are an FYI, not a risk → info, not warning.
   if (openInvoices.length > 0) {
     const sum = openInvoices.reduce((s, inv) => s + inv.amount, 0);
     actions.push({
