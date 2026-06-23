@@ -45,7 +45,7 @@ function DurationRow({ token, label, usage, widthPct }: DurationRowProps) {
         style={{
           flex: 1,
           height: 6,
-          background: "var(--color-secondary)",
+          background: "var(--color-secondary-surface)",
           borderRadius: "var(--radius-full)",
           overflow: "hidden",
         }}
@@ -153,7 +153,7 @@ function EasingCard({ token, value, usage, svgPath }: EasingCardProps) {
           position: "relative",
           marginTop: 12,
           height: 32,
-          background: "var(--color-muted)",
+          background: "var(--color-muted-surface)",
           borderRadius: "var(--radius-sm)",
           overflow: "hidden",
           cursor: "pointer",
@@ -396,7 +396,7 @@ function AnimationCard({ token, resolvedValue, usage, animationStyle }: Animatio
         style={{
           position: "relative",
           height: 56,
-          background: "var(--color-muted)",
+          background: "var(--color-muted-surface)",
           borderRadius: "var(--radius-sm)",
           overflow: "hidden",
           cursor: "pointer",
@@ -465,7 +465,7 @@ export const Animations: StoryObj = {
         />
         <AnimationCard
           token="--animate-row-reveal"
-          resolvedValue="row-reveal var(--duration-base) var(--ease-out-emphasized) both"
+          resolvedValue="row-reveal var(--duration-subtle) var(--ease-out-standard) both"
           usage="Streaming table row arrival — 4px translate, fill-mode both for staggered reveal"
           animationStyle={{ animation: "var(--animate-row-reveal)" }}
         />
@@ -480,6 +480,18 @@ export const Animations: StoryObj = {
           resolvedValue="running-pulse 1600ms var(--ease-linear) infinite"
           usage="In-progress status indicator pulse"
           animationStyle={{ animation: "var(--animate-running-pulse)", borderRadius: "50%", background: "var(--color-state-running)" }}
+        />
+        <AnimationCard
+          token="--animate-slide-right-in"
+          resolvedValue="slide-right-in var(--duration-base) var(--ease-out-emphasized)"
+          usage="Trace panel enters from right — -12px translateX enter"
+          animationStyle={{ animation: "var(--animate-slide-right-in)" }}
+        />
+        <AnimationCard
+          token="--animate-slide-left-out"
+          resolvedValue="slide-left-out var(--duration-fast) var(--ease-in-accelerated)"
+          usage="Trace panel exits to right — +12px translateX exit"
+          animationStyle={{ animation: "var(--animate-slide-left-out)", opacity: 0 }}
         />
       </div>
     </div>

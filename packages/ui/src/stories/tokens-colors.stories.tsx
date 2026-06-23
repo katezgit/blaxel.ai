@@ -81,16 +81,16 @@ export const Surface: StoryObj = {
         <SwatchRow token="--color-background" label="Page canvas — outermost background" bordered />
         <SwatchRow token="--color-page" label="Recessed page — deep background layer" bordered />
         <SwatchRow token="--color-panel" label="Panel / card — white surface above canvas" bordered />
-        <SwatchRow token="--color-elevated" label="Elevated — popover, tooltip, dropdown" bordered />
-        <SwatchRow token="--color-muted" label="Muted fill — section dividers, empty states" bordered />
-        <SwatchRow token="--color-secondary" label="Secondary fill — chip bg, selected rows" bordered />
-        <SwatchRow token="--color-surface-hover" label="Surface hover — interactive highlight" bordered />
-        {/* Component-alias surfaces — alias of panel */}
-        <SwatchRow token="--color-card" label="Card surface (alias of panel) — Card component fill" bordered />
-        <SwatchRow token="--color-popover" label="Popover surface (alias of panel) — Popover/Tooltip/Dropdown fill" bordered />
-        {/* Interaction state surfaces */}
-        <SwatchRow token="--color-selected" label="Selected row / item (alias of secondary)" bordered />
-        <SwatchRow token="--color-hover" label="Hover surface highlight (alias of elevated)" bordered />
+        <SwatchRow token="--color-elevated-surface" label="Elevated surface — popovers, tooltips, dropdowns" bordered />
+        <SwatchRow token="--color-muted-surface" label="Muted fill — section dividers, empty states" bordered />
+        <SwatchRow token="--color-secondary-surface" label="Secondary fill — chip bg, selected rows" bordered />
+        <SwatchRow token="--color-hover-surface" label="Hover surface — interactive row/backdrop highlight" bordered />
+        <SwatchRow token="--color-hover-surface-subtle" label="Subtle hover — scan aid for non-interactive rows" bordered />
+        <SwatchRow token="--color-selected-surface" label="Selected surface — active row / item highlight" bordered />
+        {/* Component-alias surfaces — alias of control-raised */}
+        <SwatchRow token="--color-card" label="Card surface (alias of control-raised) — Card component fill" bordered />
+        <SwatchRow token="--color-popover" label="Popover surface (alias of control-raised) — Popover/Tooltip/Dropdown fill" bordered />
+        <SwatchRow token="--color-form-field-surface" label="Form field surface — Input/Textarea/Select resting fill" bordered />
       </Section>
     </div>
   ),
@@ -172,7 +172,7 @@ export const TextSecondaryTiers: StoryObj = {
               style={{
                 marginTop: 12,
                 padding: "8px 10px",
-                background: "var(--color-muted)",
+                background: "var(--color-muted-surface)",
                 borderRadius: "var(--radius-sm)",
                 fontSize: 10,
                 fontFamily: "var(--font-sans)",
@@ -202,7 +202,7 @@ export const TextSecondaryTiers: StoryObj = {
                 gridTemplateColumns: "2fr 1fr 1fr",
                 padding: "8px 16px",
                 borderBottom: "1px solid var(--color-border)",
-                background: "var(--color-muted)",
+                background: "var(--color-muted-surface)",
               }}
             >
               {["Model", "Score", "Runs"].map((h) => (
@@ -260,7 +260,7 @@ export const TextSecondaryTiers: StoryObj = {
                 fontSize: 10,
                 fontFamily: "var(--font-sans)",
                 color: "var(--color-muted-foreground)",
-                background: "var(--color-muted)",
+                background: "var(--color-muted-surface)",
               }}
             >
               --color-meta
@@ -296,17 +296,17 @@ export const Primary: StoryObj = {
   name: "Primary",
   render: () => (
     <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
-      <Section title="Primary — teal CTA fill (Primary button, switches, tabs active, checkbox, progress)">
+      <Section title="Primary — orange CTA fill (Primary button, switches, tabs active, checkbox, progress)">
         <SwatchRow
           token="--color-primary"
-          label="Teal CTA fill — light: #087A6C  dark: #2BE0C8. Powers Button primary, Switch ON, Tabs active, Checkbox checked, Progress default."
+          label="Orange CTA fill — light: #c95618 (orange-800)  dark: #f06128 (orange-500). Powers Button primary, Switch ON, Tabs active, Checkbox checked, Progress default."
         />
         <SwatchRow token="--color-primary-foreground" label="Text on --color-primary fill" bordered />
         <SwatchRow token="--color-primary-hover" label="Hover state of primary" />
         <SwatchRow token="--color-primary-glow" label="Glow halo — focus / active primary chrome" bordered />
         <SwatchRow token="--color-primary-soft" label="10% alpha tint — badges, selection pills" bordered />
         <SwatchRow token="--color-primary-border" label="25% alpha tint — outlined chips" bordered />
-        <SwatchRow token="--color-primary-disabled" label="PINNED desaturated teal — disabled primary state (reads as less prominent, not darker)" bordered />
+        <SwatchRow token="--color-primary-disabled" label="PINNED desaturated orange — disabled primary state (light: #E8BBA8 / dark: #4A2010; not in palette ramp)" bordered />
       </Section>
     </div>
   ),
@@ -528,10 +528,10 @@ export const FocusChrome: StoryObj = {
             </div>
             <div style={{ marginTop: 10 }}>
               <code style={{ fontFamily: "var(--font-sans)", fontSize: 10, color: "var(--color-muted-foreground)", display: "block" }}>
-                --color-ring → teal-700/teal-500 (light: #087A6C / dark: #1A9183)
+                --color-ring → orange-800/orange-500 (light: #c95618 / dark: #f06128)
               </code>
               <code style={{ fontFamily: "var(--font-sans)", fontSize: 10, color: "var(--color-muted-foreground)", display: "block" }}>
-                --color-ring-glow → rgba teal glow
+                --color-ring-glow → rgba orange glow (12–18% alpha)
               </code>
             </div>
           </div>
@@ -592,16 +592,16 @@ export const BrandIsolation: StoryObj = {
           Brand tokens are defined in <code style={{ fontFamily: "var(--font-sans)" }}>@theme</code> and generate
           Tailwind utilities (<code style={{ fontFamily: "var(--font-sans)" }}>bg-brand</code>, etc.).
           Use only for logo/mark surfaces — never as interactive CTA fill.
-          Distinct hue from warning to avoid status ambiguity.
+          Brand is orange-800 (#c95618) — anchored to the same hue family as primary but PINNED so it never shifts with theme.
         </p>
-        <SwatchRow token="--color-brand" label="--gold (#f7b717) — logo stripe, mark fill" />
-        <SwatchRow token="--color-brand-foreground" label="AA-contrast foreground on brand fill" />
-        <SwatchRow token="--color-brand-hover" label="#D49A0E — darkened gold for hover; not a palette step (PINNED)" />
-        <SwatchRow token="--color-brand-glow" label="16% alpha gold — glow halo for brand chrome" bordered />
+        <SwatchRow token="--color-brand" label="orange-800 (#c95618) — logo stripe, mark fill. PINNED — never shifts with theme." />
+        <SwatchRow token="--color-brand-foreground" label="white — AA-contrast foreground on brand fill. PINNED." />
+        <SwatchRow token="--color-brand-hover" label="orange-900 (#9b4212) — darker orange step for hover. PINNED." />
+        <SwatchRow token="--color-brand-glow" label="16% alpha orange — glow halo for brand chrome" bordered />
         <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginTop: 12 }}>
           Warning state uses{" "}
           <code style={{ fontFamily: "var(--font-sans)" }}>--color-state-warning</code>{" "}
-          (light: <samp>#C47A0A</samp> / dark: <samp>#E5A52E</samp>) — a distinct oranger hue.
+          (light: <samp>#c37d0d</samp> / dark: <samp>#F9B23B</samp>) — amber family, distinct from brand orange.
         </p>
       </Section>
     </div>
@@ -763,13 +763,14 @@ export const ChartSeries: StoryObj = {
           <ul style={{ margin: "6px 0 0 16px", padding: 0 }}>
             <li>
               <code style={{ fontFamily: "var(--font-sans)" }}>--color-chart-1</code>{" "}
-              = <code style={{ fontFamily: "var(--font-sans)" }}>--color-primary</code>{" "}
-              (light: chart-1 <samp>#0E9888</samp> / primary <samp>#087A6C</samp> — very close; dark: both <samp>#2BE0C8</samp> — <strong>identical</strong>)
+              anchors to brand orange:{" "}
+              light: <samp>#d96520</samp> (orange-700) / dark: <samp>#f06128</samp> (orange-500).
+              Chart-1 is intentionally the brand series.
             </li>
             <li>
               <code style={{ fontFamily: "var(--font-sans)" }}>--color-chart-7</code>{" "}
               = <code style={{ fontFamily: "var(--font-sans)" }}>--color-state-running</code>{" "}
-              (light: both <samp>#2462C5</samp> — <strong>identical</strong>; dark: both <samp>#4FA8FF</samp> — <strong>identical</strong>)
+              (light: both <samp>#3772cf</samp> — <strong>identical</strong>; dark: both <samp>#33A1FF</samp> — <strong>identical</strong>)
             </li>
             <li>
               Dark only: chart-3 <samp>#F46EB0</samp> vs chart-6 <samp>#FF7066</samp> — distinct hues but similar warmth / lightness

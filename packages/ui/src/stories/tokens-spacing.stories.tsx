@@ -154,7 +154,7 @@ export const SpacingScale: StoryObj = {
               display: "grid",
               gridTemplateColumns: "100px 60px 60px 1fr",
               gap: 0,
-              background: "var(--color-muted)",
+              background: "var(--color-muted-surface)",
               padding: "6px 12px",
               borderBottom: "1px solid var(--color-border)",
             }}
