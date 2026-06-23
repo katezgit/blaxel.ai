@@ -10,7 +10,7 @@ export function Breadcrumb({ parent, current }: BreadcrumbProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="flex items-center gap-1 typography-label tracking-normal normal-case text-muted-foreground"
+      className="flex items-center gap-1 typography-body text-muted-foreground"
     >
       <Link
         href={parent.href}
