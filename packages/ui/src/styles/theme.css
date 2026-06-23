@@ -200,23 +200,30 @@
   --color-state-not-run:        light-dark(var(--ink-800), var(--ink-100)); /* status text must be readable → READ tier */
   --color-state-not-run-subtle: light-dark(var(--surface-muted-light), var(--surface-muted-dark));
 
-  /* Alert backgrounds — quieter than state-*-subtle (3%/4% vs 10–12%) to compensate
-   * for warm-hue perceived intensity at equal alpha. */
+  /* Alert backgrounds — filled-surface recipe so alerts read as tinted, not outlined.
+   *
+   * Light: 10% hue alpha against transparent — a readable pale tint, just at the
+   *   floor of the 10–12% state-*-subtle range so hierarchy is preserved (state-*-subtle
+   *   reads as the same intensity; alerts can go slightly lighter if hierarchy demands).
+   * Dark: surface-anchored solid mix — 20% vivid ramp hue blended into near-black bg
+   *   (#09090A) yields a deep low-luminance tinted surface (not transparent-alpha).
+   *   Pure alpha on near-black amplifies hue perceptually; ≤8% alpha reads as
+   *   "outlined with a faint cast." The solid mix gives the alert genuine fill. */
   --color-alert-destructive-bg: light-dark(
-    color-mix(in srgb, var(--errored-600)  3%, transparent),
-    color-mix(in srgb, var(--errored-400)  4%, transparent)
+    color-mix(in srgb, var(--errored-600) 10%, transparent),
+    color-mix(in srgb, var(--errored-400) 20%, var(--surface-bg-dark))
   );
   --color-alert-warning-bg:     light-dark(
-    color-mix(in srgb, var(--warning-600)  3%, transparent),
-    color-mix(in srgb, var(--warning-400)  4%, transparent)
+    color-mix(in srgb, var(--warning-600) 10%, transparent),
+    color-mix(in srgb, var(--warning-400) 20%, var(--surface-bg-dark))
   );
   --color-alert-success-bg:     light-dark(
-    color-mix(in srgb, var(--scored-600)   3%, transparent),
-    color-mix(in srgb, var(--scored-400)   4%, transparent)
+    color-mix(in srgb, var(--scored-600)  10%, transparent),
+    color-mix(in srgb, var(--scored-400)  20%, var(--surface-bg-dark))
   );
   --color-alert-info-bg:        light-dark(
-    color-mix(in srgb, var(--running-600)  3%, transparent),
-    color-mix(in srgb, var(--running-400)  4%, transparent)
+    color-mix(in srgb, var(--running-600) 10%, transparent),
+    color-mix(in srgb, var(--running-400) 20%, var(--surface-bg-dark))
   );
 
   /* ═══════════════════════════════════════════════════════════════════════════

@@ -27,21 +27,21 @@ const alertVariants = cva(
 
         /**
          * Error / danger. Tinted red surface + red title + red icon.
-         * Lower-intensity bg (7%/8% alpha) vs state-errored-subtle (10–12%) — see spec.
+         * bg token: light = 10% alpha tint, dark = 20% hue into near-black (filled).
          */
         destructive:
           "bg-alert-destructive-bg border-state-errored text-foreground [&>svg]:text-state-errored",
 
         /**
          * Amber warning. Tinted amber surface + amber title + amber icon.
-         * Lower-intensity bg (7%/8% alpha) vs state-warning-subtle (12%) — see spec.
+         * bg token: light = 10% alpha tint, dark = 20% hue into near-black (filled).
          */
         warning:
           "bg-alert-warning-bg border-state-warning text-foreground [&>svg]:text-state-warning",
 
         /**
          * Positive / success. Tinted green surface + green title + green icon.
-         * Lower-intensity bg (7%/8% alpha) vs state-scored-subtle (11–12%) — see spec.
+         * bg token: light = 10% alpha tint, dark = 20% hue into near-black (filled).
          */
         success:
           "bg-alert-success-bg border-state-scored text-foreground [&>svg]:text-state-scored",
@@ -49,7 +49,7 @@ const alertVariants = cva(
         /**
          * Informational. Tinted blue surface + blue title + blue icon.
          * Maps to the running/blue token family (no dedicated info set exists).
-         * Lower-intensity bg (7%/8% alpha) vs state-running-subtle (12%) — see spec.
+         * bg token: light = 10% alpha tint, dark = 20% hue into near-black (filled).
          */
         info:
           "bg-alert-info-bg border-state-running text-foreground [&>svg]:text-state-running",
