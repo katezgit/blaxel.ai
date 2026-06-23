@@ -247,6 +247,16 @@
   --color-popover:            var(--color-control-raised);
   --color-popover-foreground: var(--color-foreground);
   --color-form-field-surface: var(--color-control-raised);
+
+  /* Segmented control thumb — quiet raised pill in light, brand-orange in dark.
+   * Light: white surface (surface-panel-light) floats on the grey track — iOS/macOS
+   *   pattern: contrast is structural, not saturated.
+   * Dark: brand-orange (color-primary) — existing dark behavior is correct. */
+  --color-segmented-thumb:            light-dark(var(--surface-panel-light), var(--orange-500));
+  /* Active segment foreground — paired with thumb surface above.
+   * Light: dark ink (foreground) on white thumb → legible and quiet.
+   * Dark: white on orange → existing pair. */
+  --color-segmented-thumb-foreground: light-dark(var(--ink-900), var(--white));
 }
 
 /* ─── Overlay roles ──────────────────────────────────────────────────────────

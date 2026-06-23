@@ -120,8 +120,8 @@ export const segmentedControlItemVariants = cva([
   "text-foreground/60",
   // Inactive hover — matches sidebar nav-link row hover (bg-secondary-surface + text-foreground).
   "data-[state=off]:hover:bg-secondary-surface data-[state=off]:hover:text-foreground",
-  // Active text color — paired with bg-primary thumb (primary button pair).
-  "data-[state=on]:text-primary-foreground",
+  // Active text color — paired with bg-segmented-thumb (white in light, orange in dark).
+  "data-[state=on]:text-segmented-thumb-foreground",
   "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
   // Text color fades simultaneously with the thumb slide.
@@ -239,7 +239,7 @@ const SegmentedControlRoot = React.forwardRef<
           aria-hidden
           data-slot="segmented-control-indicator"
           className={cn(
-            "absolute top-0 bottom-0 left-0 bg-primary pointer-events-none",
+            "absolute top-0 bottom-0 left-0 bg-segmented-thumb pointer-events-none",
           )}
           style={thumbStyle}
         />
