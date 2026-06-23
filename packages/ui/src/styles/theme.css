@@ -106,10 +106,13 @@
   --color-primary-hover: light-dark(var(--orange-900), var(--orange-400));
   --color-primary-glow:  light-dark(
     color-mix(in srgb, var(--orange-700) 12%, transparent),
-    color-mix(in srgb, var(--surface-bg-dark) 93.5%, var(--orange-500) 6.5%)
+    color-mix(in srgb, var(--orange-500) 10%, transparent)
   );
-  /* Dark uses surface-anchored mix (not pure orange alpha) — near-black amplifies
-   * orange alphas perceptually so a low-alpha tint reads as orange instead of glow. */
+  /* Both sides use alpha-on-transparent so the glow always LIFTS above its
+   * container (sidebar bg, card panel, tier-pick card). A solid surface-anchored
+   * mix would paint the same hex regardless of container and reads as a sunken
+   * stain on brighter panels. Dark drops to 10% (vs light's 12%) because
+   * near-black perceptually amplifies orange alpha. */
   /* Soft / border: alpha tints for badges and selection pills. */
   --color-primary-soft:   light-dark(
     color-mix(in srgb, var(--orange-800) 10%, transparent),
