@@ -26,7 +26,7 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
       aria-label={ariaLabel}
       style={{ viewTransitionName: "shell-sidebar" }}
       className={cn(
-        "relative hidden shrink-0 border-r border-border bg-background md:block",
+        "relative hidden shrink-0 border-r border-sidebar-border bg-background md:block",
         transitionEnabled && "transition-[width] duration-subtle ease-out-standard",
         collapsed ? "lg:w-(--sidebar-rail-w)" : "lg:w-(--sidebar-w)",
         "md:w-(--sidebar-rail-w)",

@@ -50,23 +50,23 @@
   --ink-500: oklch(.393 .029 285.012);   /* v2-gray-30 — text-disabled dark  ↔ ink-400 light */
 
   /* Surfaces — light / dark pairs.
-   * Light: chrome tier (--surface-bg-light) sits a faint cool gray below the
-   *   white content tier (--surface-panel-light). Mirrors the dark mode role
-   *   direction (bg recessed, panel lifted) with the hue inverted. Cards float
-   *   on white panel via border + shadow.
-   * Dark: Blaxel .dark HSL surface tiers converted to hex. */
-  --surface-bg-light:        #F7F7F9;
-  --surface-bg-dark:         #09090b;
+   * Light: chrome tier (--surface-bg-light) sits a faint warm off-white below the
+   *   pure-white content tier (--surface-panel-light). Cards float on white panel
+   *   via border + shadow.
+   * Dark: neutralized warm-grey tiers (low-chroma luminance ladder). Anchored
+   *   neutral so hover/highlight mixes don't inherit a violet cast. */
+  --surface-bg-light:        #F9F9F8;
+  --surface-bg-dark:         #09090A;
   --surface-panel-light:     #FFFFFF;
-  --surface-panel-dark:      #121217;
+  --surface-panel-dark:      #131313;
   --surface-page-light:      #FFFFFF;
-  --surface-page-dark:       #1a1a1a;
+  --surface-page-dark:       #1A1A1A;
   --surface-elevated-light:  #FFFFFF;
-  --surface-elevated-dark:   #191924;
+  --surface-elevated-dark:   #1A1A1A;
   --surface-muted-light:     #FFFFFF;
-  --surface-muted-dark:      #1a1a23;
-  --surface-secondary-light: #F2F3F7;
-  --surface-secondary-dark:  #252537;
+  --surface-muted-dark:      #1B1B1B;
+  --surface-secondary-light: #EEEDE9;
+  --surface-secondary-dark:  #262626;
 
   /* Orange — brand action hue.
    * Source: Blaxel .dark --primary hsl(21,79%,44%) + --blaxel-hover hsl(17,87%,55%).

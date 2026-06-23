@@ -39,14 +39,7 @@
     var(--surface-bg-light),
     color-mix(in srgb, var(--surface-bg-dark) 30%, var(--surface-panel-dark) 70%)
   );
-  /* Form-field border — stronger alpha than --color-border because --color-border
-   * collapses when the field sits inside a card or dialog (field fill < card surface
-   * → mushy edge). Must read above --color-border-disabled so the enabled state is
-   * the brighter affordance. */
-  --color-form-field-border: light-dark(
-    rgb(var(--border-seed-light) / .165),
-    rgb(var(--border-seed-dark) / .07)
-  );
+  --color-form-field-border: var(--color-border);
 
   /* Typography — 3-tier reading hierarchy.
    *   foreground:       body, headings, main values
@@ -65,7 +58,7 @@
   /* Borders — alpha-tinted hairlines, compose on any surface.
    *   border:        default hairline
    *   border-strong: ~+10pp alpha for selected/active edges */
-  --color-border:        light-dark(rgb(var(--border-seed-light) / .1125), rgb(var(--border-seed-dark) / .07));
+  --color-border:        light-dark(rgb(var(--border-seed-light) / .16),   rgb(var(--border-seed-dark) / .07));
   --color-border-strong: light-dark(rgb(var(--border-seed-light) / .21),   rgb(var(--border-seed-dark) / .135));
   /* Progress track — dedicated token because muted-surface dark === card dark;
    * reusing muted-surface makes the track vanish on table rows. */
@@ -82,12 +75,9 @@
   --color-code-fg:     var(--ink-50);              /* #E8EEF5 — primary code text */
   --color-code-muted:  var(--ink-100);             /* #B3BFCE — language label */
   --color-code-border: rgba(255 255 255 / .06);    /* hairline on dark surface */
-  /* Highlight surface for select-kind components (Select, Command, DropdownMenu, Combobox).
-   * Light: 5% black mix on elevated-light → ~#F2F2F2, a soft neutral step BELOW the
-   *   white popover (--color-popover = --color-control-raised = --surface-panel-light).
-   *   Plain --surface-elevated-light would match the popover bg → invisible highlight.
-   * Dark: white-mix lift because popover bg = --control-raised = --surface-elevated-dark —
-   *   same primitive = invisible if using orange mix. Same pattern as --color-sidebar-hover-manage. */
+  /* Highlight surface for popover-content items (Select / Command / DropdownMenu / Combobox).
+   * Mixed against the popover's own elevated surface so the highlight reads as a step
+   * away from the popover bg — using elevated directly would equal the popover. */
   --color-highlight-surface: light-dark(
     color-mix(in srgb, var(--surface-elevated-light) 95%, black 5%),
     color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
@@ -118,11 +108,8 @@
     color-mix(in srgb, var(--orange-700) 12%, transparent),
     color-mix(in srgb, var(--surface-bg-dark) 93.5%, var(--orange-500) 6.5%)
   );
-  /* Dark value: surface-anchored mix (94% surface + 6% orange-500). Pure
-   * orange alphas amplify warmth on near-black due to perceptual hue
-   * amplification at low luminance — anchoring on the sidebar's own bg
-   * surface keeps the selected tint readable above idle/hover without
-   * reading as orange. */
+  /* Dark uses surface-anchored mix (not pure orange alpha) — near-black amplifies
+   * orange alphas perceptually so a low-alpha tint reads as orange instead of glow. */
   /* Soft / border: alpha tints for badges and selection pills. */
   --color-primary-soft:   light-dark(
     color-mix(in srgb, var(--orange-800) 10%, transparent),
@@ -137,39 +124,17 @@
   --color-primary-disabled: light-dark(#E8BBA8, #4A2010); /* PINNED — desaturated orange steps; not in palette ramp */
   --color-border-disabled:  light-dark(#C8CDD6, #2D3440); /* PINNED — neutral-adjacent; not in palette ramp */
 
-  /* Hover surface — hovered rows and interactive backdrops.
-   * Light: 8% orange-800 mix into white → warm-tinted lift above white.
-   * Selected tier uses 16% orange mix for stronger commitment read.
-   * Dark: 8% white mix → neutral lift; orange-500 at this alpha read as red/error
-   * on table rows where the hover repeats frequently. */
+  /* Hover surface — rows and interactive backdrops. Aligns with --color-secondary-surface
+   * family (neutral, no brand tint) so hover reads quiet against content tiers. */
   --color-hover-surface:    light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
+    var(--surface-secondary-light),
     color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
   );
-  /* Hover surface — scan aid for non-interactive rows.
-   * Half-intensity of --color-hover-surface (8% → 4%). Apply to tables whose
-   * rows are not clickable (actions sit in per-row buttons); the lighter tint
-   * aids horizontal scanning without implying click affordance. */
+  /* Hover surface — scan aid for non-interactive rows. Half-intensity of
+   * --color-hover-surface; aids horizontal scanning without implying click affordance. */
   --color-hover-surface-subtle: light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 96%, var(--orange-800) 4%),
+    color-mix(in srgb, var(--surface-elevated-light) 50%, var(--surface-secondary-light) 50%),
     color-mix(in srgb, var(--surface-elevated-dark) 96%, white 4%)
-  );
-  /* Sidebar hover — two variants for two shell surfaces.
-   *
-   * App shell sidebar (sits on bg-background):
-   *   Light: 8% black mix anchored on the sidebar's own --surface-bg-light base
-   *     (#F7F7F9) → ~#E2E2E5, a perceptible neutral DARKEN step. Anchoring on
-   *     elevated (white) would put hover at #F5F5F5, only 2 luminance units
-   *     below the sidebar — invisible. Lifting to white (highlight-surface) is
-   *     rejected as a chrome → content tier jump.
-   *   Dark: elevated-dark lifts above bg-dark (distinct tier).
-   *
-   * Manage shell sidebar (sits on bg-card / panel surface):
-   *   Dark: 12% white mix → neutral lift; orange mix would clash on dark-navy elevated bg. */
-  --color-sidebar-hover: var(--color-secondary-surface);
-  --color-sidebar-hover-manage: light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
   );
   --color-selected-surface: light-dark(
     color-mix(in srgb, var(--surface-bg-light) 84%, var(--orange-800) 16%),
@@ -177,12 +142,9 @@
   );
   --color-control-raised:   light-dark(var(--surface-panel-light),     var(--surface-elevated-dark));
 
-  /* Accent alias — resolves bg-accent utility used by shadcn internals.
-   * Maps to hover-surface so shadcn defaults (Command, DropdownMenu active state)
-   * inherit the correct elevated bg.
-   * Defined with the same literal light-dark() expression as --color-hover-surface
-   * (not var(--color-hover-surface)) so the value resolves directly on :root and
-   * getComputedStyle() returns a non-empty string. */
+  /* Accent — bg-accent utility used by shadcn internals (Command / DropdownMenu active).
+   * Literal expression rather than var(--color-hover-surface) so getComputedStyle returns
+   * a resolved value on :root. */
   --color-accent:            light-dark(
     color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
     color-mix(in srgb, var(--surface-elevated-dark) 92%, var(--orange-500) 8%)
@@ -275,18 +237,13 @@
  * Component-specific token aliases. New components add their bindings here.
  * Foundational tokens live in primitive.css. */
 @theme {
-  /* Card — asymmetric lift via --color-control-raised.
-   * Light: panel (#FFF) === main page bg → border + shadow carry the boundary.
-   * Dark: elevated (#161D28) lifts visibly above panel-dark. */
-  --color-card:            var(--color-control-raised);
-  --color-card-foreground: var(--color-foreground);
-
+  /* Card / popover / focused form-field — share --color-control-raised so they read
+   * at the same elevation tier. Light: panel === page bg → border + shadow carry the
+   * boundary. Dark: elevated lifts above panel. */
+  --color-card:               var(--color-control-raised);
+  --color-card-foreground:    var(--color-foreground);
   --color-popover:            var(--color-control-raised);
   --color-popover-foreground: var(--color-foreground);
-
-  /* Form-field surface — raised bg when a field (Input, Textarea, Select, Combobox)
-   * is focused or open. Tracks --color-control-raised so focused fields match card/popover
-   * elevation. Named separately so the focus-lift intent is explicit at each call site. */
   --color-form-field-surface: var(--color-control-raised);
 }
 
