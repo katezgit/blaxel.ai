@@ -283,14 +283,14 @@ function CreatePolicyForm({
     <form
       onSubmit={onSubmit}
       noValidate
-      className="flex min-h-0 flex-1 flex-col gap-4"
+      className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8"
     >
-      {/* Scroll region: form column scrolls independently; code panel rides
-          alongside on lg+ inside the same bounded grid. Footer below stays
-          visible without sticky positioning because this row is height-capped
-          by `min-h-0 flex-1`. */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8">
-        <ScrollArea className="min-h-0">
+      {/* Form column owns its own scroll region and pins the action footer at
+          the column bottom — actions land under col 1 only, never under the
+          code panel. Both columns are height-bound by the grid's `min-h-0
+          flex-1` so each viewport scrolls independently. */}
+      <div className="flex min-h-0 flex-col gap-4">
+        <ScrollArea className="min-h-0 flex-1">
           <div className="flex flex-col gap-10 pr-4 pb-2">
             <PolicyTypeSection form={form} />
             <PolicyBodySection
@@ -307,24 +307,28 @@ function CreatePolicyForm({
           </div>
         </ScrollArea>
 
-        <ScrollArea className="min-h-0">
-          <div className="pr-4 pb-2">
-            <CodeReferencePanel
-              policyType={policyType}
-              name={cleanName}
-              displayName={cleanDisplayName}
-              resourceTypes={resourceTypes}
-              locations={locations}
-              tokenLimits={tokenLimits}
-            />
-          </div>
-        </ScrollArea>
+        <FormFooter
+          onCancel={onCancel}
+          submitting={form.formState.isSubmitting}
+        />
       </div>
 
-      <FormFooter
-        onCancel={onCancel}
-        submitting={form.formState.isSubmitting}
-      />
+      <ScrollArea className="min-h-0">
+        {/* pt-1 drops the eyebrow line so its cap-height visually lands on
+            the same row as the left column's section-1 heading; without it
+            the meta line-height (14) sits ~10px higher than the subtitle
+            line-height (22) and reads as a misaligned top. */}
+        <div className="pr-4 pb-2 pt-1">
+          <CodeReferencePanel
+            policyType={policyType}
+            name={cleanName}
+            displayName={cleanDisplayName}
+            resourceTypes={resourceTypes}
+            locations={locations}
+            tokenLimits={tokenLimits}
+          />
+        </div>
+      </ScrollArea>
     </form>
   );
 }
@@ -419,38 +423,38 @@ function PolicyTypeOptionRow({ option }: { option: PolicyTypeOption }) {
       textValue={option.label}
       disabled={option.disabled}
     >
-      <span className="flex items-start gap-2">
-        <Icon
-          aria-hidden="true"
-          className={cn(
-            "mt-0.5 size-4 shrink-0",
-            option.disabled ? "text-text-disabled" : "text-muted-foreground",
-          )}
-        />
-        <span className="flex flex-col gap-0.5">
-          <span className="inline-flex items-center gap-2">
-            <span
-              className={cn(
-                "typography-body",
-                option.disabled ? "text-text-disabled" : "text-foreground",
-              )}
-            >
-              {option.label}
-            </span>
-            {option.disabled ? (
-              <span className="typography-meta text-meta-foreground">
-                [coming soon]
-              </span>
-            ) : null}
-          </span>
-          <span
+      {/* Icon belongs to the title row only — hint indents under the title at
+          icon-width + gap (16 + 8 = 24, i.e. pl-6). */}
+      <span className="flex flex-col gap-0.5">
+        <span className="inline-flex items-center gap-2">
+          <Icon
+            aria-hidden="true"
             className={cn(
-              "typography-meta",
+              "size-4 shrink-0",
               option.disabled ? "text-text-disabled" : "text-muted-foreground",
             )}
+          />
+          <span
+            className={cn(
+              "typography-body",
+              option.disabled ? "text-text-disabled" : "text-foreground",
+            )}
           >
-            {option.hint}
+            {option.label}
           </span>
+          {option.disabled ? (
+            <span className="typography-meta text-meta-foreground">
+              [coming soon]
+            </span>
+          ) : null}
+        </span>
+        <span
+          className={cn(
+            "typography-meta pl-6",
+            option.disabled ? "text-text-disabled" : "text-muted-foreground",
+          )}
+        >
+          {option.hint}
         </span>
       </span>
     </SelectItem>
@@ -904,6 +908,7 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
               variant="block"
               language={tab.language}
               code={snippets[tab.value]}
+              className="whitespace-pre-wrap break-words overflow-x-hidden"
             />
           </TabsContent>
         ))}
@@ -1116,7 +1121,7 @@ function indent(text: string, spaces: number): string {
     .join("\n");
 }
 
-// ─── Form footer — natural sibling below the bounded scroll region ───────────
+// ─── Form footer — pinned at the bottom of the form column ───────────────────
 
 function FormFooter({
   onCancel,
@@ -1129,7 +1134,7 @@ function FormFooter({
     <div
       role="region"
       aria-label="Create policy actions"
-      className="flex shrink-0 items-center justify-end gap-2 border-t border-border bg-panel/95 -mx-4 px-4 py-3 backdrop-blur md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 xl:-mx-20 xl:px-20"
+      className="flex shrink-0 items-center justify-end gap-2 border-t border-border pt-3"
     >
       <Button type="button" variant="ghost" onClick={onCancel}>
         Cancel
