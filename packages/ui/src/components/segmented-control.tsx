@@ -122,6 +122,12 @@ export const segmentedControlItemVariants = cva([
   "data-[state=off]:hover:bg-secondary-surface data-[state=off]:hover:text-foreground",
   // Active text color — paired with bg-primary thumb (primary button pair).
   "data-[state=on]:text-primary-foreground",
+  // Bind SVG color directly so the icon tracks the active/inactive state even
+  // inside a parent that targets descendant SVGs (e.g. DropdownMenu.Item applies
+  // `[&_svg:not([class*='text-'])]:text-muted-foreground` to mute row icons —
+  // a (0,2,1) selector that beats our (0,1,1) `.item svg`, so !important is the
+  // straightforward escape hatch).
+  "[&_svg]:!text-current",
   "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
   // Text color fades simultaneously with the thumb slide.
