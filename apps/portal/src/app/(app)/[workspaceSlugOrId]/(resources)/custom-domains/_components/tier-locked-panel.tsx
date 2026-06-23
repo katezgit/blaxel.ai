@@ -92,6 +92,7 @@ export default function TierLockedPanel() {
               Sandbox preview URL.
             </p>
             <UpgradeTierDialog
+              recommendedTier={3}
               trigger={
                 <Button variant="primary" className="min-w-[180px]">
                   Upgrade tier

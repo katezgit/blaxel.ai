@@ -6,14 +6,20 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@repo/ui/components/dialog";
+import type { SelectableTier } from "@/lib/mock/billing-tiers";
 import UpgradeTierDialogContent from "./upgrade-tier-dialog-content";
 
 interface UpgradeTierDialogProps {
   /** The element that opens the dialog. Rendered inside DialogTrigger asChild. */
   trigger: ReactNode;
+  /** Tier the launching surface needs — pre-selected and marked Recommended. */
+  recommendedTier?: SelectableTier;
 }
 
-export default function UpgradeTierDialog({ trigger }: UpgradeTierDialogProps) {
+export default function UpgradeTierDialog({
+  trigger,
+  recommendedTier,
+}: UpgradeTierDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -23,7 +29,10 @@ export default function UpgradeTierDialog({ trigger }: UpgradeTierDialogProps) {
           two-step body + footer all fit on 13" laptops without inner scroll
           stacking against the dialog scroll. */}
       <DialogContent size="lg" className="max-h-[85vh]">
-        <UpgradeTierDialogContent onClose={() => setOpen(false)} />
+        <UpgradeTierDialogContent
+          onClose={() => setOpen(false)}
+          recommendedTier={recommendedTier}
+        />
       </DialogContent>
     </Dialog>
   );
