@@ -51,7 +51,7 @@ export function PolicyUsageBand({
   if (total === 0) {
     const deleteCommand = `bl policy delete ${policy.metadata.name}`;
     return (
-      <BandFrame label="Usage">
+      <BandFrame label="Usage" className="border-t-0 pt-0">
         <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-background px-5 py-5">
           <h3 className="typography-label font-medium text-foreground">
             No workloads reference this policy.
@@ -84,7 +84,7 @@ export function PolicyUsageBand({
   const zeroRows = KIND_ROWS.filter((row) => policy.usage[row.key] === 0);
 
   return (
-    <BandFrame label="Usage">
+    <BandFrame label="Usage" className="border-t-0 pt-0">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col rounded-md border border-border bg-background">
           <div className="border-b border-border px-4 py-2">

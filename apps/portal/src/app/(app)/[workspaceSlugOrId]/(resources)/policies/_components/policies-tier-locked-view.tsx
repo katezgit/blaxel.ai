@@ -1,4 +1,4 @@
-import { GitMerge, Globe, Gauge } from "lucide-react";
+import { GitMerge, Globe, Gauge, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
@@ -30,19 +30,12 @@ const CAPABILITIES: ReadonlyArray<Capability> = [
   },
 ];
 
-// Inline metadata style — matches the above-Tier-0 list header so the page
-// chrome stays consistent across locked/unlocked states. Marketing energy
-// lives in the card below; the header is just orientation.
-const LOCKED_DESCRIPTION = (
-  <p className="max-w-2xl typography-body text-muted-foreground">
-    Take control of your deployments. Define where and how your AI workloads run.
-  </p>
-);
-
 export function PoliciesTierLockedView() {
   return (
     <div className={cn("page-shell", "gap-8")}>
-      <PoliciesPageHeader tierLocked description={LOCKED_DESCRIPTION} />
+      {/* Locked state: header carries the title + Tier badge only — the card
+          below owns the narrative copy, so the orientation row stays tight. */}
+      <PoliciesPageHeader tierLocked />
 
       <section aria-labelledby="policies-locked-heading">
         <h2 id="policies-locked-heading" className="sr-only">
@@ -54,7 +47,7 @@ export function PoliciesTierLockedView() {
             floating as separate panels. The right region carries a subtle
             primary-glow backdrop so the eye lands on "ship it" without copy
             shouting. On narrow viewports the divider rotates to horizontal. */}
-        <Card className="overflow-hidden p-0">
+        <Card className="overflow-hidden border-0 p-0 sm:border">
           <div className="grid lg:grid-cols-[2fr_1fr]">
             <div className="flex flex-col gap-5 p-6 lg:p-8">
               <div className="flex flex-col gap-2">
@@ -90,13 +83,14 @@ export function PoliciesTierLockedView() {
             </div>
 
             <div className="relative flex flex-col items-center justify-center gap-4 overflow-hidden border-t border-border bg-primary-glow p-6 text-center lg:border-t-0 lg:border-l lg:p-8">
-              {/* Decorative tier-progress glyph — three stacked bars with the
-                  bottom one lit to read as "you are entering Tier 1." Pure
-                  visual chrome, no payload text, scales with type. */}
-              <span aria-hidden="true" className="flex flex-col items-center gap-1">
-                <span className="h-1 w-4 rounded-full bg-border" />
-                <span className="h-1 w-7 rounded-full bg-border" />
-                <span className="h-1 w-10 rounded-full bg-primary" />
+              {/* Premium-unlock glyph — readable at any width (the 3-bar
+                  tier-progress treatment compressed into a single stripe at
+                  mobile width). */}
+              <span
+                aria-hidden="true"
+                className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-primary"
+              >
+                <Sparkles className="size-5" />
               </span>
               <h3 className="typography-subtitle font-semibold text-foreground">
                 Ready to ship?

@@ -229,60 +229,78 @@ function CreatePolicyForm({
     }
   }
 
+  // Shared step list — rendered once in the mobile single-scroll viewport,
+  // once in the lg split-column layout. React renders each <section> tree
+  // independently so useId-driven aria-* IDs stay unique per instance.
+  const formSections = (
+    <>
+      <section className="flex flex-col gap-4">
+        <StepHeading index={1} title="Choose a policy type" />
+        <PolicyTypeSelectField form={form} />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <StepHeading
+          index={2}
+          title="Configure the rule"
+          description={POLICY_TYPE_BY_VALUE[policyType].hint}
+        />
+        {flavorDeepLink ? <FlavorUnavailableNotice /> : null}
+        {policyType === "location" ? (
+          <LocationBody value={locations} onChange={setLocations} />
+        ) : null}
+        {policyType === "maxToken" ? (
+          <TokenUsageBody value={tokenLimits} onChange={setTokenLimits} />
+        ) : null}
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <StepHeading
+          index={3}
+          title="Choose target workloads"
+          description="Attaches only to the workload types selected here."
+        />
+        <ResourceTypesField form={form} />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <StepHeading
+          index={4}
+          title="Name the policy"
+          description="Display name is the dashboard label; the slug is auto-derived for CLI."
+        />
+        <IdentityEditableFields form={form} />
+      </section>
+    </>
+  );
+
   return (
     <form
       onSubmit={onSubmit}
       noValidate
       className="flex min-h-0 flex-1 flex-col gap-4"
     >
-      {/* Both columns are height-bound by the grid's `min-h-0 flex-1` so each
-          viewport scrolls independently. The footer is a flex sibling below
-          the grid, spanning the full page width so Create lands at the same
-          vertical position whether the user's eye is on form or code. */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8">
+      {/* Layout splits at lg: mobile reads the form and code panel as one
+          continuous step list (single scroll viewport); lg+ splits into
+          form-left / code-right with each column scrolling independently.
+          Footer stays pinned in both layouts. */}
+      <ScrollArea className="block min-h-0 flex-1 lg:hidden">
+        <div className="flex flex-col gap-10 pr-4 pb-2">
+          {formSections}
+          <CodeReferencePanel
+            policyType={policyType}
+            name={cleanName}
+            displayName={cleanDisplayName}
+            resourceTypes={resourceTypes}
+            locations={locations}
+            tokenLimits={tokenLimits}
+          />
+        </div>
+      </ScrollArea>
+
+      <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[3fr_2fr] lg:gap-8">
         <ScrollArea className="min-h-0">
-          <div className="flex flex-col gap-10 pr-4 pb-2">
-            <section className="flex flex-col gap-4">
-              <StepHeading index={1} title="Choose a policy type" />
-              <PolicyTypeSelectField form={form} />
-            </section>
-
-            <section className="flex flex-col gap-4">
-              <StepHeading
-                index={2}
-                title="Configure the rule"
-                description={POLICY_TYPE_BY_VALUE[policyType].hint}
-              />
-              {flavorDeepLink ? <FlavorUnavailableNotice /> : null}
-              {policyType === "location" ? (
-                <LocationBody value={locations} onChange={setLocations} />
-              ) : null}
-              {policyType === "maxToken" ? (
-                <TokenUsageBody
-                  value={tokenLimits}
-                  onChange={setTokenLimits}
-                />
-              ) : null}
-            </section>
-
-            <section className="flex flex-col gap-4">
-              <StepHeading
-                index={3}
-                title="Choose target workloads"
-                description="Attaches only to the workload types selected here."
-              />
-              <ResourceTypesField form={form} />
-            </section>
-
-            <section className="flex flex-col gap-4">
-              <StepHeading
-                index={4}
-                title="Name the policy"
-                description="Display name is the dashboard label; the slug is auto-derived for CLI."
-              />
-              <IdentityEditableFields form={form} />
-            </section>
-          </div>
+          <div className="flex flex-col gap-10 pr-4 pb-2">{formSections}</div>
         </ScrollArea>
 
         <ScrollArea className="min-h-0">
@@ -612,14 +630,20 @@ function FormFooter({
     <div
       role="region"
       aria-label="Create policy actions"
-      className="flex shrink-0 items-center justify-end gap-2 border-t border-border pt-3"
+      className="shrink-0 border-t border-border pt-3 lg:grid lg:grid-cols-[3fr_2fr] lg:gap-8"
     >
-      <Button type="button" variant="ghost" onClick={onCancel}>
-        Cancel
-      </Button>
-      <Button type="submit" variant="primary" disabled={submitting}>
-        Create policy
-      </Button>
+      {/* Buttons anchor under the form column on lg+ (3fr cell), keeping the
+          primary CTA on the form's F-reading axis. Code panel (2fr cell on the
+          right) intentionally has no footer affordance — the form-filler is
+          the primary actor; the code viewer is consulting reference. */}
+      <div className="flex items-center justify-between gap-2 sm:justify-end">
+        <Button type="button" variant="ghost" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" variant="primary" disabled={submitting}>
+          Create policy
+        </Button>
+      </div>
     </div>
   );
 }

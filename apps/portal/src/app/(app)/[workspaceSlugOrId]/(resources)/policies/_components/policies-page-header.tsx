@@ -5,9 +5,9 @@ import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 
 interface PoliciesPageHeaderProps {
-  /** Body block under the H1 row. List page passes a short string;
-   * locked view passes a two-line ReactNode. */
-  description: ReactNode;
+  /** Body block under the H1 row. Omit on the locked state — the card
+   * below carries the narrative copy, so the header stays orientation-only. */
+  description?: ReactNode;
   /** Href the `+ Create Policy` action navigates to. Omit to hide the CTA (Tier-1-locked state). */
   createHref?: string;
   /** When true, surfaces a Tier-1 badge next to the heading. */

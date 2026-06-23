@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
+import { CopyButton } from "@repo/ui/components/copy-button";
 import { SearchInput } from "@repo/ui/components/search-input";
 import {
   Popover,
@@ -108,17 +109,25 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
         cell: (info) => {
           const policy = info.row.original;
           return (
-            <Link
-              href={`/${workspaceSlug}/policies/${policy.metadata.name}`}
-              className="flex flex-col leading-tight hover:underline"
-            >
-              <span className="typography-body font-medium text-foreground">
-                {policy.metadata.displayName}
+            <div className="group/policy-name flex items-center gap-1.5">
+              <Link
+                href={`/${workspaceSlug}/policies/${policy.metadata.name}`}
+                className="flex flex-col leading-tight hover:underline"
+              >
+                <span className="typography-body font-medium text-foreground">
+                  {policy.metadata.displayName}
+                </span>
+                <span className="font-mono typography-meta text-muted-foreground">
+                  {policy.metadata.name}
+                </span>
+              </Link>
+              <span className="opacity-0 transition-opacity duration-fast ease-out-standard group-hover/policy-name:opacity-100 focus-within:opacity-100">
+                <CopyButton
+                  value={policy.metadata.name}
+                  tooltipLabel="Copy policy name"
+                />
               </span>
-              <span className="font-mono typography-meta text-muted-foreground">
-                {policy.metadata.name}
-              </span>
-            </Link>
+            </div>
           );
         },
       }),
