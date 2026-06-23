@@ -30,14 +30,14 @@ Per-step slot (magnified):
 
   circle:       size-6 (24px) rounded-full
   Step Name:    typography-body font-semibold, same row as circle
-  description:  text-caption text-muted-foreground, row below — ml-8 (32px indent = circle width + gap-2)
+  description:  typography-caption text-muted-foreground, row below — ml-8 (32px indent = circle width + gap-2)
   connector:    h-px flex-1, sits in row A between label and next circle
 
 Mobile (<md): single-step summary
   ┌─────────────────────────────┐
-  │  Step 2 of 4                │  ← text-meta text-meta-foreground
-  │  Taskset                    │  ← text-subtitle font-semibold text-foreground
-  │  Select the taskset…        │  ← text-body text-muted-foreground
+  │  Step 2 of 4                │  ← typography-meta text-meta-foreground
+  │  Taskset                    │  ← typography-subtitle font-semibold text-foreground
+  │  Select the taskset…        │  ← typography-body text-muted-foreground
   └─────────────────────────────┘
 ```
 
@@ -74,10 +74,10 @@ Only a completed left step earns a teal connector; the line reads as "path alrea
 | Role | Token | Notes |
 |---|---|---|
 | Step name (desktop) | `typography-body font-semibold` | Active step: `text-foreground`. Pending/completed: `text-meta-foreground`. Same scale in both states — weight/color carry the hierarchy, not size. |
-| Step description (desktop) | `text-caption text-muted-foreground` | Subordinate to step name. `text-caption` (12px) vs `text-body` (14px) creates visible scale hierarchy — description recedes behind the name. |
-| Mobile counter | `text-meta text-meta-foreground` | "Step N of M" read-only line above the current label. |
-| Mobile label | `text-subtitle font-semibold text-foreground` | Same scale as desktop step name. |
-| Mobile description | `text-body text-muted-foreground` | Larger than desktop description because it is the only description visible — it carries more reading weight alone. |
+| Step description (desktop) | `typography-caption text-muted-foreground` | Subordinate to step name. `typography-caption` (12px) vs `typography-body` (14px) creates visible scale hierarchy — description recedes behind the name. |
+| Mobile counter | `typography-meta text-meta-foreground` | "Step N of M" read-only line above the current label. |
+| Mobile label | `typography-subtitle font-semibold text-foreground` | Same scale as desktop step name. |
+| Mobile description | `typography-body text-muted-foreground` | Larger than desktop description because it is the only description visible — it carries more reading weight alone. |
 
 ### Color
 
@@ -121,13 +121,13 @@ Only a completed left step earns a teal connector; the line reads as "path alrea
 
 **Operator-flagged issue (2026-06-13):** The description text read as floating, disconnected from its step name. The gap was too wide.
 
-**Before:** `mt-1` = 4px, `text-body` (14px) for description.
+**Before:** `mt-1` = 4px, `typography-body` (14px) for description.
 
-**After:** `mt-0.5` = 2px, `text-caption` (12px) for description.
+**After:** `mt-0.5` = 2px, `typography-caption` (12px) for description.
 
 Two changes combine to fix the disconnected read:
-1. **Gap tightened from `mt-1` to `mt-0.5` (4px → 2px).** At 4px with a 14px font below a 14px font (same `text-body` scale on both lines), the whitespace reads as paragraph separation. 2px visually binds the two lines into a single label block.
-2. **Description scale reduced from `text-body` to `text-caption`.** Equal type scale (14px/14px) gave description the same visual weight as the step name, making both appear equal-rank. `text-caption` (12px) with `text-muted-foreground` is clearly subordinate — it reads as caption/annotation beneath the title, not a peer line.
+1. **Gap tightened from `mt-1` to `mt-0.5` (4px → 2px).** At 4px with a 14px font below a 14px font (same `typography-body` scale on both lines), the whitespace reads as paragraph separation. 2px visually binds the two lines into a single label block.
+2. **Description scale reduced from `typography-body` to `typography-caption`.** Equal type scale (14px/14px) gave description the same visual weight as the step name, making both appear equal-rank. `typography-caption` (12px) with `text-muted-foreground` is clearly subordinate — it reads as caption/annotation beneath the title, not a peer line.
 
 The two fixes are codependent: tightening the gap alone with equal-weight type still reads as two parallel labels. Scale reduction alone with the old 4px gap still floats. Both together close the disconnection.
 
@@ -182,7 +182,7 @@ Mobile fallback:
 | # | Question | Decision | Rationale |
 |---|---|---|---|
 | 1 | Title→description gap | `mt-0.5` (2px) | 4px (`mt-1`) read as paragraph separation at equal type scale. 2px visually binds description as caption beneath title. |
-| 2 | Description typography | `text-caption text-muted-foreground` | Equal-weight `text-body` gave description the same rank as step name. `text-caption` (12px) is visually subordinate by scale + color. |
+| 2 | Description typography | `typography-caption text-muted-foreground` | Equal-weight `typography-body` gave description the same rank as step name. `typography-caption` (12px) is visually subordinate by scale + color. |
 | 3 | Connector state threshold | Left step only | Connector teal = left step is completed. In-progress connector (active→pending) stays muted to avoid implying the next step is already done. |
 | 4 | Mobile layout | Single-step summary | Full horizontal list doesn't fit narrow viewports without truncation or horizontal scroll. Single-step summary (counter + label + description) preserves all semantic content with no overflow. |
 | 5 | ARIA role | `<ol role="list">` + `aria-current="step"` | Steps are named discrete stages; `role="progressbar"` is a scalar 0–N abstraction. `<ol>` exposes position-in-set semantics natively. |
