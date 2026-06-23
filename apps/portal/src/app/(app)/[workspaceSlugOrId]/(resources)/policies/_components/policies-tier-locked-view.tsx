@@ -33,9 +33,15 @@ const CAPABILITIES: ReadonlyArray<Capability> = [
 export default function PoliciesTierLockedView() {
   return (
     <div className={cn("page-shell", "gap-8")}>
-      {/* Locked state: header carries the title + Tier badge only — the card
-          below owns the narrative copy, so the orientation row stays tight. */}
-      <PoliciesPageHeader tierLocked />
+      <PoliciesPageHeader
+        tierLocked
+        description={
+          <p className="max-w-2xl typography-body text-muted-foreground">
+            Control where workloads run, which hardware they use, and token
+            limits for governed deployments — available on Tier 1 and above.
+          </p>
+        }
+      />
 
       <section aria-labelledby="policies-locked-heading">
         <h2 id="policies-locked-heading" className="sr-only">
