@@ -11,7 +11,7 @@ interface TierContextBannerProps {
 // One-line context strip shown at the top of step 2 — the tier is locked by
 // then, so the user just needs a reminder of what they picked while they
 // configure balance protection. Replaces the right-rail About-Tier panel.
-export function TierContextBanner({
+export default function TierContextBanner({
   targetTier,
   amountUsd,
   cadence,

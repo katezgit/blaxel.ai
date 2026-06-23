@@ -2,7 +2,7 @@
 
 import { Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type { PolicyMaxTokens } from "@/lib/mock/policies";
 
 interface MaxTokenClauseBandProps {
@@ -12,7 +12,7 @@ interface MaxTokenClauseBandProps {
 
 const NUMBER_FMT = new Intl.NumberFormat("en-US");
 
-export function MaxTokenClauseBand({
+export default function MaxTokenClauseBand({
   maxTokens,
   onRequestEdit,
 }: MaxTokenClauseBandProps) {
@@ -41,7 +41,7 @@ export function MaxTokenClauseBand({
         </p>
 
         <div className="flex flex-col gap-3">
-          <h3 className="typography-label font-medium text-foreground">
+          <h3 className="typography-body font-semibold text-foreground">
             Window
           </h3>
           <p className="typography-body text-foreground">
@@ -51,7 +51,7 @@ export function MaxTokenClauseBand({
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="typography-label font-medium text-foreground">
+            <h3 className="typography-body font-semibold text-foreground">
               Token limits
             </h3>
             <Button

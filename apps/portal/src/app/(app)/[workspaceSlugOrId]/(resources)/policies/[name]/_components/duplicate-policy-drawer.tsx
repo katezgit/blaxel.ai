@@ -38,12 +38,15 @@ import {
   FieldGroup,
   FlavorUnavailableNotice,
   IdentityEditableFields,
+  LabelsEditor,
   LocationBody,
   PolicyTypeSelectField,
   ResourceTypesField,
   TokenUsageBody,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-pieces";
 import {
+  labelsEntriesToRecord,
+  labelsRecordToEntries,
   policyFormSchema,
   type LocationItem,
   type PolicyFormValues,
@@ -56,7 +59,7 @@ interface DuplicatePolicyDrawerProps {
   onClose: () => void;
 }
 
-export function DuplicatePolicyDrawer({
+export default function DuplicatePolicyDrawer({
   source,
   workspaceSlug,
   onClose,
@@ -111,6 +114,7 @@ function DuplicatePolicyForm({
       name: initialName,
       resourceTypes: [...source.spec.resourceTypes],
       policyType: source.spec.type,
+      labels: [...labelsRecordToEntries(source.metadata.labels)],
     },
   });
 
@@ -175,7 +179,7 @@ function DuplicatePolicyForm({
       resourceTypes: values.resourceTypes,
       ...(policyLocations !== undefined ? { locations: policyLocations } : {}),
       ...(policyMaxTokens !== undefined ? { maxTokens: policyMaxTokens } : {}),
-      labels: { ...source.metadata.labels },
+      labels: labelsEntriesToRecord(values.labels),
       createdBy: "alex@cubic.dev",
       workspace: source.metadata.workspace,
     });
@@ -242,6 +246,13 @@ function DuplicatePolicyForm({
           </FieldGroup>
 
           <IdentityEditableFields form={form} />
+
+          <FieldGroup
+            label="Labels"
+            hint="Key/value pairs for organizing and filtering."
+          >
+            <LabelsEditor form={form} />
+          </FieldGroup>
         </DrawerBody>
 
         <DrawerFooter className="flex justify-end gap-2">

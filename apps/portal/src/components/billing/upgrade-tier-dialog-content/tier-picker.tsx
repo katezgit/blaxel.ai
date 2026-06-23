@@ -21,7 +21,7 @@ interface TierPickerProps {
   recommendedTier?: SelectableTier;
 }
 
-export function TierPicker({
+export default function TierPicker({
   value,
   onChange,
   recommendedTier = 1,

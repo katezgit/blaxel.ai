@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
-import { DetailPageHeader } from "@/components/shell/detail-page-header";
+import DetailPageHeader from "@/components/shell/detail-page-header";
 import type { Policy } from "@/lib/mock/policies";
 import { POLICY_TYPE_BY_VALUE } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
 
@@ -23,7 +23,7 @@ interface PolicyDetailHeaderProps {
   onRequestDelete: () => void;
 }
 
-export function PolicyDetailHeader({
+export default function PolicyDetailHeader({
   policy,
   workspaceSlug,
   onRequestEdit,

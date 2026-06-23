@@ -7,10 +7,10 @@ import { Button } from "@repo/ui/components/button";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
 import { Alert, AlertDescription } from "@repo/ui/components/alert";
 import { type DisplayTier } from "@/lib/mock/billing-tiers";
-import { SelectedTierSummary } from "./selected-tier-summary";
-import { TierPicker } from "./tier-picker";
-import { TierContextBanner } from "./tier-context-banner";
-import { BalanceProtectionCard } from "./balance-protection-card";
+import SelectedTierSummary from "./selected-tier-summary";
+import TierPicker from "./tier-picker";
+import TierContextBanner from "./tier-context-banner";
+import BalanceProtectionCard from "./balance-protection-card";
 import {
   INITIAL_VALUES,
   resolveAmountUsd,
@@ -27,7 +27,7 @@ interface MonthlyTopUpFlowProps {
   onCheckout: (amountUsd: number) => void;
 }
 
-export function MonthlyTopUpFlow({
+export default function MonthlyTopUpFlow({
   currentTier,
   onCancel,
   onCheckout,
@@ -76,6 +76,10 @@ export function MonthlyTopUpFlow({
             </p>
           </div>
 
+          {/* -mr-3 pr-3: ScrollArea's overlay scrollbar floats inside the
+              content box; without negative-margin compensation it overlaps
+              right-edge fields. Net effect — scrollbar sits in the dialog
+              gutter, content keeps its 12px right padding. */}
           <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
             <div className="flex flex-col gap-4">
               <TierPicker
@@ -106,6 +110,10 @@ export function MonthlyTopUpFlow({
             </p>
           </div>
 
+          {/* -mr-3 pr-3: ScrollArea's overlay scrollbar floats inside the
+              content box; without negative-margin compensation it overlaps
+              right-edge fields. Net effect — scrollbar sits in the dialog
+              gutter, content keeps its 12px right padding. */}
           <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
             <div className="flex flex-col gap-4">
               <TierContextBanner

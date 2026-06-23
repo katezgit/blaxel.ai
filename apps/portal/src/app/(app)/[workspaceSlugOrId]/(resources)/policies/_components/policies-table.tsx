@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
@@ -68,8 +67,9 @@ interface PoliciesTableProps {
   policies: ReadonlyArray<Policy>;
 }
 
-export function PoliciesTable({ policies }: PoliciesTableProps) {
+export default function PoliciesTable({ policies }: PoliciesTableProps) {
   const params = useParams<{ workspaceSlugOrId: string }>();
+  const router = useRouter();
   const workspaceSlug = params.workspaceSlugOrId;
   const [typeFilter, setTypeFilter] = useState<PolicyType | "all">("all");
   const [sortKey, setSortKey] = useState<SortKey>("updated");
@@ -109,19 +109,19 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
         cell: (info) => {
           const policy = info.row.original;
           return (
-            <div className="group/policy-name flex items-center gap-1.5">
-              <Link
-                href={`/${workspaceSlug}/policies/${policy.metadata.name}`}
-                className="flex flex-col leading-tight hover:underline"
-              >
-                <span className="typography-body font-medium text-foreground">
+            <div className="flex items-center gap-1.5">
+              <div className="flex flex-col leading-tight">
+                <span className="typography-body text-foreground">
                   {policy.metadata.displayName}
                 </span>
                 <span className="font-mono typography-meta text-muted-foreground">
                   {policy.metadata.name}
                 </span>
-              </Link>
-              <span className="opacity-0 transition-opacity duration-fast ease-out-standard group-hover/policy-name:opacity-100 focus-within:opacity-100">
+              </div>
+              {/* Copy sits beside the name — proximity to the thing being
+                * copied. Row-level onClick guards against this button via
+                * target.closest("a, button"), so the click is local. */}
+              <span className="opacity-0 transition-opacity duration-fast ease-out-standard group-hover/policy-row:opacity-100 focus-within:opacity-100">
                 <CopyButton
                   value={policy.metadata.name}
                   tooltipLabel="Copy policy name"
@@ -192,7 +192,7 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
         },
       }),
     ];
-  }, [workspaceSlug]);
+  }, []);
 
   const table = useReactTable({
     data: rows as Policy[],
@@ -285,15 +285,40 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
                 </td>
               </tr>
             ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className={cn(tableRowVariants({ density: "compact" }))}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className={cn(tableCellVariants({ density: "compact" }))}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const policy = row.original;
+                const href = `/${workspaceSlug}/policies/${policy.metadata.name}`;
+                // Whole-row navigation matches the dashboard table convention
+                // (see custom-domains). Skip the push when the click lands on
+                // an interactive descendant (button, anchor) so the trailing
+                // actions cell stays a clean action zone — no cmd/middle-click
+                // surprises either.
+                const onRowClick = (
+                  event: React.MouseEvent<HTMLTableRowElement>,
+                ) => {
+                  const target = event.target as HTMLElement;
+                  if (target.closest("a, button")) return;
+                  if (event.defaultPrevented) return;
+                  router.push(href);
+                };
+                return (
+                  <tr
+                    key={row.id}
+                    onClick={onRowClick}
+                    onMouseEnter={() => router.prefetch(href)}
+                    className={cn(
+                      tableRowVariants({ density: "compact" }),
+                      "group/policy-row cursor-pointer",
+                    )}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className={cn(tableCellVariants({ density: "compact" }))}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -340,7 +365,7 @@ function EvaluationRulesHelp() {
               Within a type — UNION (OR)
             </span>
             <p className="typography-body text-muted-foreground">
-              Two Location policies allow any region named by either policy.
+              Two Location policies allow any location named by either policy.
             </p>
           </div>
           <div className="flex flex-col gap-1">

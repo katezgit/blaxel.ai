@@ -118,7 +118,7 @@ function CopyButton({ value, surface, className }: CopyButtonProps) {
     "disabled:pointer-events-none",
     isLight
       ? "text-muted-foreground hover:text-foreground hover:bg-hover-surface"
-      : "text-foreground hover:bg-white/10",
+      : "text-code-muted hover:text-code-fg hover:bg-white/10",
     className,
   )
 

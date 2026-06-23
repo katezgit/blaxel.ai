@@ -35,6 +35,8 @@ interface IndicatorGeometry {
   x: number
   width: number
   ready: boolean
+  isFirst: boolean
+  isLast: boolean
 }
 
 function useSlideIndicator(
@@ -44,14 +46,26 @@ function useSlideIndicator(
     x: 0,
     width: 0,
     ready: false,
+    isFirst: false,
+    isLast: false,
   })
 
   const measure = React.useCallback(() => {
     const list = listRef.current
     if (!list) return
-    const active = list.querySelector<HTMLElement>("[data-state='on']")
+    const items = Array.from(
+      list.querySelectorAll<HTMLElement>("[data-slot='segmented-control-item']")
+    )
+    const activeIndex = items.findIndex((el) => el.dataset.state === "on")
+    const active = items[activeIndex]
     if (!active) return
-    setGeo({ x: active.offsetLeft, width: active.offsetWidth, ready: true })
+    setGeo({
+      x: active.offsetLeft,
+      width: active.offsetWidth,
+      ready: true,
+      isFirst: activeIndex === 0,
+      isLast: activeIndex === items.length - 1,
+    })
   }, [listRef])
 
   React.useLayoutEffect(() => {
@@ -104,7 +118,8 @@ export const segmentedControlItemVariants = cva([
   "rounded-sm px-3",
   "typography-body font-medium select-none",
   "text-foreground/60",
-  "hover:text-foreground",
+  // Inactive hover — matches sidebar nav-link row hover (bg-secondary-surface + text-foreground).
+  "data-[state=off]:hover:bg-secondary-surface data-[state=off]:hover:text-foreground",
   // Active text color — paired with bg-primary thumb (primary button pair).
   "data-[state=on]:text-primary-foreground",
   "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
@@ -187,11 +202,19 @@ const SegmentedControlRoot = React.forwardRef<
 
   // Sliding thumb indicator style (inline CSS — uses var() directly).
   // --motion-state-change = var(--duration-fast) var(--ease-out-standard).
+  // Per-corner radius: round the outer edges only when the active segment is
+  // the first or last item, so the thumb hugs the track edge there. Middle
+  // segments get square corners — no rounded "pill" sitting between segments.
+  const outerRadius = "5px" // outer rounded-md (6px) minus 1px parent border
   const thumbStyle: React.CSSProperties = geo.ready
     ? {
         transform: `translateX(${geo.x}px)`,
         width: `${geo.width}px`,
-        transition: `transform var(--motion-state-change), width var(--motion-state-change)`,
+        borderTopLeftRadius: geo.isFirst ? outerRadius : "0px",
+        borderBottomLeftRadius: geo.isFirst ? outerRadius : "0px",
+        borderTopRightRadius: geo.isLast ? outerRadius : "0px",
+        borderBottomRightRadius: geo.isLast ? outerRadius : "0px",
+        transition: `transform var(--motion-state-change), width var(--motion-state-change), border-radius var(--motion-state-change)`,
       }
     : { opacity: 0 }
 
@@ -217,7 +240,6 @@ const SegmentedControlRoot = React.forwardRef<
           data-slot="segmented-control-indicator"
           className={cn(
             "absolute top-0 bottom-0 left-0 bg-primary pointer-events-none",
-            "rounded-[5px]", // eslint-disable-line no-restricted-syntax -- structural compensation: outer rounded-md (6px) minus 1px parent border so the thumb's corner sits flush inside the track's. No token expresses "outer-radius minus border-width".
           )}
           style={thumbStyle}
         />

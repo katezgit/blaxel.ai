@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { ArrowUpRight } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { CodeBlock } from "@repo/ui/components/code-block";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
@@ -23,6 +24,7 @@ import {
   computeBodyDirty,
   FlavorUnavailableNotice,
   IdentityEditableFields,
+  LabelsEditor,
   LocationBody,
   PolicyTypeSelectField,
   ResourceTypesField,
@@ -30,6 +32,7 @@ import {
   TokenUsageBody,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-pieces";
 import {
+  labelsRecordToEntries,
   POLICY_TYPE_BY_VALUE,
   policyFormSchema,
   readPolicyTypeParam,
@@ -47,13 +50,11 @@ import {
   DialogTitle,
 } from "@repo/ui/components/dialog";
 
-// ─── View ────────────────────────────────────────────────────────────────────
-
 interface CreatePolicyViewProps {
   workspaceSlug: string;
 }
 
-export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
+export default function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const searchParams = useSearchParams();
   const typeParam = readPolicyTypeParam(searchParams.get("type"));
@@ -116,8 +117,6 @@ function Header({ listHref }: { listHref: string }) {
   );
 }
 
-// ─── Form orchestration ──────────────────────────────────────────────────────
-
 interface CreatePolicyFormProps {
   listHref: string;
   initialType: PolicyType | null;
@@ -145,6 +144,7 @@ function CreatePolicyForm({
           duplicateFrom.spec.type === "flavor"
             ? "location"
             : duplicateFrom.spec.type,
+        labels: [...labelsRecordToEntries(duplicateFrom.metadata.labels)],
       };
     }
     return {
@@ -155,6 +155,7 @@ function CreatePolicyForm({
         initialType === "maxToken" || initialType === "location"
           ? initialType
           : "location",
+      labels: [],
     };
   }, [duplicateFrom, initialType]);
 
@@ -271,6 +272,15 @@ function CreatePolicyForm({
         />
         <IdentityEditableFields form={form} />
       </section>
+
+      <section className="flex flex-col gap-4">
+        <StepHeading
+          index={5}
+          title="Labels"
+          description="Key/value pairs for organizing and filtering. Optional."
+        />
+        <LabelsEditor form={form} />
+      </section>
     </>
   );
 
@@ -361,8 +371,6 @@ function CreatePolicyForm({
   );
 }
 
-// ─── Section 5: code reference panel — language-tabbed, reflects form state ──
-
 interface CodeReferencePanelProps {
   policyType: PolicyType;
   name: string;
@@ -398,7 +406,7 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
       className="flex min-w-0 flex-col gap-4"
     >
       <StepHeading
-        index={5}
+        index={6}
         title="Create policy"
         description="Review the artifact below, then create."
         headingId="create-policy-reference-heading"
@@ -422,21 +430,35 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
           </TabsContent>
         ))}
       </Tabs>
+      {/* Mirror of the Policies list-page footer pattern — Docs + API
+        * reference inline under the snippet so the developer eye lands on
+        * both affordances without leaving the code panel. */}
       <p className="typography-caption text-muted-foreground">
         <Link
           href="https://docs.blaxel.ai/Model-Governance/Policies"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-muted-foreground hover:text-foreground hover:underline"
+          aria-label="Policies documentation, opens in new tab"
+          className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
         >
-          Policies docs
+          Docs
+          <ArrowUpRight aria-hidden="true" className="size-3 self-center" />
+        </Link>
+        {" · "}
+        <Link
+          href="https://docs.blaxel.ai/api-reference/policies/create-or-update-policy"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Policies API reference, opens in new tab"
+          className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
+        >
+          API reference
+          <ArrowUpRight aria-hidden="true" className="size-3 self-center" />
         </Link>
       </p>
     </aside>
   );
 }
-
-// ─── Snippet builders ────────────────────────────────────────────────────────
 
 type SnippetBuildContext = CodeReferencePanelProps;
 
@@ -616,8 +638,6 @@ function indent(text: string, spaces: number): string {
     .map((line) => `${pad}${line}`)
     .join("\n");
 }
-
-// ─── Form footer — pinned at the bottom of the form column ───────────────────
 
 function FormFooter({
   onCancel,

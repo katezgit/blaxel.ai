@@ -14,7 +14,7 @@ interface PoliciesPageHeaderProps {
   tierLocked?: boolean;
 }
 
-export function PoliciesPageHeader({
+export default function PoliciesPageHeader({
   description,
   createHref,
   tierLocked = false,

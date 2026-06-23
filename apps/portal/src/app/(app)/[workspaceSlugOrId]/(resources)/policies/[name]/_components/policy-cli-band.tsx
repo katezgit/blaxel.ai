@@ -2,14 +2,14 @@
 
 import { CodeBlock } from "@repo/ui/components/code-block";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type { Policy } from "@/lib/mock/policies";
 
 interface PolicyCliBandProps {
   policy: Policy;
 }
 
-export function PolicyCliBand({ policy }: PolicyCliBandProps) {
+export default function PolicyCliBand({ policy }: PolicyCliBandProps) {
   const yaml = buildYamlManifest(policy);
   const blGetCommand = `bl policy get ${policy.metadata.name}`;
   const blApplyCommand = `bl apply -f - <<'EOF'\n${yaml}\nEOF`;

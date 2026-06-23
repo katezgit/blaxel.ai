@@ -1,8 +1,14 @@
 "use client";
 
 import { useId, type ReactNode } from "react";
-import { Controller, type UseFormReturn } from "react-hook-form";
-import { AlertTriangle, Globe, MapPin } from "lucide-react";
+import {
+  Controller,
+  useFieldArray,
+  type UseFormReturn,
+} from "react-hook-form";
+import { AlertTriangle, Globe, MapPin, Plus, X } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
+import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
 import {
   Select,
@@ -30,8 +36,7 @@ import {
   type TokenLimits,
 } from "./form-schema";
 
-// ─── Dirty check — chip state lives outside RHF, so isDirty needs help ──────
-
+// Dirty check — chip state lives outside RHF, so isDirty needs help.
 interface BodyDirtyInitial {
   locations: ReadonlyArray<LocationItem>;
   maxTokens: TokenLimits | null;
@@ -64,8 +69,6 @@ export function computeBodyDirty(
   return false;
 }
 
-// ─── Section field group — label + optional hint above a control group ──────
-
 interface FieldGroupProps {
   label: string;
   hint?: ReactNode;
@@ -89,8 +92,6 @@ export function FieldGroup({ label, hint, children }: FieldGroupProps) {
   );
 }
 
-// ─── Numbered section heading (Create page only) ─────────────────────────────
-
 interface StepHeadingProps {
   index: number;
   title: string;
@@ -113,13 +114,11 @@ export function StepHeading({
         <span className="font-mono text-meta-foreground">{index}.</span> {title}
       </h2>
       {description ? (
-        <p className="text-muted-foreground">{description}</p>
+        <p className="typography-caption text-muted-foreground">{description}</p>
       ) : null}
     </header>
   );
 }
-
-// ─── Policy type — selectable (Create) ───────────────────────────────────────
 
 interface PolicyTypeSelectFieldProps {
   form: UseFormReturn<PolicyFormValues>;
@@ -219,8 +218,6 @@ function PolicyTypeOptionRow({ option }: { option: PolicyTypeOption }) {
   );
 }
 
-// ─── Policy type — read-only display (Edit) ──────────────────────────────────
-
 interface PolicyTypeReadOnlyFieldProps {
   policyType: PolicyType;
 }
@@ -234,10 +231,11 @@ export function PolicyTypeReadOnlyField({
     <div className="flex flex-col gap-1.5">
       <Field label="Policy type">
         <div
+          role="textbox"
+          aria-readonly="true"
           className={cn(
             "flex w-full items-center gap-2 rounded-md border border-border bg-muted-surface px-3 py-2",
           )}
-          aria-readonly="true"
         >
           <Icon
             aria-hidden="true"
@@ -255,8 +253,6 @@ export function PolicyTypeReadOnlyField({
   );
 }
 
-// ─── Flavor deep-link / unavailable notice ───────────────────────────────────
-
 export function FlavorUnavailableNotice() {
   return (
     <div className="flex items-start gap-2 rounded-md border border-state-warning/40 bg-state-warning-subtle px-4 py-3">
@@ -272,8 +268,6 @@ export function FlavorUnavailableNotice() {
     </div>
   );
 }
-
-// ─── Body editor — location chips ────────────────────────────────────────────
 
 interface LocationBodyProps {
   value: ReadonlyArray<LocationItem>;
@@ -331,8 +325,6 @@ export function LocationBody({ value, onChange }: LocationBodyProps) {
     </div>
   );
 }
-
-// ─── Body editor — token-usage caps + period ─────────────────────────────────
 
 interface TokenUsageBodyProps {
   value: TokenLimits;
@@ -433,8 +425,6 @@ function TokenCapField({
   );
 }
 
-// ─── Resource type field ─────────────────────────────────────────────────────
-
 interface ResourceTypesFieldProps {
   form: UseFormReturn<PolicyFormValues>;
 }
@@ -487,7 +477,89 @@ export function ResourceTypesField({ form }: ResourceTypesFieldProps) {
   );
 }
 
-// ─── Identity — editable (Create) ────────────────────────────────────────────
+interface LabelsEditorProps {
+  form: UseFormReturn<PolicyFormValues>;
+}
+
+export function LabelsEditor({ form }: LabelsEditorProps) {
+  const { control, register, formState } = form;
+  const { fields, append, remove } = useFieldArray({ control, name: "labels" });
+  const rowErrors = formState.errors.labels;
+  const arrayError =
+    rowErrors && "root" in rowErrors ? rowErrors.root?.message : undefined;
+
+  return (
+    <div className="flex flex-col gap-2">
+      {fields.length === 0 ? (
+        <p className="typography-caption text-muted-foreground">
+          No labels yet.
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {fields.map((field, index) => {
+            const keyError = Array.isArray(rowErrors)
+              ? rowErrors[index]?.key?.message
+              : undefined;
+            const valueError = Array.isArray(rowErrors)
+              ? rowErrors[index]?.value?.message
+              : undefined;
+            return (
+              <li key={field.id} className="flex flex-col gap-1">
+                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-2">
+                  <Input
+                    aria-label={`Label key ${index + 1}`}
+                    placeholder="env"
+                    className="font-mono"
+                    {...register(`labels.${index}.key` as const)}
+                  />
+                  <Input
+                    aria-label={`Label value ${index + 1}`}
+                    placeholder="prod"
+                    className="font-mono"
+                    {...register(`labels.${index}.value` as const)}
+                  />
+                  <IconButton
+                    type="button"
+                    variant="ghost"
+                    aria-label={`Remove label ${index + 1}`}
+                    onClick={() => remove(index)}
+                  >
+                    <X aria-hidden="true" />
+                  </IconButton>
+                </div>
+                {(keyError || valueError) && (
+                  <span
+                    role="alert"
+                    className="typography-caption font-medium text-state-errored-text"
+                  >
+                    {keyError ?? valueError}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {arrayError && (
+        <span
+          role="alert"
+          className="typography-caption font-medium text-state-errored-text"
+        >
+          {arrayError}
+        </span>
+      )}
+      <Button
+        type="button"
+        variant="ghost"
+        className="self-start"
+        onClick={() => append({ key: "", value: "" })}
+      >
+        <Plus aria-hidden="true" />
+        Add label
+      </Button>
+    </div>
+  );
+}
 
 interface IdentityEditableFieldsProps {
   form: UseFormReturn<PolicyFormValues>;
@@ -513,7 +585,7 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
             {...register("displayName")}
           />
         </Field>
-        <p id={displayHelperId} className="text-muted-foreground">
+        <p id={displayHelperId} className="typography-caption text-muted-foreground">
           Shown in the dashboard.
         </p>
       </div>
@@ -526,7 +598,7 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
             {...register("name")}
           />
         </Field>
-        <p id={nameHelperId} className="text-muted-foreground">
+        <p id={nameHelperId} className="typography-caption text-muted-foreground">
           Used in <code className="typography-code">bl</code> commands and{" "}
           <code className="typography-code">spec.policies[]</code>.
           Auto-derived; editable.
@@ -541,8 +613,6 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
     </>
   );
 }
-
-// ─── Identity — partial read-only (Edit: displayName editable, name fixed) ──
 
 interface IdentityEditableNameOnlyFieldsProps {
   form: UseFormReturn<PolicyFormValues>;
@@ -569,17 +639,18 @@ export function IdentityEditableNameOnlyFields({
             {...register("displayName")}
           />
         </Field>
-        <p id={displayHelperId} className="text-muted-foreground">
+        <p id={displayHelperId} className="typography-caption text-muted-foreground">
           Shown in the dashboard.
         </p>
       </div>
       <div className="flex max-w-sm flex-col gap-1.5">
         <Field label="Name">
           <div
+            role="textbox"
+            aria-readonly="true"
             className={cn(
               "flex w-full items-center rounded-md border border-border bg-muted-surface px-3 py-2 font-mono typography-body text-foreground",
             )}
-            aria-readonly="true"
           >
             {fixedName}
           </div>

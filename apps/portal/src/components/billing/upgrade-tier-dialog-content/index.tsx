@@ -12,8 +12,8 @@ import {
 import { SegmentedControl } from "@repo/ui/components/segmented-control";
 import { useAccountState } from "@/lib/mock/account-context";
 import type { DisplayTier } from "@/lib/mock/billing-tiers";
-import { OneTimeTopUpFlow } from "./one-time-top-up-flow";
-import { MonthlyTopUpFlow } from "./monthly-top-up-flow";
+import OneTimeTopUpFlow from "./one-time-top-up-flow";
+import MonthlyTopUpFlow from "./monthly-top-up-flow";
 
 type Mode = "one-time" | "monthly";
 
@@ -32,14 +32,7 @@ const formatUsd = (n: number): string =>
     maximumFractionDigits: 0,
   }).format(n);
 
-/**
- * The full body of the rebuilt UpgradeTierDialog. Owns the mode toggle; each
- * mode mounts its own flow component (no `variant=` / `mode=` props shared).
- * Switching modes resets the flow's internal step state via `key={mode}`.
- *
- * Self-contained — no imports from `apps/portal/src/app/(account)/**`.
- */
-export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentProps) {
+export default function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentProps) {
   const [mode, setMode] = useState<Mode>("monthly");
   const { state } = useAccountState();
   // `state.tier` is 0|1|2|3 in the existing fixture. Cast to the wider

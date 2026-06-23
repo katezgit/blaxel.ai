@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type { PolicyFlavor } from "@/lib/mock/policies";
 
 interface FlavorClauseBandProps {
@@ -10,7 +10,7 @@ interface FlavorClauseBandProps {
   onRequestEdit: () => void;
 }
 
-export function FlavorClauseBand({
+export default function FlavorClauseBand({
   flavors,
   onRequestEdit,
 }: FlavorClauseBandProps) {
@@ -25,7 +25,7 @@ export function FlavorClauseBand({
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="typography-label font-medium text-foreground">
+            <h3 className="typography-body font-semibold text-foreground">
               Allowed flavors
             </h3>
             <Button
@@ -61,7 +61,7 @@ export function FlavorClauseBand({
             className="mt-0.5 size-4 text-state-warning-text"
           />
           <div className="flex flex-col gap-1">
-            <p className="typography-label font-medium text-foreground">
+            <p className="typography-body font-semibold text-foreground">
               Flavor policies are not yet available in the dashboard.
             </p>
             <p className="typography-caption text-muted-foreground">

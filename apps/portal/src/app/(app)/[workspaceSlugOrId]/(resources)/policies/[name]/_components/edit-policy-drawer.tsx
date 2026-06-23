@@ -33,12 +33,15 @@ import {
   FieldGroup,
   FlavorUnavailableNotice,
   IdentityEditableNameOnlyFields,
+  LabelsEditor,
   LocationBody,
   PolicyTypeReadOnlyField,
   ResourceTypesField,
   TokenUsageBody,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-pieces";
 import {
+  labelsEntriesToRecord,
+  labelsRecordToEntries,
   POLICY_TYPE_BY_VALUE,
   policyFormSchema,
   type LocationItem,
@@ -46,14 +49,8 @@ import {
   type TokenLimits,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
 
-// Drawer state mirrors the delete-dialog shape: `policy: null` = closed,
-// `policy: Policy` = open with that policy's data. `focusTarget` decides which
-// field to land focus on after mount — header click lands on display-name,
-// clause-band hover Edit lands on the clause body (the section the user was
-// reading).
-export type EditPolicyDrawerState =
-  | { policy: Policy; focusTarget: "displayName" | "clause" }
-  | null;
+// Drawer state mirrors the delete-dialog shape: null = closed, Policy = open.
+export type EditPolicyDrawerState = Policy | null;
 
 interface EditPolicyDrawerProps {
   state: EditPolicyDrawerState;
@@ -72,9 +69,8 @@ export function EditPolicyDrawer({ state, onClose }: EditPolicyDrawerProps) {
       <DrawerContent size="lg" aria-describedby={undefined}>
         {state !== null && (
           <EditPolicyForm
-            key={state.policy.metadata.name}
-            policy={state.policy}
-            focusTarget={state.focusTarget}
+            key={state.metadata.name}
+            policy={state}
             onClose={onClose}
           />
         )}
@@ -85,12 +81,10 @@ export function EditPolicyDrawer({ state, onClose }: EditPolicyDrawerProps) {
 
 interface EditPolicyFormProps {
   policy: Policy;
-  focusTarget: "displayName" | "clause";
   onClose: () => void;
 }
 
-function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
-  void focusTarget;
+function EditPolicyForm({ policy, onClose }: EditPolicyFormProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const queryClient = useQueryClient();
 
@@ -102,6 +96,7 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
       name: policy.metadata.name,
       resourceTypes: [...policy.spec.resourceTypes],
       policyType: policy.spec.type,
+      labels: [...labelsRecordToEntries(policy.metadata.labels)],
     },
   });
 
@@ -149,6 +144,7 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
     await updatePolicy(accountId, workspaceId, policy.metadata.name, {
       displayName: values.displayName,
       resourceTypes: values.resourceTypes,
+      labels: labelsEntriesToRecord(values.labels),
       locations: policy.spec.type === "location" ? locations : undefined,
       maxTokens:
         policy.spec.type === "maxToken"
@@ -233,6 +229,13 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
             form={form}
             fixedName={policy.metadata.name}
           />
+
+          <FieldGroup
+            label="Labels"
+            hint="Key/value pairs for organizing and filtering."
+          >
+            <LabelsEditor form={form} />
+          </FieldGroup>
         </DrawerBody>
 
         <DrawerFooter className="flex justify-end gap-2">

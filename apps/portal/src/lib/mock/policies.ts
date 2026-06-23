@@ -306,6 +306,7 @@ export function deletePolicy(
 export interface PolicyUpdatePatch {
   displayName: string;
   resourceTypes: ReadonlyArray<PolicyResourceType>;
+  labels: Record<string, string>;
   locations?: ReadonlyArray<PolicyLocation>;
   maxTokens?: PolicyMaxTokens;
   updatedBy: string;
@@ -334,6 +335,7 @@ export async function updatePolicy(
     metadata: {
       ...current.metadata,
       displayName: patch.displayName,
+      labels: patch.labels,
       updatedAt: new Date().toISOString(),
       updatedBy: patch.updatedBy,
     },

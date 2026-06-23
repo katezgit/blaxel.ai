@@ -28,7 +28,7 @@ const capabilities = [
   },
 ] as const;
 
-export function PoliciesEmptyState({ createHref }: PoliciesEmptyStateProps) {
+export default function PoliciesEmptyState({ createHref }: PoliciesEmptyStateProps) {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
       <section

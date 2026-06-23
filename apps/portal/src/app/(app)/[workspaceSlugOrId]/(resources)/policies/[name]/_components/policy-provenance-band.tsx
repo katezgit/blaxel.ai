@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import { policyTypeLabel } from "@/lib/mock/policies";
 import type { PolicyMetadata, PolicyType } from "@/lib/mock/policies";
 
@@ -21,7 +21,7 @@ interface PolicyProvenanceBandProps {
   policyType: PolicyType;
 }
 
-export function PolicyProvenanceBand({
+export default function PolicyProvenanceBand({
   metadata,
   policyType,
 }: PolicyProvenanceBandProps) {
@@ -89,7 +89,7 @@ interface ProvenanceRowProps {
 function ProvenanceRow({ label, children }: ProvenanceRowProps) {
   return (
     <>
-      <dt className="typography-label font-medium text-muted-foreground">
+      <dt className="typography-body font-medium text-muted-foreground">
         {label}
       </dt>
       <dd className="flex flex-wrap items-baseline gap-x-1">{children}</dd>

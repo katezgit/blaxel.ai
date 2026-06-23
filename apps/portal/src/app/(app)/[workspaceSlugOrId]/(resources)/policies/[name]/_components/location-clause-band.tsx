@@ -2,7 +2,7 @@
 
 import { Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type { PolicyLocation } from "@/lib/mock/policies";
 
 interface LocationClauseBandProps {
@@ -10,7 +10,7 @@ interface LocationClauseBandProps {
   onRequestEdit: () => void;
 }
 
-export function LocationClauseBand({
+export default function LocationClauseBand({
   locations,
   onRequestEdit,
 }: LocationClauseBandProps) {
@@ -24,7 +24,7 @@ export function LocationClauseBand({
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="typography-label font-medium text-foreground">
+            <h3 className="typography-body font-semibold text-foreground">
               Allowed locations
             </h3>
             <Button

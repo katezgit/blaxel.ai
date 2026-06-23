@@ -10,7 +10,7 @@ import {
   CollapsibleTrigger,
 } from "@repo/ui/components/collapsible";
 import { CopyButton } from "@repo/ui/components/copy-button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type {
   Policy,
   PolicyUsageCounts,
@@ -40,7 +40,7 @@ const KIND_ROWS: ReadonlyArray<KindRow> = [
   { key: "sandboxes", label: "Sandboxes", routeSegment: "sandboxes" },
 ];
 
-export function PolicyUsageBand({
+export default function PolicyUsageBand({
   policy,
   usages,
   workspaceSlug,
@@ -52,8 +52,8 @@ export function PolicyUsageBand({
     const deleteCommand = `bl policy delete ${policy.metadata.name}`;
     return (
       <BandFrame label="Usage" className="border-t-0 pt-0">
-        <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-background px-5 py-5">
-          <h3 className="typography-label font-medium text-foreground">
+        <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-background p-6">
+          <h3 className="typography-body font-semibold text-foreground">
             No workloads reference this policy.
           </h3>
           <p className="typography-body text-muted-foreground">
@@ -88,7 +88,7 @@ export function PolicyUsageBand({
       <div className="flex flex-col gap-3">
         <div className="flex flex-col rounded-md border border-border bg-background">
           <div className="border-b border-border px-4 py-2">
-            <h3 className="typography-label font-medium text-foreground">
+            <h3 className="typography-body font-semibold text-foreground">
               Workloads referencing this policy
             </h3>
           </div>

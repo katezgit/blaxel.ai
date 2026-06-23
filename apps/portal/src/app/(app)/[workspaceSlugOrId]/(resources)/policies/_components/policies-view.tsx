@@ -2,17 +2,18 @@
 
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { ArrowUpRight } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { useAccountState } from "@/lib/mock/account-context";
 import { policyQueries } from "@/lib/query/policies";
 import type { Policy } from "@/lib/mock/policies";
-import { PoliciesTierLockedView } from "./policies-tier-locked-view";
-import { PoliciesPageHeader } from "./policies-page-header";
-import { PoliciesTable } from "./policies-table";
-import { PoliciesTableSkeleton } from "./policies-table-skeleton";
-import { PoliciesErrorBand } from "./policies-error-band";
-import { PoliciesEmptyState } from "./policies-empty-state";
+import PoliciesTierLockedView from "./policies-tier-locked-view";
+import PoliciesPageHeader from "./policies-page-header";
+import PoliciesTable from "./policies-table";
+import PoliciesTableSkeleton from "./policies-table-skeleton";
+import PoliciesErrorBand from "./policies-error-band";
+import PoliciesEmptyState from "./policies-empty-state";
 
 // Dev simulation harness — `?state=loading|error|empty` overrides the live
 // fetch state so each wireframe state can be visually verified without
@@ -26,11 +27,32 @@ function readStateSim(value: string | null): StateSim {
 const LIST_DESCRIPTION = (
   <p className="max-w-2xl typography-body text-muted-foreground">
     Control where workloads run, which hardware they use, and token limits for
-    governed deployments.
+    governed deployments.{" "}
+    <a
+      href="https://docs.blaxel.ai/Model-Governance/Policies"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Policies documentation, opens in new tab"
+      className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
+    >
+      Docs
+      <ArrowUpRight aria-hidden="true" className="size-3 self-center" />
+    </a>
+    {" · "}
+    <a
+      href="https://docs.blaxel.ai/api-reference/policies/list-policies"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Policies API reference, opens in new tab"
+      className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
+    >
+      API reference
+      <ArrowUpRight aria-hidden="true" className="size-3 self-center" />
+    </a>
   </p>
 );
 
-export function PoliciesView() {
+export default function PoliciesView() {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { state } = useAccountState();
   const searchParams = useSearchParams();

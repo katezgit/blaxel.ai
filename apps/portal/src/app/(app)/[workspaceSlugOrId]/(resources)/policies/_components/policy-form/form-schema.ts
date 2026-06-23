@@ -6,8 +6,6 @@ import type {
   PolicyType,
 } from "@/lib/mock/policies";
 
-// ─── Policy type catalog ─────────────────────────────────────────────────────
-
 export interface PolicyTypeOption {
   value: PolicyType;
   label: string;
@@ -55,8 +53,6 @@ export const POLICY_TYPE_BY_VALUE: Record<PolicyType, PolicyTypeOption> =
     {} as Record<PolicyType, PolicyTypeOption>,
   );
 
-// ─── Resource type catalog ───────────────────────────────────────────────────
-
 export const RESOURCE_TYPE_OPTIONS: ReadonlyArray<{
   value: PolicyResourceType;
   label: string;
@@ -68,8 +64,6 @@ export const RESOURCE_TYPE_OPTIONS: ReadonlyArray<{
   { value: "application", label: "Applications" },
 ];
 
-// ─── Granularity catalog (for maxToken body) ─────────────────────────────────
-
 export const GRANULARITY_OPTIONS: ReadonlyArray<{
   value: MaxTokenGranularity;
   label: string;
@@ -80,7 +74,24 @@ export const GRANULARITY_OPTIONS: ReadonlyArray<{
   { value: "minute", label: "Minute" },
 ];
 
-// ─── Form schema — shared between Create and Edit wrappers ───────────────────
+// Labels — Record<string, string> on the wire; the form holds them as an
+// ordered array so add/remove/reorder stay stable and useFieldArray can drive
+// the editor without churning React keys.
+export const labelEntrySchema = z.object({
+  key: z
+    .string()
+    .trim()
+    .min(1, "Key is required.")
+    .max(63, "Max 63 characters.")
+    .regex(/^[a-z0-9-]+$/, "Lowercase letters, digits, and hyphens only."),
+  value: z
+    .string()
+    .trim()
+    .min(1, "Value is required.")
+    .max(63, "Max 63 characters."),
+});
+
+export type LabelEntry = z.infer<typeof labelEntrySchema>;
 
 export const policyFormSchema = z.object({
   displayName: z
@@ -98,12 +109,37 @@ export const policyFormSchema = z.object({
     .array(z.enum(["agent", "model", "function", "sandbox", "application"]))
     .min(1, "Select at least one target."),
   policyType: z.enum(["location", "maxToken", "flavor"]),
+  labels: z.array(labelEntrySchema).refine(
+    (rows) => {
+      const keys = rows.map((row) => row.key.trim()).filter((k) => k.length > 0);
+      return new Set(keys).size === keys.length;
+    },
+    { message: "Label keys must be unique." },
+  ),
 });
 
 export type PolicyFormValues = z.infer<typeof policyFormSchema>;
 
-// ─── Body-editor types (local component state, not part of RHF schema) ───────
+export function labelsRecordToEntries(
+  record: Record<string, string> | undefined,
+): ReadonlyArray<LabelEntry> {
+  if (!record) return [];
+  return Object.entries(record).map(([key, value]) => ({ key, value }));
+}
 
+export function labelsEntriesToRecord(
+  entries: ReadonlyArray<LabelEntry>,
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const { key, value } of entries) {
+    const k = key.trim();
+    if (k.length === 0) continue;
+    out[k] = value.trim();
+  }
+  return out;
+}
+
+// Body-editor types — local component state, not part of the RHF schema.
 export interface LocationItem {
   type: "continent" | "country";
   name: string;
@@ -123,8 +159,6 @@ export const SAMPLE_LOCATIONS: ReadonlyArray<LocationItem> = [
   { type: "continent", name: "North America" },
   { type: "country", name: "United States of America" },
 ];
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 export function readPolicyTypeParam(value: string | null): PolicyType | null {
   if (value === "location" || value === "maxToken" || value === "flavor") {

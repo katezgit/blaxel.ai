@@ -1,10 +1,10 @@
-import { GitMerge, Globe, Gauge, Sparkles } from "lucide-react";
+import { GitMerge, Globe, Gauge, Rocket } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import { cn } from "@repo/ui/lib/cn";
-import { UpgradeTierDialog } from "@/components/billing/upgrade-tier-dialog";
-import { PoliciesPageHeader } from "./policies-page-header";
+import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
+import PoliciesPageHeader from "./policies-page-header";
 
 interface Capability {
   icon: LucideIcon;
@@ -30,7 +30,7 @@ const CAPABILITIES: ReadonlyArray<Capability> = [
   },
 ];
 
-export function PoliciesTierLockedView() {
+export default function PoliciesTierLockedView() {
   return (
     <div className={cn("page-shell", "gap-8")}>
       {/* Locked state: header carries the title + Tier badge only — the card
@@ -49,7 +49,7 @@ export function PoliciesTierLockedView() {
             shouting. On narrow viewports the divider rotates to horizontal. */}
         <Card className="overflow-hidden border-0 p-0 sm:border">
           <div className="grid lg:grid-cols-[2fr_1fr]">
-            <div className="flex flex-col gap-5 p-6 lg:p-8">
+            <div className="flex flex-col gap-6 p-6 lg:p-8">
               <div className="flex flex-col gap-2">
                 <h3 className="typography-subtitle font-semibold text-foreground">
                   What you can do with Policies
@@ -90,7 +90,7 @@ export function PoliciesTierLockedView() {
                 aria-hidden="true"
                 className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-primary"
               >
-                <Sparkles className="size-5" />
+                <Rocket className="size-5" />
               </span>
               <h3 className="typography-subtitle font-semibold text-foreground">
                 Ready to ship?
