@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
+import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { policyQueries } from "@/lib/query/policies";
 import type { Policy, PolicyUsages } from "@/lib/mock/policies";
@@ -31,6 +32,7 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
   const { accountId, workspaceId } = useCurrentTenancy();
   const searchParams = useSearchParams();
   const stateSim = readStateSim(searchParams.get("state"));
+  const listHref = `/${workspaceSlug}/policies`;
 
   const policyQuery = useQuery({
     ...policyQueries.detail(accountId, workspaceId, policyName),
@@ -52,7 +54,10 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
   if (stateSim === "error" || policyQuery.isError) {
     return (
       <div className="page-shell">
-        <Breadcrumb workspaceSlug={workspaceSlug} policyName={policyName} />
+        <Breadcrumb
+          parent={{ href: listHref, label: "Policies" }}
+          current={policyName}
+        />
         <div
           role="alert"
           aria-live="assertive"
@@ -75,7 +80,7 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
               Retry
             </Button>
             <Button asChild variant="ghost">
-              <Link href={`/${workspaceSlug}/policies`}>
+              <Link href={listHref}>
                 <ArrowLeft aria-hidden="true" />
                 Back to Policies
               </Link>
@@ -90,7 +95,10 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
   if (policy == null) {
     return (
       <div className="page-shell">
-        <Breadcrumb workspaceSlug={workspaceSlug} policyName={policyName} />
+        <Breadcrumb
+          parent={{ href: listHref, label: "Policies" }}
+          current={policyName}
+        />
         <div className="rounded-lg border border-border bg-card px-6 py-10">
           <h2 className="typography-subtitle font-semibold text-foreground">
             Policy not found
@@ -102,7 +110,7 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
           </p>
           <div className="mt-4 flex items-center gap-3">
             <Button asChild variant="primary">
-              <Link href={`/${workspaceSlug}/policies`}>
+              <Link href={listHref}>
                 Back to Policies
               </Link>
             </Button>
@@ -117,11 +125,7 @@ export function PolicyDetailView({ workspaceSlug, policyName }: PolicyDetailView
 
   return (
     <div className="page-shell">
-      <Breadcrumb
-        workspaceSlug={workspaceSlug}
-        policyName={policy.metadata.displayName}
-      />
-      <PolicyDetailHeader policy={policy} />
+      <PolicyDetailHeader policy={policy} workspaceSlug={workspaceSlug} />
       <ClauseBand policy={policy} />
       <PolicyUsageBand
         policy={policy}
@@ -144,27 +148,6 @@ function ClauseBand({ policy }: { policy: Policy }) {
     return <MaxTokenClauseBand maxTokens={policy.spec.maxTokens ?? null} />;
   }
   return <FlavorClauseBand flavors={policy.spec.flavors ?? []} />;
-}
-
-function Breadcrumb({
-  workspaceSlug,
-  policyName,
-}: {
-  workspaceSlug: string;
-  policyName: string;
-}) {
-  return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-muted-foreground">
-      <Link
-        href={`/${workspaceSlug}/policies`}
-        className="typography-label hover:text-foreground"
-      >
-        Policies
-      </Link>
-      <span aria-hidden="true" className="typography-label">/</span>
-      <span className="typography-label text-foreground">{policyName}</span>
-    </nav>
-  );
 }
 
 // Re-export Policy/PolicyUsages here for type narrowing in band components.

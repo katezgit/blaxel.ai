@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 
@@ -11,20 +9,16 @@ export function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkeletonProp
   const listHref = `/${workspaceSlug}/custom-domains`;
   return (
     <>
-      <div className="flex flex-col gap-3">
+      <header className="flex flex-col gap-3">
         <Breadcrumb parent={{ href: listHref, label: "Custom domains" }} current="—" />
-        <Link
-          href={listHref}
-          className="inline-flex items-center gap-1 self-start typography-label text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft aria-hidden="true" className="size-3.5" />
-          Custom domains
-        </Link>
-        <div className="flex flex-col gap-2">
-          <SkeletonBar className="h-7 w-72" />
-          <SkeletonBar className="h-4 w-96" />
+        <div className="flex items-start gap-3">
+          <SkeletonBar className="size-10 rounded-full" />
+          <div className="page-header min-w-0">
+            <SkeletonBar className="h-7 w-72" />
+            <SkeletonBar className="h-4 w-96" />
+          </div>
         </div>
-      </div>
+      </header>
 
       {Array.from({ length: 4 }).map((_, i) => (
         <BandSkeleton key={i} />

@@ -1,28 +1,23 @@
 "use client";
 
-import Link from "next/link";
 import { Skeleton } from "@repo/ui/components/skeleton";
+import { Breadcrumb } from "@/components/shell/breadcrumb";
 
 export function PolicyDetailSkeleton({ workspaceSlug }: { workspaceSlug: string }) {
+  const listHref = `/${workspaceSlug}/policies`;
   return (
     <>
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-muted-foreground">
-        <Link
-          href={`/${workspaceSlug}/policies`}
-          className="typography-label hover:text-foreground"
-        >
-          Policies
-        </Link>
-        <span aria-hidden="true" className="typography-label">/</span>
-        <Skeleton className="h-3.5 w-32 rounded-sm" />
-      </nav>
-
-      <header className="flex flex-col gap-2">
-        <Skeleton className="h-7 w-64 rounded-sm" />
-        <Skeleton className="h-3 w-24 rounded-sm" />
-        <div className="mt-2 flex gap-6">
-          <Skeleton className="h-3.5 w-32 rounded-sm" />
-          <Skeleton className="h-3.5 w-48 rounded-sm" />
+      <header className="flex flex-col gap-3">
+        <Breadcrumb
+          parent={{ href: listHref, label: "Policies" }}
+          current="—"
+        />
+        <div className="flex items-start gap-3">
+          <Skeleton className="size-10 rounded-full" />
+          <div className="page-header min-w-0">
+            <Skeleton className="h-7 w-64 rounded-sm" />
+            <Skeleton className="h-4 w-48 rounded-sm" />
+          </div>
         </div>
       </header>
 

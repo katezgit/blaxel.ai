@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { MoreHorizontal, Pencil, Check, Copy } from "lucide-react";
+import { MoreHorizontal, Pencil, ShieldCheck } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
@@ -10,47 +9,46 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
+import { Breadcrumb } from "@/components/shell/breadcrumb";
+import { DetailPageHeader } from "@/components/shell/detail-page-header";
+import { IconAvatar } from "@/components/shell/icon-avatar";
 import type { Policy } from "@/lib/mock/policies";
-import { joinResourceTypes, policyTypeLabel } from "@/lib/mock/policies";
+import { policyTypeLabel, totalUsage } from "@/lib/mock/policies";
 
 interface PolicyDetailHeaderProps {
   policy: Policy;
+  workspaceSlug: string;
 }
 
-export function PolicyDetailHeader({ policy }: PolicyDetailHeaderProps) {
-  const [copied, setCopied] = useState(false);
-
-  async function copyName() {
-    await navigator.clipboard.writeText(policy.metadata.name);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
+export function PolicyDetailHeader({ policy, workspaceSlug }: PolicyDetailHeaderProps) {
+  const heading = policy.metadata.displayName || policy.metadata.name;
+  const total = totalUsage(policy.usage);
+  const listHref = `/${workspaceSlug}/policies`;
 
   return (
-    <header className="flex flex-col gap-2">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="typography-display font-semibold text-foreground">
-            {policy.metadata.displayName}
-          </h1>
-          <button
-            type="button"
-            onClick={copyName}
-            className="inline-flex items-center gap-1.5 self-start rounded-sm font-mono typography-meta text-muted-foreground hover:text-foreground focus-visible:shadow-focus-ring"
-            aria-label={`Copy policy id ${policy.metadata.name}`}
-          >
-            <span>{policy.metadata.name}</span>
-            {copied ? (
-              <Check aria-hidden="true" className="size-3 text-state-scored-text" />
-            ) : (
-              <Copy aria-hidden="true" className="size-3 opacity-60" />
-            )}
-          </button>
-        </div>
-        <div className="flex items-center gap-2">
+    <DetailPageHeader
+      breadcrumb={
+        <Breadcrumb
+          parent={{ href: listHref, label: "Policies" }}
+          current={heading}
+        />
+      }
+      avatar={<IconAvatar icon={ShieldCheck} label="Policy" />}
+      heading={heading}
+      description={
+        <>
+          <span>{policyTypeLabel(policy.spec.type)} policy</span>
+          <span aria-hidden="true"> · </span>
+          <span>
+            {total} {total === 1 ? "workload" : "workloads"} attached
+          </span>
+        </>
+      }
+      action={
+        <>
           <Button variant="secondary">
             <Pencil aria-hidden="true" />
-            Edit
+            Edit policy
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -76,27 +74,8 @@ export function PolicyDetailHeader({ policy }: PolicyDetailHeaderProps) {
               <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
-      <dl className="flex flex-wrap items-center gap-x-6 gap-y-2 typography-body">
-        <div className="flex items-center gap-2">
-          <dt className="text-muted-foreground">Type:</dt>
-          <dd className="font-medium text-foreground">
-            {policyTypeLabel(policy.spec.type)}
-            {policy.spec.type === "flavor" && (
-              <span className="ml-2 typography-meta text-muted-foreground">
-                [coming soon]
-              </span>
-            )}
-          </dd>
-        </div>
-        <div className="flex items-center gap-2">
-          <dt className="text-muted-foreground">Targets:</dt>
-          <dd className="text-foreground">
-            {joinResourceTypes(policy.spec.resourceTypes)}
-          </dd>
-        </div>
-      </dl>
-    </header>
+        </>
+      }
+    />
   );
 }
