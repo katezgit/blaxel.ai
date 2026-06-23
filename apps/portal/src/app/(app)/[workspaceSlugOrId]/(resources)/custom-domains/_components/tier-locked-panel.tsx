@@ -1,65 +1,50 @@
-import { ArrowRight, Asterisk, MapPin, Tag } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
+import { Card } from "@repo/ui/components/card";
 import { UpgradeTierDialog } from "@/components/billing/upgrade-tier-dialog";
-import { CapabilityCard } from "@/components/paywall/capability-card";
 
 export function TierLockedPanel() {
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
-      <section
-        aria-labelledby="custom-domains-capabilities-heading"
-        className="flex flex-col gap-3"
-      >
+    <section
+      aria-labelledby="custom-domains-locked-heading"
+      className="flex max-w-2xl flex-col gap-6"
+    >
+      <div className="flex flex-col gap-1">
+        <span className="font-mono typography-meta uppercase tracking-wider text-meta-foreground">
+          Tier 3 feature
+        </span>
         <h2
-          id="custom-domains-capabilities-heading"
-          className="font-mono typography-meta uppercase tracking-wider text-meta-foreground"
+          id="custom-domains-locked-heading"
+          className="typography-subtitle font-semibold text-foreground"
         >
-          Capabilities
-        </h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1">
-          <CapabilityCard
-            icon={Asterisk}
-            title="Wildcard support"
-            description="One domain covers every subdomain — no per-subdomain registration."
-          />
-          <CapabilityCard
-            icon={Tag}
-            title="Branded sandbox previews"
-            description="Your users see your domain, not *.preview.bl.run."
-          />
-          <CapabilityCard
-            icon={MapPin}
-            title="Region-locked assignment"
-            description="Each domain pins to one region for latency control."
-          />
-        </div>
-      </section>
-
-      <aside
-        aria-labelledby="custom-domains-unlock-heading"
-        className="flex h-fit flex-col gap-3 rounded-lg border border-border bg-card p-5"
-      >
-        <h2
-          id="custom-domains-unlock-heading"
-          className="font-mono typography-meta uppercase tracking-wider text-meta-foreground"
-        >
-          Unlock Custom domains
-        </h2>
-        <p className="typography-body text-foreground">
           Custom domains require Tier 3.
+        </h2>
+        <p className="typography-body text-muted-foreground">
+          Map customer-owned DNS to Sandbox preview URLs with managed TLS,
+          region-locked per domain. Activate Tier 3 to register your first
+          domain.
         </p>
-        <p className="typography-caption text-muted-foreground">
-          A $200+ monthly top-up activates Tier 3.
-        </p>
+      </div>
+
+      <Card className="flex flex-col gap-4 p-6">
+        <div className="flex flex-col gap-1">
+          <h3 className="typography-body font-semibold text-foreground">
+            Activate Tier 3
+          </h3>
+          <p className="typography-body text-muted-foreground">
+            A $200+ monthly top-up activates Tier 3 and unlocks Custom domains
+            alongside the rest of the dedicated runtime surface.
+          </p>
+        </div>
         <UpgradeTierDialog
           trigger={
-            <Button variant="primary" className="mt-2 w-full">
+            <Button variant="primary" className="self-start">
               Upgrade tier
               <ArrowRight aria-hidden="true" />
             </Button>
           }
         />
-      </aside>
-    </div>
+      </Card>
+    </section>
   );
 }
