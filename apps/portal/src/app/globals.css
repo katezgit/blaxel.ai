@@ -143,6 +143,24 @@
     rgb(var(--border-seed-dark)  / .002)
   );
 
+  /* Sidebar divider — chrome→content edge, softer than --color-border. Dark uses
+   * a solid surface tone (not white-alpha) because alpha overlays on near-black
+   * read "raw" without a tonal lift behind them. */
+  --color-sidebar-border: light-dark(
+    rgb(var(--border-seed-light) / .10),
+    var(--surface-elevated-dark)
+  );
+
+  /* Sidebar hover — two variants for two shell surfaces.
+   *   App shell sidebar  → aliases secondary-surface (sits on bg-background).
+   *   Manage shell sidebar → custom mix (sits on bg-card / panel surface; orange
+   *   mix in light, neutral white mix in dark to avoid clashing on dark-navy bg). */
+  --color-sidebar-hover: var(--color-secondary-surface);
+  --color-sidebar-hover-manage: light-dark(
+    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
+    color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
+  );
+
   /* PINNED dark teal, never flips with theme. App-scoped because the only
    * consumer is the onboarding brand panel. */
   --color-brand-surface: #055E55; /* PINNED */
