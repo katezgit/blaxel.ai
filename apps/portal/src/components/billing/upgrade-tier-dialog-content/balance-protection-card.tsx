@@ -15,7 +15,7 @@ interface BalanceProtectionCardProps {
   monthlyLimitEnabled: boolean;
 }
 
-export function BalanceProtectionCard({
+export default function BalanceProtectionCard({
   register,
   setValue,
   errors,

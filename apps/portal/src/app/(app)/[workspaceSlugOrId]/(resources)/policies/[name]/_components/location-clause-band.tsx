@@ -2,7 +2,7 @@
 
 import { Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type { PolicyLocation } from "@/lib/mock/policies";
 
 interface LocationClauseBandProps {
@@ -10,7 +10,7 @@ interface LocationClauseBandProps {
   onRequestEdit: () => void;
 }
 
-export function LocationClauseBand({
+export default function LocationClauseBand({
   locations,
   onRequestEdit,
 }: LocationClauseBandProps) {

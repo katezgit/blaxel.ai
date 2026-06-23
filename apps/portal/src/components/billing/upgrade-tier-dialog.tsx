@@ -6,14 +6,14 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@repo/ui/components/dialog";
-import { UpgradeTierDialogContent } from "./upgrade-tier-dialog-content";
+import UpgradeTierDialogContent from "./upgrade-tier-dialog-content";
 
 interface UpgradeTierDialogProps {
   /** The element that opens the dialog. Rendered inside DialogTrigger asChild. */
   trigger: ReactNode;
 }
 
-export function UpgradeTierDialog({ trigger }: UpgradeTierDialogProps) {
+export default function UpgradeTierDialog({ trigger }: UpgradeTierDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (

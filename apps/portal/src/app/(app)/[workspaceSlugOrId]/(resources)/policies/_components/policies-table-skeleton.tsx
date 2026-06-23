@@ -9,7 +9,7 @@ const COL_TEMPLATE = "grid-cols-[2fr_1fr_1.5fr_1fr_1fr]";
 // Silhouette mirror of the live PoliciesTable: filter row, header columns,
 // row layout, and trailing count line. Same widths and column template so the
 // swap-in is invisible — only the content text fades in.
-export function PoliciesTableSkeleton() {
+export default function PoliciesTableSkeleton() {
   return (
     <div className="flex flex-col gap-4">
       {/* Filter row: search + type + sort + evaluation rules trigger. Matches

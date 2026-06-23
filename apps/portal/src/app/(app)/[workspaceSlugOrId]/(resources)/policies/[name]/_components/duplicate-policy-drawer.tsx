@@ -59,7 +59,7 @@ interface DuplicatePolicyDrawerProps {
   onClose: () => void;
 }
 
-export function DuplicatePolicyDrawer({
+export default function DuplicatePolicyDrawer({
   source,
   workspaceSlug,
   onClose,

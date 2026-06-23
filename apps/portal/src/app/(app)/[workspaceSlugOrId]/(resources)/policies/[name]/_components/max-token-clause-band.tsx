@@ -2,7 +2,7 @@
 
 import { Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type { PolicyMaxTokens } from "@/lib/mock/policies";
 
 interface MaxTokenClauseBandProps {
@@ -12,7 +12,7 @@ interface MaxTokenClauseBandProps {
 
 const NUMBER_FMT = new Intl.NumberFormat("en-US");
 
-export function MaxTokenClauseBand({
+export default function MaxTokenClauseBand({
   maxTokens,
   onRequestEdit,
 }: MaxTokenClauseBandProps) {

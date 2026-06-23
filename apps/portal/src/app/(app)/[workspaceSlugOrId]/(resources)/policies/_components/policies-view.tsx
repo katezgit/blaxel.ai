@@ -8,12 +8,12 @@ import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { useAccountState } from "@/lib/mock/account-context";
 import { policyQueries } from "@/lib/query/policies";
 import type { Policy } from "@/lib/mock/policies";
-import { PoliciesTierLockedView } from "./policies-tier-locked-view";
-import { PoliciesPageHeader } from "./policies-page-header";
-import { PoliciesTable } from "./policies-table";
-import { PoliciesTableSkeleton } from "./policies-table-skeleton";
-import { PoliciesErrorBand } from "./policies-error-band";
-import { PoliciesEmptyState } from "./policies-empty-state";
+import PoliciesTierLockedView from "./policies-tier-locked-view";
+import PoliciesPageHeader from "./policies-page-header";
+import PoliciesTable from "./policies-table";
+import PoliciesTableSkeleton from "./policies-table-skeleton";
+import PoliciesErrorBand from "./policies-error-band";
+import PoliciesEmptyState from "./policies-empty-state";
 
 // Dev simulation harness — `?state=loading|error|empty` overrides the live
 // fetch state so each wireframe state can be visually verified without
@@ -52,7 +52,7 @@ const LIST_DESCRIPTION = (
   </p>
 );
 
-export function PoliciesView() {
+export default function PoliciesView() {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { state } = useAccountState();
   const searchParams = useSearchParams();

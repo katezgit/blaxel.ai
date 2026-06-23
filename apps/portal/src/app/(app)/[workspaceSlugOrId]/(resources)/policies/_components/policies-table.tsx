@@ -67,7 +67,7 @@ interface PoliciesTableProps {
   policies: ReadonlyArray<Policy>;
 }
 
-export function PoliciesTable({ policies }: PoliciesTableProps) {
+export default function PoliciesTable({ policies }: PoliciesTableProps) {
   const params = useParams<{ workspaceSlugOrId: string }>();
   const router = useRouter();
   const workspaceSlug = params.workspaceSlugOrId;

@@ -19,7 +19,7 @@ interface DetailPageHeaderProps {
   action?: ReactNode;
 }
 
-export function DetailPageHeader({
+export default function DetailPageHeader({
   breadcrumb,
   avatar,
   heading,

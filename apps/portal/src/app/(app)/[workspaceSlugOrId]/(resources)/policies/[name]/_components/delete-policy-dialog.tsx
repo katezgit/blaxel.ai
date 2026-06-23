@@ -22,7 +22,7 @@ interface DeletePolicyDialogProps {
   onConfirm: (policy: Policy) => Promise<void> | void;
 }
 
-export function DeletePolicyDialog({
+export default function DeletePolicyDialog({
   policy,
   onClose,
   onConfirm,

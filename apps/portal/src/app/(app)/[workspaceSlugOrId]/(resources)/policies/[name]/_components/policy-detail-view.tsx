@@ -13,20 +13,20 @@ import { policyQueries } from "@/lib/query/policies";
 import { queryKeys } from "@/lib/query/keys";
 import { deletePolicy } from "@/lib/mock/policies";
 import type { Policy, PolicyUsages } from "@/lib/mock/policies";
-import { PolicyDetailHeader } from "./policy-detail-header";
-import { LocationClauseBand } from "./location-clause-band";
-import { MaxTokenClauseBand } from "./max-token-clause-band";
-import { FlavorClauseBand } from "./flavor-clause-band";
-import { PolicyUsageBand } from "./policy-usage-band";
-import { PolicyProvenanceBand } from "./policy-provenance-band";
-import { PolicyCliBand } from "./policy-cli-band";
-import { PolicyDetailSkeleton } from "./policy-detail-skeleton";
-import { DeletePolicyDialog } from "./delete-policy-dialog";
+import PolicyDetailHeader from "./policy-detail-header";
+import LocationClauseBand from "./location-clause-band";
+import MaxTokenClauseBand from "./max-token-clause-band";
+import FlavorClauseBand from "./flavor-clause-band";
+import PolicyUsageBand from "./policy-usage-band";
+import PolicyProvenanceBand from "./policy-provenance-band";
+import PolicyCliBand from "./policy-cli-band";
+import PolicyDetailSkeleton from "./policy-detail-skeleton";
+import DeletePolicyDialog from "./delete-policy-dialog";
 import {
   EditPolicyDrawer,
   type EditPolicyDrawerState,
 } from "./edit-policy-drawer";
-import { DuplicatePolicyDrawer } from "./duplicate-policy-drawer";
+import DuplicatePolicyDrawer from "./duplicate-policy-drawer";
 
 interface PolicyDetailViewProps {
   workspaceSlug: string;

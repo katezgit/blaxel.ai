@@ -3,7 +3,7 @@ import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/query/get-query-client";
 import { policyQueries } from "@/lib/query/policies";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
-import { PoliciesView } from "./_components/policies-view";
+import PoliciesView from "./_components/policies-view";
 
 export const metadata: Metadata = {
   title: "Policies",

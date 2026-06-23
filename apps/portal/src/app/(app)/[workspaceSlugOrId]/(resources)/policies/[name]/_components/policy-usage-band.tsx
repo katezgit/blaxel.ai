@@ -10,7 +10,7 @@ import {
   CollapsibleTrigger,
 } from "@repo/ui/components/collapsible";
 import { CopyButton } from "@repo/ui/components/copy-button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type {
   Policy,
   PolicyUsageCounts,
@@ -40,7 +40,7 @@ const KIND_ROWS: ReadonlyArray<KindRow> = [
   { key: "sandboxes", label: "Sandboxes", routeSegment: "sandboxes" },
 ];
 
-export function PolicyUsageBand({
+export default function PolicyUsageBand({
   policy,
   usages,
   workspaceSlug,

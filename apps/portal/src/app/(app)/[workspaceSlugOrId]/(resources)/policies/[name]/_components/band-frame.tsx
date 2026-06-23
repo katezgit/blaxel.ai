@@ -14,7 +14,7 @@ interface BandFrameProps {
 // Flat band layout with editorial section heading. Mirror of the Custom
 // Domains Band primitive so both detail surfaces share rhythm: 16px sans
 // semibold subhead, 1px divider above, no card chrome.
-export function BandFrame({ label, children, className }: BandFrameProps) {
+export default function BandFrame({ label, children, className }: BandFrameProps) {
   return (
     <section
       aria-label={label}

@@ -3,8 +3,8 @@ import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import { cn } from "@repo/ui/lib/cn";
-import { UpgradeTierDialog } from "@/components/billing/upgrade-tier-dialog";
-import { PoliciesPageHeader } from "./policies-page-header";
+import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
+import PoliciesPageHeader from "./policies-page-header";
 
 interface Capability {
   icon: LucideIcon;
@@ -30,7 +30,7 @@ const CAPABILITIES: ReadonlyArray<Capability> = [
   },
 ];
 
-export function PoliciesTierLockedView() {
+export default function PoliciesTierLockedView() {
   return (
     <div className={cn("page-shell", "gap-8")}>
       {/* Locked state: header carries the title + Tier badge only — the card

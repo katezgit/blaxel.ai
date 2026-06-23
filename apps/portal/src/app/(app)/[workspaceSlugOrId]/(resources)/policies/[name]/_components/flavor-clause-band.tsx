@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { BandFrame } from "./band-frame";
+import BandFrame from "./band-frame";
 import type { PolicyFlavor } from "@/lib/mock/policies";
 
 interface FlavorClauseBandProps {
@@ -10,7 +10,7 @@ interface FlavorClauseBandProps {
   onRequestEdit: () => void;
 }
 
-export function FlavorClauseBand({
+export default function FlavorClauseBand({
   flavors,
   onRequestEdit,
 }: FlavorClauseBandProps) {

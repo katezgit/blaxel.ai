@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MapPin, GaugeCircle, Combine } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
-import { CapabilityCard } from "@/components/paywall/capability-card";
+import CapabilityCard from "@/components/paywall/capability-card";
 
 interface PoliciesEmptyStateProps {
   createHref: string;
@@ -28,7 +28,7 @@ const capabilities = [
   },
 ] as const;
 
-export function PoliciesEmptyState({ createHref }: PoliciesEmptyStateProps) {
+export default function PoliciesEmptyState({ createHref }: PoliciesEmptyStateProps) {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
       <section

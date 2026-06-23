@@ -7,10 +7,10 @@ import { Button } from "@repo/ui/components/button";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
 import { Alert, AlertDescription } from "@repo/ui/components/alert";
 import { type DisplayTier } from "@/lib/mock/billing-tiers";
-import { SelectedTierSummary } from "./selected-tier-summary";
-import { TierPicker } from "./tier-picker";
-import { TierContextBanner } from "./tier-context-banner";
-import { BalanceProtectionCard } from "./balance-protection-card";
+import SelectedTierSummary from "./selected-tier-summary";
+import TierPicker from "./tier-picker";
+import TierContextBanner from "./tier-context-banner";
+import BalanceProtectionCard from "./balance-protection-card";
 import {
   INITIAL_VALUES,
   resolveAmountUsd,
@@ -27,7 +27,7 @@ interface MonthlyTopUpFlowProps {
   onCheckout: (amountUsd: number) => void;
 }
 
-export function MonthlyTopUpFlow({
+export default function MonthlyTopUpFlow({
   currentTier,
   onCancel,
   onCheckout,

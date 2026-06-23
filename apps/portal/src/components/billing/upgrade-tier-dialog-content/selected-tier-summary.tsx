@@ -30,7 +30,7 @@ interface SelectedTierSummaryProps {
 // right-rail About-Tier panel — surfaces unlock requirement + four quotas
 // inline; the rest tucks behind a disclosure that auto-scrolls into view so
 // users don't lose the new content below the ScrollArea fold.
-export function SelectedTierSummary({ targetTier, currentTier }: SelectedTierSummaryProps) {
+export default function SelectedTierSummary({ targetTier, currentTier }: SelectedTierSummaryProps) {
   const [expanded, setExpanded] = useState(false);
   const detailsRef = useRef<HTMLDivElement | null>(null);
   const entry = ladderEntry(targetTier);

@@ -54,7 +54,7 @@ interface CreatePolicyViewProps {
   workspaceSlug: string;
 }
 
-export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
+export default function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const searchParams = useSearchParams();
   const typeParam = readPolicyTypeParam(searchParams.get("type"));

@@ -6,10 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/button";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
 import { type DisplayTier } from "@/lib/mock/billing-tiers";
-import { SelectedTierSummary } from "./selected-tier-summary";
-import { TierPicker } from "./tier-picker";
-import { TierContextBanner } from "./tier-context-banner";
-import { BalanceProtectionCard } from "./balance-protection-card";
+import SelectedTierSummary from "./selected-tier-summary";
+import TierPicker from "./tier-picker";
+import TierContextBanner from "./tier-context-banner";
+import BalanceProtectionCard from "./balance-protection-card";
 import {
   INITIAL_VALUES,
   resolveAmountUsd,
@@ -26,7 +26,7 @@ interface OneTimeTopUpFlowProps {
   onCheckout: (amountUsd: number) => void;
 }
 
-export function OneTimeTopUpFlow({
+export default function OneTimeTopUpFlow({
   currentTier,
   onCancel,
   onCheckout,

@@ -9,7 +9,7 @@ import { Breadcrumb } from "@/components/shell/breadcrumb";
 // editorial bands (Clause / Usage / Provenance / CLI) each with a real
 // section heading + content shape that resembles the populated render so
 // the swap-in is layout-neutral.
-export function PolicyDetailSkeleton({ workspaceSlug }: { workspaceSlug: string }) {
+export default function PolicyDetailSkeleton({ workspaceSlug }: { workspaceSlug: string }) {
   const listHref = `/${workspaceSlug}/policies`;
   return (
     <>
