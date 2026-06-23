@@ -51,38 +51,42 @@ export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentPr
 
   return (
     <>
-      <DialogHeader>
-        <DialogTitle>Top up your account</DialogTitle>
-        <DialogDescription>
-          {mode === "monthly" ? (
-            <>
-              Monthly top-ups to your balance ensure you maintain eligibility
-              for a specific quota tier.{" "}
-              <a
-                href="https://docs.blaxel.ai/Get-started/Pricing"
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary hover:underline"
-              >
-                Learn more
-              </a>
-            </>
-          ) : (
-            "Immediately add credits to your account balance."
-          )}
-        </DialogDescription>
-        <div className="pt-3">
-          <SegmentedControl
-            aria-label="Top-up frequency"
-            value={mode}
-            onValueChange={(next) => setMode(next as Mode)}
-          >
-            <SegmentedControl.Item value="monthly">Monthly</SegmentedControl.Item>
-            <SegmentedControl.Item value="one-time">
-              One-time purchase
-            </SegmentedControl.Item>
-          </SegmentedControl>
+      {/* gap-6 + pb-4: header chrome owns rhythm between the title-unit and
+          the mode toggle (24px), then pb-4 + body pt-2 yields the 24px
+          segmented→stepper section gap. Title↔description stays 4px via the
+          inner gap-1 wrapper. */}
+      <DialogHeader className="gap-6 pb-4">
+        <div className="flex flex-col gap-1">
+          <DialogTitle>Top up your account</DialogTitle>
+          <DialogDescription>
+            {mode === "monthly" ? (
+              <>
+                Monthly top-ups to your balance ensure you maintain eligibility
+                for a specific quota tier.{" "}
+                <a
+                  href="https://docs.blaxel.ai/Get-started/Pricing"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Learn more
+                </a>
+              </>
+            ) : (
+              "Immediately add credits to your account balance."
+            )}
+          </DialogDescription>
         </div>
+        <SegmentedControl
+          aria-label="Top-up frequency"
+          value={mode}
+          onValueChange={(next) => setMode(next as Mode)}
+        >
+          <SegmentedControl.Item value="monthly">Monthly</SegmentedControl.Item>
+          <SegmentedControl.Item value="one-time">
+            One-time purchase
+          </SegmentedControl.Item>
+        </SegmentedControl>
       </DialogHeader>
       <DialogBody>
         {mode === "one-time" ? (

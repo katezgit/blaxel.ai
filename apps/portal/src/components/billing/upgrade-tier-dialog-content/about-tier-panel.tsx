@@ -29,9 +29,11 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
   const hiddenCount = entry.quotas.length - visibleQuotas.length;
 
   return (
+    // p-6: spacious panel padding per spacing canon.
+    // gap-6: section → section within the card (panel-internal section rhythm).
     <aside
       aria-labelledby="upgrade-about-tier-heading"
-      className="flex h-fit flex-col gap-4 rounded-lg border border-border bg-muted-surface p-4"
+      className="flex h-fit flex-col gap-6 rounded-lg border border-border bg-muted-surface p-6"
     >
       <h3
         id="upgrade-about-tier-heading"
@@ -40,7 +42,8 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
         About Tier {targetTier}
       </h3>
 
-      <section className="flex flex-col gap-1.5">
+      {/* gap-1: eyebrow → its content (single header unit). */}
+      <section className="flex flex-col gap-1">
         <h4 className="font-mono typography-meta uppercase tracking-wider text-meta-foreground">
           Unlock requirement
         </h4>
@@ -49,11 +52,13 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
         </p>
       </section>
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-1.5">
         <h4 className="font-mono typography-meta uppercase tracking-wider text-meta-foreground">
           Key quotas vs current tier {currentTier}
         </h4>
-        <ul className="flex flex-col gap-2">
+        {/* gap-3: quota row → quota row (block within a section, denser than the
+            16px default to keep the panel compact on the lg-grid right column). */}
+        <ul className="flex flex-col gap-3">
           {visibleQuotas.map((quota) => {
             const delta = quotaDelta(quota.id, currentTier, targetTier);
             return (
@@ -92,7 +97,7 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
       </section>
 
       {entry.features.length > 0 ? (
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-1.5">
           <h4 className="font-mono typography-meta uppercase tracking-wider text-meta-foreground">
             Features unlocked
           </h4>

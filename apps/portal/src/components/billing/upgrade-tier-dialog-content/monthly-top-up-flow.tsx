@@ -66,108 +66,104 @@ export function MonthlyTopUpFlow({
   };
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+    // gap-8: Stepper (chrome) → step body (region) at 32px per spacing canon.
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-8">
       <Stepper steps={STEPS} currentStep={step} />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
-        <div className="flex flex-col gap-6">
-          {step === 1 ? (
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="typography-subtitle font-semibold text-foreground">
-                    Choose how much to top-up
-                  </h3>
-                  <p className="typography-body text-muted-foreground">
-                    Monthly top-ups secure your tier. The balance is added
-                    immediately and renews every 30 days.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <span className="typography-label text-muted-foreground">
-                    Amount to top up
-                  </span>
-                  <AmountPicker
-                    selection={values.selection}
-                    onSelectionChange={(selection) =>
-                      setValue(
-                        "selection",
-                        selection as TopUpFormValues["selection"],
-                        { shouldValidate: true, shouldDirty: true },
-                      )
-                    }
-                    customAmount={values.customAmount}
-                    onCustomAmountChange={(next) =>
-                      setValue("customAmount", next, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      })
-                    }
-                    customAmountError={errors.customAmount?.message}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={onCancel}>
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  variant="primary"
-                  disabled={!canContinue}
-                  onClick={handleContinue}
-                >
-                  Continue
-                </Button>
-              </div>
+      {/* gap-8: peer major regions (form column ↔ About-Tier panel). */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
+        {step === 1 ? (
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
+              <h3 className="typography-subtitle font-semibold text-foreground">
+                Choose how much to top-up
+              </h3>
+              <p className="typography-body text-muted-foreground">
+                Monthly top-ups secure your tier. The balance is added
+                immediately and renews every 30 days.
+              </p>
             </div>
-          ) : (
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="typography-subtitle font-semibold text-foreground">
-                    Configure balance protection
-                  </h3>
-                  <p className="typography-body text-muted-foreground">
-                    Optional settings that keep your balance above a floor and
-                    help avoid downgrades.
-                  </p>
-                </div>
 
-                <BalanceProtectionCard
-                  register={register}
-                  setValue={setValue}
-                  errors={errors}
-                  autoTopUpEnabled={values.autoTopUpEnabled}
-                  monthlyLimitEnabled={values.monthlyLimitEnabled}
-                />
-
-                <Alert variant="success">
-                  <AlertDescription>
-                    You will be charged ${amountUsd.toLocaleString()} today, and
-                    every 30 days thereafter.
-                  </AlertDescription>
-                </Alert>
-              </div>
-
-              <div className="flex items-center justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setStep(1)}
-                  disabled={isSubmitting}
-                >
-                  Previous
-                </Button>
-                <Button type="submit" variant="primary" disabled={isSubmitting}>
-                  {isSubmitting ? "Processing…" : "Checkout"}
-                </Button>
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="typography-label text-muted-foreground">
+                Amount to top up
+              </span>
+              <AmountPicker
+                selection={values.selection}
+                onSelectionChange={(selection) =>
+                  setValue(
+                    "selection",
+                    selection as TopUpFormValues["selection"],
+                    { shouldValidate: true, shouldDirty: true },
+                  )
+                }
+                customAmount={values.customAmount}
+                onCustomAmountChange={(next) =>
+                  setValue("customAmount", next, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                customAmountError={errors.customAmount?.message}
+              />
             </div>
-          )}
-        </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <Button type="button" variant="ghost" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                disabled={!canContinue}
+                onClick={handleContinue}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
+              <h3 className="typography-subtitle font-semibold text-foreground">
+                Configure balance protection
+              </h3>
+              <p className="typography-body text-muted-foreground">
+                Optional settings that keep your balance above a floor and help
+                avoid downgrades.
+              </p>
+            </div>
+
+            <BalanceProtectionCard
+              register={register}
+              setValue={setValue}
+              errors={errors}
+              autoTopUpEnabled={values.autoTopUpEnabled}
+              monthlyLimitEnabled={values.monthlyLimitEnabled}
+            />
+
+            <Alert variant="success">
+              <AlertDescription>
+                You will be charged ${amountUsd.toLocaleString()} today, and
+                every 30 days thereafter.
+              </AlertDescription>
+            </Alert>
+
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setStep(1)}
+                disabled={isSubmitting}
+              >
+                Previous
+              </Button>
+              <Button type="submit" variant="primary" disabled={isSubmitting}>
+                {isSubmitting ? "Processing…" : "Checkout"}
+              </Button>
+            </div>
+          </div>
+        )}
 
         <AboutTierPanel targetTier={targetTier} currentTier={currentTier} />
       </div>
