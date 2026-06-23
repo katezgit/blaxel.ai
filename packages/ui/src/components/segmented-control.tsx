@@ -57,8 +57,8 @@ function useSlideIndicator(
       list.querySelectorAll<HTMLElement>("[data-slot='segmented-control-item']")
     )
     const activeIndex = items.findIndex((el) => el.dataset.state === "on")
-    if (activeIndex === -1) return
     const active = items[activeIndex]
+    if (!active) return
     setGeo({
       x: active.offsetLeft,
       width: active.offsetWidth,
