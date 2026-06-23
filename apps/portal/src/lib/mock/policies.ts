@@ -354,6 +354,52 @@ export async function fetchPolicyUsages(
   return delay(USAGES[name] ?? null);
 }
 
+export interface PolicyCreateInput {
+  displayName: string;
+  name: string;
+  type: PolicyType;
+  resourceTypes: ReadonlyArray<PolicyResourceType>;
+  locations?: ReadonlyArray<PolicyLocation>;
+  flavors?: ReadonlyArray<PolicyFlavor>;
+  maxTokens?: PolicyMaxTokens;
+  labels?: Record<string, string>;
+  createdBy: string;
+  workspace: string;
+}
+
+export async function createPolicy(
+  _accountId: string,
+  _workspaceId: string,
+  input: PolicyCreateInput,
+): Promise<Policy> {
+  void _accountId;
+  void _workspaceId;
+  const now = new Date().toISOString();
+  const next: Policy = {
+    metadata: {
+      name: input.name,
+      displayName: input.displayName,
+      createdAt: now,
+      createdBy: input.createdBy,
+      updatedAt: now,
+      updatedBy: input.createdBy,
+      workspace: input.workspace,
+      labels: input.labels ?? {},
+    },
+    spec: {
+      type: input.type,
+      resourceTypes: input.resourceTypes,
+      ...(input.locations !== undefined ? { locations: input.locations } : {}),
+      ...(input.flavors !== undefined ? { flavors: input.flavors } : {}),
+      ...(input.maxTokens !== undefined ? { maxTokens: input.maxTokens } : {}),
+    },
+    usage: { agents: 0, functions: 0, jobs: 0, models: 0, sandboxes: 0 },
+  };
+  FIXTURES.push(next);
+  DELETED_NAMES.delete(input.name);
+  return delay(next);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Display helpers — pure, used by both list and detail surfaces. App-level
 // vocab decisions live here (resourceType -> label, granularity -> word).

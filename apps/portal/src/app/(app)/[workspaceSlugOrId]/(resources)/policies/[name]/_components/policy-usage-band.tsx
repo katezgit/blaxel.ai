@@ -192,14 +192,14 @@ function KindUsageRow({
                 </Link>
                 {workload.peerPolicies.length > 0 && (
                   <span className="flex flex-wrap items-center gap-1.5">
-                    <span className="typography-meta text-muted-foreground">
+                    <span className="typography-caption text-muted-foreground">
                       Also attaches:
                     </span>
                     {workload.peerPolicies.map((peer) => (
                       <Link
                         key={peer}
                         href={`/${workspaceSlug}/policies/${peer}`}
-                        className="inline-flex items-center rounded-md border border-border bg-background px-2 py-0.5 font-mono typography-meta text-muted-foreground hover:border-border-strong hover:text-foreground"
+                        className="inline-flex items-center rounded-md border border-border bg-background px-2 py-0.5 typography-code text-muted-foreground hover:border-border-strong hover:text-foreground"
                       >
                         {peer}
                       </Link>

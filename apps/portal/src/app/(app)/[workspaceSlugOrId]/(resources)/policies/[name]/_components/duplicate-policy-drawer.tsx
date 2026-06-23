@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,54 +27,53 @@ import {
 } from "@repo/ui/components/drawer";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { queryKeys } from "@/lib/query/keys";
-import { updatePolicy } from "@/lib/mock/policies";
-import type { Policy } from "@/lib/mock/policies";
+import { createPolicy } from "@/lib/mock/policies";
+import type {
+  Policy,
+  PolicyLocation,
+  PolicyMaxTokens,
+} from "@/lib/mock/policies";
 import {
   FieldGroup,
   FlavorUnavailableNotice,
-  IdentityEditableNameOnlyFields,
+  IdentityEditableFields,
   LocationBody,
-  PolicyTypeReadOnlyField,
+  PolicyTypeSelectField,
   ResourceTypesField,
   TokenUsageBody,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-pieces";
 import {
-  POLICY_TYPE_BY_VALUE,
   policyFormSchema,
   type LocationItem,
   type PolicyFormValues,
   type TokenLimits,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
 
-// Drawer state mirrors the delete-dialog shape: `policy: null` = closed,
-// `policy: Policy` = open with that policy's data. `focusTarget` decides which
-// field to land focus on after mount — header click lands on display-name,
-// clause-band hover Edit lands on the clause body (the section the user was
-// reading).
-export type EditPolicyDrawerState =
-  | { policy: Policy; focusTarget: "displayName" | "clause" }
-  | null;
-
-interface EditPolicyDrawerProps {
-  state: EditPolicyDrawerState;
+interface DuplicatePolicyDrawerProps {
+  source: Policy | null;
+  workspaceSlug: string;
   onClose: () => void;
 }
 
-export function EditPolicyDrawer({ state, onClose }: EditPolicyDrawerProps) {
+export function DuplicatePolicyDrawer({
+  source,
+  workspaceSlug,
+  onClose,
+}: DuplicatePolicyDrawerProps) {
   return (
     <Drawer
       direction="right"
-      open={state !== null}
+      open={source !== null}
       onOpenChange={(next) => {
         if (!next) onClose();
       }}
     >
       <DrawerContent size="lg" aria-describedby={undefined}>
-        {state !== null && (
-          <EditPolicyForm
-            key={state.policy.metadata.name}
-            policy={state.policy}
-            focusTarget={state.focusTarget}
+        {source !== null && (
+          <DuplicatePolicyForm
+            key={source.metadata.name}
+            source={source}
+            workspaceSlug={workspaceSlug}
             onClose={onClose}
           />
         )}
@@ -82,33 +82,42 @@ export function EditPolicyDrawer({ state, onClose }: EditPolicyDrawerProps) {
   );
 }
 
-interface EditPolicyFormProps {
-  policy: Policy;
-  focusTarget: "displayName" | "clause";
+interface DuplicatePolicyFormProps {
+  source: Policy;
+  workspaceSlug: string;
   onClose: () => void;
 }
 
-function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
-  void focusTarget;
+function DuplicatePolicyForm({
+  source,
+  workspaceSlug,
+  onClose,
+}: DuplicatePolicyFormProps) {
+  const router = useRouter();
   const { accountId, workspaceId } = useCurrentTenancy();
   const queryClient = useQueryClient();
+
+  const initialName = `${source.metadata.name}-copy`;
+  const initialDisplay = source.metadata.displayName
+    ? `${source.metadata.displayName} (copy)`
+    : initialName;
 
   const form = useForm<PolicyFormValues>({
     resolver: zodResolver(policyFormSchema),
     mode: "onChange",
     defaultValues: {
-      displayName: policy.metadata.displayName,
-      name: policy.metadata.name,
-      resourceTypes: [...policy.spec.resourceTypes],
-      policyType: policy.spec.type,
+      displayName: initialDisplay,
+      name: initialName,
+      resourceTypes: [...source.spec.resourceTypes],
+      policyType: source.spec.type,
     },
   });
 
   const [locations, setLocations] = useState<ReadonlyArray<LocationItem>>(
-    () => [...(policy.spec.locations ?? [])],
+    () => [...(source.spec.locations ?? [])],
   );
   const [tokenLimits, setTokenLimits] = useState<TokenLimits>(() => {
-    const m = policy.spec.maxTokens;
+    const m = source.spec.maxTokens;
     return {
       input: m?.input ?? 0,
       output: m?.output ?? 0,
@@ -118,58 +127,52 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
     };
   });
 
-  // Locations + tokenLimits live outside RHF, so isDirty alone misses them.
-  // Track them against the original snapshot for the cancel-confirm path.
-  const initialSpec = policy.spec;
-  const bodyDirty = computeBodyDirty(
-    policy.spec.type,
-    locations,
-    tokenLimits,
-    initialSpec.locations ?? [],
-    initialSpec.maxTokens ?? null,
-  );
-  const isDirty = form.formState.isDirty || bodyDirty;
-
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
+  // Duplicate is always "dirty" by definition — the form opens with a new
+  // name suffix and the user has actively initiated a create. Always gate
+  // the cancel path through the discard confirm.
   function requestClose() {
-    if (isDirty) {
-      setConfirmDiscard(true);
-    } else {
-      onClose();
-    }
+    setConfirmDiscard(true);
   }
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await updatePolicy(accountId, workspaceId, policy.metadata.name, {
+    const policyLocations: ReadonlyArray<PolicyLocation> | undefined =
+      values.policyType === "location" ? locations : undefined;
+    const policyMaxTokens: PolicyMaxTokens | undefined =
+      values.policyType === "maxToken"
+        ? {
+            granularity: tokenLimits.granularity,
+            step: tokenLimits.step,
+            input: tokenLimits.input,
+            output: tokenLimits.output,
+            total: tokenLimits.total,
+            ratioInputOverOutput:
+              source.spec.maxTokens?.ratioInputOverOutput ?? 0,
+          }
+        : undefined;
+
+    await createPolicy(accountId, workspaceId, {
       displayName: values.displayName,
+      name: values.name,
+      type: values.policyType,
       resourceTypes: values.resourceTypes,
-      locations: policy.spec.type === "location" ? locations : undefined,
-      maxTokens:
-        policy.spec.type === "maxToken"
-          ? {
-              granularity: tokenLimits.granularity,
-              step: tokenLimits.step,
-              input: tokenLimits.input,
-              output: tokenLimits.output,
-              total: tokenLimits.total,
-              ratioInputOverOutput:
-                policy.spec.maxTokens?.ratioInputOverOutput ?? 0,
-            }
-          : undefined,
-      updatedBy: "alex@cubic.dev",
+      ...(policyLocations !== undefined ? { locations: policyLocations } : {}),
+      ...(policyMaxTokens !== undefined ? { maxTokens: policyMaxTokens } : {}),
+      labels: { ...source.metadata.labels },
+      createdBy: "alex@cubic.dev",
+      workspace: source.metadata.workspace,
     });
     await queryClient.invalidateQueries({
       queryKey: queryKeys.resources(accountId, workspaceId),
       predicate: (query) => query.queryKey.includes("policies"),
     });
-    toast.success(
-      `Policy '${values.displayName}' saved.`,
-    );
     onClose();
+    router.push(`/${workspaceSlug}/policies/${values.name}`);
+    toast.success(`Policy '${values.displayName}' created.`);
   });
 
-  const policyType = policy.spec.type;
+  const policyType = form.watch("policyType");
 
   return (
     <>
@@ -180,27 +183,26 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
       >
         <DrawerHeader className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <DrawerTitle>Edit policy</DrawerTitle>
+            <DrawerTitle>Duplicate policy</DrawerTitle>
             <DrawerDescription>
-              {POLICY_TYPE_BY_VALUE[policyType].narrative}
+              Start from{" "}
+              <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-1.5 py-0.5 font-mono font-medium text-foreground typography-code">
+                {source.metadata.name}
+              </code>
+              {" "}and adjust before saving — values copy across, name is
+              yours to set.
             </DrawerDescription>
           </div>
           <DrawerCloseButton
             onClick={(event) => {
-              // Intercept the default Radix close so dirty forms get the
-              // discard-confirm gate. The drawer's onOpenChange path also
-              // funnels through requestClose, so Esc and overlay click hit
-              // the same gate.
-              if (isDirty) {
-                event.preventDefault();
-                setConfirmDiscard(true);
-              }
+              event.preventDefault();
+              setConfirmDiscard(true);
             }}
           />
         </DrawerHeader>
 
         <DrawerBody className="flex flex-col gap-6">
-          <PolicyTypeReadOnlyField policyType={policyType} />
+          <PolicyTypeSelectField form={form} />
 
           {policyType === "location" ? (
             <FieldGroup label="Allowed locations">
@@ -209,10 +211,7 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
           ) : null}
           {policyType === "maxToken" ? (
             <FieldGroup label="Token limits">
-              <TokenUsageBody
-                value={tokenLimits}
-                onChange={setTokenLimits}
-              />
+              <TokenUsageBody value={tokenLimits} onChange={setTokenLimits} />
             </FieldGroup>
           ) : null}
           {policyType === "flavor" ? <FlavorUnavailableNotice /> : null}
@@ -224,10 +223,7 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
             <ResourceTypesField form={form} />
           </FieldGroup>
 
-          <IdentityEditableNameOnlyFields
-            form={form}
-            fixedName={policy.metadata.name}
-          />
+          <IdentityEditableFields form={form} />
         </DrawerBody>
 
         <DrawerFooter className="flex justify-end gap-2">
@@ -237,11 +233,9 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
           <Button
             type="submit"
             variant="primary"
-            disabled={
-              form.formState.isSubmitting || (!isDirty && !bodyDirty)
-            }
+            disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? "Saving…" : "Save changes"}
+            {form.formState.isSubmitting ? "Creating…" : "Create policy"}
           </Button>
         </DrawerFooter>
       </form>
@@ -256,34 +250,6 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
       />
     </>
   );
-}
-
-function computeBodyDirty(
-  type: Policy["spec"]["type"],
-  currentLocations: ReadonlyArray<LocationItem>,
-  currentTokenLimits: TokenLimits,
-  initialLocations: ReadonlyArray<LocationItem>,
-  initialMaxTokens: TokenLimits | { input: number; output: number; total: number; step: number; granularity: TokenLimits["granularity"] } | null,
-): boolean {
-  if (type === "location") {
-    if (currentLocations.length !== initialLocations.length) return true;
-    return currentLocations.some(
-      (loc, idx) =>
-        loc.type !== initialLocations[idx]?.type ||
-        loc.name !== initialLocations[idx]?.name,
-    );
-  }
-  if (type === "maxToken") {
-    if (initialMaxTokens === null) return true;
-    return (
-      currentTokenLimits.input !== initialMaxTokens.input ||
-      currentTokenLimits.output !== initialMaxTokens.output ||
-      currentTokenLimits.total !== initialMaxTokens.total ||
-      currentTokenLimits.step !== initialMaxTokens.step ||
-      currentTokenLimits.granularity !== initialMaxTokens.granularity
-    );
-  }
-  return false;
 }
 
 interface DiscardChangesDialogProps {
@@ -306,12 +272,11 @@ function DiscardChangesDialog({
     >
       <DialogContent size="sm">
         <DialogHeader>
-          <DialogTitle>Discard changes?</DialogTitle>
+          <DialogTitle>Discard duplicate?</DialogTitle>
         </DialogHeader>
         <DialogBody>
           <p className="typography-body text-foreground">
-            You have unsaved edits to this policy. Close the drawer and lose
-            them?
+            Close the drawer without creating the duplicate?
           </p>
         </DialogBody>
         <DialogFooter>

@@ -26,6 +26,7 @@ import {
   EditPolicyDrawer,
   type EditPolicyDrawerState,
 } from "./edit-policy-drawer";
+import { DuplicatePolicyDrawer } from "./duplicate-policy-drawer";
 
 interface PolicyDetailViewProps {
   workspaceSlug: string;
@@ -49,6 +50,7 @@ export function PolicyDetailView({
   const queryClient = useQueryClient();
   const [policyToDelete, setPolicyToDelete] = useState<Policy | null>(null);
   const [editState, setEditState] = useState<EditPolicyDrawerState>(null);
+  const [duplicateSource, setDuplicateSource] = useState<Policy | null>(null);
 
   const policyQuery = useQuery({
     ...policyQueries.detail(accountId, workspaceId, policyName),
@@ -160,6 +162,7 @@ export function PolicyDetailView({
         onRequestEdit={() =>
           setEditState({ policy, focusTarget: "displayName" })
         }
+        onRequestDuplicate={() => setDuplicateSource(policy)}
         onRequestDelete={() => setPolicyToDelete(policy)}
       />
       <ClauseBand
@@ -172,7 +175,10 @@ export function PolicyDetailView({
         workspaceSlug={workspaceSlug}
         onRequestDelete={() => setPolicyToDelete(policy)}
       />
-      <PolicyProvenanceBand metadata={policy.metadata} />
+      <PolicyProvenanceBand
+        metadata={policy.metadata}
+        policyType={policy.spec.type}
+      />
       <PolicyCliBand policy={policy} />
       <DeletePolicyDialog
         policy={policyToDelete}
@@ -182,6 +188,11 @@ export function PolicyDetailView({
       <EditPolicyDrawer
         state={editState}
         onClose={() => setEditState(null)}
+      />
+      <DuplicatePolicyDrawer
+        source={duplicateSource}
+        workspaceSlug={workspaceSlug}
+        onClose={() => setDuplicateSource(null)}
       />
     </div>
   );

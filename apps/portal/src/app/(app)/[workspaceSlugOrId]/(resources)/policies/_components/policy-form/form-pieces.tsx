@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { AlertTriangle, Globe, MapPin } from "lucide-react";
 import { Input } from "@repo/ui/components/input";
@@ -30,7 +30,32 @@ import {
   type TokenLimits,
 } from "./form-schema";
 
-// ─── Numbered section heading ────────────────────────────────────────────────
+// ─── Section field group — label + optional hint above a control group ──────
+
+interface FieldGroupProps {
+  label: string;
+  hint?: ReactNode;
+  children: ReactNode;
+}
+
+export function FieldGroup({ label, hint, children }: FieldGroupProps) {
+  const labelId = useId();
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span id={labelId} className="typography-label text-muted-foreground">
+        {label}
+      </span>
+      {hint ? (
+        <p className="typography-caption text-muted-foreground">{hint}</p>
+      ) : null}
+      <div role="group" aria-labelledby={labelId}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─── Numbered section heading (Create page only) ─────────────────────────────
 
 interface StepHeadingProps {
   index: number;
@@ -49,7 +74,7 @@ export function StepHeading({
     <header className="flex flex-col gap-1">
       <h2
         id={headingId}
-        className="typography-subtitle font-semibold text-foreground"
+        className="typography-body font-semibold text-foreground"
       >
         <span className="font-mono text-meta-foreground">{index}.</span> {title}
       </h2>
@@ -266,8 +291,8 @@ export function LocationBody({ value, onChange }: LocationBodyProps) {
         })}
       </div>
       <p className="typography-caption text-muted-foreground">
-        Continents and countries union — workloads may run in any selected
-        region.
+        Continents and countries union — workloads may run in any matching
+        data center.
       </p>
     </div>
   );
@@ -446,37 +471,33 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
 
   return (
     <>
-      <FieldRow cols={1}>
-        <div className="flex flex-col gap-1.5">
-          <Field label="Display name" error={errors.displayName?.message}>
-            <Input
-              placeholder="EU-only production"
-              aria-describedby={displayHelperId}
-              {...register("displayName")}
-            />
-          </Field>
-          <p id={displayHelperId} className="text-muted-foreground">
-            Shown in the dashboard.
-          </p>
-        </div>
-      </FieldRow>
-      <FieldRow cols={1}>
-        <div className="flex flex-col gap-1.5">
-          <Field label="Name" error={errors.name?.message}>
-            <Input
-              placeholder="eu-only-prod"
-              className="font-mono"
-              aria-describedby={nameHelperId}
-              {...register("name")}
-            />
-          </Field>
-          <p id={nameHelperId} className="text-muted-foreground">
-            Used in <code className="typography-code">bl</code> commands and{" "}
-            <code className="typography-code">spec.policies[]</code>.
-            Auto-derived; editable.
-          </p>
-        </div>
-      </FieldRow>
+      <div className="flex max-w-sm flex-col gap-1.5">
+        <Field label="Display name" error={errors.displayName?.message}>
+          <Input
+            placeholder="EU-only production"
+            aria-describedby={displayHelperId}
+            {...register("displayName")}
+          />
+        </Field>
+        <p id={displayHelperId} className="text-muted-foreground">
+          Shown in the dashboard.
+        </p>
+      </div>
+      <div className="flex max-w-sm flex-col gap-1.5">
+        <Field label="Name" error={errors.name?.message}>
+          <Input
+            placeholder="eu-only-prod"
+            className="font-mono"
+            aria-describedby={nameHelperId}
+            {...register("name")}
+          />
+        </Field>
+        <p id={nameHelperId} className="text-muted-foreground">
+          Used in <code className="typography-code">bl</code> commands and{" "}
+          <code className="typography-code">spec.policies[]</code>.
+          Auto-derived; editable.
+        </p>
+      </div>
       {slug ? (
         <p className="typography-caption text-meta-foreground">
           Slug preview:{" "}
@@ -506,39 +527,35 @@ export function IdentityEditableNameOnlyFields({
 
   return (
     <>
-      <FieldRow cols={1}>
-        <div className="flex flex-col gap-1.5">
-          <Field label="Display name" error={errors.displayName?.message}>
-            <Input
-              placeholder="EU-only production"
-              aria-describedby={displayHelperId}
-              {...register("displayName")}
-            />
-          </Field>
-          <p id={displayHelperId} className="text-muted-foreground">
-            Shown in the dashboard.
-          </p>
-        </div>
-      </FieldRow>
-      <FieldRow cols={1}>
-        <div className="flex flex-col gap-1.5">
-          <Field label="Name">
-            <div
-              className={cn(
-                "flex w-full items-center rounded-md border border-border bg-muted-surface px-3 py-2 font-mono typography-body text-foreground",
-              )}
-              aria-readonly="true"
-            >
-              {fixedName}
-            </div>
-          </Field>
-          <p className="typography-caption text-meta-foreground">
-            Resource identifier — fixed at creation, referenced in{" "}
-            <code className="typography-code">bl</code> commands and{" "}
-            <code className="typography-code">spec.policies[]</code>.
-          </p>
-        </div>
-      </FieldRow>
+      <div className="flex max-w-sm flex-col gap-1.5">
+        <Field label="Display name" error={errors.displayName?.message}>
+          <Input
+            placeholder="EU-only production"
+            aria-describedby={displayHelperId}
+            {...register("displayName")}
+          />
+        </Field>
+        <p id={displayHelperId} className="text-muted-foreground">
+          Shown in the dashboard.
+        </p>
+      </div>
+      <div className="flex max-w-sm flex-col gap-1.5">
+        <Field label="Name">
+          <div
+            className={cn(
+              "flex w-full items-center rounded-md border border-border bg-muted-surface px-3 py-2 font-mono typography-body text-foreground",
+            )}
+            aria-readonly="true"
+          >
+            {fixedName}
+          </div>
+        </Field>
+        <p className="typography-caption text-meta-foreground">
+          Resource identifier — fixed at creation, referenced in{" "}
+          <code className="typography-code">bl</code> commands and{" "}
+          <code className="typography-code">spec.policies[]</code>.
+        </p>
+      </div>
     </>
   );
 }

@@ -68,7 +68,7 @@ export function LocationClauseBand({
 
 function LocationChip({ location }: { location: PolicyLocation }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 typography-meta text-foreground">
+    <span className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 typography-code text-foreground">
       <span className="font-medium text-muted-foreground">
         {location.type === "continent" ? "Continent" : "Country"}:
       </span>

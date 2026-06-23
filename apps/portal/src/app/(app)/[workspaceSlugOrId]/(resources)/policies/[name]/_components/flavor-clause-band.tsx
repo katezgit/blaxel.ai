@@ -78,11 +78,11 @@ export function FlavorClauseBand({
 
 function FlavorChip({ flavor }: { flavor: PolicyFlavor }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 typography-meta text-foreground">
+    <span className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 typography-code text-foreground">
       <span className="font-medium text-muted-foreground">
         {flavor.type.toUpperCase()}:
       </span>
-      <span className="font-mono">{flavor.name}</span>
+      <span>{flavor.name}</span>
     </span>
   );
 }

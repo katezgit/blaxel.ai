@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import { BandFrame } from "./band-frame";
-import type { PolicyMetadata } from "@/lib/mock/policies";
+import { policyTypeLabel } from "@/lib/mock/policies";
+import type { PolicyMetadata, PolicyType } from "@/lib/mock/policies";
 
 const TIMESTAMP_FMT = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -17,13 +18,22 @@ const TIMESTAMP_FMT = new Intl.DateTimeFormat("en-US", {
 
 interface PolicyProvenanceBandProps {
   metadata: PolicyMetadata;
+  policyType: PolicyType;
 }
 
-export function PolicyProvenanceBand({ metadata }: PolicyProvenanceBandProps) {
+export function PolicyProvenanceBand({
+  metadata,
+  policyType,
+}: PolicyProvenanceBandProps) {
   const labelEntries = Object.entries(metadata.labels);
   return (
     <BandFrame label="Provenance">
       <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[140px_1fr]">
+        <ProvenanceRow label="Type">
+          <span className="typography-body text-foreground">
+            {policyTypeLabel(policyType)}
+          </span>
+        </ProvenanceRow>
         <ProvenanceRow label="Created">
           <span className="typography-body text-foreground">
             {TIMESTAMP_FMT.format(new Date(metadata.createdAt))}
@@ -57,7 +67,7 @@ export function PolicyProvenanceBand({ metadata }: PolicyProvenanceBandProps) {
               {labelEntries.map(([key, value]) => (
                 <span
                   key={key}
-                  className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 font-mono typography-meta text-foreground"
+                  className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 typography-code text-foreground"
                 >
                   <span className="text-muted-foreground">{key}:</span>
                   {value}

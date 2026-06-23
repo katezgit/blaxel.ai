@@ -13,7 +13,7 @@ import type { ReactNode } from "react";
  */
 interface DetailPageHeaderProps {
   breadcrumb: ReactNode;
-  avatar: ReactNode;
+  avatar?: ReactNode;
   heading: ReactNode;
   description?: ReactNode;
   action?: ReactNode;
@@ -31,7 +31,7 @@ export function DetailPageHeader({
       {breadcrumb}
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="shrink-0">{avatar}</span>
+          {avatar && <span className="shrink-0">{avatar}</span>}
           <div className="page-header min-w-0">
             <h1 className="typography-display font-semibold text-foreground">
               {heading}

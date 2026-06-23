@@ -1,25 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { Copy, MoreHorizontal, Pencil } from "lucide-react";
+import { MoreHorizontal, Pencil } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { DetailPageHeader } from "@/components/shell/detail-page-header";
-import { IconAvatar } from "@/components/shell/icon-avatar";
 import type { Policy } from "@/lib/mock/policies";
-import { POLICY_TYPE_BY_VALUE } from "../../_components/policy-form/form-schema";
+import { POLICY_TYPE_BY_VALUE } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
 
 interface PolicyDetailHeaderProps {
   policy: Policy;
   workspaceSlug: string;
   onRequestEdit: () => void;
+  onRequestDuplicate: () => void;
   onRequestDelete: () => void;
 }
 
@@ -27,11 +27,11 @@ export function PolicyDetailHeader({
   policy,
   workspaceSlug,
   onRequestEdit,
+  onRequestDuplicate,
   onRequestDelete,
 }: PolicyDetailHeaderProps) {
   const heading = policy.metadata.displayName || policy.metadata.name;
   const listHref = `/${workspaceSlug}/policies`;
-  const duplicateHref = `/${workspaceSlug}/policies/new?duplicate=${encodeURIComponent(policy.metadata.name)}`;
   const typeOption = POLICY_TYPE_BY_VALUE[policy.spec.type];
 
   return (
@@ -42,17 +42,10 @@ export function PolicyDetailHeader({
           current={heading}
         />
       }
-      avatar={<IconAvatar icon={typeOption.icon} label={`${typeOption.label} policy`} />}
       heading={heading}
       description={typeOption.narrative}
       action={
         <>
-          <Button asChild variant="secondary">
-            <Link href={duplicateHref}>
-              <Copy aria-hidden="true" />
-              Duplicate
-            </Link>
-          </Button>
           <Button variant="secondary" onClick={onRequestEdit}>
             <Pencil aria-hidden="true" />
             Edit policy
@@ -64,11 +57,15 @@ export function PolicyDetailHeader({
               </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={onRequestDuplicate}>
+                Duplicate
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => navigator.clipboard.writeText(window.location.href)}
               >
                 Copy link
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"
                 onSelect={(event) => {

@@ -24,7 +24,7 @@ export const POLICY_TYPE_OPTIONS: ReadonlyArray<PolicyTypeOption> = [
     label: "Location",
     hint: "Continent or country allow-list.",
     narrative:
-      "Restricts attached workloads to a continent or country allow-list — requests outside these regions are denied.",
+      "Restricts attached workloads to a continent or country allow-list — requests outside these locations are denied.",
     icon: MapPin,
   },
   {
