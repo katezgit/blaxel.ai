@@ -20,6 +20,7 @@ import type {
   PolicyType,
 } from "@/lib/mock/policies";
 import {
+  computeBodyDirty,
   FlavorUnavailableNotice,
   IdentityEditableFields,
   LocationBody,
@@ -27,7 +28,7 @@ import {
   ResourceTypesField,
   StepHeading,
   TokenUsageBody,
-} from "../../_components/policy-form/form-pieces";
+} from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-pieces";
 import {
   POLICY_TYPE_BY_VALUE,
   policyFormSchema,
@@ -36,7 +37,15 @@ import {
   type LocationItem,
   type PolicyFormValues,
   type TokenLimits,
-} from "../../_components/policy-form/form-schema";
+} from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@repo/ui/components/dialog";
 
 // ─── View ────────────────────────────────────────────────────────────────────
 
@@ -174,17 +183,29 @@ function CreatePolicyForm({
   const cleanDisplayName = (form.watch("displayName") || cleanName).trim();
 
   // Body-editor state lives below RHF so the code-reference panel can read it.
-  const [locations, setLocations] = useState<ReadonlyArray<LocationItem>>([
+  const INITIAL_LOCATIONS: ReadonlyArray<LocationItem> = [
     { type: "continent", name: "North America" },
     { type: "country", name: "United States of America" },
-  ]);
-  const [tokenLimits, setTokenLimits] = useState<TokenLimits>({
+  ];
+  const INITIAL_TOKEN_LIMITS: TokenLimits = {
     input: 1_000_000,
     output: 0,
     total: 2_000_000,
     step: 1,
     granularity: "month",
+  };
+  const [locations, setLocations] =
+    useState<ReadonlyArray<LocationItem>>(INITIAL_LOCATIONS);
+  const [tokenLimits, setTokenLimits] = useState<TokenLimits>(
+    INITIAL_TOKEN_LIMITS,
+  );
+
+  const bodyDirty = computeBodyDirty(policyType, locations, tokenLimits, {
+    locations: INITIAL_LOCATIONS,
+    maxTokens: INITIAL_TOKEN_LIMITS,
   });
+  const isDirty = form.formState.isDirty || bodyDirty;
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   const onSubmit = form.handleSubmit(async () => {
     await new Promise((resolve) => setTimeout(resolve, 400));
@@ -192,11 +213,19 @@ function CreatePolicyForm({
     router.push(listHref);
   });
 
-  function onCancel() {
+  function navigateBack() {
     if (window.history.length > 1) {
       router.back();
     } else {
       router.push(listHref);
+    }
+  }
+
+  function onCancel() {
+    if (isDirty) {
+      setConfirmDiscard(true);
+    } else {
+      navigateBack();
     }
   }
 
@@ -274,6 +303,42 @@ function CreatePolicyForm({
         onCancel={onCancel}
         submitting={form.formState.isSubmitting}
       />
+      <Dialog
+        open={confirmDiscard}
+        onOpenChange={(next) => {
+          if (!next) setConfirmDiscard(false);
+        }}
+      >
+        <DialogContent size="sm">
+          <DialogHeader>
+            <DialogTitle>Discard changes?</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <p className="typography-body text-foreground">
+              Leave this page without creating the policy?
+            </p>
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setConfirmDiscard(false)}
+            >
+              Keep editing
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => {
+                setConfirmDiscard(false);
+                navigateBack();
+              }}
+            >
+              Discard
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

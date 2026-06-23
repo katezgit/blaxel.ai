@@ -34,6 +34,7 @@ import type {
   PolicyMaxTokens,
 } from "@/lib/mock/policies";
 import {
+  computeBodyDirty,
   FieldGroup,
   FlavorUnavailableNotice,
   IdentityEditableFields,
@@ -127,13 +128,28 @@ function DuplicatePolicyForm({
     };
   });
 
+  const bodyDirty = computeBodyDirty(source.spec.type, locations, tokenLimits, {
+    locations: source.spec.locations ?? [],
+    maxTokens: source.spec.maxTokens
+      ? {
+          input: source.spec.maxTokens.input,
+          output: source.spec.maxTokens.output,
+          total: source.spec.maxTokens.total,
+          step: source.spec.maxTokens.step,
+          granularity: source.spec.maxTokens.granularity,
+        }
+      : null,
+  });
+  const isDirty = form.formState.isDirty || bodyDirty;
+
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
-  // Duplicate is always "dirty" by definition — the form opens with a new
-  // name suffix and the user has actively initiated a create. Always gate
-  // the cancel path through the discard confirm.
   function requestClose() {
-    setConfirmDiscard(true);
+    if (isDirty) {
+      setConfirmDiscard(true);
+    } else {
+      onClose();
+    }
   }
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -195,8 +211,10 @@ function DuplicatePolicyForm({
           </div>
           <DrawerCloseButton
             onClick={(event) => {
-              event.preventDefault();
-              setConfirmDiscard(true);
+              if (isDirty) {
+                event.preventDefault();
+                setConfirmDiscard(true);
+              }
             }}
           />
         </DrawerHeader>

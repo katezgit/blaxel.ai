@@ -30,6 +30,40 @@ import {
   type TokenLimits,
 } from "./form-schema";
 
+// ─── Dirty check — chip state lives outside RHF, so isDirty needs help ──────
+
+interface BodyDirtyInitial {
+  locations: ReadonlyArray<LocationItem>;
+  maxTokens: TokenLimits | null;
+}
+
+export function computeBodyDirty(
+  type: PolicyType,
+  currentLocations: ReadonlyArray<LocationItem>,
+  currentTokenLimits: TokenLimits,
+  initial: BodyDirtyInitial,
+): boolean {
+  if (type === "location") {
+    if (currentLocations.length !== initial.locations.length) return true;
+    return currentLocations.some(
+      (loc, idx) =>
+        loc.type !== initial.locations[idx]?.type ||
+        loc.name !== initial.locations[idx]?.name,
+    );
+  }
+  if (type === "maxToken") {
+    if (initial.maxTokens === null) return true;
+    return (
+      currentTokenLimits.input !== initial.maxTokens.input ||
+      currentTokenLimits.output !== initial.maxTokens.output ||
+      currentTokenLimits.total !== initial.maxTokens.total ||
+      currentTokenLimits.step !== initial.maxTokens.step ||
+      currentTokenLimits.granularity !== initial.maxTokens.granularity
+    );
+  }
+  return false;
+}
+
 // ─── Section field group — label + optional hint above a control group ──────
 
 interface FieldGroupProps {

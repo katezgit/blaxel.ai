@@ -29,6 +29,7 @@ import { queryKeys } from "@/lib/query/keys";
 import { updatePolicy } from "@/lib/mock/policies";
 import type { Policy } from "@/lib/mock/policies";
 import {
+  computeBodyDirty,
   FieldGroup,
   FlavorUnavailableNotice,
   IdentityEditableNameOnlyFields,
@@ -120,14 +121,18 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
 
   // Locations + tokenLimits live outside RHF, so isDirty alone misses them.
   // Track them against the original snapshot for the cancel-confirm path.
-  const initialSpec = policy.spec;
-  const bodyDirty = computeBodyDirty(
-    policy.spec.type,
-    locations,
-    tokenLimits,
-    initialSpec.locations ?? [],
-    initialSpec.maxTokens ?? null,
-  );
+  const bodyDirty = computeBodyDirty(policy.spec.type, locations, tokenLimits, {
+    locations: policy.spec.locations ?? [],
+    maxTokens: policy.spec.maxTokens
+      ? {
+          input: policy.spec.maxTokens.input,
+          output: policy.spec.maxTokens.output,
+          total: policy.spec.maxTokens.total,
+          step: policy.spec.maxTokens.step,
+          granularity: policy.spec.maxTokens.granularity,
+        }
+      : null,
+  });
   const isDirty = form.formState.isDirty || bodyDirty;
 
   const [confirmDiscard, setConfirmDiscard] = useState(false);
@@ -256,34 +261,6 @@ function EditPolicyForm({ policy, focusTarget, onClose }: EditPolicyFormProps) {
       />
     </>
   );
-}
-
-function computeBodyDirty(
-  type: Policy["spec"]["type"],
-  currentLocations: ReadonlyArray<LocationItem>,
-  currentTokenLimits: TokenLimits,
-  initialLocations: ReadonlyArray<LocationItem>,
-  initialMaxTokens: TokenLimits | { input: number; output: number; total: number; step: number; granularity: TokenLimits["granularity"] } | null,
-): boolean {
-  if (type === "location") {
-    if (currentLocations.length !== initialLocations.length) return true;
-    return currentLocations.some(
-      (loc, idx) =>
-        loc.type !== initialLocations[idx]?.type ||
-        loc.name !== initialLocations[idx]?.name,
-    );
-  }
-  if (type === "maxToken") {
-    if (initialMaxTokens === null) return true;
-    return (
-      currentTokenLimits.input !== initialMaxTokens.input ||
-      currentTokenLimits.output !== initialMaxTokens.output ||
-      currentTokenLimits.total !== initialMaxTokens.total ||
-      currentTokenLimits.step !== initialMaxTokens.step ||
-      currentTokenLimits.granularity !== initialMaxTokens.granularity
-    );
-  }
-  return false;
 }
 
 interface DiscardChangesDialogProps {
