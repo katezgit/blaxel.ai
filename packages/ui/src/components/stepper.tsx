@@ -101,7 +101,6 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
                 className="flex flex-1 flex-col last:flex-none"
               >
                 <RowEl {...rowProps}>
-                  {/* numeral/icon is decorative — accessible name comes from <li> text */}
                   <span
                     aria-hidden="true"
                     className={cn(
