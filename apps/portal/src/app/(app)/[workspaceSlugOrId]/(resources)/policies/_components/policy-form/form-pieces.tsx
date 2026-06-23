@@ -489,6 +489,18 @@ export function LabelsEditor({ form }: LabelsEditorProps) {
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
+          <li
+            aria-hidden="true"
+            className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-2"
+          >
+            <span className="typography-label font-medium text-foreground">
+              Key
+            </span>
+            <span className="typography-label font-medium text-foreground">
+              Value
+            </span>
+            <span />
+          </li>
           {fields.map((field, index) => {
             const keyError = Array.isArray(rowErrors)
               ? rowErrors[index]?.key?.message
