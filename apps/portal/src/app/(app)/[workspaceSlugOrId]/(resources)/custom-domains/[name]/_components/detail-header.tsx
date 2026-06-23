@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Globe, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
@@ -13,7 +13,6 @@ import {
 } from "@repo/ui/components/dropdown-menu";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { DetailPageHeader } from "@/components/shell/detail-page-header";
-import { IconAvatar } from "@/components/shell/icon-avatar";
 import type { CustomDomain } from "@/lib/mock/custom-domains";
 import { DeleteDomainDialog } from "./delete-domain-dialog";
 
@@ -26,6 +25,16 @@ const STATUS_LABEL = {
   pending: "Pending",
   verified: "Verified",
   failed: "Failed",
+} as const;
+
+// Each status is colored semantically — pairs with the per-record check
+// outcomes in DnsRecordsBand and the inline indicator in VerificationBand so
+// every "Failed / Pending / Verified" string on the page reads in the same
+// hue. Half-coloring (only failed) was the prior bug.
+const STATUS_DESCRIPTION_CLASS = {
+  pending: "font-medium text-state-warning-text",
+  verified: "font-medium text-state-scored-text",
+  failed: "font-medium text-state-errored-text",
 } as const;
 
 export function DetailHeader({ domain, workspaceSlug }: DetailHeaderProps) {
@@ -51,7 +60,6 @@ export function DetailHeader({ domain, workspaceSlug }: DetailHeaderProps) {
             current={metadata.name}
           />
         }
-        avatar={<IconAvatar icon={Globe} label="Custom domain" />}
         heading={metadata.name}
         description={
           <CustomDomainDescription
@@ -119,21 +127,14 @@ interface CustomDomainDescriptionProps {
   region: string;
 }
 
-// personality.md §7 — failure outranks success. When status=failed the status
-// segment is rendered with the destructive text token so it out-weighs the
-// surrounding neutral metadata; success/pending render plain neutral text.
 function CustomDomainDescription({ status, region }: CustomDomainDescriptionProps) {
   return (
     <>
       <span>Custom domain</span>
       <span aria-hidden="true"> · </span>
-      {status === "failed" ? (
-        <span className="font-medium text-state-errored-text">
-          {STATUS_LABEL[status]}
-        </span>
-      ) : (
-        <span>{STATUS_LABEL[status]}</span>
-      )}
+      <span className={STATUS_DESCRIPTION_CLASS[status]}>
+        {STATUS_LABEL[status]}
+      </span>
       <span aria-hidden="true"> · </span>
       <span className="font-mono">{region}</span>
     </>

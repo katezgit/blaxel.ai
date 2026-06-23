@@ -2,8 +2,9 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { CopyButton } from "@repo/ui/components/copy-button";
 import {
   tableBodyClass,
   tableCellVariants,
@@ -14,6 +15,7 @@ import {
 } from "@repo/ui/components/table";
 import { cn } from "@repo/ui/lib/cn";
 import type { CustomDomain, CustomDomainStatus } from "@/lib/mock/custom-domains";
+import { formatRegion } from "../_lib/region";
 import { formatRelative } from "../_lib/relative-time";
 import { DomainStatusBadge } from "./status-badge";
 
@@ -80,20 +82,38 @@ interface DomainRowProps {
 }
 
 function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
+  const router = useRouter();
   const { metadata, spec } = domain;
   const href = `/${workspaceSlug}/custom-domains/${encodeURIComponent(metadata.name)}`;
   const isFailed = spec.status === "failed";
+  const region = formatRegion(spec.region);
+
+  // Row-level navigation so the entire `cursor-pointer` surface is live, not
+  // just the inner Link in the first cell. Skip when the click originates on
+  // an interactive descendant (the Link, a button, or the copy-error link in
+  // the error row below) so cmd/middle-click and inner actions keep their
+  // native semantics.
+  const handleRowClick = (event: React.MouseEvent<HTMLTableRowElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.closest("a, button")) return;
+    if (event.defaultPrevented) return;
+    router.push(href);
+  };
 
   return (
     <>
       <tr
+        onClick={handleRowClick}
+        onMouseEnter={() => router.prefetch(href)}
         className={cn(
           tableRowVariants(),
           "group cursor-pointer",
           // personality.md §7 — failure outranks success: failed rows carry a
           // subtle background tint + left-border accent to lift them off the
           // baseline rhythm without crossing into alarm-fatigue territory.
-          isFailed && "bg-state-errored-subtle hover:bg-state-errored-subtle",
+          // Drop the standard between-row divider so the failed row visually
+          // merges into the error band beneath it as one bound group.
+          isFailed && "bg-state-errored-subtle hover:bg-state-errored-subtle border-b-0",
         )}
       >
         <td
@@ -108,21 +128,32 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
               className="absolute inset-y-0 left-0 w-0.5 bg-state-errored"
             />
           )}
-          <Link
-            href={href}
-            className="flex flex-col gap-0.5 font-mono typography-label outline-hidden focus-visible:shadow-focus-ring rounded-sm"
-          >
-            <span className="text-foreground">{metadata.name}</span>
-            {metadata.displayName && (
-              <span className="font-sans typography-caption text-muted-foreground">
-                {metadata.displayName}
-              </span>
-            )}
-          </Link>
+          <div className="flex items-start gap-1.5">
+            <Link
+              href={href}
+              className="flex flex-col gap-0.5 font-mono typography-label outline-hidden focus-visible:shadow-focus-ring rounded-sm"
+            >
+              <span className="text-foreground">{metadata.name}</span>
+              {metadata.displayName && (
+                <span className="font-sans typography-caption text-muted-foreground">
+                  {metadata.displayName}
+                </span>
+              )}
+            </Link>
+            <CopyButton
+              value={metadata.name}
+              tooltipLabel="Copy domain"
+              className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            />
+          </div>
           <LabelChips labels={metadata.labels} />
         </td>
-        <td className={cn(tableCellVariants(), "font-mono typography-label text-muted-foreground")}>
-          {spec.region}
+        <td className={cn(tableCellVariants(), "typography-label text-muted-foreground")}>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="text-base leading-none">{region.flag}</span>
+            <span className="text-foreground">{region.label}</span>
+            <span className="font-mono text-muted-foreground">({region.slug})</span>
+          </span>
         </td>
         <td className={tableCellVariants()}>
           <DomainStatusBadge status={spec.status} />
@@ -138,8 +169,18 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
         </td>
       </tr>
       {isFailed && spec.verificationError && (
-        <tr className="bg-state-errored-subtle">
-          <td colSpan={5} className="px-6 pb-3 typography-caption text-state-errored-text">
+        // Continuation of the failed row above: shares the errored-subtle bg
+        // and the left-border accent extends through this row so the eye
+        // reads it as bound to the failed row, not the next one. Bottom
+        // divider is the same `border-border` every other row uses — no need
+        // to shout a state-errored border at the page; the bg + left bar
+        // carry the "this is part of the failure" signal on their own.
+        <tr className="bg-state-errored-subtle border-b border-border">
+          <td colSpan={5} className="relative px-6 pb-3 typography-caption text-state-errored-text">
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-0 left-0 w-0.5 bg-state-errored"
+            />
             <span className="font-medium">
               {extractFirstLine(spec.verificationError)}
             </span>{" "}
@@ -147,7 +188,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
               href={href}
               className="font-medium underline-offset-2 hover:underline"
             >
-              Check your DNS provider and retry verification →
+              View record to publish →
             </Link>
           </td>
         </tr>

@@ -14,7 +14,7 @@ export function CertificateBand({ domain }: CertificateBandProps) {
     <Band title="Certificate">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-2">
-          <span className="typography-label font-medium text-foreground">
+          <span className="typography-body font-semibold text-foreground">
             Subject alternative names (SANs)
           </span>
           {isIssued ? (
@@ -32,7 +32,7 @@ export function CertificateBand({ domain }: CertificateBandProps) {
           )}
         </div>
 
-        <p className="typography-caption text-muted-foreground">
+        <p className="typography-body text-muted-foreground">
           Managed TLS via AWS Certificate Manager. Provisioned on verification.
         </p>
       </div>

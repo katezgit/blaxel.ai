@@ -12,27 +12,27 @@ export function SecurityBand({ domain }: SecurityBandProps) {
 
   return (
     <Band title="Security">
-      <dl className="grid grid-cols-[160px_1fr] gap-x-6 gap-y-3 items-baseline">
-        <dt className="typography-label text-muted-foreground">Registered by</dt>
-        <dd className="typography-label text-foreground">{metadata.createdBy}</dd>
+      <dl className="grid grid-cols-[160px_1fr] gap-x-6 gap-y-4 items-baseline">
+        <dt className="typography-body text-muted-foreground">Registered by</dt>
+        <dd className="typography-body text-foreground">{metadata.createdBy}</dd>
 
-        <dt className="typography-label text-muted-foreground">Registered at</dt>
-        <dd className="font-mono typography-label text-foreground">
+        <dt className="typography-body text-muted-foreground">Registered at</dt>
+        <dd className="font-mono typography-body text-foreground">
           {formatAbsoluteUtc(metadata.createdAt)}
         </dd>
 
-        <dt className="typography-label text-muted-foreground">Last updated by</dt>
-        <dd className="typography-label text-foreground">{metadata.updatedBy}</dd>
+        <dt className="typography-body text-muted-foreground">Last updated by</dt>
+        <dd className="typography-body text-foreground">{metadata.updatedBy}</dd>
 
-        <dt className="typography-label text-muted-foreground">Last updated at</dt>
-        <dd className="font-mono typography-label text-foreground">
+        <dt className="typography-body text-muted-foreground">Last updated at</dt>
+        <dd className="font-mono typography-body text-foreground">
           {formatAbsoluteUtc(metadata.updatedAt)}
         </dd>
 
-        <dt className="typography-label text-muted-foreground">Labels</dt>
+        <dt className="typography-body text-muted-foreground">Labels</dt>
         <dd>
           {labels.length === 0 ? (
-            <span className="typography-label text-muted-foreground">No labels.</span>
+            <span className="typography-body text-muted-foreground">No labels.</span>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {labels.map(([key, value]) => (

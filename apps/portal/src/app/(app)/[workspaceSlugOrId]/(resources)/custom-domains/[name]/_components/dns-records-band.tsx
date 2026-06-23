@@ -17,7 +17,7 @@ export function DnsRecordsBand({ domain }: DnsRecordsBandProps) {
 
   return (
     <Band title="DNS records issued by Blaxel">
-      <p className="typography-caption text-muted-foreground">
+      <p className="typography-body text-muted-foreground">
         Publish these records to your DNS provider, then verify the domain.
         Records below come straight from the resource — copy from here.
       </p>
@@ -60,7 +60,7 @@ interface RecordGroupProps {
 function RecordGroup({ label, children }: RecordGroupProps) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="typography-meta font-medium uppercase tracking-wider text-meta-foreground">
+      <span className="typography-body font-semibold text-foreground">
         {label}
       </span>
       {children}
@@ -97,50 +97,53 @@ function RecordRow({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 rounded-sm border border-border bg-muted-surface p-3",
-        recordIsFailing && "border-state-errored bg-state-errored-subtle",
+        "flex flex-col gap-2",
+        recordIsFailing &&
+          "rounded-sm border-l-2 border-state-errored bg-state-errored-subtle pl-3 pr-3 py-2",
       )}
     >
+      <RecordOutcomeLabel
+        type={type}
+        status={status}
+        recordIsFailing={recordIsFailing}
+      />
       <div className="grid grid-cols-[60px_1fr] gap-x-3 gap-y-1 items-baseline">
-        <span className="typography-meta font-medium uppercase tracking-wider text-meta-foreground">
+        <span className="typography-meta uppercase tracking-wider text-meta-foreground">
           Host
         </span>
-        <span className="font-mono typography-label text-foreground break-all">
+        <span className="font-mono typography-body text-foreground break-all">
           {host}
         </span>
-        <span className="typography-meta font-medium uppercase tracking-wider text-meta-foreground">
+        <span className="typography-meta uppercase tracking-wider text-meta-foreground">
           Value
         </span>
         <div className="min-w-0">
           <CodeBlock variant="inline" code={value} className="break-all" />
         </div>
       </div>
-      <RecordCheckOutcome
-        type={type}
-        status={status}
-        recordIsFailing={recordIsFailing}
-        expectedValue={value}
-      />
+      {recordIsFailing && <RecordOutcomeDetail expectedValue={value} />}
     </div>
   );
 }
 
-interface RecordCheckOutcomeProps {
+interface RecordOutcomeLabelProps {
   type: "CNAME" | "TXT";
   status: CustomDomainStatus;
   recordIsFailing: boolean;
-  expectedValue: string;
 }
 
-function RecordCheckOutcome({
+// Short status label rendered at the top of each record block. The expanded
+// expected/observed diagnostic for a failing record renders separately at the
+// bottom of the block via RecordOutcomeDetail so it sits beneath the host /
+// value it refers to.
+function RecordOutcomeLabel({
   type,
   status,
   recordIsFailing,
-  expectedValue,
-}: RecordCheckOutcomeProps) {
+}: RecordOutcomeLabelProps) {
   if (status === "verified") {
     return (
-      <span className="inline-flex items-center gap-1.5 typography-meta text-state-scored-text">
+      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-scored-text">
         <Check className="size-3" aria-hidden="true" />
         Matched
       </span>
@@ -148,7 +151,7 @@ function RecordCheckOutcome({
   }
   if (status === "pending") {
     return (
-      <span className="inline-flex items-center gap-1.5 typography-meta text-state-warning-text">
+      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-warning-text">
         <Loader2 className="size-3 animate-spin" aria-hidden="true" />
         Checking…
       </span>
@@ -156,27 +159,34 @@ function RecordCheckOutcome({
   }
   if (recordIsFailing) {
     return (
-      <div className="flex flex-col gap-1">
-        <span className="inline-flex items-center gap-1.5 typography-meta text-state-errored-text">
-          <X className="size-3" aria-hidden="true" />
-          {type === "CNAME" ? "Not matched" : "Not found"}
-        </span>
-        <p className="font-mono typography-meta text-muted-foreground">
-          expected:{" "}
-          <span className="text-foreground">{expectedValue}</span>
-        </p>
-        <p className="font-mono typography-meta text-muted-foreground">
-          observed:{" "}
-          <span className="text-foreground">not present in DNS</span>
-        </p>
-      </div>
+      <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-errored-text">
+        <X className="size-3" aria-hidden="true" />
+        {type === "CNAME" ? "Not matched" : "Not found"}
+      </span>
     );
   }
   // Failed-status domain, but this record matched — quiet success.
   return (
-    <span className="inline-flex items-center gap-1.5 typography-meta text-state-scored-text">
+    <span className="inline-flex items-center gap-1.5 typography-caption font-medium text-state-scored-text">
       <Check className="size-3" aria-hidden="true" />
       Matched
     </span>
+  );
+}
+
+interface RecordOutcomeDetailProps {
+  expectedValue: string;
+}
+
+function RecordOutcomeDetail({ expectedValue }: RecordOutcomeDetailProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="font-mono typography-caption text-muted-foreground">
+        expected: <span className="text-foreground">{expectedValue}</span>
+      </p>
+      <p className="font-mono typography-caption text-muted-foreground">
+        observed: <span className="text-foreground">not present in DNS</span>
+      </p>
+    </div>
   );
 }

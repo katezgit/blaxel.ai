@@ -68,13 +68,8 @@ const LIST_DESCRIPTION = (
 );
 
 const LOCKED_DESCRIPTION = (
-  <div className="flex flex-col gap-1">
-    <p className="typography-body font-semibold text-foreground">
-      Bring your own identity to Blaxel
-    </p>
-    <p className="typography-body text-muted-foreground">
-      Route Sandbox preview URLs through your own domain names, with managed
-      TLS, region-locked per domain.
-    </p>
-  </div>
+  <p className="max-w-2xl typography-body text-muted-foreground">
+    Bring your own identity to Blaxel. Route Sandbox preview URLs through
+    domains you own, with managed TLS and region-locked assignment.
+  </p>
 );
