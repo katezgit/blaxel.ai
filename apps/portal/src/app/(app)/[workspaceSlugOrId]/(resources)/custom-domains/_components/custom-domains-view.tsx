@@ -29,6 +29,7 @@ export function CustomDomainsView() {
     <>
       <CustomDomainsHeader
         action={<AddDomainButton disabled={tierLocked} />}
+        tierLocked={tierLocked}
       />
       {tierLocked ? <TierLockedPanel /> : <CustomDomainsLoaded fixture={fixture} />}
     </>

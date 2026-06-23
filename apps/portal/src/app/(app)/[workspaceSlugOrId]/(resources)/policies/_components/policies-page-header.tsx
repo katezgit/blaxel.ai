@@ -1,21 +1,31 @@
 "use client";
 
 import { ArrowUpRightIcon, Plus } from "lucide-react";
+import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 
 interface PoliciesPageHeaderProps {
   /** Whether to render the `+ Create Policy` action. Absent in the Tier-1-locked state. */
   showCreate: boolean;
   onCreate?: () => void;
+  /** When true, surfaces a Tier-1 badge next to the heading. */
+  tierLocked?: boolean;
 }
 
-export function PoliciesPageHeader({ showCreate, onCreate }: PoliciesPageHeaderProps) {
+export function PoliciesPageHeader({ showCreate, onCreate, tierLocked = false }: PoliciesPageHeaderProps) {
   return (
     <header className="page-header">
       <div className="flex items-start justify-between gap-4">
-        <h1 className="typography-display font-semibold text-foreground">
-          Policies
-        </h1>
+        <div className="flex items-center gap-2">
+          <h1 className="typography-display font-semibold text-foreground">
+            Policies
+          </h1>
+          {tierLocked && (
+            <Badge variant="neutral" size="sm">
+              Tier 1
+            </Badge>
+          )}
+        </div>
         {showCreate && (
           <Button variant="primary" onClick={onCreate}>
             <Plus aria-hidden="true" />
