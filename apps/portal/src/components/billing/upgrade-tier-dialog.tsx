@@ -25,10 +25,11 @@ export default function UpgradeTierDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      {/* DS default max-h is 80vh; lift to 85vh so the header + stepper +
+      {/* DS default max-h is 80vh; lift to 85vh on ≥sm so the header + stepper +
           two-step body + footer all fit on 13" laptops without inner scroll
-          stacking against the dialog scroll. */}
-      <DialogContent size="lg" className="max-h-[85vh]">
+          stacking against the dialog scroll. Below sm the DS makes DialogContent
+          fullscreen — leave that uncapped. */}
+      <DialogContent size="lg" className="sm:max-h-[85vh]">
         <UpgradeTierDialogContent
           onClose={() => setOpen(false)}
           recommendedTier={recommendedTier}
