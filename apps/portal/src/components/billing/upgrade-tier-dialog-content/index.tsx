@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import {
   DialogBody,
@@ -15,6 +16,9 @@ import { OneTimeTopUpFlow } from "./one-time-top-up-flow";
 import { MonthlyTopUpFlow } from "./monthly-top-up-flow";
 
 type Mode = "one-time" | "monthly";
+
+const QUOTAS_DOC_URL =
+  "https://docs.blaxel.ai/Security/Quotas#how-tiers-are-calculated";
 
 interface UpgradeTierDialogContentProps {
   /** Called when the dialog should close — e.g. on Cancel or after Checkout. */
@@ -36,11 +40,11 @@ const formatUsd = (n: number): string =>
  * Self-contained — no imports from `apps/portal/src/app/(account)/**`.
  */
 export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentProps) {
-  const [mode, setMode] = useState<Mode>("one-time");
+  const [mode, setMode] = useState<Mode>("monthly");
   const { state } = useAccountState();
   // `state.tier` is 0|1|2|3 in the existing fixture. Cast to the wider
-  // DisplayTier (0..4); the About-Tier panel can compare against any of
-  // those without overflow.
+  // DisplayTier so the About-Tier panel can compare against any tier 0..6
+  // without overflow.
   const currentTier = state.tier as DisplayTier;
 
   const handleCheckout = (amountUsd: number) => {
@@ -59,28 +63,28 @@ export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentPr
         <div className="flex flex-col gap-1">
           <DialogTitle>Top up your account</DialogTitle>
           <DialogDescription>
-            {mode === "monthly" ? (
-              <>
-                Monthly top-ups to your balance ensure you maintain eligibility
-                for a specific quota tier.{" "}
-                <a
-                  href="https://docs.blaxel.ai/Get-started/Pricing"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Learn more
-                </a>
-              </>
-            ) : (
-              "Immediately add credits to your account balance."
-            )}
+            {mode === "monthly"
+              ? "Monthly top-ups to your balance ensure you maintain eligibility for a specific quota tier. "
+              : "Immediately add credits to your account balance. "}
+            <a
+              href={QUOTAS_DOC_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-primary hover:underline"
+            >
+              Learn more
+              <ExternalLink aria-hidden="true" className="size-3.5" />
+            </a>
           </DialogDescription>
         </div>
+        {/* self-start: SegmentedControl is inline-flex at root, but DialogHeader's
+            flex-col stretches direct children. Wrap with self-start so the
+            control hugs its labels. */}
         <SegmentedControl
           aria-label="Top-up frequency"
           value={mode}
           onValueChange={(next) => setMode(next as Mode)}
+          className="self-start"
         >
           <SegmentedControl.Item value="monthly">Monthly</SegmentedControl.Item>
           <SegmentedControl.Item value="one-time">
@@ -92,6 +96,7 @@ export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentPr
         {mode === "one-time" ? (
           <OneTimeTopUpFlow
             key="one-time"
+            currentTier={currentTier}
             onCancel={onClose}
             onCheckout={handleCheckout}
           />

@@ -1,12 +1,14 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import {
   TIER_UNLOCK_USD,
   ladderEntry,
   quotaDelta,
   type DisplayTier,
+  type SelectableTier,
 } from "@/lib/mock/billing-tiers";
 
 const QUOTAS_VISIBLE = 5;
@@ -16,17 +18,23 @@ const formatQuotaValue = (value: number | null, unit?: string): string => {
   return `${value.toLocaleString()}${unit ?? ""}`;
 };
 
+const formatUsd = (value: number): string =>
+  value >= 1000 ? `$${value.toLocaleString()}` : `$${value}`;
+
 interface AboutTierPanelProps {
-  targetTier: DisplayTier;
+  targetTier: SelectableTier;
   currentTier: DisplayTier;
 }
 
 export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps) {
+  const [expanded, setExpanded] = useState(false);
   const entry = ladderEntry(targetTier);
   const threshold = TIER_UNLOCK_USD[targetTier];
 
-  const visibleQuotas = entry.quotas.slice(0, QUOTAS_VISIBLE);
-  const hiddenCount = entry.quotas.length - visibleQuotas.length;
+  const visibleQuotas = expanded
+    ? entry.quotas
+    : entry.quotas.slice(0, QUOTAS_VISIBLE);
+  const hiddenCount = entry.quotas.length - QUOTAS_VISIBLE;
 
   return (
     // p-6: spacious panel padding per spacing canon.
@@ -37,7 +45,7 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
     >
       <h3
         id="upgrade-about-tier-heading"
-        className="typography-subtitle font-semibold text-foreground"
+        className="font-mono typography-subtitle font-semibold text-foreground"
       >
         About Tier {targetTier}
       </h3>
@@ -48,7 +56,7 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
           Unlock requirement
         </h4>
         <p className="typography-body text-foreground">
-          ${threshold}+ top-up in past 30 days to sustain.
+          {formatUsd(threshold)}+ top-up in past 30 days to sustain.
         </p>
       </section>
 
@@ -72,12 +80,7 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
                     {formatQuotaValue(quota.value, quota.unit)}
                   </span>
                   {delta !== null && delta > 0 ? (
-                    <span
-                      className={cn(
-                        "font-mono tabular-nums typography-caption",
-                        "text-state-scored-text",
-                      )}
-                    >
+                    <span className="font-mono tabular-nums typography-caption text-state-scored-text">
                       +{delta.toLocaleString()}
                     </span>
                   ) : null}
@@ -89,9 +92,23 @@ export function AboutTierPanel({ targetTier, currentTier }: AboutTierPanelProps)
         {hiddenCount > 0 ? (
           <button
             type="button"
-            className="self-start typography-caption text-primary hover:underline"
+            onClick={() => setExpanded((prev) => !prev)}
+            aria-expanded={expanded}
+            className={cn(
+              "inline-flex items-center gap-1 self-start rounded-sm typography-caption text-primary",
+              "hover:underline focus-visible:outline-none focus-visible:shadow-focus-ring",
+            )}
           >
-            + {hiddenCount} more
+            {expanded ? (
+              <>
+                <ChevronUp aria-hidden="true" className="size-3.5" />
+                Show fewer
+              </>
+            ) : (
+              <>
+                <ChevronDown aria-hidden="true" className="size-3.5" />+ {hiddenCount} more
+              </>
+            )}
           </button>
         ) : null}
       </section>

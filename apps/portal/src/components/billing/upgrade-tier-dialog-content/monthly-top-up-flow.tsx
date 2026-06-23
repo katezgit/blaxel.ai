@@ -6,19 +6,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/button";
 import { Stepper, type StepperStep } from "@repo/ui/components/stepper";
 import { Alert, AlertDescription } from "@repo/ui/components/alert";
-import { tierForAmount, type DisplayTier } from "@/lib/mock/billing-tiers";
+import { type DisplayTier } from "@/lib/mock/billing-tiers";
 import { AboutTierPanel } from "./about-tier-panel";
-import { AmountPicker } from "./amount-picker";
+import { TierPicker } from "./tier-picker";
 import { BalanceProtectionCard } from "./balance-protection-card";
 import {
   INITIAL_VALUES,
   resolveAmountUsd,
+  selectedTier,
   topUpSchema,
   type TopUpFormValues,
 } from "./wizard-state";
 
 const STEPS: ReadonlyArray<StepperStep> = [
-  { label: "Choose amount" },
+  { label: "Choose target tier" },
   { label: "Balance protection" },
 ];
 
@@ -46,24 +47,17 @@ export function MonthlyTopUpFlow({
     setValue,
     watch,
     handleSubmit,
-    trigger,
     formState: { errors, isSubmitting },
   } = form;
 
   const values = watch();
   const amountUsd = resolveAmountUsd(values);
-  const canContinue = amountUsd > 0;
-  const targetTier = tierForAmount(amountUsd);
+  const targetTier = selectedTier(values);
 
   const onSubmit = handleSubmit(async () => {
     await new Promise((resolve) => setTimeout(resolve, 250));
     onCheckout(amountUsd);
   });
-
-  const handleContinue = async () => {
-    const valid = await trigger(["selection", "customAmount"]);
-    if (valid) setStep(2);
-  };
 
   return (
     // gap-8: Stepper (chrome) → step body (region) at 32px per spacing canon.
@@ -76,37 +70,23 @@ export function MonthlyTopUpFlow({
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-1">
               <h3 className="typography-subtitle font-semibold text-foreground">
-                Choose how much to top-up
+                Step 1: Choose the top-up for your target tier
               </h3>
               <p className="typography-body text-muted-foreground">
-                Monthly top-ups secure your tier. The balance is added
-                immediately and renews every 30 days.
+                Select a target quota tier to determine your monthly top-up.
+                All topped-up funds go directly toward your Blaxel usage.
               </p>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <span className="typography-label text-muted-foreground">
-                Amount to top up
-              </span>
-              <AmountPicker
-                selection={values.selection}
-                onSelectionChange={(selection) =>
-                  setValue(
-                    "selection",
-                    selection as TopUpFormValues["selection"],
-                    { shouldValidate: true, shouldDirty: true },
-                  )
-                }
-                customAmount={values.customAmount}
-                onCustomAmountChange={(next) =>
-                  setValue("customAmount", next, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                customAmountError={errors.customAmount?.message}
-              />
-            </div>
+            <TierPicker
+              value={values.selectedTier}
+              onChange={(next) =>
+                setValue("selectedTier", next, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+            />
 
             <div className="flex items-center justify-end gap-2">
               <Button type="button" variant="ghost" onClick={onCancel}>
@@ -115,8 +95,7 @@ export function MonthlyTopUpFlow({
               <Button
                 type="button"
                 variant="primary"
-                disabled={!canContinue}
-                onClick={handleContinue}
+                onClick={() => setStep(2)}
               >
                 Continue
               </Button>
@@ -126,7 +105,7 @@ export function MonthlyTopUpFlow({
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-1">
               <h3 className="typography-subtitle font-semibold text-foreground">
-                Configure balance protection
+                Step 2: Configure balance protection
               </h3>
               <p className="typography-body text-muted-foreground">
                 Optional settings that keep your balance above a floor and help
