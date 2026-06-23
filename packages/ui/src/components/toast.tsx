@@ -33,8 +33,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
         error: <OctagonXIcon className="size-4" />,
         loading: <LoaderIcon className="size-4 animate-spin text-muted-foreground" />,
       }}
-      // Inline-style is [1,0,0,0] specificity — clean override of sonner's
-      // 999999999 z-index on the toaster root without a CSS-specificity fight.
+      // Sonner hardcodes z-index:999999999 on its root; inline style overrides
+      // it without a specificity fight.
       style={{ zIndex: "var(--z-toast)" } as React.CSSProperties}
       {...props}
     />

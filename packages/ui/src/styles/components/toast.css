@@ -5,10 +5,13 @@
  * (0,3,0) — `[data-sonner-toast][data-styled='true'] [<slot>]` — and is
  * injected as a runtime <style> tag AFTER globals.css, so any tie on
  * specificity loses on source order. Every selector here adds one more
- * attribute selector than sonner's to reach (0,4,0) and win cleanly without
+ * attribute selector than sonner's equivalent to win cleanly without
  * `!important`:
- *   root      → `[data-sonner-toaster] [data-sonner-toast][data-styled='true']`
- *   descendant → `[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [<slot>]`
+ *   default pattern → `[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [<slot>]`
+ *                     reaches (0,4,0); beats sonner's (0,3,0).
+ *   close-button   → also adds `[data-sonner-theme]` on the toaster anchor;
+ *                     reaches (0,5,0); beats sonner's dark-theme override at
+ *                     (0,4,0) which would otherwise reassert in dark mode.
  *
  * Owned by toast.tsx — keep this file in lockstep with that component.
  * ============================================================================= */
@@ -100,25 +103,31 @@
   height: 1.75rem;
   padding-inline: 0.625rem;
   font-size: var(--typography-body);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button]:hover {
   background: var(--color-secondary-surface);
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button]:focus-visible {
-  /* base.css supplies the global focus ring via *:focus-visible; sonner's
-   * hardcoded box-shadow would otherwise replace it. Reset so the global
-   * ring shows through. */
-  box-shadow: none;
+  /* Sonner hardcodes its own focus shadow; restate base.css's global ring
+   * via the token so this rule (which beats sonner on specificity) paints
+   * the expected orange ring instead of clearing all shadow. */
+  box-shadow: var(--shadow-focus-ring);
 }
 
 /* ── Close button — IconButton variant="ghost" size="sm" parity:
  *    24×24 transparent square, rounded-sm, hover lifts to hover-surface,
  *    active to selected-surface. Focus inherits the global ring via the
  *    --shadow-focus-ring token (sonner's hardcoded focus shadow would mask
- *    base.css's *:focus-visible). ────────────────────────────────────────── */
-[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-close-button] {
+ *    base.css's *:focus-visible).
+ *
+ *    Specificity: sonner has a dark-theme close-button override at (0,4,0)
+ *    (`[data-sonner-theme='dark'] [data-sonner-toast] [data-close-button]`),
+ *    which ties our standard pattern. Anchor on `[data-sonner-theme]` (always
+ *    present on the toaster root, light OR dark) to reach (0,5,0) and win
+ *    cleanly in both modes. ─────────────────────────────────────────────── */
+[data-sonner-toaster][data-sonner-theme] [data-sonner-toast][data-styled='true'] [data-close-button] {
   top: 1rem;
   right: 0.5rem;
   left: auto;
