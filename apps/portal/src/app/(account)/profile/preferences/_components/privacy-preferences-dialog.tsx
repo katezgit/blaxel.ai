@@ -57,12 +57,7 @@ export function PrivacyPreferencesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        size="lg"
-        // max-h-[90vh]: three toggle rows + footer crowd against the DS default
-        // 80vh cap on short phones — override for more vertical room.
-        className="max-h-[90vh]"
-      >
+      <DialogContent size="lg" className="sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Your privacy choices</DialogTitle>
           <p className="typography-body text-muted-foreground">

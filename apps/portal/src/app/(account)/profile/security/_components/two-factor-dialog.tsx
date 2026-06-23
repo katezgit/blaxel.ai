@@ -59,9 +59,9 @@ export function TwoFactorDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="lg"
-        // max-h-[90vh]: four-step stepper + body + footer crowd against the DS
-        // default 80vh cap on short phones — override for more vertical room.
-        className="max-h-[90vh]"
+        // Stepper header + per-step body+footer needs extra desktop height
+        // beyond the DS default 85vh.
+        className="sm:max-h-[90vh]"
       >
         <DialogHeader>
           <DialogTitle>Set up two-factor authentication</DialogTitle>
