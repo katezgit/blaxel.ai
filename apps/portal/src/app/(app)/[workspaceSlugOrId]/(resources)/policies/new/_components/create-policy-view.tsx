@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { AlertTriangle, Cpu, GaugeCircle, Globe, MapPin } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@repo/ui/components/button";
-import { Checkbox } from "@repo/ui/components/checkbox";
 import { CodeBlock } from "@repo/ui/components/code-block";
 import { Input } from "@repo/ui/components/input";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
@@ -161,9 +160,10 @@ export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
 // Height-bound shell: fills `<main>` so the form column owns its own scroll
 // region (sections 1–5) and the footer sits below it as a natural flex sibling.
 // Page itself does not scroll — overflow-hidden prevents the whole route from
-// scrolling when sections overflow.
+// scrolling when sections overflow. Padding ramps with viewport so two-column
+// content keeps breathing room from the sidebar edge below the xl breakpoint.
 const PAGE_SHELL_CLASS =
-  "mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 overflow-hidden px-4 pb-6 pt-8 md:px-6 lg:px-8 xl:px-20";
+  "mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 overflow-hidden px-6 pb-6 pt-8 md:px-8 lg:px-12 xl:px-20";
 
 function Header({ listHref }: { listHref: string }) {
   return (
@@ -283,14 +283,14 @@ function CreatePolicyForm({
     <form
       onSubmit={onSubmit}
       noValidate
-      className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8"
+      className="flex min-h-0 flex-1 flex-col gap-4"
     >
-      {/* Form column owns its own scroll region and pins the action footer at
-          the column bottom — actions land under col 1 only, never under the
-          code panel. Both columns are height-bound by the grid's `min-h-0
-          flex-1` so each viewport scrolls independently. */}
-      <div className="flex min-h-0 flex-col gap-4">
-        <ScrollArea className="min-h-0 flex-1">
+      {/* Both columns are height-bound by the grid's `min-h-0 flex-1` so each
+          viewport scrolls independently. The footer is a flex sibling below
+          the grid, spanning the full page width so Create lands at the same
+          vertical position whether the user's eye is on form or code. */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8">
+        <ScrollArea className="min-h-0">
           <div className="flex flex-col gap-10 pr-4 pb-2">
             <PolicyTypeSection form={form} />
             <PolicyBodySection
@@ -303,32 +303,27 @@ function CreatePolicyForm({
             />
             <ResourceTypesSection form={form} />
             <IdentitySection form={form} />
-            <FinalNoteSection />
           </div>
         </ScrollArea>
 
-        <FormFooter
-          onCancel={onCancel}
-          submitting={form.formState.isSubmitting}
-        />
+        <ScrollArea className="min-h-0">
+          <div className="pr-4 pb-2">
+            <CodeReferencePanel
+              policyType={policyType}
+              name={cleanName}
+              displayName={cleanDisplayName}
+              resourceTypes={resourceTypes}
+              locations={locations}
+              tokenLimits={tokenLimits}
+            />
+          </div>
+        </ScrollArea>
       </div>
 
-      <ScrollArea className="min-h-0">
-        {/* pt-1 drops the eyebrow line so its cap-height visually lands on
-            the same row as the left column's section-1 heading; without it
-            the meta line-height (14) sits ~10px higher than the subtitle
-            line-height (22) and reads as a misaligned top. */}
-        <div className="pr-4 pb-2 pt-1">
-          <CodeReferencePanel
-            policyType={policyType}
-            name={cleanName}
-            displayName={cleanDisplayName}
-            resourceTypes={resourceTypes}
-            locations={locations}
-            tokenLimits={tokenLimits}
-          />
-        </div>
-      </ScrollArea>
+      <FormFooter
+        onCancel={onCancel}
+        submitting={form.formState.isSubmitting}
+      />
     </form>
   );
 }
@@ -339,14 +334,19 @@ function StepHeading({
   index,
   title,
   description,
+  headingId,
 }: {
   index: number;
   title: string;
   description?: string;
+  headingId?: string;
 }) {
   return (
     <header className="flex flex-col gap-1">
-      <h2 className="typography-subtitle font-semibold text-foreground">
+      <h2
+        id={headingId}
+        className="typography-subtitle font-semibold text-foreground"
+      >
         <span className="font-mono text-meta-foreground">{index}.</span> {title}
       </h2>
       {description ? (
@@ -723,30 +723,30 @@ function ResourceTypesSection({
         name="resourceTypes"
         render={({ field, fieldState }) => (
           <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="flex flex-wrap gap-1.5">
               {RESOURCE_TYPE_OPTIONS.map((option) => {
                 const checked = field.value.includes(option.value);
                 return (
-                  <label
+                  <button
+                    type="button"
                     key={option.value}
-                    className="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 py-2 transition-colors duration-fast ease-out-standard hover:border-border-strong"
+                    onClick={() => {
+                      field.onChange(
+                        checked
+                          ? field.value.filter((v) => v !== option.value)
+                          : [...field.value, option.value],
+                      );
+                    }}
+                    aria-pressed={checked}
+                    className={cn(
+                      "inline-flex items-center rounded-md border px-2.5 py-1 typography-caption transition-colors duration-fast ease-out-standard",
+                      checked
+                        ? "border-border-strong bg-muted-surface text-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
+                    )}
                   >
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={(next) => {
-                        if (next === true) {
-                          field.onChange([...field.value, option.value]);
-                        } else {
-                          field.onChange(
-                            field.value.filter((v) => v !== option.value),
-                          );
-                        }
-                      }}
-                    />
-                    <span className="typography-body text-foreground">
-                      {option.label}
-                    </span>
-                  </label>
+                    {option.label}
+                  </button>
                 );
               })}
             </div>
@@ -832,20 +832,7 @@ function IdentitySection({
   );
 }
 
-// ─── Section 5: code reference + create ──────────────────────────────────────
-
-function FinalNoteSection() {
-  return (
-    <section className="flex flex-col gap-2">
-      <StepHeading index={5} title="Create policy" />
-      <p className="text-muted-foreground">
-        Preview the artifact in any client on the right, then create.
-      </p>
-    </section>
-  );
-}
-
-// ─── Code reference panel — language-tabbed, reflects form state ─────────────
+// ─── Section 5: code reference panel — language-tabbed, reflects form state ──
 
 interface CodeReferencePanelProps {
   policyType: PolicyType;
@@ -879,19 +866,14 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
   return (
     <aside
       aria-labelledby="create-policy-reference-heading"
-      className="flex min-w-0 flex-col gap-3"
+      className="flex min-w-0 flex-col gap-4"
     >
-      <div className="flex flex-col gap-1">
-        <h2
-          id="create-policy-reference-heading"
-          className="font-mono typography-meta uppercase tracking-wider text-meta-foreground"
-        >
-          Apply via code
-        </h2>
-        <p className="typography-caption text-muted-foreground">
-          Mirrors the form. Copy and run from your own client.
-        </p>
-      </div>
+      <StepHeading
+        index={5}
+        title="Create policy"
+        description="Review the artifact below, then create."
+        headingId="create-policy-reference-heading"
+      />
       <Tabs defaultValue="typescript" className="gap-3">
         <TabsList variant="underline" aria-label="Client language">
           {LANGUAGE_TABS.map((tab) => (
