@@ -143,7 +143,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
 
                 {/* ml-8 = size-6 (24px) + gap-2 (8px) = 32px — aligns left edge under step label */}
                 {step.description && (
-                  <span className="ml-8 mt-0 typography-body text-muted-foreground">
+                  <span className="ml-8 mt-0.5 typography-caption text-muted-foreground">
                     {step.description}
                   </span>
                 )}
