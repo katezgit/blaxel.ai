@@ -37,3 +37,7 @@
 
 /* ── UTILITIES — utilities layer ─────────────────────────────────────────── */
 @import './utilities.css';
+
+/* ── COMPONENT OVERRIDES — third-party wrappers that need to beat ship-in
+ *    stylesheets via selector specificity rather than `!important`. ─────── */
+@import './components/toast.css';
