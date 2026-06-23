@@ -6,12 +6,17 @@ import Band from "./band";
 interface RoutingBandProps {
   workspaceSlug: string;
   domain: CustomDomain;
+  attachAbove?: boolean;
 }
 
-export default function RoutingBand({ workspaceSlug, domain }: RoutingBandProps) {
+export default function RoutingBand({
+  workspaceSlug,
+  domain,
+  attachAbove,
+}: RoutingBandProps) {
   const { spec } = domain;
   return (
-    <Band title="Routing">
+    <Band title="Routing" attachAbove={attachAbove}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <span className="typography-body font-semibold text-foreground">

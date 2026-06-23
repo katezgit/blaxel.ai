@@ -39,6 +39,7 @@ const schema = z.object({
       /^(?!-)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+(?<!-)$/,
       "Enter a domain name (e.g. preview.acme.com)",
     ),
+  displayName: z.string().max(60, "Keep the label short").optional(),
   region: z.string().min(1, "Region is required"),
 });
 
@@ -52,7 +53,7 @@ interface AddDomainDialogProps {
 export default function AddDomainDialog({ open, onOpenChange }: AddDomainDialogProps) {
   const form = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", region: DEFAULT_REGION },
+    defaultValues: { name: "", displayName: "", region: DEFAULT_REGION },
     mode: "onChange",
   });
   const {
@@ -64,16 +65,15 @@ export default function AddDomainDialog({ open, onOpenChange }: AddDomainDialogP
   } = form;
 
   useEffect(() => {
-    if (!open) reset({ name: "", region: DEFAULT_REGION });
+    if (!open) reset({ name: "", displayName: "", region: DEFAULT_REGION });
   }, [open, reset]);
 
-  const onSubmit = handleSubmit(async ({ name, region }) => {
+  const onSubmit = handleSubmit(async ({ name, displayName, region }) => {
     await new Promise((resolve) => setTimeout(resolve, 250));
-    // Mocked: real path would POST to /domains and redirect to the new resource
-    // in pending state. Keep the user-visible affordance honest.
     const { label, slug } = formatRegion(region);
+    const labeled = displayName ? `"${displayName}" (${name})` : name;
     toast.success(
-      `Registration started for ${name} in ${label} (${slug}) — publish DNS records and verify to activate.`,
+      `${labeled} added in ${label} (${slug}) — publish DNS records and verify to activate.`,
     );
     onOpenChange(false);
   });
@@ -85,7 +85,7 @@ export default function AddDomainDialog({ open, onOpenChange }: AddDomainDialogP
           <DialogHeader>
             <DialogTitle>Add custom domain</DialogTitle>
             <DialogDescription>
-              Register a domain name and pin it to a region. Once submitted,
+              Add a domain you own and pin it to a region. Once submitted,
               publish the DNS records Blaxel returns to your provider, then
               verify.
             </DialogDescription>
@@ -103,6 +103,19 @@ export default function AddDomainDialog({ open, onOpenChange }: AddDomainDialogP
                 placeholder="preview.acme.com"
                 aria-required="true"
                 {...register("name")}
+              />
+            </FormField>
+            <FormField
+              id="add-domain-display-name"
+              label="Display name"
+              helper="Optional. A friendly name for this domain, surfaced anywhere the hostname is shown."
+              error={errors.displayName?.message}
+            >
+              <Input
+                type="text"
+                autoComplete="off"
+                placeholder="Customer-facing demo previews"
+                {...register("displayName")}
               />
             </FormField>
             <FormField
@@ -166,7 +179,7 @@ export default function AddDomainDialog({ open, onOpenChange }: AddDomainDialogP
               variant="primary"
               disabled={isSubmitting || !isValid}
             >
-              {isSubmitting ? "Registering…" : "Register domain"}
+              {isSubmitting ? "Adding…" : "Add domain"}
             </Button>
           </DialogFooter>
         </form>

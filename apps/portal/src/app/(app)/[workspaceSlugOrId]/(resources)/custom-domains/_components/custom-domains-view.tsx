@@ -69,7 +69,7 @@ const LIST_DESCRIPTION = (
 
 const LOCKED_DESCRIPTION = (
   <p className="max-w-2xl typography-body text-muted-foreground">
-    Bring your own identity to Blaxel. Route Sandbox preview URLs through
-    domains you own, with managed TLS and region-locked assignment.
+    Route Sandbox previews through domains you own, with managed TLS and region
+    pinning — available on Tier 3 and above.
   </p>
 );

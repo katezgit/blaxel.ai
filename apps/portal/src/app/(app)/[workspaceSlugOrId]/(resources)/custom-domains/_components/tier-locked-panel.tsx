@@ -44,8 +44,8 @@ export default function TierLockedPanel() {
                 What you can do with Custom domains
               </h3>
               <p className="typography-body text-muted-foreground">
-                Bring your own DNS to Blaxel. Route Sandbox preview URLs through
-                domains you own, with managed TLS and region-locked assignment.
+                Bring your own DNS to Blaxel. Take ownership of how Sandbox
+                previews appear and where they route.
               </p>
             </div>
             <ul className="flex flex-col gap-4">

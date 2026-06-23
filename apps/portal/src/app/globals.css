@@ -169,6 +169,22 @@
   /* PINNED dark teal, never flips with theme. App-scoped because the only
    * consumer is the onboarding brand panel. */
   --color-brand-surface: #055E55; /* PINNED */
+
+  /* DNS records band — failing-row callout background. Light: soft errored
+   * wash (transparent pinkish glass). Dark: neutral white-lift instead of red
+   * tint because red on near-black mixes to perceptual brown; the left
+   * border-accent + "× Not found" label carry the state signal. App-scoped
+   * because it deliberately drops the red hue in dark mode — that is NOT the
+   * right default for other error surfaces (Alert/destructive etc.).
+   *
+   * Uses --errored-600 primitive directly (not --color-state-errored semantic)
+   * because composing through the semantic alias would re-introduce
+   * errored-400 on dark via its own light-dark() — the whole point here is to
+   * NOT tint dark. The dark branch is an explicit neutral lift. */
+  --color-dns-record-error-bg: light-dark(
+    color-mix(in srgb, var(--errored-600) 6%, transparent),
+    color-mix(in srgb, white 4%, transparent)
+  );
 }
 
 /* Sticky-header inner caps drop py-8 and use pt-8.
