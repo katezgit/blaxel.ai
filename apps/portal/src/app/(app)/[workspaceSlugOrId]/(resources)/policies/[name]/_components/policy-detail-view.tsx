@@ -126,28 +126,24 @@ export function PolicyDetailView({
 
   const policy = policyQuery.data;
   if (policy == null) {
+    // Per docs/design/guidelines/resource-not-found.md §7 — inline content
+    // event in the content area, no card chrome, ~360px column, vertically +
+    // horizontally centered. Breadcrumb stays as normal page chrome above.
     return (
       <div className="page-shell">
         <Breadcrumb
           parent={{ href: listHref, label: "Policies" }}
           current={policyName}
         />
-        <div className="rounded-lg border border-border bg-card px-6 py-10">
-          <h2 className="typography-subtitle font-semibold text-foreground">
-            Policy not found
-          </h2>
-          <p className="mt-1 typography-body text-muted-foreground">
-            No Policy named <code className="font-mono">{policyName}</code>{" "}
-            exists in this workspace. It may have been deleted, or the URL may
-            be incorrect.
-          </p>
-          <div className="mt-4 flex items-center gap-3">
-            <Button asChild variant="primary">
-              <Link href={listHref}>Back to Policies</Link>
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="flex w-full max-w-[360px] flex-col gap-4">
+            <h2 className="typography-subtitle font-semibold text-foreground">
+              Policy <code className="font-mono">{policyName}</code>{" "}
+              isn&apos;t available.
+            </h2>
+            <Button asChild variant="primary" className="self-start">
+              <Link href={listHref}>Go to Policies</Link>
             </Button>
-            <code className="font-mono typography-meta text-muted-foreground">
-              bl policy list
-            </code>
           </div>
         </div>
       </div>
@@ -198,6 +194,10 @@ export function PolicyDetailView({
 
 // Clause band switches on spec.type into ONE of three sibling components —
 // composition, not configuration. Each clause owns its own copy and layout.
+// `className="border-t-0 pt-0"` suppresses the band's default top divider
+// because the Clause band is the first sibling under the page heading — the
+// divider would otherwise read as an underline of the heading. Subsequent
+// bands keep their dividers to separate Provenance / CLI from each other.
 function ClauseBand({
   policy,
   onRequestEdit,
@@ -205,11 +205,13 @@ function ClauseBand({
   policy: Policy;
   onRequestEdit: () => void;
 }) {
+  const firstBandClassName = "border-t-0 pt-0";
   if (policy.spec.type === "location") {
     return (
       <LocationClauseBand
         locations={policy.spec.locations ?? []}
         onRequestEdit={onRequestEdit}
+        className={firstBandClassName}
       />
     );
   }
@@ -218,6 +220,7 @@ function ClauseBand({
       <MaxTokenClauseBand
         maxTokens={policy.spec.maxTokens ?? null}
         onRequestEdit={onRequestEdit}
+        className={firstBandClassName}
       />
     );
   }
@@ -225,6 +228,7 @@ function ClauseBand({
     <FlavorClauseBand
       flavors={policy.spec.flavors ?? []}
       onRequestEdit={onRequestEdit}
+      className={firstBandClassName}
     />
   );
 }

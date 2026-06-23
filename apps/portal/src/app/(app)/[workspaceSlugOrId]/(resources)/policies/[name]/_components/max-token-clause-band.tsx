@@ -8,6 +8,7 @@ import type { PolicyMaxTokens } from "@/lib/mock/policies";
 interface MaxTokenClauseBandProps {
   maxTokens: PolicyMaxTokens | null;
   onRequestEdit: () => void;
+  className?: string;
 }
 
 const NUMBER_FMT = new Intl.NumberFormat("en-US");
@@ -15,10 +16,11 @@ const NUMBER_FMT = new Intl.NumberFormat("en-US");
 export default function MaxTokenClauseBand({
   maxTokens,
   onRequestEdit,
+  className,
 }: MaxTokenClauseBandProps) {
   if (maxTokens === null) {
     return (
-      <BandFrame label="Clause">
+      <BandFrame label="Clause" className={className}>
         <p className="typography-body text-muted-foreground">
           No token limits configured. Edit to add caps.
         </p>
@@ -32,7 +34,7 @@ export default function MaxTokenClauseBand({
       : `${maxTokens.step} ${maxTokens.granularity}s`;
 
   return (
-    <BandFrame label="Clause">
+    <BandFrame label="Clause" className={className}>
       <div className="group flex flex-col gap-4">
         <p className="typography-body text-muted-foreground">
           Token consumption for attached workloads is capped per window.

@@ -8,14 +8,16 @@ import type { PolicyFlavor } from "@/lib/mock/policies";
 interface FlavorClauseBandProps {
   flavors: ReadonlyArray<PolicyFlavor>;
   onRequestEdit: () => void;
+  className?: string;
 }
 
 export default function FlavorClauseBand({
   flavors,
   onRequestEdit,
+  className,
 }: FlavorClauseBandProps) {
   return (
-    <BandFrame label="Clause">
+    <BandFrame label="Clause" className={className}>
       <div className="group flex flex-col gap-4">
         <p className="typography-body text-muted-foreground">
           Workloads attached to this policy are deployed only on these
