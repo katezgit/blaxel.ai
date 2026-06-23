@@ -300,10 +300,10 @@
   <main class="main">
     <!-- Page header -->
     <div class="page-header">
-      <div class="breadcrumb">Hosting / <strong>Custom Domains</strong></div>
+      <div class="breadcrumb">Hosting / <strong>Custom domains</strong></div>
       <div class="page-title-row">
         <div>
-          <div class="page-title">Custom Domains</div>
+          <div class="page-title">Custom domains</div>
           <div class="page-subtitle">Customer-owned DNS mapped to Sandbox preview URLs, with managed TLS. Region-locked per domain.</div>
         </div>
         <button class="btn btn-primary">+ Add domain</button>
@@ -362,7 +362,7 @@
 
     <!-- Detail page header -->
     <div class="page-header" style="margin-top:8px;">
-      <div class="breadcrumb"><a href="#">Hosting</a> / <a href="#">Custom Domains</a> / <strong>agents.acme.com</strong></div>
+      <div class="breadcrumb"><a href="#">Hosting</a> / <a href="#">Custom domains</a> / <strong>agents.acme.com</strong></div>
       <div class="page-title-row" style="align-items:flex-start;">
         <div style="flex:1;">
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -466,7 +466,8 @@
     <div class="band">
       <div class="band-label">Certificate</div>
       <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">Certificate not yet issued — domain must be verified first.</div>
-      <div style="font-size:12px;color:var(--text-secondary);font-style:italic;">Subject alternative names will appear here once verified.</div>
+      <div style="font-size:12px;color:var(--text-secondary);font-style:italic;margin-bottom:8px;">Subject alternative names (SANs) will appear here once verified.</div>
+      <div class="schema-note">³ <code>spec.subjectAlternativeNames</code> is <strong>array of objects</strong> (<code>additionalProperties: true</code>) — no sub-field names are defined in the API schema. Each object renders as one row. Screens phase confirms the runtime key (e.g. <code>value</code> or <code>dnsName</code>) from a live API response before binding the display string.</div>
     </div>
 
     <!-- BAND 4: Routing attachment -->
@@ -546,6 +547,56 @@
         </span>
       </div>
     </div>
+
+    <hr>
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- VIEW 3: INDEX PAGE — EMPTY STATE (CLI-first, no form wizard)  -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="page-header" style="margin-top:8px;">
+      <div class="breadcrumb">Hosting / <strong>Custom domains</strong></div>
+      <div class="page-title-row">
+        <div>
+          <div class="page-title">Custom domains</div>
+          <div class="page-subtitle">Customer-owned DNS mapped to Sandbox preview URLs, with managed TLS. Region-locked per domain.</div>
+        </div>
+        <button class="btn btn-primary">+ Add domain</button>
+      </div>
+    </div>
+
+    <!-- Empty table header -->
+    <div style="display:grid;grid-template-columns:1fr 100px 120px 120px 24px;gap:16px;padding:0 0 8px;border-bottom:1px solid var(--border);margin-bottom:24px;">
+      <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">Domain</span>
+      <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">Region</span>
+      <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">Status</span>
+      <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">Last verified</span>
+      <span></span>
+    </div>
+
+    <!-- Empty state — CLI-first guidance band (Sacrificial choice #5) -->
+    <div style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">No custom domains registered yet.</div>
+    <div style="background:var(--bg-muted);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px;max-width:560px;">
+      <div style="font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:16px;">Register your first domain</div>
+
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;">1. Register the domain</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg-base);border:1px solid var(--border-subtle);border-radius:5px;padding:8px 12px;">
+          <span style="font-family:'SF Mono',Menlo,monospace;font-size:12px;color:var(--text-mono);">$ bl domain register &lt;apex-domain&gt; --region us-pdx-1</span>
+          <button class="cli-copy">📋</button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;">2. Publish the DNS records Blaxel returns, then verify</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg-base);border:1px solid var(--border-subtle);border-radius:5px;padding:8px 12px;">
+          <span style="font-family:'SF Mono',Menlo,monospace;font-size:12px;color:var(--text-mono);">$ bl domain verify &lt;apex-domain&gt;</span>
+          <button class="cli-copy">📋</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary affordance — single-input, not a wizard -->
+    <div style="font-size:12px;color:var(--text-secondary);">Or paste a domain name → <button class="btn btn-ghost btn-sm" style="font-size:12px;">Add domain</button></div>
 
   </main>
 </div>

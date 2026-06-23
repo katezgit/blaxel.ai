@@ -1,9 +1,10 @@
-# Custom Domains — Text Wireframe (index / list page)
+# Custom domains — Text Wireframe (index / list page)
 
-**Page:** Hosting › Custom Domains
+**Page:** Hosting › Custom domains
 **Route:** `/:workspaceSlugOrId/custom-domains`
 **Phase:** Wireframes
 **Date:** 2026-06-22
+**Persona path:** Alex (primary) + Sam (secondary, planned-audit pattern)
 **Source scenarios:** Scenarios applicability — index/list screens: scenarios phase intentionally skipped per `design-phases.md`. Production reference: operator screenshot of current Tier-3-locked state; API reference: `spec.{name, displayName, region, status, cnameRecords, txtRecords, subjectAlternativeNames, fallbackPreviewId, lastVerifiedAt, verificationError, createdAt, createdBy, labels}`.
 
 ---
@@ -14,19 +15,22 @@ Rendered inside the workspace shell: left sidebar shows Hosting group with `Cust
 
 ---
 
-## Create-domain flow placement decision
+## Register domain — flow placement decision
 
-**Decision: inline drawer on the list page, not a standalone `/create` route.**
+**Decision: CLI is the primary path. The dashboard surfaces a minimal single-input affordance, not a multi-field wizard.**
 
-Rationale: Custom domain registration is a short (3-field) operation — `name` (apex domain), `region`, and optional `displayName`. Alex reaches here from the CLI or from a team link; she enters the domain she already knows. A dedicated route (a) breaks the "one URL per primitive" URL contract before the domain exists, (b) adds a navigation hop, (c) forces a back-navigation to return to the list she was watching. The correct container is a right-side sheet or modal anchored to the list page. The sheet closes on successful submit and redirects to the new domain's detail page; on failure, it stays open and renders the API error verbatim (cause + next move, no apology). The "Add domain" primary action button in the page header triggers the sheet. This matches the `bl domain register <name> --region <region>` CLI command — one call, no wizard.
+Rationale: `personas.md:14` (Alex — out of scope): "hand-holding wizards for primitives Alex already knows how to compose in code." `personality.md` Sacrificial choice #5: "CLI / SDK is a peer surface, not a fallback. Empty states lead with the `bl …` command, not a `Create` button." Alex has already run `bl domain register preview.acme.com --region us-pdx-1` in her terminal before opening the dashboard — the dashboard is where she watches state, not where she initiates setup.
 
-**Create form fields (inside sheet):**
-- `Domain` — text input, required. Placeholder: `preview.acme.com`. API field: `spec.name`.
-- `Region` — select. Options: `us-pdx-1 (Oregon)` / `us-was-1 (N. Virginia)` / `eu-lon-1 (London)` / `eu-fra-1 (Frankfurt)`. Required. API field: `spec.region`.
-- `Display name` — text input, optional. API field: `metadata.displayName`.
-- Submit: `Register domain` button (primary). Cancel: ghost, shown only when any field is dirty (form-actions guideline).
-- Post-submit success → redirect to `/custom-domains/{name}` with `status=pending`.
-- Post-submit error → error line inline below the form (API `verificationError` or HTTP error message), form stays open.
+The "Add domain" button in the page header opens a **single-input step** — one text field (the domain name), no region selector, no display name field, no wizard. The minimal affordance exists for the case where Alex pastes a domain name into the dashboard (e.g. copying from a Slack message) rather than switching to terminal. Sam may also use this path.
+
+**Single-input affordance (inside a right-side sheet or modal):**
+- `Domain name` — text input, required. Placeholder: `preview.acme.com`. API field: `spec.name`.
+- Submit: `Register domain` button (primary). Cancel: ghost, shown only when the field is dirty (form-actions guideline).
+- Post-submit → redirect to `/custom-domains/{name}` with `status=pending`. On error → error line inline below the input (API error message verbatim), input stays open.
+
+**No region selector, no display name field in this affordance.** These fields exist on the API but introducing them at registration time adds wizard friction that conflicts with Alex's primary path (CLI already handles both). Region defaults to the workspace's default region. Display name can be set from the detail page after registration. This keeps the dashboard affordance to "paste a domain name → submit" — one step, no decisions.
+
+**Persona scope note:** This affordance is lightly weighted — not a primary CTA. The CLI-first guidance band (see STATE 4 — Empty) is the primary affordance Alex sees. The "Add domain" button is a secondary convenience path for dashboard-first entry.
 
 ---
 
@@ -48,26 +52,28 @@ list page
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  Custom Domains                                                │
+│  Custom domains                                                │
 │  Customer-owned DNS mapped to Sandbox preview URLs,           │
 │  with managed TLS. Region-locked per domain.                   │
 │                                              [Add domain]      │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-- **Heading:** `Custom Domains` — canonical name from `platform.md`. Plural, capital D.
+- **Heading:** `Custom domains` — lowercase d per `platform.md:202` vocabulary table. (Sidebar IA label "Custom Domains" retains capital D as the live-product nav label; page heading uses canonical lowercase form.)
 - **Subtitle:** States the primitive's purpose in one sentence. No marketing phrasing.
-- **Primary action:** `Add domain` — disabled in Tier-3-locked state (greyed, cursor default, tooltip: "Upgrade to Tier 3 to register custom domains"). Enabled in all other states. Triggers the create sheet.
+- **Primary action:** `Add domain` — disabled in Tier-3-locked state (greyed, cursor default, tooltip: "Upgrade to Tier 3 to register custom domains"). Enabled in all other states. Triggers the single-input sheet.
 
 ---
 
 ## STATE 1 — Tier-3 locked (paywall)
 
-Triggered when the workspace account is below Tier 3. The Custom Domains route is reachable and visible in the sidebar (personality.md Sacrificial choice #8 — "Free surfaces visible, paid surfaces inline-gated"); the feature is gated at the point of use, not hidden.
+Triggered when the workspace account is below Tier 3. The custom domains route is reachable and visible in the sidebar (personality.md Sacrificial choice #8 — "Free surfaces visible, paid surfaces inline-gated"); the feature is gated at the point of use, not hidden.
+
+**Note — operator override:** The production dashboard shows a Tier-3 paywall for this surface (operator-supplied screenshot, 2026-06-22). This wireframe binds to the operator's stated system state. The live pricing page at blaxel.ai/pricing may describe usage-based pricing on top of tier gating — both can be true simultaneously. Tier 3 is the unlock mechanism; usage-based billing applies after the tier is active. The right-rail CTA routes to the account Billing top-up surface, which is the Tier-3 unlock mechanism per `account-billing.md` § B4 "Top-up" (the "$200+ top-up in past 30 days" threshold sustains Tier-3 access).
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  Custom Domains                                                │
+│  Custom domains                                                │
 │  Customer-owned DNS mapped to Sandbox preview URLs,           │
 │  with managed TLS. Region-locked per domain.                   │
 │                                        [Add domain · locked]   │
@@ -85,9 +91,9 @@ Triggered when the workspace account is below Tier 3. The Custom Domains route i
 │  with automatic TLS via ACM.    │  │  💳  Upgrade tier →  │   │
 │                                 │  └──────────────────────┘   │
 │  ── Features ──                 │                              │
-│                                 │  Routes to account Billing   │
-│  Wildcard support               │  top-up flow.               │
-│  One domain covers all          │                              │
+│                                 │  Takes you to account        │
+│  Wildcard support               │  Billing — top up $200+      │
+│  One domain covers all          │  to activate Tier 3.         │
 │  subdomains — no per-           │                              │
 │  subdomain registration.        │                              │
 │                                 │                              │
@@ -105,8 +111,8 @@ Triggered when the workspace account is below Tier 3. The Custom Domains route i
 **Anatomy:**
 
 - **Left panel — feature description:** Globe icon + headline "Bring your own identity to Blaxel" + one-sentence description. Below: three feature rows (Wildcard support / Branded sandbox previews / Region-locked assignment), each with a bolded feature label and one-sentence explanation. Copy mirrors production framing but uses Blaxel personality voice — no marketing superlatives.
-- **Right rail — upgrade CTA:** Section label "Ready to ship?" (matches production wording). Explanation sentence names the primitive (custom domains) and the action it unlocks. `Upgrade tier →` button (primary, orange per Blaxel brand — token: `--color-primary` / orange). Subdued text below button: "Routes to account Billing top-up flow." — so Alex knows where she's going before clicking.
-- **"Upgrade tier →" links to:** `account-billing.md` § B2 "Tier upgrade / top-up" — the dedicated top-up / tier upgrade section of the Billing page. Route: `/account/billing#tier-upgrade`.
+- **Right rail — upgrade CTA:** Section label "Ready to ship?" (matches production wording). Explanation sentence names the primitive (custom domains) and the action it unlocks. `Upgrade tier →` button (primary, orange per Blaxel brand — token: `--color-primary` / orange). Subdued text below button describes the destination so Alex knows where she's going before clicking.
+- **"Upgrade tier →" links to:** account Billing top-up surface — route `/account/billing` (the monthly top-up section activates Tier 3 at the $200+ threshold, per `account-billing.md` § B4). This is the correct mechanism: Tier 3 is sustained by a qualifying monthly top-up, not a separate "plan upgrade" flow.
 - **Layout:** Two-column. Left: ~60% width, feature description. Right: ~40% width, upgrade CTA rail. On narrow breakpoint: stacks, upgrade CTA above feature list.
 
 **Interaction principle #11 compliance:** Feature is visible in the IA with tier requirement noted at the point of use. "Add domain" button is greyed with tooltip — not hidden.
@@ -119,7 +125,7 @@ Triggered when the workspace is Tier ≥ 3 and the list fetch is in flight.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  Custom Domains                                                │
+│  Custom domains                                                │
 │  Customer-owned DNS mapped to Sandbox preview URLs, …         │
 │                                              [Add domain]      │
 └────────────────────────────────────────────────────────────────┘
@@ -143,7 +149,7 @@ Triggered when the list fetch fails.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  Custom Domains                                                │
+│  Custom domains                                                │
 │  …                                                             │
 │                                              [Add domain]      │
 └────────────────────────────────────────────────────────────────┘
@@ -164,7 +170,7 @@ Triggered when the workspace is Tier ≥ 3 and the API returns an empty list.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  Custom Domains                                                │
+│  Custom domains                                                │
 │  Customer-owned DNS mapped to Sandbox preview URLs, …         │
 │                                              [Add domain]      │
 └────────────────────────────────────────────────────────────────┘
@@ -172,21 +178,35 @@ Triggered when the workspace is Tier ≥ 3 and the API returns an empty list.
   Domain            Region       Status     Last verified
   ─────────────────────────────────────────────────────────────
 
-  No custom domains in this workspace.
-  bl domain register <apex-domain> --region us-pdx-1
+  No custom domains registered yet.
+
+  ┌──────────────────────────────────────────────────────────┐
+  │  Register your first domain                              │
+  │                                                          │
+  │  $ bl domain register <apex-domain> --region us-pdx-1   │
+  │                                                 [📋]     │
+  │                                                          │
+  │  Then add the DNS records Blaxel returns to your         │
+  │  provider and run:                                       │
+  │                                                          │
+  │  $ bl domain verify <apex-domain>                        │
+  │                                                 [📋]     │
+  └──────────────────────────────────────────────────────────┘
+
+  Or paste a domain name →  [Add domain]
 
 ```
 
-- Empty state leads with the `bl …` command (personality.md Sacrificial choice #5 — CLI is the primary empty-state affordance).
-- No illustration, no "Get started" CTA, no guidance wizard.
-- Command is copyable (click-to-copy affordance on the mono code block).
-- The `Add domain` button in the header remains enabled — it is the dashboard path for those who prefer the form.
+- **CLI guidance band leads the empty state** (personality.md Sacrificial choice #5 — "Empty states lead with the `bl …` command, not a `Create` button"). The band shows both the register and verify commands — the two-step process Alex needs.
+- Commands are copyable (click-to-copy [📋] affordance on each mono code block).
+- The `Add domain` button appears as a secondary affordance after the CLI band — labelled "Or paste a domain name →" to frame it as a convenience path, not the primary one. This is for Alex who pastes a domain from Slack, or Sam who prefers the dashboard form.
+- No illustration, no guidance wizard, no multi-step onboarding.
 
 ---
 
 ## STATE 5 — Populated
 
-Triggered when the workspace is Tier ≥ 3 and the API returns ≥1 domain. The table renders one row per Custom Domain resource.
+Triggered when the workspace is Tier ≥ 3 and the API returns ≥1 domain. The table renders one row per custom domain resource.
 
 ### Table header
 
@@ -248,7 +268,7 @@ If `metadata.labels` are set, they render as inline chips after the domain name 
 - [x] **Inheritance** — no upstream wireframe for this screen (new surface); structure inherits shell from `app-shell.md`.
 - [x] **Tokens** — `--color-state-error`, `--color-state-warning`, `--color-state-success`, `--color-primary` referenced. Screens phase assigns exact hue values.
 - [x] **States** — Tier-3-locked (paywall) + loading + error + empty + populated + row-level `pending`/`verified`/`failed` all specified.
-- [x] **Vocabulary** — "Custom Domains" (capital D, plural) per `platform.md`. "Sandbox previews", "API Key", "Policy", "Region" all verbatim. No synonyms.
-- [x] **Drift** — None from platform.md or personality.md. Production paywall framing (globe icon, feature list, right-rail CTA) preserved and noted.
+- [x] **Vocabulary** — "Custom domains" (lowercase d) per `platform.md:202` canonical vocabulary table throughout body copy and page headings. Sidebar IA label "Custom Domains" (capital D) stays as live-product nav label. "Sandbox previews", "API Key", "Policy", "Region" all verbatim. No synonyms.
+- [x] **Drift** — (a) Create-domain drawer replaced with CLI-first guidance band + single-input minimal affordance per Sacrificial choice #5 and `personas.md:14`. (b) Tier-3 paywall preserved per operator-supplied production screenshot override; top-up route corrected to `account-billing.md` § B4 mechanism (not the invented "§ B2 Tier upgrade / top-up" anchor). (c) Persona path added to frontmatter per domain-review warning.
 
 PASS

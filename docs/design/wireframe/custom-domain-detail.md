@@ -1,9 +1,10 @@
-# Custom Domain detail — Text Wireframe
+# Custom domain detail — Text Wireframe
 
-**Page:** Hosting › Custom Domains › {name}
+**Page:** Hosting › Custom domains › {name}
 **Route:** `/:workspaceSlugOrId/custom-domains/{name}`
 **Phase:** Wireframes
 **Date:** 2026-06-22
+**Persona path:** Alex (primary) + Sam (secondary, planned-audit pattern)
 **Source scenarios:** `.intermediate/discovery/custom-domain-detail/scenarios.md` (PASSed gate after revision). All five audit questions and both synthesis contracts are FAIL contracts satisfied below — trace citations inline per band.
 **API schema source:** https://docs.blaxel.ai/api-reference/customdomains/list-custom-domains
 
@@ -27,7 +28,7 @@ All wireframe elements below bind to one of these fields or are explicitly footn
 | `status` | `spec.status` | enum | `pending` \| `verified` \| `failed` |
 | `cnameRecords` | `spec.cnameRecords` | string | single CNAME target (not a list) |
 | `txtRecords` | `spec.txtRecords` | map | name → value, one entry per TXT record (multi-row) |
-| `subjectAlternativeNames` | `spec.subjectAlternativeNames` | string[] | SANs on the issued ACM cert |
+| `subjectAlternativeNames` | `spec.subjectAlternativeNames` | array of objects (`additionalProperties: true` — no defined sub-fields in schema) | SANs on the issued ACM cert — see footnote ³ |
 | `fallbackPreviewId` | `spec.fallbackPreviewId` | string | catch-all preview ID for unmapped subdomains |
 | `lastVerifiedAt` | `spec.lastVerifiedAt` | timestamp | null when never checked |
 | `verificationError` | `spec.verificationError` | string | populated when `status = failed` |
@@ -35,12 +36,13 @@ All wireframe elements below bind to one of these fields or are explicitly footn
 **Schema-uncertain (footnoted at each occurrence):**
 - ¹ **Live list of Sandbox previews routed through this domain** — `CustomDomain` schema does not expose a list of attached preview URLs; only `fallbackPreviewId` (single string) is on the schema. The broader routing view requires a reverse-lookup cross-primitive query (filter Sandbox previews by domain hostname). Wireframe phase cannot source this without a confirmed API endpoint. Design fallback: render `fallbackPreviewId` as the one schema-backed routing fact; footnote the broader list as "screens phase resolves — pending confirmation of reverse-lookup query endpoint."
 - ² **Per-domain audit events** — `CustomDomain` schema surfaces only `createdBy` / `updatedBy` / `createdAt` / `updatedAt`. A streaming per-domain audit log is not present. Workspace-level audit may expose this via a separate endpoint. Wireframe design: render `createdBy` + `createdAt` + `updatedBy` + `updatedAt` in the security band as schema-backed audit metadata. Footnote: "screens phase confirms whether a workspace-level audit endpoint joins per-domain events; if so, add a log-line table to the security band using `{actor} {action} for {domain} at {timestamp UTC}` format per alex-user-stories.md Phase 5. If not, the four metadata fields are the floor."
+- ³ **`subjectAlternativeNames` sub-field shape** — The API schema declares this as `array of objects` with `additionalProperties: true` and no defined sub-field names. The schema does not enumerate what keys each object contains. Design treatment: render each object as one row in the SAN list; display the object's string representation (or key-value pairs if multiple keys are present) as a monospace line. Screens phase must confirm the actual runtime object shape (e.g. `{value: "preview.acme.com"}` or `{dnsName: "*.preview.acme.com"}`) by inspecting a live API response and bind the display to the confirmed key. Until confirmed, render as `[object]` with an inline note: "field shape confirmed in screens phase."
 
 ---
 
 ## Layout context
 
-Rendered inside the workspace shell. Breadcrumb: `Hosting / Custom Domains / preview.acme.com`. The page is one scroll — no tabs, no sub-navigation. Every band is present on the initial paint. This satisfies personality.md Sacrificial choice #3: "Single-page ops + security band, never a 'Security view' tab."
+Rendered inside the workspace shell. Breadcrumb: `Hosting / Custom domains / preview.acme.com`. The page is one scroll — no tabs, no sub-navigation. Every band is present on the initial paint. This satisfies personality.md Sacrificial choice #3: "Single-page ops + security band, never a 'Security view' tab."
 
 ---
 
@@ -63,7 +65,7 @@ Rendered inside the workspace shell. Breadcrumb: `Hosting / Custom Domains / pre
 
 **Header anatomy:**
 
-- **Back link:** `← Custom Domains` — navigates to `/:workspaceSlugOrId/custom-domains`. Breadcrumb above it also present (app-shell convention).
+- **Back link:** `← Custom domains` — navigates to `/:workspaceSlugOrId/custom-domains`. Breadcrumb above it also present (app-shell convention). Lowercase d per `platform.md:202`.
 - **Domain name:** `metadata.name` — rendered as the primary heading (large, monospace or mono-adjacent to signal it's a DNS identifier). If `metadata.displayName` is set, it renders immediately below in muted/secondary weight.
 - **Status badge:** `spec.status` — hue-encoded pill:
   - `pending` — amber/warning token (`--color-state-warning`). Label: `○ pending`.
@@ -186,12 +188,17 @@ API field: `spec.txtRecords` — an **object/map** of TXT record name → value.
 ```
 ── Certificate ──────────────────────────────────────────────────
 
-  Subject alternative names (SANs)
+  Subject alternative names (SANs)  [SCHEMA-UNCERTAIN³]
   ┌──────────────────────────────────────────────────────────┐
-  │  preview.acme.com                                        │
-  │  *.preview.acme.com                                      │
-  │  [additional SANs from spec.subjectAlternativeNames[]]   │
+  │  [object — sub-field shape confirmed in screens phase]   │
+  │  [object — sub-field shape confirmed in screens phase]   │
+  │  [additional rows from spec.subjectAlternativeNames[]]   │
   └──────────────────────────────────────────────────────────┘
+
+  ³ spec.subjectAlternativeNames is array of objects with no
+  defined sub-fields (additionalProperties: true). Screens
+  phase binds display to confirmed key (e.g. value / dnsName)
+  from a live API response. Each object renders as one row.
 
   Managed TLS via AWS Certificate Manager. Certificate is
   provisioned on domain verification. (status=pending: not
@@ -199,7 +206,7 @@ API field: `spec.txtRecords` — an **object/map** of TXT record name → value.
 ```
 
 **Anatomy:**
-- **SANs list:** `spec.subjectAlternativeNames` — each array entry renders as one line. This is the security-team-readable answer to "what hostnames does this cert cover?" (Scenario 4). Values are copyable.
+- **SANs list:** `spec.subjectAlternativeNames` — each array entry (object) renders as one row. The schema declares `array of objects` with `additionalProperties: true` — no sub-field names are enumerated (footnote ³). This is the security-team-readable answer to "what hostnames does this cert cover?" (Scenario 4). Rows are copyable. **Screens phase must confirm the object's runtime key** (e.g. `{value: "..."}` or `{dnsName: "..."}`) by inspecting a live API response before rendering the display string.
 - **Cert status note:** One-line contextual note that correlates cert issuance with domain `status`. When `status = verified`, the cert is active. When `status = pending` or `status = failed`, cert is not yet issued. This gives Sam a complete picture without requiring a separate security tab.
 - **Loading state:** Skeleton list (3 lines). **Empty state (pending/failed):** `Certificate not yet issued — domain must be verified first.`
 
@@ -470,7 +477,7 @@ Custom domain `preview.acme.com` not found in this workspace.
 | 1. "Did I publish the right records, and has Blaxel seen them yet?" | Header (status badge + lastVerifiedAt) + Band 1 (DNS records at full fidelity, per-record check outcome) + Band 2 (lastVerifiedAt + stream) | PASS |
 | 2. "Which record is wrong, and what value should be published instead?" | Band 1 (failed records expanded with expected + observed values, failure-sort to top) + Band 2 (verificationError as log line + Retry CTA) | PASS |
 | 3. "Is this domain still healthy, and what previews are flowing through it right now?" | Header (status=verified + lastVerifiedAt) + Band 4 (fallbackPreviewId as schema-backed routing fact; broader list pending screens phase¹) | PASS (partial — routing list schema-uncertain, acknowledged) |
-| 4. "Who registered this, with which credential, and what does the issued certificate cover?" | Header (createdBy + createdAt) + Band 3 (subjectAlternativeNames) + Band 6 (createdBy/createdAt/updatedBy + API Key placeholder²) | PASS (partial — API Key schema-uncertain, acknowledged) |
+| 4. "Who registered this, with which credential, and what does the issued certificate cover?" | Header (createdBy + createdAt) + Band 3 (subjectAlternativeNames — schema-uncertain³, object shape confirmed in screens phase) + Band 6 (createdBy/createdAt/updatedBy + API Key placeholder²) | PASS (partial — API Key schema-uncertain², SAN sub-field shape schema-uncertain³, both acknowledged) |
 | 5. "What's this domain doing for me right now, and is anything still depending on it?" | Header (status + region) + Band 4 (fallbackPreviewId) + Band 5 (bl commands for re-create/IaC) | PASS |
 
 ---
@@ -480,7 +487,7 @@ Custom domain `preview.acme.com` not found in this workspace.
 - [x] **Inheritance** — header contract and default-content contract from `scenarios.md` fully consumed; every field traced to API schema or explicitly footnoted.
 - [x] **Tokens** — `--color-state-error`, `--color-state-warning`, `--color-state-success` referenced. Hue assignments deferred to screens phase. No invented tokens.
 - [x] **States** — `pending` + `verified` + `failed` DNS status states fully specified; page-level loading + error + 404 specified.
-- [x] **Vocabulary** — "Custom Domain" (platform.md), "Sandbox", "Policy", "API Key", "Region", "Preview URL" verbatim. `spec.cnameRecords` as single string (not "CNAME records" plural); `spec.txtRecords` as multi-row map. No synonyms.
-- [x] **Drift** — Schema-uncertain items (live routing list¹, per-domain audit events / API Key / Policy²) are explicitly footnoted with fallback designs and "screens phase resolves" language. No invented data shapes.
+- [x] **Vocabulary** — "Custom domains" (lowercase d) per `platform.md:202` in page title, breadcrumb, and body copy. Back-link in header: "← Custom domains". "Sandbox", "Policy", "API Key", "Region", "Preview URL" verbatim. `spec.cnameRecords` as single string (not "CNAME records" plural); `spec.txtRecords` as multi-row map. No synonyms.
+- [x] **Drift** — Schema-uncertain items: live routing list (¹), per-domain audit events / API Key / Policy (²), `subjectAlternativeNames` object sub-field shape (³) — all explicitly footnoted with fallback designs and "screens phase resolves" language. `subjectAlternativeNames` corrected from `string[]` to `array of objects (additionalProperties: true)` per confirmed API schema. No invented data shapes.
 
 PASS
