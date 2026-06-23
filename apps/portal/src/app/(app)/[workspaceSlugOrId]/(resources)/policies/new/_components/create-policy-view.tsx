@@ -7,9 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Cpu, GaugeCircle, MapPin } from "lucide-react";
 import { z } from "zod";
-import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
 import { CodeBlock } from "@repo/ui/components/code-block";
@@ -21,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
+import { cn } from "@repo/ui/lib/cn";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
@@ -32,39 +33,46 @@ import type {
   PolicyType,
 } from "@/lib/mock/policies";
 
-const POLICY_TYPE_OPTIONS: ReadonlyArray<{
+// ─── Policy type catalog ─────────────────────────────────────────────────────
+
+interface PolicyTypeOption {
   value: PolicyType;
   label: string;
   hint: string;
-}> = [
+  icon: typeof MapPin;
+  disabled?: boolean;
+}
+
+const POLICY_TYPE_OPTIONS: ReadonlyArray<PolicyTypeOption> = [
   {
     value: "location",
     label: "Location",
     hint: "Continent or country allow-list.",
+    icon: MapPin,
   },
   {
     value: "maxToken",
     label: "Token usage",
     hint: "Per-period token cap.",
+    icon: GaugeCircle,
   },
   {
     value: "flavor",
     label: "Flavor",
-    hint: "CPU type allow-list. Coming soon in the dashboard.",
+    hint: "CPU type allow-list.",
+    icon: Cpu,
+    disabled: true,
   },
 ];
 
-const POLICY_TYPE_TRIGGER_LABEL: Record<PolicyType, string> = {
-  location: "Location",
-  maxToken: "Token usage",
-  flavor: "Flavor [coming soon]",
-};
-
-const POLICY_TYPE_HELPER: Record<PolicyType, string> = {
-  location: "Continent or country allow-list.",
-  maxToken: "Per-period token cap.",
-  flavor: "CPU type allow-list. Coming soon in the dashboard.",
-};
+const POLICY_TYPE_BY_VALUE: Record<PolicyType, PolicyTypeOption> =
+  POLICY_TYPE_OPTIONS.reduce(
+    (acc, option) => {
+      acc[option.value] = option;
+      return acc;
+    },
+    {} as Record<PolicyType, PolicyTypeOption>,
+  );
 
 const RESOURCE_TYPE_OPTIONS: ReadonlyArray<{
   value: PolicyResourceType;
@@ -77,6 +85,8 @@ const RESOURCE_TYPE_OPTIONS: ReadonlyArray<{
   { value: "application", label: "Applications" },
 ];
 
+// ─── Form schema ─────────────────────────────────────────────────────────────
+
 const formSchema = z.object({
   displayName: z
     .string()
@@ -88,10 +98,7 @@ const formSchema = z.object({
     .trim()
     .min(1, "Policy name is required.")
     .max(64, "Max 64 characters.")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Lowercase letters, digits, and hyphens only.",
-    ),
+    .regex(/^[a-z0-9-]+$/, "Lowercase letters, digits, and hyphens only."),
   resourceTypes: z
     .array(z.enum(["agent", "model", "function", "sandbox", "application"]))
     .min(1, "Select at least one target."),
@@ -104,10 +111,11 @@ function readPolicyTypeParam(value: string | null): PolicyType | null {
   if (value === "location" || value === "maxToken" || value === "flavor") {
     return value;
   }
-  // Permissive lowercase aliases — survives external links from CLI / docs.
   if (value === "tokenusage" || value === "tokenUsage") return "maxToken";
   return null;
 }
+
+// ─── View ────────────────────────────────────────────────────────────────────
 
 interface CreatePolicyViewProps {
   workspaceSlug: string;
@@ -119,8 +127,6 @@ export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
   const typeParam = readPolicyTypeParam(searchParams.get("type"));
   const duplicateName = searchParams.get("duplicate");
 
-  // Duplicate-source fetched from the same cache the list page prefetches.
-  // Detail cache may also be warm if user came from a detail page.
   const duplicateQuery = useQuery({
     ...policyQueries.detail(accountId, workspaceId, duplicateName ?? ""),
     enabled: duplicateName != null,
@@ -143,7 +149,6 @@ export function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProps) {
     <div className="page-shell">
       <Header listHref={listHref} />
       <CreatePolicyForm
-        workspaceSlug={workspaceSlug}
         listHref={listHref}
         initialType={typeParam}
         duplicateFrom={duplicateQuery.data ?? null}
@@ -160,14 +165,9 @@ function Header({ listHref }: { listHref: string }) {
         current="Create policy"
       />
       <div className="page-header">
-        <div className="flex items-center gap-2">
-          <h1 className="typography-display font-semibold text-foreground">
-            Create policy
-          </h1>
-          <Badge variant="neutral" size="sm">
-            Tier 1
-          </Badge>
-        </div>
+        <h1 className="typography-display font-semibold text-foreground">
+          Create policy
+        </h1>
         <p className="typography-body text-muted-foreground">
           Define the policy type and the workload kinds it can be attached to.
         </p>
@@ -176,37 +176,47 @@ function Header({ listHref }: { listHref: string }) {
   );
 }
 
+// ─── Form orchestration ──────────────────────────────────────────────────────
+
 interface CreatePolicyFormProps {
-  workspaceSlug: string;
   listHref: string;
   initialType: PolicyType | null;
   duplicateFrom: Policy | null;
 }
 
 function CreatePolicyForm({
-  workspaceSlug,
   listHref,
   initialType,
   duplicateFrom,
 }: CreatePolicyFormProps) {
-  void workspaceSlug;
   const router = useRouter();
+
+  // Flavor deep-link falls through: form pre-selects Location, but section 2
+  // surfaces a one-time notice explaining flavor is CLI-only.
+  const flavorDeepLink = initialType === "flavor";
 
   const defaultValues = useMemo<FormValues>(() => {
     if (duplicateFrom) {
       return {
-        // `name` deliberately cleared — duplicate must be renamed before save.
         displayName: `${duplicateFrom.metadata.displayName} copy`,
         name: "",
         resourceTypes: [...duplicateFrom.spec.resourceTypes],
-        policyType: duplicateFrom.spec.type,
+        // Flavor source → user can duplicate the spec but UI keeps the form
+        // on Location; flavor in dropdown stays disabled.
+        policyType:
+          duplicateFrom.spec.type === "flavor"
+            ? "location"
+            : duplicateFrom.spec.type,
       };
     }
     return {
       displayName: "",
       name: "",
       resourceTypes: ["agent"],
-      policyType: initialType ?? "location",
+      policyType:
+        initialType === "maxToken" || initialType === "location"
+          ? initialType
+          : "location",
     };
   }, [duplicateFrom, initialType]);
 
@@ -216,11 +226,6 @@ function CreatePolicyForm({
     mode: "onChange",
   });
 
-  // Auto-suggest slug from displayName while the user has not deviated.
-  // Compare against the prior step's suggestion — if they match, advance it.
-  // Skip the initial render: defaults must not trigger autofill (a duplicate
-  // prefill carries a displayName but its `name` is deliberately cleared so
-  // the user must rename — autofilling here would defeat that).
   const displayName = form.watch("displayName");
   const slug = form.watch("name");
   const initialDisplayName = useRef(displayName);
@@ -236,11 +241,23 @@ function CreatePolicyForm({
 
   const policyType = form.watch("policyType");
   const resourceTypes = form.watch("resourceTypes");
-  const cleanName = form.watch("name") || "my-policy";
-  const cleanDisplayName = form.watch("displayName") || cleanName;
+  const cleanName = (form.watch("name") || "my-policy").trim();
+  const cleanDisplayName = (form.watch("displayName") || cleanName).trim();
+
+  // Body-editor state lives below RHF so the code-reference panel can read it.
+  const [locations, setLocations] = useState<ReadonlyArray<LocationItem>>([
+    { type: "continent", name: "North America" },
+    { type: "country", name: "United States" },
+  ]);
+  const [tokenLimits, setTokenLimits] = useState<TokenLimits>({
+    input: 1_000_000,
+    output: 0,
+    total: 2_000_000,
+    step: 1,
+    granularity: "month",
+  });
 
   const onSubmit = form.handleSubmit(async () => {
-    // Mocked write — simulate API round-trip then navigate to the list.
     await new Promise((resolve) => setTimeout(resolve, 400));
     toast.success("Policy created");
     router.push(listHref);
@@ -258,144 +275,432 @@ function CreatePolicyForm({
     <form
       onSubmit={onSubmit}
       noValidate
-      className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]"
+      className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] lg:gap-8"
     >
-      <div className="flex flex-col gap-8">
-        <TypeAndTargetsSection form={form} />
-        <BodySectionFor policyType={policyType} />
-        <div className="flex items-center justify-end gap-2 border-t border-border pt-6">
-          <Button type="button" variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={form.formState.isSubmitting}
-          >
-            Create policy
-          </Button>
-        </div>
+      <div className="flex flex-col gap-10">
+        <PolicyTypeSection form={form} />
+        <PolicyBodySection
+          policyType={policyType}
+          flavorDeepLink={flavorDeepLink}
+          locations={locations}
+          onLocationsChange={setLocations}
+          tokenLimits={tokenLimits}
+          onTokenLimitsChange={setTokenLimits}
+        />
+        <ResourceTypesSection form={form} />
+        <IdentitySection form={form} />
+        <FinalNoteSection />
       </div>
-      <YamlManifestPanel
+
+      <CodeReferencePanel
         policyType={policyType}
         name={cleanName}
         displayName={cleanDisplayName}
         resourceTypes={resourceTypes}
+        locations={locations}
+        tokenLimits={tokenLimits}
+      />
+
+      <StickyFooter
+        onCancel={onCancel}
+        submitting={form.formState.isSubmitting}
       />
     </form>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Form sections — composition, not configuration. Each policy type renders its
-// own sibling body component; the parent picks one based on form state.
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Numbered section heading ────────────────────────────────────────────────
 
-function TypeAndTargetsSection({
+function StepHeading({
+  index,
+  title,
+  description,
+}: {
+  index: number;
+  title: string;
+  description?: string;
+}) {
+  return (
+    <header className="flex flex-col gap-1">
+      <h2 className="font-mono typography-label font-medium text-foreground">
+        <span className="text-meta-foreground">{index}.</span> {title}
+      </h2>
+      {description ? (
+        <p className="text-muted-foreground">{description}</p>
+      ) : null}
+    </header>
+  );
+}
+
+// ─── Section 1: policy type ──────────────────────────────────────────────────
+
+function PolicyTypeSection({
   form,
 }: {
   form: ReturnType<typeof useForm<FormValues>>;
 }) {
-  const {
-    register,
-    control,
-    watch,
-    formState: { errors },
-  } = form;
-  const policyType = watch("policyType");
+  const policyType = form.watch("policyType");
+  const helper = POLICY_TYPE_BY_VALUE[policyType].hint;
 
   return (
-    <section className="flex flex-col gap-6">
-      <h2 className="typography-subtitle font-semibold text-foreground">
-        Type and targets
-      </h2>
-
-      <Field label="Policy type" hint={POLICY_TYPE_HELPER[policyType]}>
+    <section className="flex flex-col gap-4">
+      <StepHeading index={1} title="What is your policy on?" />
+      <Field label="Policy type" hint={helper}>
         <Controller
-          control={control}
+          control={form.control}
           name="policyType"
-          render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger aria-label="Policy type" className="w-full">
-                {/* Children on SelectValue override the portaled ItemText, so
-                 * the trigger shows the label alone — the hint sits below as
-                 * a Field helper-text slot. */}
-                <SelectValue>
-                  {POLICY_TYPE_TRIGGER_LABEL[field.value]}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {POLICY_TYPE_OPTIONS.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    textValue={option.label}
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <span>
-                        {option.label}
-                        {option.value === "flavor" && (
-                          <span className="ml-2 typography-meta text-muted-foreground">
-                            [coming soon]
-                          </span>
-                        )}
+          render={({ field }) => {
+            const current = POLICY_TYPE_BY_VALUE[field.value];
+            const CurrentIcon = current.icon;
+            return (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger aria-label="Policy type" className="w-full">
+                  <SelectValue>
+                    <span className="inline-flex items-center gap-2">
+                      <CurrentIcon
+                        aria-hidden="true"
+                        className="size-4 text-muted-foreground"
+                      />
+                      <span className="typography-body text-foreground">
+                        {current.label}
                       </span>
-                      <span className="typography-meta text-muted-foreground">
-                        {option.hint}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+                    </span>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {POLICY_TYPE_OPTIONS.map((option) => (
+                    <PolicyTypeOptionRow key={option.value} option={option} />
+                  ))}
+                </SelectContent>
+              </Select>
+            );
+          }}
         />
       </Field>
+    </section>
+  );
+}
 
-      <FieldRow cols={1}>
-        <Field
-          label="Display name"
-          hint="Human label. Shown in the dashboard."
-          error={errors.displayName?.message}
-        >
-          <Input
-            placeholder="EU-only production"
-            aria-invalid={errors.displayName ? true : undefined}
-            {...register("displayName")}
-          />
-        </Field>
+function PolicyTypeOptionRow({ option }: { option: PolicyTypeOption }) {
+  const Icon = option.icon;
+  return (
+    <SelectItem
+      value={option.value}
+      textValue={option.label}
+      disabled={option.disabled}
+    >
+      <span className="flex items-start gap-2">
+        <Icon
+          aria-hidden="true"
+          className={cn(
+            "mt-0.5 size-4 shrink-0",
+            option.disabled ? "text-text-disabled" : "text-muted-foreground",
+          )}
+        />
+        <span className="flex flex-col gap-0.5">
+          <span className="inline-flex items-center gap-2">
+            <span
+              className={cn(
+                "typography-body",
+                option.disabled ? "text-text-disabled" : "text-foreground",
+              )}
+            >
+              {option.label}
+            </span>
+            {option.disabled ? (
+              <span className="typography-meta text-meta-foreground">
+                [coming soon]
+              </span>
+            ) : null}
+          </span>
+          <span
+            className={cn(
+              "typography-meta",
+              option.disabled ? "text-text-disabled" : "text-muted-foreground",
+            )}
+          >
+            {option.hint}
+          </span>
+        </span>
+      </span>
+    </SelectItem>
+  );
+}
+
+// ─── Section 2: policy body editor ───────────────────────────────────────────
+
+interface LocationItem {
+  type: "continent" | "country";
+  name: string;
+}
+
+interface TokenLimits {
+  input: number;
+  output: number;
+  total: number;
+  step: number;
+  granularity: MaxTokenGranularity;
+}
+
+interface PolicyBodySectionProps {
+  policyType: PolicyType;
+  flavorDeepLink: boolean;
+  locations: ReadonlyArray<LocationItem>;
+  onLocationsChange: (next: ReadonlyArray<LocationItem>) => void;
+  tokenLimits: TokenLimits;
+  onTokenLimitsChange: (next: TokenLimits) => void;
+}
+
+function PolicyBodySection({
+  policyType,
+  flavorDeepLink,
+  locations,
+  onLocationsChange,
+  tokenLimits,
+  onTokenLimitsChange,
+}: PolicyBodySectionProps) {
+  return (
+    <section className="flex flex-col gap-4">
+      <StepHeading
+        index={2}
+        title="Configure your policy"
+        description={POLICY_TYPE_BY_VALUE[policyType].hint}
+      />
+      {flavorDeepLink ? <FlavorDeepLinkNotice /> : null}
+      {policyType === "location" ? (
+        <LocationBody value={locations} onChange={onLocationsChange} />
+      ) : null}
+      {policyType === "maxToken" ? (
+        <TokenUsageBody value={tokenLimits} onChange={onTokenLimitsChange} />
+      ) : null}
+    </section>
+  );
+}
+
+function FlavorDeepLinkNotice() {
+  return (
+    <div className="flex items-start gap-2 rounded-md border border-state-warning/40 bg-state-warning-subtle px-4 py-3">
+      <AlertTriangle
+        aria-hidden="true"
+        className="mt-0.5 size-4 shrink-0 text-state-warning-text"
+      />
+      <p className="typography-body text-foreground">
+        Flavor policies are authorable via{" "}
+        <code className="font-mono">bl apply -f</code> only — the dashboard form
+        does not yet support them. We&apos;ve switched the form to Location;
+        change the type if you need a different one.
+      </p>
+    </div>
+  );
+}
+
+// Location body — toggle chips, mixed continent + country.
+const SAMPLE_LOCATIONS: ReadonlyArray<LocationItem> = [
+  { type: "continent", name: "North America" },
+  { type: "continent", name: "Europe" },
+  { type: "continent", name: "Asia Pacific" },
+  { type: "country", name: "United States" },
+  { type: "country", name: "Germany" },
+  { type: "country", name: "France" },
+  { type: "country", name: "Japan" },
+];
+
+function LocationBody({
+  value,
+  onChange,
+}: {
+  value: ReadonlyArray<LocationItem>;
+  onChange: (next: ReadonlyArray<LocationItem>) => void;
+}) {
+  function toggle(item: LocationItem) {
+    const exists = value.some(
+      (s) => s.type === item.type && s.name === item.name,
+    );
+    onChange(
+      exists
+        ? value.filter((s) => !(s.type === item.type && s.name === item.name))
+        : [...value, item],
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap gap-2">
+        {SAMPLE_LOCATIONS.map((item) => {
+          const checked = value.some(
+            (s) => s.type === item.type && s.name === item.name,
+          );
+          return (
+            <button
+              type="button"
+              key={`${item.type}:${item.name}`}
+              onClick={() => toggle(item)}
+              aria-pressed={checked}
+              className={cn(
+                "rounded-md border px-3 py-1.5 typography-meta transition-colors duration-fast ease-out-standard",
+                checked
+                  ? "border-primary bg-primary-soft text-foreground"
+                  : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
+              )}
+            >
+              <span className="font-medium">
+                {item.type === "continent" ? "Continent" : "Country"}:
+              </span>{" "}
+              {item.name}
+            </button>
+          );
+        })}
+      </div>
+      <p className="typography-caption text-muted-foreground">
+        Mixed granularity allowed. Continents and countries OR together — the
+        workload can run anywhere in the union.
+      </p>
+    </div>
+  );
+}
+
+// Token-usage body — three caps + period selector.
+const GRANULARITY_OPTIONS: ReadonlyArray<{
+  value: MaxTokenGranularity;
+  label: string;
+}> = [
+  { value: "month", label: "Month" },
+  { value: "day", label: "Day" },
+  { value: "hour", label: "Hour" },
+  { value: "minute", label: "Minute" },
+];
+
+function TokenUsageBody({
+  value,
+  onChange,
+}: {
+  value: TokenLimits;
+  onChange: (next: TokenLimits) => void;
+}) {
+  function update<K extends keyof TokenLimits>(key: K, next: TokenLimits[K]) {
+    onChange({ ...value, [key]: next });
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <FieldRow cols={3}>
+        <TokenCapField
+          label="Input"
+          value={value.input}
+          onChange={(v) => update("input", v)}
+        />
+        <TokenCapField
+          label="Output"
+          value={value.output}
+          onChange={(v) => update("output", v)}
+        />
+        <TokenCapField
+          label="Total"
+          value={value.total}
+          onChange={(v) => update("total", v)}
+        />
       </FieldRow>
-
-      <FieldRow cols={1}>
-        <Field
-          label="Policy name"
-          hint="Canonical id used in bl commands and spec.policies[]. Lowercase, hyphens only."
-          error={errors.name?.message}
-        >
+      <div className="flex flex-col gap-1.5">
+        <span className="typography-label text-muted-foreground">
+          Over which period?
+        </span>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[120px_1fr]">
           <Input
-            placeholder="eu-only-prod"
-            aria-invalid={errors.name ? true : undefined}
-            className="font-mono"
-            {...register("name")}
+            type="number"
+            min={1}
+            value={value.step}
+            onChange={(event) =>
+              update("step", Number(event.target.value) || 1)
+            }
+            className="font-mono tabular-nums"
+            aria-label="Period length"
           />
-        </Field>
-      </FieldRow>
+          <Select
+            value={value.granularity}
+            onValueChange={(next) =>
+              update("granularity", next as MaxTokenGranularity)
+            }
+          >
+            <SelectTrigger aria-label="Period unit" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {GRANULARITY_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <span className="typography-caption text-meta-foreground">
+          Leave any cap blank for Unlimited.
+        </span>
+      </div>
+    </div>
+  );
+}
 
-      <Field
-        label="Target workload types"
-        error={errors.resourceTypes?.message}
-      >
-        <Controller
-          control={control}
-          name="resourceTypes"
-          render={({ field }) => (
+function TokenCapField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (next: number) => void;
+}) {
+  // 0 in the model means "unlimited"; surface as empty so the placeholder shows.
+  const display = value === 0 ? "" : String(value);
+  return (
+    <Field label={label}>
+      <Input
+        type="number"
+        min={0}
+        inputMode="numeric"
+        value={display}
+        placeholder="Unlimited"
+        onChange={(event) => {
+          const raw = event.target.value;
+          onChange(raw === "" ? 0 : Number(raw) || 0);
+        }}
+        className="font-mono tabular-nums"
+      />
+    </Field>
+  );
+}
+
+// ─── Section 3: workload targets ─────────────────────────────────────────────
+
+function ResourceTypesSection({
+  form,
+}: {
+  form: ReturnType<typeof useForm<FormValues>>;
+}) {
+  return (
+    <section className="flex flex-col gap-4">
+      <StepHeading
+        index={3}
+        title="Pick the workload kinds"
+        description="The policy will only attach to workloads of these kinds."
+      />
+      <Controller
+        control={form.control}
+        name="resourceTypes"
+        render={({ field, fieldState }) => (
+          <div className="flex flex-col gap-2">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {RESOURCE_TYPE_OPTIONS.map((option) => {
                 const checked = field.value.includes(option.value);
                 return (
                   <label
                     key={option.value}
-                    className="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 py-2 hover:border-border-strong"
+                    className={cn(
+                      "flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 transition-colors duration-fast ease-out-standard",
+                      checked
+                        ? "border-primary bg-primary-soft"
+                        : "border-border bg-background hover:border-border-strong",
+                    )}
                   >
                     <Checkbox
                       checked={checked}
@@ -416,309 +721,156 @@ function TypeAndTargetsSection({
                 );
               })}
             </div>
-          )}
-        />
-      </Field>
+            {fieldState.error ? (
+              <span
+                role="alert"
+                className="typography-caption font-medium text-state-errored-text"
+              >
+                {fieldState.error.message}
+              </span>
+            ) : null}
+          </div>
+        )}
+      />
     </section>
   );
 }
 
-function BodySectionFor({ policyType }: { policyType: PolicyType }) {
-  if (policyType === "location") return <LocationBody />;
-  if (policyType === "maxToken") return <MaxTokenBody />;
-  return <FlavorBody />;
-}
+// ─── Section 4: identity (display name → slug) ───────────────────────────────
 
-// ── Location body ────────────────────────────────────────────────────────────
-
-const SAMPLE_LOCATIONS = [
-  { type: "continent" as const, name: "North America" },
-  { type: "continent" as const, name: "Europe" },
-  { type: "continent" as const, name: "Asia Pacific" },
-  { type: "country" as const, name: "United States" },
-  { type: "country" as const, name: "Germany" },
-  { type: "country" as const, name: "France" },
-  { type: "country" as const, name: "Japan" },
-];
-
-function LocationBody() {
-  const [selected, setSelected] = useState<
-    ReadonlyArray<{ type: "continent" | "country"; name: string }>
-  >([
-    { type: "continent", name: "North America" },
-    { type: "country", name: "United States" },
-  ]);
-
-  function toggle(item: { type: "continent" | "country"; name: string }) {
-    setSelected((prev) => {
-      const exists = prev.some(
-        (s) => s.type === item.type && s.name === item.name,
-      );
-      return exists
-        ? prev.filter((s) => !(s.type === item.type && s.name === item.name))
-        : [...prev, item];
-    });
-  }
+function IdentitySection({
+  form,
+}: {
+  form: ReturnType<typeof useForm<FormValues>>;
+}) {
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = form;
+  const slug = watch("name");
 
   return (
     <section className="flex flex-col gap-4">
-      <header className="flex flex-col gap-1">
-        <h2 className="typography-subtitle font-semibold text-foreground">
-          Allowed locations
-        </h2>
-        <p className="typography-body text-muted-foreground">
-          Workloads are deployed only to matching data centers. Mixed
-          granularity allowed in one policy.
+      <StepHeading
+        index={4}
+        title="Confirm display name"
+        description="The display name is the human label; we derive a canonical slug for bl commands."
+      />
+      <FieldRow cols={1}>
+        <Field
+          label="Display name"
+          hint="Human label. Shown in the dashboard."
+          error={errors.displayName?.message}
+        >
+          <Input
+            placeholder="EU-only production"
+            {...register("displayName")}
+          />
+        </Field>
+      </FieldRow>
+      <FieldRow cols={1}>
+        <Field
+          label="Name"
+          hint="Canonical id used in bl commands and spec.policies[]. Auto-derived; editable."
+          error={errors.name?.message}
+        >
+          <Input
+            placeholder="eu-only-prod"
+            className="font-mono"
+            {...register("name")}
+          />
+        </Field>
+      </FieldRow>
+      {slug ? (
+        <p className="typography-caption text-meta-foreground">
+          Slug preview:{" "}
+          <code className="font-mono text-foreground">{slug}</code>
         </p>
-      </header>
-      <div className="flex flex-wrap gap-2">
-        {SAMPLE_LOCATIONS.map((item) => {
-          const checked = selected.some(
-            (s) => s.type === item.type && s.name === item.name,
-          );
-          return (
-            <button
-              type="button"
-              key={`${item.type}:${item.name}`}
-              onClick={() => toggle(item)}
-              aria-pressed={checked}
-              className={
-                checked
-                  ? "rounded-md border border-primary bg-primary-soft px-3 py-1.5 typography-meta text-foreground"
-                  : "rounded-md border border-border bg-background px-3 py-1.5 typography-meta text-muted-foreground hover:border-border-strong"
-              }
-            >
-              <span className="font-medium">
-                {item.type === "continent" ? "Continent" : "Country"}:
-              </span>{" "}
-              {item.name}
-            </button>
-          );
-        })}
-      </div>
-      <p className="typography-caption text-muted-foreground">
-        Combination note: adding both a continent and a country from the same
-        region creates a UNION (OR) — the workload can run in either. The
-        INTERSECTION (AND) applies only across policy types.
+      ) : null}
+    </section>
+  );
+}
+
+// ─── Section 5: code reference + create ──────────────────────────────────────
+
+function FinalNoteSection() {
+  return (
+    <section className="flex flex-col gap-2">
+      <StepHeading index={5} title="Create policy" />
+      <p className="text-muted-foreground">
+        Review the artifact in any of the supported clients on the right, then
+        hit Create policy.
       </p>
     </section>
   );
 }
 
-// ── Token-usage body ─────────────────────────────────────────────────────────
+// ─── Code reference panel — language-tabbed, reflects form state ─────────────
 
-const GRANULARITY_OPTIONS: ReadonlyArray<{
-  value: MaxTokenGranularity;
-  label: string;
-}> = [
-  { value: "month", label: "Month" },
-  { value: "day", label: "Day" },
-  { value: "hour", label: "Hour" },
-  { value: "minute", label: "Minute" },
-];
-
-function MaxTokenBody() {
-  const [granularity, setGranularity] = useState<MaxTokenGranularity>("month");
-  const [step, setStep] = useState(1);
-  const [thresholds, setThresholds] = useState({
-    input: 1_000_000,
-    output: 0,
-    total: 2_000_000,
-    ratio: 0,
-  });
-
-  function updateThreshold(key: keyof typeof thresholds, value: number) {
-    setThresholds((prev) => ({ ...prev, [key]: value }));
-  }
-
-  return (
-    <section className="flex flex-col gap-6">
-      <header className="flex flex-col gap-1">
-        <h2 className="typography-subtitle font-semibold text-foreground">
-          Token thresholds
-        </h2>
-        <p className="typography-body text-muted-foreground">
-          A threshold of 0 means &ldquo;not evaluated&rdquo; — the policy does
-          not enforce that dimension.
-        </p>
-      </header>
-
-      <div className="flex flex-col gap-3">
-        <h3 className="typography-label font-medium text-foreground">Window</h3>
-        <FieldRow cols={2}>
-          <Field label="Granularity">
-            <Select
-              value={granularity}
-              onValueChange={(value) =>
-                setGranularity(value as MaxTokenGranularity)
-              }
-            >
-              <SelectTrigger aria-label="Granularity" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {GRANULARITY_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field label="Step" hint="Number of granularity units per window.">
-            <Input
-              type="number"
-              min={1}
-              value={step}
-              onChange={(e) => setStep(Number(e.target.value) || 1)}
-            />
-          </Field>
-        </FieldRow>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <h3 className="typography-label font-medium text-foreground">
-          Thresholds
-        </h3>
-        <ThresholdField
-          label="Input tokens per window"
-          field="spec.maxTokens.input"
-          value={thresholds.input}
-          onChange={(v) => updateThreshold("input", v)}
-        />
-        <ThresholdField
-          label="Output tokens per window"
-          field="spec.maxTokens.output"
-          value={thresholds.output}
-          onChange={(v) => updateThreshold("output", v)}
-        />
-        <ThresholdField
-          label="Total tokens per window"
-          field="spec.maxTokens.total"
-          value={thresholds.total}
-          onChange={(v) => updateThreshold("total", v)}
-        />
-        <ThresholdField
-          label="Input / output ratio cap"
-          field="spec.maxTokens.ratioInputOverOutput"
-          value={thresholds.ratio}
-          onChange={(v) => updateThreshold("ratio", v)}
-        />
-      </div>
-    </section>
-  );
-}
-
-function ThresholdField({
-  label,
-  field,
-  value,
-  onChange,
-}: {
-  label: string;
-  field: string;
-  value: number;
-  onChange: (next: number) => void;
-}) {
-  const notEvaluated = value === 0;
-  return (
-    <div className="grid grid-cols-1 gap-1 sm:grid-cols-[1fr_180px]">
-      <div className="flex flex-col gap-0.5">
-        <span className="typography-label text-foreground">{label}</span>
-        <span className="font-mono typography-meta text-meta-foreground">
-          {field}
-        </span>
-      </div>
-      <div className="flex flex-col gap-0.5">
-        <Input
-          type="number"
-          min={0}
-          value={value}
-          onChange={(event) => onChange(Number(event.target.value) || 0)}
-          className="font-mono tabular-nums"
-        />
-        {notEvaluated && (
-          <span className="typography-meta text-muted-foreground">
-            Not evaluated
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Flavor body ──────────────────────────────────────────────────────────────
-
-function FlavorBody() {
-  return (
-    <section className="flex flex-col gap-4">
-      <header className="flex flex-col gap-1">
-        <h2 className="typography-subtitle font-semibold text-foreground">
-          Allowed hardware flavors
-        </h2>
-        <p className="typography-body text-muted-foreground">
-          Workloads are deployed only on matching hardware.
-        </p>
-      </header>
-      <div className="flex flex-col gap-2 rounded-md border border-state-warning/40 bg-state-warning-subtle px-4 py-3">
-        <div className="flex items-start gap-2">
-          <AlertTriangle
-            aria-hidden="true"
-            className="mt-0.5 size-4 text-state-warning-text"
-          />
-          <div className="flex flex-col gap-1">
-            <p className="typography-label font-medium text-foreground">
-              Flavor policies are not yet available in the dashboard.
-            </p>
-            <p className="typography-caption text-muted-foreground">
-              You can author and apply them via{" "}
-              <code className="font-mono">bl apply -f policy.yaml</code> or the
-              REST API. Dashboard UI coming soon.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// YAML manifest panel — right column, sticky on scroll. Reflects the form
-// state above; the panel is the load-bearing artifact for the Sam audit path.
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface YamlManifestPanelProps {
+interface CodeReferencePanelProps {
   policyType: PolicyType;
   name: string;
   displayName: string;
   resourceTypes: ReadonlyArray<PolicyResourceType>;
+  locations: ReadonlyArray<LocationItem>;
+  tokenLimits: TokenLimits;
 }
 
-function YamlManifestPanel({
-  policyType,
-  name,
-  displayName,
-  resourceTypes,
-}: YamlManifestPanelProps) {
-  const manifest = buildManifest({ policyType, name, displayName, resourceTypes });
+const LANGUAGE_TABS = [
+  { value: "typescript", label: "TypeScript", language: "typescript" },
+  { value: "python", label: "Python", language: "python" },
+  { value: "go", label: "Go", language: "go" },
+  { value: "curl", label: "cURL", language: "bash" },
+  { value: "cli", label: "CLI", language: "bash" },
+] as const;
+
+function CodeReferencePanel(props: CodeReferencePanelProps) {
+  const snippets = useMemo(
+    () => ({
+      typescript: buildTypescriptSnippet(props),
+      python: buildPythonSnippet(props),
+      go: buildGoSnippet(props),
+      curl: buildCurlSnippet(props),
+      cli: buildCliSnippet(props),
+    }),
+    [props],
+  );
+
   return (
     <aside
-      aria-labelledby="create-policy-yaml-heading"
+      aria-labelledby="create-policy-reference-heading"
       className="flex flex-col gap-3 lg:sticky lg:top-8 lg:h-fit"
     >
       <div className="flex flex-col gap-1">
         <h2
-          id="create-policy-yaml-heading"
+          id="create-policy-reference-heading"
           className="font-mono typography-meta uppercase tracking-wider text-meta-foreground"
         >
-          YAML manifest
+          Apply via code
         </h2>
         <p className="typography-caption text-muted-foreground">
-          Reflects the form. Save to a file and apply with{" "}
-          <code className="font-mono">bl apply -f</code>.
+          Mirrors the form. Copy and run from your own client.
         </p>
       </div>
-      <CodeBlock variant="block" language="yaml" code={manifest} />
+      <Tabs defaultValue="typescript" className="gap-3">
+        <TabsList variant="underline" aria-label="Client language">
+          {LANGUAGE_TABS.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {LANGUAGE_TABS.map((tab) => (
+          <TabsContent key={tab.value} value={tab.value} className="m-0">
+            <CodeBlock
+              variant="block"
+              language={tab.language}
+              code={snippets[tab.value]}
+            />
+          </TabsContent>
+        ))}
+      </Tabs>
       <p className="typography-caption text-muted-foreground">
         <Link
           href="https://docs.blaxel.ai/Model-Governance/Policies"
@@ -733,46 +885,220 @@ function YamlManifestPanel({
   );
 }
 
-function buildManifest({
-  policyType,
-  name,
-  displayName,
-  resourceTypes,
-}: YamlManifestPanelProps): string {
+// ─── Snippet builders ────────────────────────────────────────────────────────
+
+type SnippetBuildContext = CodeReferencePanelProps;
+
+function buildYamlBody(ctx: SnippetBuildContext): string {
   const lines: string[] = [
     "apiVersion: blaxel.ai/v1alpha1",
     "kind: Policy",
     "metadata:",
-    `  name: ${name}`,
-    `  displayName: ${displayName}`,
+    `  name: ${ctx.name}`,
+    `  displayName: ${ctx.displayName}`,
     "spec:",
-    `  type: ${policyType}`,
+    `  type: ${ctx.policyType}`,
     "  resourceTypes:",
-    ...resourceTypes.map((kind) => `    - ${kind}`),
+    ...ctx.resourceTypes.map((kind) => `    - ${kind}`),
   ];
-  if (policyType === "location") {
-    lines.push(
-      "  locations:",
-      "    - type: continent",
-      "      name: North America",
-      "    - type: country",
-      "      name: United States",
-    );
-  } else if (policyType === "maxToken") {
+  if (ctx.policyType === "location") {
+    lines.push("  locations:");
+    if (ctx.locations.length === 0) {
+      lines.push("    []");
+    } else {
+      for (const loc of ctx.locations) {
+        lines.push(`    - type: ${loc.type}`, `      name: ${loc.name}`);
+      }
+    }
+  } else if (ctx.policyType === "maxToken") {
     lines.push(
       "  maxTokens:",
-      "    granularity: month",
-      "    step: 1",
-      "    input: 1000000",
-      "    output: 0",
-      "    total: 2000000",
-      "    ratioInputOverOutput: 0",
+      `    granularity: ${ctx.tokenLimits.granularity}`,
+      `    step: ${ctx.tokenLimits.step}`,
+      `    input: ${ctx.tokenLimits.input}`,
+      `    output: ${ctx.tokenLimits.output}`,
+      `    total: ${ctx.tokenLimits.total}`,
     );
-  } else if (policyType === "flavor") {
-    lines.push("  flavors:", "    - name: t4", "      type: cpu");
+  } else if (ctx.policyType === "flavor") {
+    lines.push(
+      "  flavors:",
+      "    - name: t4",
+      "      type: cpu",
+    );
   }
   return lines.join("\n");
 }
+
+function buildTypescriptSnippet(ctx: SnippetBuildContext): string {
+  const body = buildPolicyObjectLiteral(ctx, { lang: "ts" });
+  return [
+    'import { createPolicy } from "@blaxel/core";',
+    "",
+    `await createPolicy({`,
+    `  body: ${indent(body, 2).trimStart()},`,
+    `});`,
+  ].join("\n");
+}
+
+function buildPythonSnippet(ctx: SnippetBuildContext): string {
+  const body = buildPolicyObjectLiteral(ctx, { lang: "py" });
+  return [
+    "from blaxel import create_policy",
+    "",
+    `await create_policy(body=${indent(body, 2).trimStart()})`,
+  ].join("\n");
+}
+
+function buildGoSnippet(ctx: SnippetBuildContext): string {
+  const lines = [
+    `client, _ := blaxel.NewClient()`,
+    ``,
+    `_, err := client.CreatePolicy(ctx, blaxel.Policy{`,
+    `\tMetadata: blaxel.PolicyMetadata{`,
+    `\t\tName:        "${ctx.name}",`,
+    `\t\tDisplayName: "${ctx.displayName}",`,
+    `\t},`,
+    `\tSpec: blaxel.PolicySpec{`,
+    `\t\tType: "${ctx.policyType}",`,
+    `\t\tResourceTypes: []string{${ctx.resourceTypes
+      .map((kind) => `"${kind}"`)
+      .join(", ")}},`,
+  ];
+  if (ctx.policyType === "location") {
+    lines.push(`\t\tLocations: []blaxel.PolicyLocation{`);
+    for (const loc of ctx.locations) {
+      lines.push(
+        `\t\t\t{Type: "${loc.type}", Name: "${loc.name}"},`,
+      );
+    }
+    lines.push(`\t\t},`);
+  } else if (ctx.policyType === "maxToken") {
+    lines.push(
+      `\t\tMaxTokens: &blaxel.PolicyMaxTokens{`,
+      `\t\t\tGranularity: "${ctx.tokenLimits.granularity}",`,
+      `\t\t\tStep:        ${ctx.tokenLimits.step},`,
+      `\t\t\tInput:       ${ctx.tokenLimits.input},`,
+      `\t\t\tOutput:      ${ctx.tokenLimits.output},`,
+      `\t\t\tTotal:       ${ctx.tokenLimits.total},`,
+      `\t\t},`,
+    );
+  } else if (ctx.policyType === "flavor") {
+    lines.push(
+      `\t\tFlavors: []blaxel.PolicyFlavor{`,
+      `\t\t\t{Name: "t4", Type: "cpu"},`,
+      `\t\t},`,
+    );
+  }
+  lines.push(`\t},`, `})`);
+  return lines.join("\n");
+}
+
+function buildCurlSnippet(ctx: SnippetBuildContext): string {
+  const body = buildPolicyObjectLiteral(ctx, { lang: "json" });
+  return [
+    `curl -X POST https://api.blaxel.ai/v0/policies \\`,
+    `  -H "Authorization: Bearer $BLAXEL_API_KEY" \\`,
+    `  -H "Content-Type: application/json" \\`,
+    `  -d '${body.replace(/\n\s*/g, " ")}'`,
+  ].join("\n");
+}
+
+function buildCliSnippet(ctx: SnippetBuildContext): string {
+  const yaml = buildYamlBody(ctx);
+  return [
+    `cat <<'EOF' | bl apply -f -`,
+    yaml,
+    `EOF`,
+  ].join("\n");
+}
+
+// Object-literal builder shared by TS / Python / cURL — each language picks
+// the quote and key style it wants.
+function buildPolicyObjectLiteral(
+  ctx: SnippetBuildContext,
+  opts: { lang: "ts" | "py" | "json" },
+): string {
+  const quoteKey = (key: string) =>
+    opts.lang === "ts" ? key : `"${key}"`;
+  const str = (value: string) =>
+    opts.lang === "py" ? `"${value}"` : `"${value}"`;
+  const arr = (items: ReadonlyArray<string>) =>
+    `[${items.map(str).join(", ")}]`;
+  const open = opts.lang === "py" ? "{" : "{";
+  const close = opts.lang === "py" ? "}" : "}";
+
+  const lines: string[] = [`${open}`];
+  lines.push(`  ${quoteKey("metadata")}: {`);
+  lines.push(`    ${quoteKey("name")}: ${str(ctx.name)},`);
+  lines.push(`    ${quoteKey("displayName")}: ${str(ctx.displayName)},`);
+  lines.push(`  },`);
+  lines.push(`  ${quoteKey("spec")}: {`);
+  lines.push(`    ${quoteKey("type")}: ${str(ctx.policyType)},`);
+  lines.push(`    ${quoteKey("resourceTypes")}: ${arr(ctx.resourceTypes)},`);
+  if (ctx.policyType === "location") {
+    lines.push(`    ${quoteKey("locations")}: [`);
+    for (const loc of ctx.locations) {
+      lines.push(
+        `      { ${quoteKey("type")}: ${str(loc.type)}, ${quoteKey("name")}: ${str(loc.name)} },`,
+      );
+    }
+    lines.push(`    ],`);
+  } else if (ctx.policyType === "maxToken") {
+    lines.push(`    ${quoteKey("maxTokens")}: {`);
+    lines.push(
+      `      ${quoteKey("granularity")}: ${str(ctx.tokenLimits.granularity)},`,
+    );
+    lines.push(`      ${quoteKey("step")}: ${ctx.tokenLimits.step},`);
+    lines.push(`      ${quoteKey("input")}: ${ctx.tokenLimits.input},`);
+    lines.push(`      ${quoteKey("output")}: ${ctx.tokenLimits.output},`);
+    lines.push(`      ${quoteKey("total")}: ${ctx.tokenLimits.total},`);
+    lines.push(`    },`);
+  } else if (ctx.policyType === "flavor") {
+    lines.push(`    ${quoteKey("flavors")}: [`);
+    lines.push(
+      `      { ${quoteKey("name")}: ${str("t4")}, ${quoteKey("type")}: ${str("cpu")} },`,
+    );
+    lines.push(`    ],`);
+  }
+  lines.push(`  },`);
+  lines.push(close);
+  return lines.join("\n");
+}
+
+function indent(text: string, spaces: number): string {
+  const pad = " ".repeat(spaces);
+  return text
+    .split("\n")
+    .map((line) => `${pad}${line}`)
+    .join("\n");
+}
+
+// ─── Sticky footer ───────────────────────────────────────────────────────────
+
+function StickyFooter({
+  onCancel,
+  submitting,
+}: {
+  onCancel: () => void;
+  submitting: boolean;
+}) {
+  return (
+    <div
+      role="region"
+      aria-label="Create policy actions"
+      className="sticky bottom-0 z-overlay -mx-4 mt-2 flex items-center justify-end gap-2 border-t border-border bg-panel/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6 lg:col-span-2 lg:-mx-8 lg:px-8 xl:-mx-20 xl:px-20"
+    >
+      <Button type="button" variant="ghost" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button type="submit" variant="primary" disabled={submitting}>
+        Create policy
+      </Button>
+    </div>
+  );
+}
+
+// ─── Util ────────────────────────────────────────────────────────────────────
 
 function slugify(input: string): string {
   return input
