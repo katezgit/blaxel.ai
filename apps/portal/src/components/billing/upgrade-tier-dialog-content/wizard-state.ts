@@ -15,11 +15,10 @@ import {
 
 const TIER_SELECTION_VALUES = SELECTABLE_TIERS.map(
   (t) => String(t) as `${SelectableTier}`,
-);
-const [FIRST_TIER, ...REST_TIERS] = TIER_SELECTION_VALUES;
+) as [`${SelectableTier}`, ...`${SelectableTier}`[]];
 
 export const topUpSchema = z.object({
-  selectedTier: z.enum([FIRST_TIER, ...REST_TIERS]),
+  selectedTier: z.enum(TIER_SELECTION_VALUES),
   autoTopUpEnabled: z.boolean(),
   autoTopUpThresholdUsd: z.number({ message: "Threshold is required" }).min(1),
   autoTopUpAmountUsd: z.number({ message: "Amount is required" }).min(1),
