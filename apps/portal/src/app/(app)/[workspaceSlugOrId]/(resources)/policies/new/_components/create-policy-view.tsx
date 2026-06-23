@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -322,8 +322,8 @@ function StepHeading({
 }) {
   return (
     <header className="flex flex-col gap-1">
-      <h2 className="font-mono typography-label font-medium text-foreground">
-        <span className="text-meta-foreground">{index}.</span> {title}
+      <h2 className="typography-subtitle font-semibold text-foreground">
+        <span className="font-mono text-meta-foreground">{index}.</span> {title}
       </h2>
       {description ? (
         <p className="text-muted-foreground">{description}</p>
@@ -341,42 +341,52 @@ function PolicyTypeSection({
 }) {
   const policyType = form.watch("policyType");
   const helper = POLICY_TYPE_BY_VALUE[policyType].hint;
+  const helperId = useId();
 
   return (
     <section className="flex flex-col gap-4">
       <StepHeading index={1} title="What is your policy on?" />
-      <Field label="Policy type" hint={helper}>
-        <Controller
-          control={form.control}
-          name="policyType"
-          render={({ field }) => {
-            const current = POLICY_TYPE_BY_VALUE[field.value];
-            const CurrentIcon = current.icon;
-            return (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger aria-label="Policy type" className="w-full">
-                  <SelectValue>
-                    <span className="inline-flex items-center gap-2">
-                      <CurrentIcon
-                        aria-hidden="true"
-                        className="size-4 text-muted-foreground"
-                      />
-                      <span className="typography-body text-foreground">
-                        {current.label}
+      <div className="flex flex-col gap-1.5">
+        <Field label="Policy type">
+          <Controller
+            control={form.control}
+            name="policyType"
+            render={({ field }) => {
+              const current = POLICY_TYPE_BY_VALUE[field.value];
+              const CurrentIcon = current.icon;
+              return (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    aria-label="Policy type"
+                    aria-describedby={helperId}
+                    className="w-full"
+                  >
+                    <SelectValue>
+                      <span className="inline-flex items-center gap-2">
+                        <CurrentIcon
+                          aria-hidden="true"
+                          className="size-4 text-muted-foreground"
+                        />
+                        <span className="typography-body text-foreground">
+                          {current.label}
+                        </span>
                       </span>
-                    </span>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {POLICY_TYPE_OPTIONS.map((option) => (
-                    <PolicyTypeOptionRow key={option.value} option={option} />
-                  ))}
-                </SelectContent>
-              </Select>
-            );
-          }}
-        />
-      </Field>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {POLICY_TYPE_OPTIONS.map((option) => (
+                      <PolicyTypeOptionRow key={option.value} option={option} />
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
+          />
+        </Field>
+        <p id={helperId} className="text-muted-foreground">
+          {helper}
+        </p>
+      </div>
     </section>
   );
 }
@@ -749,6 +759,8 @@ function IdentitySection({
     formState: { errors },
   } = form;
   const slug = watch("name");
+  const displayHelperId = useId();
+  const nameHelperId = useId();
 
   return (
     <section className="flex flex-col gap-4">
@@ -758,29 +770,39 @@ function IdentitySection({
         description="The display name is the human label; we derive a canonical slug for bl commands."
       />
       <FieldRow cols={1}>
-        <Field
-          label="Display name"
-          hint="Human label. Shown in the dashboard."
-          error={errors.displayName?.message}
-        >
-          <Input
-            placeholder="EU-only production"
-            {...register("displayName")}
-          />
-        </Field>
+        <div className="flex flex-col gap-1.5">
+          <Field
+            label="Display name"
+            error={errors.displayName?.message}
+          >
+            <Input
+              placeholder="EU-only production"
+              aria-describedby={displayHelperId}
+              {...register("displayName")}
+            />
+          </Field>
+          <p id={displayHelperId} className="text-muted-foreground">
+            Human label. Shown in the dashboard.
+          </p>
+        </div>
       </FieldRow>
       <FieldRow cols={1}>
-        <Field
-          label="Name"
-          hint="Canonical id used in bl commands and spec.policies[]. Auto-derived; editable."
-          error={errors.name?.message}
-        >
-          <Input
-            placeholder="eu-only-prod"
-            className="font-mono"
-            {...register("name")}
-          />
-        </Field>
+        <div className="flex flex-col gap-1.5">
+          <Field label="Name" error={errors.name?.message}>
+            <Input
+              placeholder="eu-only-prod"
+              className="font-mono"
+              aria-describedby={nameHelperId}
+              {...register("name")}
+            />
+          </Field>
+          <p id={nameHelperId} className="text-muted-foreground">
+            Canonical id used in{" "}
+            <code className="typography-code">bl</code> commands and{" "}
+            <code className="typography-code">spec.policies[]</code>.
+            Auto-derived; editable.
+          </p>
+        </div>
       </FieldRow>
       {slug ? (
         <p className="typography-caption text-meta-foreground">
