@@ -9,6 +9,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Info } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import {
   Select,
@@ -19,6 +20,16 @@ import {
 } from "@repo/ui/components/select";
 import { SearchInput } from "@repo/ui/components/search-input";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@repo/ui/components/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@repo/ui/components/tooltip";
+import {
   tableBodyClass,
   tableCellVariants,
   tableClass,
@@ -26,22 +37,20 @@ import {
   tableRowVariants,
   tableHeadVariants,
 } from "@repo/ui/components/table";
-import type { Policy, PolicyResourceType, PolicyType } from "@/lib/mock/policies";
+import type { Policy, PolicyType } from "@/lib/mock/policies";
+import { totalUsage } from "@/lib/mock/policies";
 import {
-  joinResourceTypes,
-  policyTypeLabel,
-  totalUsage,
-} from "@/lib/mock/policies";
-
-const DATE_FMT = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-});
+  appliesToLabel,
+  attachedResourcesLabel,
+  fullTimestamp,
+  relativeUpdated,
+  ruleSummary,
+} from "./policies-row-helpers";
 
 const SORT_OPTIONS = [
   { value: "updated", label: "Updated" },
   { value: "name", label: "Name" },
-  { value: "usage", label: "Usage" },
+  { value: "usage", label: "Attached" },
 ] as const;
 type SortKey = (typeof SORT_OPTIONS)[number]["value"];
 
@@ -50,18 +59,6 @@ const TYPE_OPTIONS: ReadonlyArray<{ value: PolicyType | "all"; label: string }> 
   { value: "location", label: "Location" },
   { value: "maxToken", label: "Token usage" },
   { value: "flavor", label: "Flavor" },
-];
-
-const TARGET_OPTIONS: ReadonlyArray<{
-  value: PolicyResourceType | "all";
-  label: string;
-}> = [
-  { value: "all", label: "All targets" },
-  { value: "agent", label: "Agents" },
-  { value: "model", label: "Model APIs" },
-  { value: "function", label: "MCP Servers" },
-  { value: "sandbox", label: "Sandboxes" },
-  { value: "application", label: "Applications" },
 ];
 
 const columnHelper = createColumnHelper<Policy>();
@@ -74,7 +71,6 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
   const params = useParams<{ workspaceSlugOrId: string }>();
   const workspaceSlug = params.workspaceSlugOrId;
   const [typeFilter, setTypeFilter] = useState<PolicyType | "all">("all");
-  const [targetFilter, setTargetFilter] = useState<PolicyResourceType | "all">("all");
   const [sortKey, setSortKey] = useState<SortKey>("updated");
   const [search, setSearch] = useState("");
 
@@ -82,14 +78,8 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
     const normalized = search.trim().toLowerCase();
     const filtered = policies.filter((policy) => {
       if (typeFilter !== "all" && policy.spec.type !== typeFilter) return false;
-      if (
-        targetFilter !== "all" &&
-        !policy.spec.resourceTypes.includes(targetFilter)
-      ) {
-        return false;
-      }
       if (normalized) {
-        const haystack = `${policy.metadata.displayName} ${policy.metadata.name}`.toLowerCase();
+        const haystack = `${policy.metadata.displayName} ${policy.metadata.name} ${ruleSummary(policy)}`.toLowerCase();
         if (!haystack.includes(normalized)) return false;
       }
       return true;
@@ -102,20 +92,19 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
       if (sortKey === "usage") {
         return totalUsage(b.usage) - totalUsage(a.usage);
       }
-      // updated, descending
       return (
         new Date(b.metadata.updatedAt).getTime() -
         new Date(a.metadata.updatedAt).getTime()
       );
     });
     return sorted;
-  }, [policies, typeFilter, targetFilter, sortKey, search]);
+  }, [policies, typeFilter, sortKey, search]);
 
   const columns = useMemo(() => {
     return [
       columnHelper.accessor((row) => row.metadata.displayName, {
-        id: "name",
-        header: "Name",
+        id: "policy",
+        header: "Policy",
         cell: (info) => {
           const policy = info.row.original;
           return (
@@ -133,54 +122,65 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
           );
         },
       }),
-      columnHelper.accessor((row) => row.spec.type, {
-        id: "type",
-        header: "Type",
-        cell: (info) => {
-          const type = info.getValue() as PolicyType;
-          return (
-            <span className="inline-flex items-center gap-2">
-              <span className="typography-body text-foreground">
-                {policyTypeLabel(type)}
-              </span>
-              {type === "flavor" && (
-                <span className="typography-meta text-muted-foreground">
-                  [coming soon]
-                </span>
-              )}
-            </span>
-          );
-        },
+      columnHelper.display({
+        id: "rule",
+        header: "Rule",
+        cell: (info) => (
+          <span className="typography-body text-foreground">
+            {ruleSummary(info.row.original)}
+          </span>
+        ),
       }),
       columnHelper.accessor((row) => row.spec.resourceTypes, {
-        id: "targets",
-        header: "Targets",
+        id: "appliesTo",
+        header: "Applies to",
         cell: (info) => (
-          <span className="text-muted-foreground">
-            {joinResourceTypes(info.getValue())}
+          <span className="typography-body text-muted-foreground">
+            {appliesToLabel(info.getValue())}
           </span>
         ),
       }),
       columnHelper.accessor((row) => row.usage, {
-        id: "usage",
-        header: "Usage",
+        id: "attached",
+        header: "Attached resources",
         cell: (info) => {
-          const policy = info.row.original;
-          return <PolicyUsageCell policy={policy} />;
+          const summary = attachedResourcesLabel(info.getValue());
+          if (summary.unused) {
+            return (
+              <span
+                className="typography-body text-muted-foreground"
+                title="No workloads reference this policy — safe to delete."
+              >
+                {summary.label}
+              </span>
+            );
+          }
+          return (
+            <span className="typography-body text-foreground">
+              {summary.label}
+            </span>
+          );
         },
       }),
       columnHelper.accessor((row) => row.metadata.updatedAt, {
         id: "updated",
         header: "Updated",
-        cell: (info) => (
-          <time
-            dateTime={info.getValue() as string}
-            title={new Date(info.getValue() as string).toUTCString()}
-            className="font-mono typography-meta text-muted-foreground"
-          >
-            {DATE_FMT.format(new Date(info.getValue() as string))}
-          </time>
-        ),
+        cell: (info) => {
+          const iso = info.getValue() as string;
+          return (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <time
+                  dateTime={iso}
+                  className="typography-body text-muted-foreground"
+                >
+                  {relativeUpdated(iso)}
+                </time>
+              </TooltipTrigger>
+              <TooltipContent>{fullTimestamp(iso)}</TooltipContent>
+            </Tooltip>
+          );
+        },
       }),
     ];
   }, [workspaceSlug]);
@@ -217,23 +217,6 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
             ))}
           </SelectContent>
         </Select>
-        <Select
-          value={targetFilter}
-          onValueChange={(value) =>
-            setTargetFilter(value as PolicyResourceType | "all")
-          }
-        >
-          <SelectTrigger className="w-44" aria-label="Filter by target">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {TARGET_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
           <SelectTrigger className="w-40" aria-label="Sort by">
             <SelectValue />
@@ -246,6 +229,9 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
             ))}
           </SelectContent>
         </Select>
+        <div className="ml-auto">
+          <EvaluationRulesHelp />
+        </div>
       </div>
 
       <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
@@ -254,7 +240,7 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className={cn(tableHeadVariants())}>
+                  <th key={header.id} className={cn(tableHeadVariants({ density: "compact" }))}>
                     {!header.isPlaceholder &&
                       flexRender(header.column.columnDef.header, header.getContext())}
                   </th>
@@ -274,9 +260,9 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className={cn(tableRowVariants())}>
+                <tr key={row.id} className={cn(tableRowVariants({ density: "compact" }))}>
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className={cn(tableCellVariants())}>
+                    <td key={cell.id} className={cn(tableCellVariants({ density: "compact" }))}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -288,39 +274,60 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
       </div>
 
       <p className="typography-caption text-muted-foreground">
-        {rows.length} {rows.length === 1 ? "policy" : "policies"} ·{" "}
-        Combination rule: UNION within type (OR) · INTERSECTION across types (AND)
+        {rows.length} {rows.length === 1 ? "policy" : "policies"}
       </p>
     </div>
   );
 }
 
-// Per-kind usage breakdown rendered as a joined list of non-zero counts.
-// Zero across all kinds renders in amber-muted to satisfy
-// "failure outranks success" — a policy enforcing nothing is the
-// Sam-audit concern and the Alex-cleanup trigger (Scenario 5).
-function PolicyUsageCell({ policy }: { policy: Policy }) {
-  const { usage } = policy;
-  const total = totalUsage(usage);
-  if (total === 0) {
-    return (
-      <span
-        className="font-mono typography-meta tabular-nums text-state-warning-text"
-        title="No workloads reference this policy — safe to delete."
-      >
-        0
-      </span>
-    );
-  }
-  const parts: string[] = [];
-  if (usage.agents > 0) parts.push(`${usage.agents} Agents`);
-  if (usage.models > 0) parts.push(`${usage.models} Model APIs`);
-  if (usage.functions > 0) parts.push(`${usage.functions} MCP Servers`);
-  if (usage.sandboxes > 0) parts.push(`${usage.sandboxes} Sandboxes`);
-  if (usage.jobs > 0) parts.push(`${usage.jobs} Jobs`);
+function EvaluationRulesHelp() {
   return (
-    <span className="font-mono typography-meta tabular-nums text-foreground">
-      {parts.join(" · ")}
-    </span>
+    <Popover>
+      <PopoverTrigger
+        className={cn(
+          "inline-flex items-center gap-1 rounded-md px-1.5 py-1",
+          "typography-caption text-muted-foreground hover:text-foreground",
+          "transition-colors",
+        )}
+        aria-label="Evaluation rules"
+      >
+        <Info aria-hidden="true" className="size-3.5" />
+        Evaluation rules
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        sideOffset={8}
+        className="max-w-sm"
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <span className="typography-label font-medium text-foreground">
+              How policies combine
+            </span>
+            <p className="typography-body text-muted-foreground">
+              When more than one policy applies to a workload, Blaxel combines
+              them by type before deciding whether the workload can run.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="typography-label font-medium text-foreground">
+              Within a type — UNION (OR)
+            </span>
+            <p className="typography-body text-muted-foreground">
+              Two Location policies allow any region named by either policy.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="typography-label font-medium text-foreground">
+              Across types — INTERSECTION (AND)
+            </span>
+            <p className="typography-body text-muted-foreground">
+              A Location and a Token usage policy both must pass for the
+              workload to run.
+            </p>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -79,6 +79,13 @@ function PoliciesViewUnlocked({
       );
   }
 
+  // PARALLEL-WORK MARKER (policies-list-inventory, 2026-06-22):
+  // The list page intro copy should read:
+  //   "Control where workloads run, which hardware they use, and token limits
+  //    for governed deployments."
+  // The description is hardcoded inside `policies-page-header.tsx`, which a
+  // parallel engineer is currently modifying. Wire a `description` prop on
+  // that shared component and pass the string above from this consumer.
   return (
     <div className="page-shell">
       <PoliciesPageHeader createHref={createHref} />
