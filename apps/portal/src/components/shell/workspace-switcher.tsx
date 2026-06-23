@@ -55,11 +55,12 @@ export default function WorkspaceSwitcher({
       <DropdownMenuTrigger
         aria-label={triggerAriaLabel}
         className={cn(
-          "flex min-w-0 max-w-full items-center rounded-md border typography-label font-medium text-foreground",
-          "hover:bg-secondary-surface focus-visible:shadow-focus-ring",
+          "flex h-8 min-w-0 max-w-full items-center rounded-md border border-transparent typography-label font-medium text-foreground",
+          "transition-colors duration-fast ease-out-standard",
+          "hover:bg-secondary-surface hover:border-border focus-visible:shadow-focus-ring",
           isRail
-            ? "border-transparent p-1"
-            : "w-full gap-1.5 border-border px-2 py-1 max-md:gap-1 max-md:px-1.5 max-md:py-0.5",
+            ? "size-8 p-0 justify-center"
+            : "w-full gap-1.5 px-2 max-md:gap-1 max-md:px-1.5",
         )}
       >
         <Boxes aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />
@@ -73,7 +74,7 @@ export default function WorkspaceSwitcher({
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
-        <DropdownMenuLabel>Switch workspace</DropdownMenuLabel>
+        <DropdownMenuLabel className="font-mono uppercase tracking-[0.16em]">Switch workspace</DropdownMenuLabel>
         {workspaces.map((ws) => {
           const isCurrent = ws.id === currentOrg.id;
           return (
