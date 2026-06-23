@@ -6,6 +6,7 @@ import {
   CreditCard,
   KeyboardIcon,
   LogOutIcon,
+  Palette,
   User,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
@@ -103,13 +104,18 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
 
         <DropdownMenuSeparator />
 
-        <div
-          className="flex items-center justify-between pl-2 pr-0 py-1.5"
-          onPointerDown={(e) => e.stopPropagation()}
+        <DropdownMenuItem
+          asChild
+          onSelect={(e) => e.preventDefault()}
         >
-          <span className="text-foreground">Appearance</span>
-          <ThemeSwitcher />
-        </div>
+          <div className="flex items-center justify-between gap-2 pl-2 pr-0 py-1.5">
+            <div className="flex items-center gap-2">
+              <Palette aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+              <span className="text-foreground">Appearance</span>
+            </div>
+            <ThemeSwitcher />
+          </div>
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
