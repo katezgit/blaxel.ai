@@ -192,7 +192,7 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
   });
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4">
+    <div className="flex min-h-0 max-h-full flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3 shrink-0">
         <div className="w-full sm:max-w-xs">
           <SearchInput
@@ -237,14 +237,27 @@ export function PoliciesTable({ policies }: PoliciesTableProps) {
       {/* Scroll container — owns the only overflow boundary so the sticky
         * column header (declared on tableHeadVariants) stays pinned to the
         * top of this region while the body scrolls. The page chrome above
-        * (filter row) and below (count line) sit outside this container. */}
-      <div className="relative w-full min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
+        * (filter row) and below (count line) sit outside this container.
+        *
+        * Sizing: no `flex-1`. The container takes its content height by
+        * default — with 4 rows the card border stops right under row 4,
+        * no empty stretched whitespace. When content exceeds the parent
+        * cap (root `max-h-full`), `min-h-0 + overflow-auto` activates and
+        * the body scrolls while sticky `<th>`s stay pinned. */}
+      <div className="relative w-full min-h-0 overflow-auto rounded-md border border-border bg-card">
         <table className={tableClass}>
           <thead className={tableHeaderClass}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className={cn(tableHeadVariants({ density: "compact" }))}>
+                  // bg-field-rest is duplicated from the shared tableHeaderClass
+                  // on <thead> because position:sticky lifts the <th> out of
+                  // the thead's painted box — without an opaque bg on the cell
+                  // itself, scrolled rows show through the pinned header.
+                  <th
+                    key={header.id}
+                    className={cn(tableHeadVariants({ density: "compact" }), "bg-field-rest")}
+                  >
                     {!header.isPlaceholder &&
                       flexRender(header.column.columnDef.header, header.getContext())}
                   </th>

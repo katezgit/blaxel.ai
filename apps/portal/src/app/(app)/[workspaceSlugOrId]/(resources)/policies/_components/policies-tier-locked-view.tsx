@@ -60,12 +60,12 @@ export function PoliciesTierLockedView() {
           </h3>
           <ul className="flex flex-col gap-4">
             {CAPABILITIES.map(({ icon: Icon, title, description }) => (
-              <li key={title} className="flex items-start gap-2">
+              <li key={title} className="flex items-start gap-3">
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground"
                 >
-                  <Icon className="size-3" />
+                  <Icon className="size-4" />
                 </span>
                 <div className="flex flex-col gap-1">
                   <p className="typography-body font-semibold text-foreground">
@@ -81,21 +81,21 @@ export function PoliciesTierLockedView() {
         </Card>
 
         <Card className="flex flex-col gap-4 p-6 lg:col-span-1">
-          <span
-            aria-hidden="true"
-            className="flex size-8 items-center justify-center rounded-md bg-muted-surface text-muted-foreground"
-          >
-            <CreditCard className="size-4" />
-          </span>
-          <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground"
+            >
+              <CreditCard className="size-4" />
+            </span>
             <h3 className="typography-subtitle font-semibold text-foreground">
               Ready to ship?
             </h3>
-            <p className="typography-body text-muted-foreground">
-              Upgrade to Tier 1 to start creating Policies and binding them to
-              your workloads.
-            </p>
           </div>
+          <p className="typography-body text-muted-foreground">
+            Upgrade to Tier 1 to start creating Policies and binding them to
+            your workloads.
+          </p>
           <UpgradeTierDialog
             trigger={
               <Button variant="primary" className="self-start">

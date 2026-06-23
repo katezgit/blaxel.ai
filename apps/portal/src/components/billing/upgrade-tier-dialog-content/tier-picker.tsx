@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CircleDollarSign } from "lucide-react";
+import { CircleDollarSign } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import { Badge } from "@repo/ui/components/badge";
 import {
@@ -30,7 +30,7 @@ export function TierPicker({
     <div
       role="radiogroup"
       aria-label="Target quota tier"
-      className="flex flex-col gap-2"
+      className="flex flex-col gap-1.5"
     >
       {SELECTABLE_TIERS.map((tier) => {
         const tierKey = String(tier) as `${SelectableTier}`;
@@ -47,23 +47,16 @@ export function TierPicker({
             aria-checked={selected}
             onClick={() => onChange(tierKey)}
             className={cn(
-              "group flex items-center justify-between gap-4 rounded-md border px-4 py-3 text-left",
+              "group flex items-center justify-between gap-4 rounded-md border px-4 py-2.5 text-left",
               "transition-colors prop-(--motion-state-change)",
               "focus-visible:outline-none focus-visible:shadow-focus-ring",
               selected
-                ? "border-primary-border bg-primary-soft"
+                ? "border-primary-border bg-primary-glow"
                 : "border-border bg-card hover:bg-hover-surface",
             )}
           >
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="flex items-center gap-2">
-                <Check
-                  aria-hidden="true"
-                  className={cn(
-                    "size-4 shrink-0 text-primary",
-                    selected ? "opacity-100" : "opacity-0",
-                  )}
-                />
                 <span className="font-mono typography-body font-medium text-foreground">
                   Tier {tier}
                 </span>

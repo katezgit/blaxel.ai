@@ -55,11 +55,11 @@ export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentPr
 
   return (
     <>
-      {/* gap-6 + pb-4: header chrome owns rhythm between the title-unit and
-          the mode toggle (24px), then pb-4 + body pt-2 yields the 24px
-          segmented→stepper section gap. Title↔description stays 4px via the
-          inner gap-1 wrapper. */}
-      <DialogHeader className="gap-6 pb-4">
+      {/* gap-4 + pb-2: tightened header chrome to give the dialog breathing
+          room — title-unit → mode toggle = 16px; pb-2 + body pt-2 yields a
+          16px segmented→stepper section gap. Title↔description stays 4px via
+          the inner gap-1 wrapper. */}
+      <DialogHeader className="gap-4 pb-2">
         <div className="flex flex-col gap-1">
           <DialogTitle>Top up your account</DialogTitle>
           <DialogDescription>
@@ -70,7 +70,7 @@ export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentPr
               href={QUOTAS_DOC_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-primary hover:underline"
+              className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground hover:underline"
             >
               Learn more
               <ExternalLink aria-hidden="true" className="size-3.5" />
@@ -92,7 +92,11 @@ export function UpgradeTierDialogContent({ onClose }: UpgradeTierDialogContentPr
           </SegmentedControl.Item>
         </SegmentedControl>
       </DialogHeader>
-      <DialogBody>
+      {/* className flex-col makes DialogBody's inner scroll container a flex
+          column so the flow form's flex-1 min-h-0 resolves against it — the
+          tier list / balance protection ScrollAreas then bound themselves and
+          the action row stays pinned at the dialog bottom. */}
+      <DialogBody className="flex flex-col">
         {mode === "one-time" ? (
           <OneTimeTopUpFlow
             key="one-time"

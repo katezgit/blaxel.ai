@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/button";
+import { ScrollArea } from "@repo/ui/components/scroll-area";
 import { Stepper, type StepperStep } from "@repo/ui/components/stepper";
 import { type DisplayTier } from "@/lib/mock/billing-tiers";
 import { AboutTierPanel } from "./about-tier-panel";
@@ -59,13 +60,19 @@ export function OneTimeTopUpFlow({
   });
 
   return (
-    // gap-8: Stepper (chrome) → step body (region) at 32px per spacing canon.
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-8">
+    // flex-1 min-h-0: form fills DialogBody (its inner is a flex column —
+    // configured at the index.tsx callsite) so the internal ScrollArea can be
+    // bounded — keeps the action row visible at the dialog bottom.
+    <form
+      onSubmit={onSubmit}
+      noValidate
+      className="flex min-h-0 flex-1 flex-col gap-4"
+    >
       <Stepper steps={STEPS} currentStep={step} />
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
         {step === 1 ? (
-          <div className="flex flex-col gap-6">
+          <div className="flex min-h-0 flex-col gap-4">
             <div className="flex flex-col gap-1">
               <h3 className="typography-subtitle font-semibold text-foreground">
                 Step 1: Choose the top-up for your target tier
@@ -76,31 +83,20 @@ export function OneTimeTopUpFlow({
               </p>
             </div>
 
-            <TierPicker
-              value={values.selectedTier}
-              onChange={(next) =>
-                setValue("selectedTier", next, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-              }
-            />
-
-            <div className="flex items-center justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={onCancel}>
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => setStep(2)}
-              >
-                Continue
-              </Button>
-            </div>
+            <ScrollArea className="-mr-3 flex-1 pr-3">
+              <TierPicker
+                value={values.selectedTier}
+                onChange={(next) =>
+                  setValue("selectedTier", next, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+              />
+            </ScrollArea>
           </div>
         ) : (
-          <div className="flex flex-col gap-6">
+          <div className="flex min-h-0 flex-col gap-4">
             <div className="flex flex-col gap-1">
               <h3 className="typography-subtitle font-semibold text-foreground">
                 Step 2: Configure balance protection
@@ -111,32 +107,59 @@ export function OneTimeTopUpFlow({
               </p>
             </div>
 
-            <BalanceProtectionCard
-              register={register}
-              setValue={setValue}
-              errors={errors}
-              autoTopUpEnabled={values.autoTopUpEnabled}
-              monthlyLimitEnabled={values.monthlyLimitEnabled}
-            />
-
-            <div className="flex items-center justify-end gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setStep(1)}
-                disabled={isSubmitting}
-              >
-                Previous
-              </Button>
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {isSubmitting ? "Processing…" : "Checkout"}
-              </Button>
-            </div>
+            <ScrollArea className="-mr-3 flex-1 pr-3">
+              <BalanceProtectionCard
+                register={register}
+                setValue={setValue}
+                errors={errors}
+                autoTopUpEnabled={values.autoTopUpEnabled}
+                monthlyLimitEnabled={values.monthlyLimitEnabled}
+              />
+            </ScrollArea>
           </div>
         )}
 
         <AboutTierPanel targetTier={targetTier} currentTier={currentTier} />
       </div>
+
+      {step === 1 ? (
+        <div className="flex shrink-0 items-center justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => setStep(2)}
+          >
+            Continue
+          </Button>
+        </div>
+      ) : (
+        <div className="flex shrink-0 items-center justify-between gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setStep(1)}
+            disabled={isSubmitting}
+          >
+            Previous
+          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting}>
+              {isSubmitting ? "Processing…" : "Checkout"}
+            </Button>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

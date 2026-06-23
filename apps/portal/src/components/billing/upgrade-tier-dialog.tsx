@@ -30,7 +30,7 @@ export function UpgradeTierDialog({ trigger }: UpgradeTierDialogProps) {
         // beyond the DS default 80vh keeps the stepper + form + footer from
         // crowding on shorter laptops.
         size="lg"
-        className="max-h-[90vh] max-w-[860px]"
+        className="max-h-[85vh] max-w-[860px]"
       >
         <UpgradeTierDialogContent onClose={() => setOpen(false)} />
       </DialogContent>
