@@ -114,7 +114,7 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                 <span className="typography-body text-foreground underline-offset-4 group-hover/policy-row:underline">
                   {policy.metadata.displayName}
                 </span>
-                <span className="font-mono typography-meta text-muted-foreground">
+                <span className="typography-code text-muted-foreground">
                   {policy.metadata.name}
                 </span>
               </div>

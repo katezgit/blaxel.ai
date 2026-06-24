@@ -23,8 +23,7 @@ interface IntegrationsTableProps<TData> {
 // breathing room. `sticky top-0` on thead pins headers to *this* scroll
 // container — it's the nearest scrolling ancestor.
 //
-// Catalog archetype: row body has no hover affordance — only the inline
-// Connect/Manage button is interactive. Row click is not wired.
+// Catalog archetype (row-interaction.md §A): no row click — Connect/Manage button is the sole affordance.
 //
 // `bg-field-rest` repeats on the `<th>` cells (not just the `<thead>`) because
 // HTML spec: `position: sticky` on a `<thead>` is a no-op — only the cells

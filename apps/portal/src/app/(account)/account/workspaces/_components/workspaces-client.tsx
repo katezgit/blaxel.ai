@@ -296,7 +296,7 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
         className="flex min-w-0 items-center gap-1"
         onClick={(event) => event.stopPropagation()}
       >
-        <span className="truncate font-mono typography-caption text-meta-foreground">
+        <span className="truncate typography-code text-meta-foreground">
           {workspace.workspaceId}
         </span>
         <CopyButton

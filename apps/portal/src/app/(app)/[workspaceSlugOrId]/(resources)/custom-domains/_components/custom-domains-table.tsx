@@ -215,7 +215,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
           <div className="flex items-start gap-1.5">
             <Link
               href={href}
-              className="flex flex-col gap-0.5 rounded-sm font-mono typography-label"
+              className="flex flex-col gap-0.5 rounded-sm font-mono"
             >
               <span className="text-foreground underline-offset-4 group-hover:underline">
                 {metadata.name}
@@ -234,7 +234,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
           </div>
           <LabelChips labels={metadata.labels} />
         </td>
-        <td className={cn(tableCellVariants(), "typography-label text-muted-foreground")}>
+        <td className={cn(tableCellVariants(), "text-muted-foreground")}>
           <span className="inline-flex items-center gap-1.5">
             <span aria-hidden="true" className="text-base leading-none">{region.flag}</span>
             <span className="text-foreground">{region.label}</span>
@@ -246,7 +246,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
         <td className={tableCellVariants()}>
           <DomainStatusBadge status={spec.status} />
         </td>
-        <td className={cn(tableCellVariants(), "typography-label text-muted-foreground")}>
+        <td className={cn(tableCellVariants(), "text-muted-foreground")}>
           {formatRelative(spec.lastVerifiedAt)}
         </td>
       </tr>
