@@ -69,6 +69,8 @@ Rules governing the interaction protocol between Operator and model — how sign
 
 **Hard stop: before any edit (main thread) or sub-agent dispatch that touches `apps/**`, `packages/**`, or tracked code, read [`.claude/workflows/worktree-protocol.md`](.claude/workflows/worktree-protocol.md) and apply the topic state machine there.** It is the single source of truth for: when to spawn a worktree, solo vs chain coordination, portal port handling (Next.js auto-retries — zero per-worktree config), return + merge protocol, cleanup, and cross-session prune. State the spawn decision in one line before acting. Operator weak-verb authorization ("go", "yes", "ship it") applies to the most recent proposed worktree/branch decision the same way it applies to commit/push. **Design-phase work (docs + `.intermediate/`) runs on `main` — no worktree spawn.**
 
+**Hard stop: before any `gh pr create` or direct merge that ships code, read [`.claude/workflows/pr-self-review.md`](.claude/workflows/pr-self-review.md) and run the loop until clean.** Lint + types + browser pass + adversarial re-read are non-negotiable, regardless of how small the diff looks. One-pass-and-PR is the failure mode the loop exists to prevent.
+
 | Path / scope                                                                                      | Agent                     |
 | ------------------------------------------------------------------------------------------------- | ------------------------- |
 | `apps/{web,doc,…}/**` (Next.js/React app work, anything under `apps/`)                            | `staff-frontend-engineer` |
@@ -123,3 +125,4 @@ Full rules live in the engineer agent files. The main thread's job is to reject 
 * Cross-screen consistency audit (operator-triggered, not a phase): [`.claude/workflows/cross-screen-audit.md`](.claude/workflows/cross-screen-audit.md)
 * Visual QA screenshot capture (entry to `design-qa`): [`.claude/workflows/visual-qa.md`](.claude/workflows/visual-qa.md)
 * Pre-PR consolidation (fold session artifacts into canonical docs before opening a PR): [`.claude/workflows/pre-pr-consolidation.md`](.claude/workflows/pre-pr-consolidation.md)
+* PR self-review (engineering loop: lint + types + browser + adversarial re-read, repeated until clean — required before every `gh pr create` or direct merge): [`.claude/workflows/pr-self-review.md`](.claude/workflows/pr-self-review.md)
