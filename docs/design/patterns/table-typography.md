@@ -7,7 +7,7 @@ Three-tier reading hierarchy for all portal tables. Every cell, sub-line, badge,
 | Token | Size | Line height | Variant |
 |---|---|---|---|
 | `typography-body` (inherited) | 14px / 0.875rem | 1.375 | default prose |
-| `typography-caption` | 12px / 0.75rem | 1.0 | metadata, headers |
+| `typography-caption` | 12px / 0.75rem | 1.0 | metadata |
 | `typography-code` | 12px / 0.75rem | — | monospace, tabular figures |
 
 ---
@@ -27,9 +27,23 @@ Three-tier reading hierarchy for all portal tables. Every cell, sub-line, badge,
 
 ---
 
+## Column headers — 14px (typography-body, inherited)
+
+**What:** Table column label row.
+
+**Applies to:** every `<th>` / column header cell in portal tables.
+
+**How to apply:** `font-medium text-meta-foreground`. No size class — headers inherit 14px from the body element alongside cell content.
+
+At 14px with medium weight and meta color, column headers carry visual mass that defines column edges in dense tables. Operators rely on column boundaries to scan across rows quickly; the header is the anchor for each column's identity. Stepping headers down to a smaller size weakens that anchor. The distinction from body-weight cell content comes entirely from `font-medium` + `text-meta-foreground`, which is sufficient — size parity with cells is intentional.
+
+**Counter-pattern:** applying `typography-caption` (12px) to column headers. Smaller headers compete with sub-line metadata and erode the column edge. The header loses its anchoring function.
+
+---
+
 ## Tier 2 — 12px (typography-caption)
 
-Used for two distinct roles: sub-line metadata and column headers. Apply differently for each.
+Used for sub-line metadata that supports the primary identifier in two-line cells.
 
 ### Sub-line metadata
 
@@ -47,20 +61,6 @@ Used for two distinct roles: sub-line metadata and column headers. Apply differe
 **Counter-pattern:** rendering sub-line metadata at 14px. It competes visually with the primary identifier and erases the reading hierarchy. Both lines read as equally important; the operator's eye has no anchor.
 
 For identifier slugs and hashes that need monospace rendering, use Tier 3 (typography-code) instead of typography-caption, while keeping `text-muted-foreground`.
-
-### Column headers
-
-**What:** Table column label row.
-
-**Applies to:** every `<th>` / column header cell in portal tables.
-
-**How to apply:** `typography-caption font-medium text-meta-foreground`.
-
-Column headers are utility chrome — they label the column, then recede. They must not compete with cell content for visual weight. 12px with medium weight achieves legibility without dominance.
-
-**Note:** The DS Table primitive is being updated to apply this standard by default. Until that lands, apply the three classes explicitly on `<th>` elements. After the DS update, no explicit class will be needed.
-
-**Counter-pattern:** 14px column headers (shadcn data-table default). shadcn is a starter kit, not a developer-tools-grade shell. At 14px, headers and cell content are the same size — the operator cannot scan headers as chrome; they read as content. Stripe, Cloudflare, Linear, and Vercel all ship 12px column headers.
 
 ---
 
@@ -88,16 +88,16 @@ Tabular figures are included in `typography-code` — character widths align acr
 | Role | Token | Color class |
 |---|---|---|
 | Primary cell content | inherited (typography-body) | inherited |
+| Column headers | inherited (typography-body) + font-medium | text-meta-foreground |
 | Sub-line metadata (prose) | typography-caption | text-muted-foreground |
 | Sub-line identifier / hash | typography-code | text-muted-foreground |
 | Tag pills, badges | typography-caption | varies by badge type |
-| Column headers | typography-caption + font-medium | text-meta-foreground |
 
 ---
 
 ## Industry framing
 
-14px / 12px cell hierarchy is universal across developer-tools dashboards: Stripe, Linear, Vercel, GitHub, Notion, and Cloudflare all apply it. 12px column headers specifically align with Stripe, Cloudflare, Linear, and Vercel. The only common exception is shadcn's data-table starter (14px headers), which is designed for rapid prototyping, not production density.
+14px / 12px cell hierarchy is universal across developer-tools dashboards: Stripe, Linear, Vercel, GitHub, Notion, and Cloudflare all apply it. The only common exception is shadcn's data-table starter, which is designed for rapid prototyping, not production density.
 
 ---
 
