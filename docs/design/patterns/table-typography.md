@@ -54,7 +54,6 @@ Used for sub-line metadata that supports the primary identifier in two-line cell
 **How to apply:** `typography-caption text-muted-foreground` on the sub-line element.
 
 **Portal examples:**
-- Workspaces table: workspace code `SDV3KQ` beneath `astra-eval`
 - Custom Domains table: description `Customer-facing demo previews` beneath `agents.acme.com`
 - Custom Domains table: tag pills `env:prod`, `team:platform`
 

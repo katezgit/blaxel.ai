@@ -34,6 +34,16 @@ Canonical pattern for how rows in portal tables behave on hover and click. Every
 - No trailing `→` arrow column.
 - Per-row kebab `...` only when a fast action exists that is NOT "open detail" (e.g. Disable, Delete, Duplicate). If the only meaningful action is "open the entity," omit the kebab; row click does the work.
 
+### Pending detail route
+
+Nine surfaces listed under Archetype B do not yet have a detail route (`[name]/page.tsx` does not exist for these resources). Until the route ships, those surfaces render rows without whole-row click and without identifier underline:
+
+**Deferred (no detail route):** Sandboxes, Volumes, Agent Drive, Images, Agents, Jobs, MCP Servers, API Keys, Service Accounts.
+
+**Live today (full Archetype B affordance):** Custom Domains, Policies, Model APIs, Workspaces (account sub-shell).
+
+The rule is unconditional: once a detail route ships for a deferred surface, that surface immediately adopts the full Archetype B affordance set — whole-row click plus identifier underline. No per-surface exception, no additional design vote required.
+
 **Why underline, not color-shift:** underline is the universal link convention and does not collide with status pills, tag badges, or the orange left-rail accent already present on selected rows. Color-shift is reserved for selected/active state.
 
 **Industry observation:** this is a deliberate Blaxel-side choice. Stripe Customers uses name-only link (not whole-row click). shadcn/ui's data-table example uses kebab-only with no row navigation. Cloudflare DNS uses per-row Edit buttons. None of them make the full row clickable. Blaxel picks whole-row click for ergonomic reasons: rows are dense, operators are fast, and tapping anywhere on a wide row is faster than hunting for a link-text target. Flag this to reviewers so it is not "fixed" back to link-only.
