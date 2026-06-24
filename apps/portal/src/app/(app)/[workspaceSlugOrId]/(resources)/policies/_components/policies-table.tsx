@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   createColumnHelper,
@@ -55,7 +55,7 @@ const SORT_OPTIONS = [
 type SortKey = (typeof SORT_OPTIONS)[number]["value"];
 
 const TYPE_OPTIONS: ReadonlyArray<{ value: PolicyType | "all"; label: string }> = [
-  { value: "all", label: "All types" },
+  { value: "all", label: "All" },
   { value: "location", label: "Location" },
   { value: "maxToken", label: "Token usage" },
   { value: "flavor", label: "Flavor" },
@@ -200,6 +200,26 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // Overflow detection so the count can sit inline with the filter row when
+  // the table fits the viewport, and drop to a footer line when the table
+  // body scrolls. ResizeObserver fires on both viewport and content size
+  // changes; the +1 epsilon avoids flapping on sub-pixel fractional heights.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const check = () => setHasOverflow(el.scrollHeight > el.clientHeight + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    const inner = el.firstElementChild;
+    if (inner) ro.observe(inner);
+    return () => ro.disconnect();
+  }, [rows.length]);
+
+  const countLabel = `${rows.length} ${rows.length === 1 ? "policy" : "policies"}`;
+
   return (
     <div className="flex min-h-0 max-h-full flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3 shrink-0">
@@ -215,13 +235,13 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
           value={typeFilter}
           onValueChange={(value) => setTypeFilter(value as PolicyType | "all")}
         >
-          <SelectTrigger className="w-40" aria-label="Filter by type">
+          <SelectTrigger className="w-48" aria-label="Filter by type">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {TYPE_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                Type: {option.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -238,6 +258,14 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
             ))}
           </SelectContent>
         </Select>
+        {!hasOverflow ? (
+          <span
+            className="typography-caption text-muted-foreground"
+            aria-live="polite"
+          >
+            {countLabel}
+          </span>
+        ) : null}
         <div className="ml-auto">
           <EvaluationRulesHelp />
         </div>
@@ -253,7 +281,10 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
         * no empty stretched whitespace. When content exceeds the parent
         * cap (root `max-h-full`), `min-h-0 + overflow-auto` activates and
         * the body scrolls while sticky `<th>`s stay pinned. */}
-      <div className="relative w-full min-h-0 overflow-auto rounded-md border border-border bg-card">
+      <div
+        ref={scrollRef}
+        className="relative w-full min-h-0 overflow-auto rounded-md border border-border bg-card"
+      >
         <table className={tableClass}>
           <thead className={tableHeaderClass}>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -324,9 +355,14 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
         </table>
       </div>
 
-      <p className="typography-caption text-muted-foreground shrink-0">
-        {rows.length} {rows.length === 1 ? "policy" : "policies"}
-      </p>
+      {hasOverflow ? (
+        <p
+          className="typography-caption text-muted-foreground shrink-0"
+          aria-live="polite"
+        >
+          {countLabel}
+        </p>
+      ) : null}
     </div>
   );
 }
