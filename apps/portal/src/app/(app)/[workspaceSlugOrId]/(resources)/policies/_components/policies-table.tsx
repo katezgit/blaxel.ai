@@ -235,7 +235,7 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
           value={typeFilter}
           onValueChange={(value) => setTypeFilter(value as PolicyType | "all")}
         >
-          <SelectTrigger className="w-40" aria-label="Filter by type">
+          <SelectTrigger className="w-48" aria-label="Filter by type">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
