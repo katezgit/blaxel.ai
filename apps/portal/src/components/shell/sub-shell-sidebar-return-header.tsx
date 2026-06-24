@@ -31,9 +31,10 @@ export function SubShellSidebarReturnHeader({
       className={cn(
         // Geometry copy of SidebarNavItem: h-8, rounded-md, sits inside the
         // parent <nav>'s px-2 gutter so the hover background is a rounded
-        // pill, not a full-width band. Wrapper below adds pt-1 so the row's
-        // vertical center stays at y≈20 — see comment in sidebar.tsx where
-        // the collapse chevron's top-5 is pinned to that centerline.
+        // pill, not a full-width band. Wrapper below uses symmetric py-1 so
+        // the row's vertical center stays at y≈20 — see comment in
+        // sidebar.tsx where the collapse chevron's top-5 is pinned to that
+        // centerline.
         "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md",
         isRail ? "justify-center px-0" : "px-2",
         "typography-body text-muted-foreground outline-hidden",
@@ -56,7 +57,7 @@ export function SubShellSidebarReturnHeader({
   );
 
   return (
-    <div className="pt-1 pb-2 border-b border-sidebar-border">
+    <div className="py-1 border-b border-sidebar-border">
       {isRail ? (
         <Tooltip>
           <TooltipTrigger asChild>{link}</TooltipTrigger>
