@@ -30,7 +30,7 @@ export const POLICY_TYPE_OPTIONS: ReadonlyArray<PolicyTypeOption> = [
     label: "Token usage",
     hint: "Per-period token cap.",
     narrative:
-      "Caps token consumption for attached workloads per window — requests over the cap receive 429.",
+      "Caps token consumption for attached workloads per window — requests over the cap are rejected for the remainder of the window.",
     icon: GaugeCircle,
   },
   {
@@ -141,7 +141,7 @@ export function labelsEntriesToRecord(
 
 // Body-editor types — local component state, not part of the RHF schema.
 export interface LocationItem {
-  type: "continent" | "country";
+  type: "continent" | "country" | "location";
   name: string;
 }
 

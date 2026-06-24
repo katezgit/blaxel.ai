@@ -26,7 +26,7 @@ export type PolicyResourceType =
   | "application";
 
 export interface PolicyLocation {
-  type: "continent" | "country";
+  type: "continent" | "country" | "location";
   name: string;
 }
 
@@ -119,18 +119,17 @@ const FIXTURES: Array<Policy> = [
       name: "pol-7a3f",
       displayName: "EU-only production",
       createdAt: "2026-06-20T14:33:00Z",
-      createdBy: "kate@cubic.dev",
+      createdBy: "avery@acme.dev",
       updatedAt: "2026-06-21T09:12:00Z",
-      updatedBy: "alex@cubic.dev",
-      workspace: "cubic-prod",
+      updatedBy: "kai@acme.dev",
+      workspace: "astra-prod",
       labels: { compliance: "hipaa", env: "prod" },
     },
     spec: {
       type: "location",
       resourceTypes: ["agent", "model", "sandbox"],
       locations: [
-        { type: "continent", name: "North America" },
-        { type: "country", name: "United States" },
+        { type: "continent", name: "Europe" },
         { type: "country", name: "Germany" },
         { type: "country", name: "France" },
       ],
@@ -142,10 +141,10 @@ const FIXTURES: Array<Policy> = [
       name: "pol-2c1e",
       displayName: "GPT-4 token cap",
       createdAt: "2026-06-18T11:00:00Z",
-      createdBy: "alex@cubic.dev",
+      createdBy: "kai@acme.dev",
       updatedAt: "2026-06-18T11:00:00Z",
-      updatedBy: "alex@cubic.dev",
-      workspace: "cubic-prod",
+      updatedBy: "kai@acme.dev",
+      workspace: "astra-prod",
       labels: {},
     },
     spec: {
@@ -167,17 +166,17 @@ const FIXTURES: Array<Policy> = [
       name: "pol-9b4d",
       displayName: "Staging GPU flavor",
       createdAt: "2026-06-15T08:45:00Z",
-      createdBy: "sam@webflow.com",
+      createdBy: "mira@acme.dev",
       updatedAt: "2026-06-15T08:45:00Z",
-      updatedBy: "sam@webflow.com",
-      workspace: "cubic-prod",
+      updatedBy: "mira@acme.dev",
+      workspace: "astra-staging",
       labels: { env: "staging" },
     },
     spec: {
       type: "flavor",
       resourceTypes: ["agent"],
       flavors: [
-        { name: "t4", type: "cpu" },
+        { name: "t4", type: "gpu" },
         { name: "x86-standard", type: "cpu" },
       ],
     },
@@ -188,10 +187,10 @@ const FIXTURES: Array<Policy> = [
       name: "pol-4d2a",
       displayName: "US-only sandboxes",
       createdAt: "2026-05-02T10:15:00Z",
-      createdBy: "alex@cubic.dev",
+      createdBy: "kai@acme.dev",
       updatedAt: "2026-05-02T10:15:00Z",
-      updatedBy: "alex@cubic.dev",
-      workspace: "cubic-prod",
+      updatedBy: "kai@acme.dev",
+      workspace: "astra-prod",
       labels: { env: "prod" },
     },
     spec: {
@@ -439,4 +438,34 @@ export function totalUsage(usage: PolicyUsageCounts): number {
   return (
     usage.agents + usage.functions + usage.jobs + usage.models + usage.sandboxes
   );
+}
+
+const TOKEN_FMT = new Intl.NumberFormat("en-US");
+
+// One-line restatement of THIS policy's rule, for the detail-page subtitle.
+// Front-loads the answer to "what does this enforce" into the F-pattern hot
+// zone instead of a generic per-type description.
+export function policySummary(policy: Policy): string {
+  const spec = policy.spec;
+  if (spec.type === "location") {
+    const list = spec.locations ?? [];
+    if (list.length === 0) {
+      return "No locations configured — workloads can run anywhere.";
+    }
+    return "Workloads outside these locations are denied.";
+  }
+  if (spec.type === "flavor") {
+    const list = spec.flavors ?? [];
+    if (list.length === 0) {
+      return "No flavors configured — workloads can run on any hardware.";
+    }
+    return "Workloads on other hardware are denied.";
+  }
+  const m = spec.maxTokens;
+  if (m === undefined) return "No token caps configured.";
+  const window = m.step === 1 ? m.granularity : `${m.step} ${m.granularity}s`;
+  if (m.total > 0) return `Caps total at ${TOKEN_FMT.format(m.total)} tokens per ${window}.`;
+  if (m.input > 0) return `Caps input at ${TOKEN_FMT.format(m.input)} tokens per ${window}.`;
+  if (m.output > 0) return `Caps output at ${TOKEN_FMT.format(m.output)} tokens per ${window}.`;
+  return "No token caps configured.";
 }

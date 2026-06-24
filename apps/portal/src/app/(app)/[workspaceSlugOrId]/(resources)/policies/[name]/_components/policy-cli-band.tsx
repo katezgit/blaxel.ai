@@ -11,7 +11,7 @@ interface PolicyCliBandProps {
 
 export default function PolicyCliBand({ policy }: PolicyCliBandProps) {
   const yaml = buildYamlManifest(policy);
-  const blGetCommand = `bl policy get ${policy.metadata.name}`;
+  const blGetCommand = `bl get policy ${policy.metadata.name}`;
   const blApplyCommand = `bl apply -f - <<'EOF'\n${yaml}\nEOF`;
 
   return (
@@ -38,7 +38,6 @@ export default function PolicyCliBand({ policy }: PolicyCliBandProps) {
 
 function buildYamlManifest(policy: Policy): string {
   const lines: string[] = [
-    "apiVersion: blaxel.ai/v1alpha1",
     "kind: Policy",
     "metadata:",
     `  name: ${policy.metadata.name}`,
