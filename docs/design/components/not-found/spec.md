@@ -107,7 +107,7 @@ Job not found
 Run not found
 ```
 
-Token references: `text-title font-semibold text-foreground` (`--text-title` 18px, `--font-weight-semibold` 600, `--color-foreground`)
+Token references: `typography-subtitle font-semibold text-foreground tracking-(--typography-subtitle--letter-spacing)` (`--typography-subtitle` line-height + size pair, `--font-weight-semibold` 600, `--color-foreground`)
 
 ### 2.4 Diagnostic Line
 
@@ -203,9 +203,9 @@ All tokens are confirmed present in `packages/ui/src/styles/`. No new tokens int
 | Role | Token | Utility | Resolved value |
 |---|---|---|---|
 | Headline text | `--color-foreground` | `text-foreground` | `#1c2024` |
-| Headline size | `--text-title` | `text-title` | 18px / 24px line-height |
+| Headline size + line-height | `--typography-subtitle` | `typography-subtitle` | resolved via theme |
 | Headline weight | `--font-weight-semibold` | `font-semibold` | 600 |
-| Letter spacing | `--text-title--letter-spacing` | `tracking-(--text-title--letter-spacing)` | −0.015em |
+| Letter spacing | `--typography-subtitle--letter-spacing` | `tracking-(--typography-subtitle--letter-spacing)` | resolved via theme |
 
 ### Diagnostic
 
