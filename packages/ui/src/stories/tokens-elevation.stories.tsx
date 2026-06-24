@@ -36,7 +36,7 @@ function DashboardBehindOverlay() {
               fontSize: 10,
               fontWeight: 500,
               padding: "1px 6px",
-              borderRadius: "var(--radius-full)",
+              borderRadius: 9999,
               background: "var(--color-secondary-surface)",
               color: "var(--color-secondary-foreground)",
             }}
