@@ -466,7 +466,6 @@ type SnippetBuildContext = CodeReferencePanelProps;
 
 function buildYamlBody(ctx: SnippetBuildContext): string {
   const lines: string[] = [
-    "apiVersion: blaxel.ai/v1alpha1",
     "kind: Policy",
     "metadata:",
     `  name: ${ctx.name}`,
