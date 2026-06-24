@@ -57,7 +57,7 @@ body {
 /* Thumb colors track <ScrollArea> — keep in sync. */
 ::-webkit-scrollbar { width: var(--size-scrollbar); height: var(--size-scrollbar); }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--color-muted-foreground) 40%, transparent); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--color-muted-foreground) 40%, transparent); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-muted-foreground); }
 
 /* Firefox */
