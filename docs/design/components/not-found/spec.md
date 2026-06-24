@@ -399,6 +399,192 @@ Elements stack vertically with `gap-4` (16px) between badge, headline, diagnosti
 
 ---
 
+## 10. In-Shell Variant — Sub-Shell Section 404s
+
+**Covers:** `/profile/*`, `/account/*`, `/account/billing/*`, `/{workspaceSlugOrId}/settings/*` — URLs that fall inside an authenticated sub-shell (the shell chrome including sidebar + topbar is preserved) but resolve to a nonexistent page within that sub-shell.
+
+**Distinct from §§1–9 above** (which cover the runtime app — `/[workspaceSlugOrId]/tasksets/…`, `/[workspaceSlugOrId]/settings/…` — with a focus on the workspace runtime persona, Alex). The sub-shell surfaces in this section serve Alex (Settings), Alex/Sam (Account), and Maya (Billing). The 404 pattern is the same structural shape but the section context, headline copy, and primary CTA destination differ by sub-shell.
+
+---
+
+### 10.1 Design anchor — the Blaxel-side question
+
+*"When a developer typos a URL inside a sub-shell, what content fills the empty area that helps them recover fast without breaking the sub-nav context they were just in?"*
+
+The answer grounded in Blaxel's surface shape and persona:
+
+- The sidebar IS the navigation recovery surface. Zero authenticated app-shell peers add a contextual suggestion list to the 404 block. The suggestion list is a docs-site pattern, not an app-shell pattern. Blaxel's sidebar already enumerates every section — adding links inside the 404 block duplicates the sidebar, creates a maintenance surface, and adds navigation noise at a moment that calls for a clean halt.
+- The "raw void" problem is a content-density problem, not a positioning problem. A vertically-centered block anchored at the optical center of the content area is the universal authenticated-app-shell pattern (Linear, Stripe, Vercel project pages). Top-aligning the block was tried and rejected — the block reads as "a page that started loading and stopped" rather than "a deliberate halt." Centered + slightly denser content (a one-line supporting sentence beneath the diagnostic path) makes the block read as a complete, intentional message rather than an unfinished render.
+- Section-specific headlines are correct. "Profile page not found" names the section context from the route group — the user knows which sub-shell they are in.
+
+---
+
+### 10.2 Layout
+
+Identical shell behavior to the runtime not-found (§2.1): header and sidebar persist; the main content area renders the 404 block vertically centered.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  [App Header — persists]                                     │
+├──────────────────┬───────────────────────────────────────────┤
+│                  │                                           │
+│  [Sub-shell      │                                           │
+│   sidebar        │                                           │
+│   persists]      │       ┌──────────────────┐               │
+│                  │       │  404             │  ← badge      │
+│   Profile        │       └──────────────────┘               │
+│   ─────────      │                                           │
+│   Account        │      {Section} page not found             │
+│   ─────────      │                                           │
+│   Billing        │   /account/billing/nonexistent-xyz        │
+│   ─────────      │   This section doesn't have a page at    │
+│   Settings       │   this URL.                               │
+│                  │                                           │
+│                  │     [Go to {Section}]  [Go back]          │
+│                  │                                           │
+└──────────────────┴───────────────────────────────────────────┘
+```
+
+Layout classes: same as §2.1 — `flex items-center justify-center w-full min-h-full py-12` on the boundary container; `flex max-w-[480px] flex-col items-center gap-4 px-6 text-center` on the content block.
+
+---
+
+### 10.3 Content block
+
+**Four elements, stacked with `gap-4`, center-aligned:**
+
+1. **Badge** — `404`, monospaced, same token rendering as §2.2. Identical across all sub-shell variants.
+
+2. **Headline** — section-specific. See §10.4 copy table. Token: `typography-subtitle font-semibold text-foreground tracking-(--typography-subtitle--letter-spacing)`.
+
+3. **Diagnostic** — the bad URL path, truncated at 80 chars, mono. Same spec as §2.4 universal variant. Below the path: one short supporting sentence in prose register (not mono). This fills the block's vertical weight without adding navigation noise.
+
+   **Supporting line (static, applies to all sub-shell variants):**
+   ```
+   This section doesn't have a page at this URL.
+   ```
+
+   Token: `typography-body text-muted-foreground` — sans-serif, same size as the diagnostic, visually reads as a soft elaboration of the path line.
+
+4. **Actions** — primary button + ghost button, `flex-row gap-2`. See §10.4 for per-section CTA targets.
+
+**Rendering spec for the diagnostic + supporting line block:**
+
+```
+┌─ diagnostic block ──────────────────────────────────────────┐
+│  /account/billing/nonexistent-xyz          ← mono, muted-fg │
+│  This section doesn't have a page at       ← prose, muted-fg│
+│  this URL.                                                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+The path line and supporting line share `max-w-[440px]` and `line-clamp-2` / `line-clamp-3` respectively. They are adjacent siblings — no gap token between them (they read as one paragraph unit). The `gap-4` rhythm lives between the four top-level block elements (badge ↔ headline ↔ diagnostic-unit ↔ actions), not inside the diagnostic unit.
+
+---
+
+### 10.4 Per-section variant table
+
+| Sub-shell | Headline | Primary CTA label | Primary CTA href | Secondary |
+|---|---|---|---|---|
+| `/profile/*` | `Profile page not found` | `Go to Profile` | `/profile` | `Go back` |
+| `/account/*` | `Account page not found` | `Go to Account` | `/account` | `Go back` |
+| `/account/billing/*` | `Billing page not found` | `Go to Plan & billing` | `/account/billing` | `Go back` |
+| `/{ws}/settings/*` | `Settings page not found` | `Go to Settings` | `/{workspaceSlugOrId}/settings/general` | `Go back` |
+
+**Billing surface persona note:** `/account/billing/*` is Maya's primary surface. The 404 block uses billing-accessible copy — "Billing page not found" is clear to Maya without runtime vocabulary. No change to the pattern is needed for Maya specifically; her session mode (document retrieval) means she is even less likely than Alex to be on a 404 surface, and the "Go to Plan & billing" CTA returns her to the correct section root.
+
+**Workspace settings dynamic param:** `/{workspaceSlugOrId}/settings/*` requires reading `params.workspaceSlugOrId` from the segment context (already implemented in the current `WorkspaceSettingsNotFound` component).
+
+---
+
+### 10.5 What changes from the current draft
+
+**Primary fix — supporting line:** Add `This section doesn't have a page at this URL.` as a `<p>` element beneath the mono diagnostic path, same token as the diagnostic but sans-serif. This tightens the block's internal density and clarifies that the section exists (the sidebar confirms it); the URL alone is a sparse single-line diagnostic. The "raw void" feel was content density, not vertical positioning — adding mass to the block resolves it without changing the peer-product centering pattern.
+
+**Layout stays centered:** Vertically + horizontally centered with `max-w-[480px]`, matching the runtime not-found and authenticated app-shell peers. Top-align was tried and rejected — without page-header content above, the block read as an unfinished render rather than a deliberate halt.
+
+**What does not change:**
+- Badge (`404`, mono)
+- Headline (section-specific, already correct)
+- Diagnostic path (mono, truncated at 80 chars)
+- Primary and secondary actions (already section-specific, already correct)
+- Token set (no new tokens)
+
+**No addition of:**
+- Contextual suggestion list / "you might be looking for:" section — docs-site pattern, wrong for an authenticated app shell
+- Illustration or icon — personality doc rules these out
+- Search affordance — command palette (`Cmd+K`) is already the search surface
+
+---
+
+### 10.6 Consolidation — shared component
+
+**Position: YES — consolidate into a shared `<InShellNotFound />` component.**
+
+The four existing files (`profile/not-found.tsx`, `account/not-found.tsx`, `account/billing/not-found.tsx`, `[workspaceSlugOrId]/settings/not-found.tsx`) are identical JSX structures differing only in headline copy and primary CTA href + label. Identical structure is the correct signal that a shared component is warranted — this is a configuration difference (what section is this), not a structural difference (what does the block look like).
+
+**Proposed component signature:**
+
+```tsx
+type InShellNotFoundSection =
+  | { kind: "profile" }
+  | { kind: "account" }
+  | { kind: "billing" }
+  | { kind: "settings"; workspaceSlugOrId: string }
+
+type InShellNotFoundProps = InShellNotFoundSection
+```
+
+Each `not-found.tsx` file becomes a thin wrapper that reads the applicable params and passes them into `<InShellNotFound />`. The `settings` variant is the only one that needs a dynamic param (`workspaceSlugOrId` from `useParams()`).
+
+**Placement:** The component lives in the portal app (`apps/portal/src/components/in-shell-not-found.tsx`), not in `packages/ui`, because it:
+- Contains portal-specific routing (`useRouter`, `useParams`, Next.js `Link`)
+- Has portal-specific section vocabulary ("Plan & billing", "/account/billing", "/profile")
+- Is a single-caller pattern (four callers in the same app, not cross-app)
+
+This is consistent with the DS boundary rule in the global CLAUDE.md: business vocabulary (section names, specific hrefs) disqualifies the component from being a shared DS primitive.
+
+**The `"use client"` boundary:** The current files are all `"use client"` (required for `useRouter().back()` and `usePathname()`). The shared component preserves this — no change to the rendering model.
+
+---
+
+### 10.7 Wireframe
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  [App Header — persists]                                     │
+├──────────────┬───────────────────────────────────────────────┤
+│              │                                               │
+│  [Sub-shell  │                                               │
+│   sidebar    │           ┌──────────────────┐               │
+│   persists]  │           │  404             │  ← badge      │
+│              │           └──────────────────┘               │
+│   Profile    │                                               │
+│   ─────────  │          {Section} page not found             │
+│   Account    │                                               │
+│   ─────────  │       /account/billing/nonexistent-xyz        │
+│   Billing    │       This section doesn't have a page at    │
+│   ─────────  │       this URL.                               │
+│   Settings   │                                               │
+│              │         [Go to {Section}]  [Go back]          │
+│              │                                               │
+└──────────────┴───────────────────────────────────────────────┘
+```
+
+Gap rhythm: `gap-4` (16px) between badge, headline, diagnostic-unit (path + supporting line as one block), and action row. `gap-2` (8px) between primary and ghost button. No gap between path line and supporting line — they read as one paragraph. Content block is `items-center text-center` — badge, headline, diagnostic, actions all anchor to the optical center.
+
+---
+
+### 10.8 Anti-patterns (in-shell specific)
+
+- **Contextual suggestion list** ("You might be looking for: Account settings / Billing / Profile"): docs-site pattern, wrong for an authenticated app shell. The sidebar already provides this. Adding it duplicates nav, creates a maintenance surface (which pages go in the list?), and adds cognitive load to a surface that should be a clean halt.
+- **Section-agnostic headline** ("Page not found" for all sub-shell variants): loses the section context the user needs to orient. Section-specific headlines ("Billing page not found") are the correct peer-product pattern.
+- **Illustration or decorative icon**: personality doc rules out "Lost astronaut / ghost illustration" explicitly. Low visual weight is the correct register for a developer infra tool.
+- **Suggestion to check the URL** ("Please check the URL and try again"): anti-pattern already listed in §8 — condescending; Alex and Maya both know what a URL is.
+- **Runtime vocabulary on the billing variant** ("Sandbox page not found", "Hosting page not found"): wrong for Maya's surface — the billing sub-shell uses billing-legible copy only.
+
+---
+
 ## 9. Component Token Summary
 
 No new component-level tokens. Composes existing semantic tokens identical to the error-page:
