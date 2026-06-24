@@ -27,6 +27,39 @@ Three-tier reading hierarchy for all portal tables. Every cell, sub-line, badge,
 
 ---
 
+## Mono-role cells (typography-code)
+
+> Role ≠ size — see [`docs/conventions/typography-utility-usage.md` §Role ≠ size](../../conventions/typography-utility-usage.md) for the principle this section applies.
+
+**What:** Any table cell whose role is monospace content — regardless of whether that cell is the primary scan target or a secondary/metric column. The role drives the token, not the pixel size.
+
+**Applies to:**
+- Mono identifier as the primary cell value (slugs, runtime names, IDs rendered in mono — e.g. `eval-runner`)
+- Secondary mono identifiers (tags, refs, key previews — e.g. `sk-••••SDV3KQ`)
+- Numeric scan columns where tabular, lining figures are required (Memory, Last run, Cost, size, latency — any column the operator sweeps top-to-bottom comparing magnitudes)
+
+**How to apply:** `typography-code` on the cell or its innermost text node.
+
+- Primary identifier cell (foreground): `typography-code text-foreground`
+- Right-aligned metric cell: `text-right typography-code text-muted-foreground tabular-nums`
+- Secondary identifier: `typography-code text-muted-foreground`
+
+The DS `Table` component's `mono` variant (`tableCellVariants`) is the canonical implementation — `font-mono typography-code [font-feature-settings:'tnum'_1,'lnum'_1]`. Tables built with the DS `Table` component inherit mono-role behavior from that variant; tables built with tanstack or raw `<td>` apply `typography-code` directly in `cellClassName`.
+
+**Why not `font-mono` + inherit 14px body:** that composition treats font-family and size as independent utilities. The design system's intent for mono-role cells is the full composite: mono family + 12px + tabular figures + 0em tracking. Splitting it loses tabular figures, breaks role-not-size composition, and drifts silently when the system's mono cell size evolves.
+
+**Why not `typography-label`:** `typography-label` is the form-field and nav-label role. Applying it to table cells is off-label use that produces the wrong token semantics and silent density drift.
+
+**Pixel size:** 12px — identical to `typography-caption` (Tier 2). The parity is coincidental, not architectural. The token is chosen by role (monospace cell content), not by size. Mono cell content that resolves to 12px is NOT interchangeable with caption sub-lines; they are different roles that currently share a size.
+
+**Portal examples:**
+- Sandboxes table — Name column (mono slug `eval-runner`): `typography-code text-foreground`
+- Sandboxes table — Last active timestamp column: `text-right typography-code text-muted-foreground tabular-nums`
+- Volumes table — size column with tabular figures: `text-right typography-code text-muted-foreground tabular-nums`
+- API Keys table — key preview / Tag column: `typography-code text-muted-foreground`
+
+---
+
 ## Column headers — 14px (typography-body, inherited)
 
 **What:** Table column label row.
@@ -63,11 +96,13 @@ For identifier slugs and hashes that need monospace rendering, use Tier 3 (typog
 
 ---
 
-## Tier 3 — 12px (typography-code)
+## Tier 3 — 12px (typography-code) — monospace sub-lines only
 
-**What:** Monospace identifiers and hashes where character alignment or copy-fidelity matters.
+Tier 3 covers monospace identifiers and hashes that appear as sub-lines inside two-line cells. For monospace content that IS the primary cell value (slugs, IDs, metric columns), see [Mono-role cells](#mono-role-cells-typography-code) above.
 
-**Applies to:** standalone ID values (e.g. `pol-7a3f`, `SDV3KQ`, API key previews, job IDs) when the identifier appears alone in a cell or as the sub-line in a two-line cell.
+**What:** Monospace identifiers and hashes where character alignment or copy-fidelity matters, rendered as the sub-line beneath a primary identifier in a two-line cell.
+
+**Applies to:** standalone ID values (e.g. `pol-7a3f`, `SDV3KQ`, API key previews, job IDs) when the identifier appears as the sub-line in a two-line cell.
 
 **How to apply:** `typography-code text-muted-foreground`.
 
@@ -86,7 +121,8 @@ Tabular figures are included in `typography-code` — character widths align acr
 
 | Role | Token | Color class |
 |---|---|---|
-| Primary cell content | inherited (typography-body) | inherited |
+| Primary cell content (sans) | inherited (typography-body) | inherited |
+| Mono cell content (identifier, metric) | typography-code | foreground (primary id) / muted-foreground (secondary/metric) |
 | Column headers | inherited (typography-body) + font-medium | text-meta-foreground |
 | Sub-line metadata (prose) | typography-caption | text-muted-foreground |
 | Sub-line identifier / hash | typography-code | text-muted-foreground |
