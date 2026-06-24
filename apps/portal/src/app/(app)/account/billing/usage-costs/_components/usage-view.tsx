@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Clock,
   Container,
+  Info,
   Layers,
   Radar,
   Route,
@@ -16,6 +17,7 @@ import {
   Table as TableIcon,
   X,
 } from "lucide-react";
+import { Alert, AlertDescription } from "@repo/ui/components/alert";
 import { Card } from "@repo/ui/components/card";
 import { DateTimeRangeSelector } from "@repo/ui/components/date-time-range-selector";
 import type {
@@ -400,6 +402,14 @@ export default function UsageView() {
       </header>
 
       <div className="flex flex-col gap-4">
+        <Alert variant="info">
+          <Info aria-hidden="true" />
+          <AlertDescription>
+            Preview only — this view&apos;s design is incomplete. Controls,
+            chart behavior, and metric definitions are still being refined.
+          </AlertDescription>
+        </Alert>
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <WorkspaceChip
