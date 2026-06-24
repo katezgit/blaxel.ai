@@ -3,7 +3,6 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@repo/ui/components/toast";
-import { RouteDirectionTagger } from "@/components/shell/route-direction-tagger";
 import { getQueryClient } from "@/lib/query/get-query-client";
 import { AccountStateProvider } from "@/lib/mock/account-context";
 
@@ -19,7 +18,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
         <AccountStateProvider>
-          <RouteDirectionTagger />
           {children}
           <Toaster />
         </AccountStateProvider>

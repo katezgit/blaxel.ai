@@ -5,20 +5,16 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Zap } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Switch } from "@repo/ui/components/switch";
-import InlineGate from "@/app/(account)/account/_components/inline-gate";
+import InlineGate from "@/app/(app)/account/_components/inline-gate";
 import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 
 const schema = z.object({
-  thresholdUsd: z
-    .number({ message: "Threshold is required" })
-    .min(1, "Threshold must be at least $1")
-    .max(10000, "Threshold must be at most $10,000"),
   amountUsd: z
     .number({ message: "Amount is required" })
     .min(1, "Amount must be at least $1")
@@ -40,9 +36,6 @@ const formatUsd = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
-// Outer shell is shared across idle / enabled / editing — uniform border in every
-// state. The "On" Badge below is the sole signal that a rule is active; an enabled
-// rule is not a warning, so no left-edge stripe or primary tint.
 function RuleShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-md border border-border bg-muted-surface px-4 py-3">
@@ -54,37 +47,39 @@ function RuleShell({ children }: { children: React.ReactNode }) {
 function RuleIcon() {
   return (
     <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground">
-      <Zap className="size-4" aria-hidden="true" />
+      <Calendar className="size-4" aria-hidden="true" />
     </div>
   );
 }
 
-interface AutoTopUpRuleProps {
+interface MonthlyTopUpRuleProps {
   isExpanded: boolean;
   onRequestEdit: () => void;
   onCollapse: () => void;
 }
 
-export default function AutoTopUpRule({
+export default function MonthlyTopUpRule({
   isExpanded,
   onRequestEdit,
   onCollapse,
-}: AutoTopUpRuleProps) {
-  const { state, setAutoTopUp } = useAccountState();
-  const { enabled, thresholdUsd, amountUsd } = state.autoTopUp;
+}: MonthlyTopUpRuleProps) {
+  const { state, setMonthlyTopUp } = useAccountState();
+  const { enabled, amountUsd } = state.monthlyTopUp;
   const { brand, last4 } = state.paymentMethod;
   const hasPaymentMethod = brand !== null;
 
   if (isExpanded) {
     return (
-      <AutoTopUpEditor
+      <MonthlyTopUpEditor
         wasOn={enabled}
-        defaults={{ thresholdUsd, amountUsd }}
+        defaults={{ amountUsd }}
         hasPaymentMethod={hasPaymentMethod}
         paymentMethodLabel={hasPaymentMethod ? `${brand} ending ${last4}` : null}
         onSave={(values) => {
-          setAutoTopUp({ enabled: true, ...values });
-          toast.success(enabled ? "Auto top-up updated" : "Auto top-up enabled");
+          setMonthlyTopUp({ enabled: true, ...values });
+          toast.success(
+            enabled ? "Monthly top-up updated" : "Monthly top-up enabled",
+          );
           onCollapse();
         }}
         onCancel={onCollapse}
@@ -101,32 +96,28 @@ export default function AutoTopUpRule({
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <h4 className="typography-body font-medium text-foreground">
-                  Auto top-up
+                  Monthly top-up
                 </h4>
                 <Badge variant="success" showDot>
                   On
                 </Badge>
               </div>
               <p className="typography-caption text-muted-foreground">
-                When balance drops below{" "}
-                <span className="font-mono text-foreground">
-                  {formatUsd(thresholdUsd)}
-                </span>
-                , add{" "}
+                Adds{" "}
                 <span className="font-mono text-foreground">
                   {formatUsd(amountUsd)}
-                </span>
-                .
+                </span>{" "}
+                on the first day of each month.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Switch
               checked
-              aria-label="Disable auto top-up"
+              aria-label="Disable monthly top-up"
               onCheckedChange={() => {
-                setAutoTopUp({ enabled: false, thresholdUsd, amountUsd });
-                toast.success("Auto top-up disabled");
+                setMonthlyTopUp({ enabled: false, amountUsd });
+                toast.success("Monthly top-up disabled");
               }}
             />
             <Button variant="ghost" onClick={onRequestEdit}>
@@ -146,12 +137,12 @@ export default function AutoTopUpRule({
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <h4 className="typography-body font-medium text-foreground">
-                Auto top-up
+                Monthly top-up
               </h4>
               <Badge variant="neutral">Off</Badge>
             </div>
             <p className="typography-caption text-muted-foreground">
-              Add credits when the balance drops below a threshold.
+              Add a fixed credit amount every month.
             </p>
           </div>
         </div>
@@ -163,7 +154,7 @@ export default function AutoTopUpRule({
   );
 }
 
-interface AutoTopUpEditorProps {
+interface MonthlyTopUpEditorProps {
   defaults: Values;
   wasOn: boolean;
   hasPaymentMethod: boolean;
@@ -172,14 +163,14 @@ interface AutoTopUpEditorProps {
   onCancel: () => void;
 }
 
-function AutoTopUpEditor({
+function MonthlyTopUpEditor({
   defaults,
   wasOn,
   hasPaymentMethod,
   paymentMethodLabel,
   onSave,
   onCancel,
-}: AutoTopUpEditorProps) {
+}: MonthlyTopUpEditorProps) {
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: defaults,
@@ -197,9 +188,7 @@ function AutoTopUpEditor({
     reset(defaults);
   }, [reset, defaults]);
 
-  const threshold = watch("thresholdUsd");
   const amount = watch("amountUsd");
-  const previewThreshold = Number.isFinite(threshold) ? formatUsd(threshold) : "$—";
   const previewAmount = Number.isFinite(amount) ? formatUsd(amount) : "$—";
 
   const onSubmit = handleSubmit(async (values) => {
@@ -215,27 +204,14 @@ function AutoTopUpEditor({
         <div className="flex items-start gap-3">
           <RuleIcon />
           <h4 className="typography-body font-medium text-foreground mt-1">
-            Auto top-up
+            Monthly top-up
           </h4>
         </div>
 
         <div className="pl-11 flex flex-col gap-3">
           <FieldRow cols={2}>
             <Field
-              label="Balance threshold"
-              error={errors.thresholdUsd?.message}
-              hint="USD"
-            >
-              <Input
-                type="number"
-                step="1"
-                min="1"
-                aria-invalid={errors.thresholdUsd ? true : undefined}
-                {...register("thresholdUsd", { valueAsNumber: true })}
-              />
-            </Field>
-            <Field
-              label="Top-up amount"
+              label="Monthly top-up amount"
               error={errors.amountUsd?.message}
               hint="USD"
             >
@@ -247,12 +223,16 @@ function AutoTopUpEditor({
                 {...register("amountUsd", { valueAsNumber: true })}
               />
             </Field>
+            <Field label="Charge date">
+              <div className="flex h-9 items-center rounded-md border border-border bg-card px-3 typography-body text-muted-foreground">
+                First day of each month
+              </div>
+            </Field>
           </FieldRow>
 
           <div className="flex flex-col gap-0.5">
             <p className="typography-caption text-muted-foreground">
-              When balance drops below {previewThreshold}, {previewAmount} will
-              be added automatically.
+              {previewAmount} will be added on the first day of each month.
             </p>
             {paymentMethodLabel ? (
               <p className="typography-caption text-meta-foreground">
@@ -262,7 +242,7 @@ function AutoTopUpEditor({
           </div>
 
           {!hasPaymentMethod ? (
-            <InlineGate tier={1} verb="enable auto top-up" />
+            <InlineGate tier={1} verb="enable monthly top-up" />
           ) : null}
 
           <div className="flex items-center justify-end gap-2">

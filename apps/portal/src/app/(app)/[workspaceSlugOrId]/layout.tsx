@@ -1,107 +1,44 @@
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
-import { Suspense, type ReactNode } from "react";
-import { WorkspaceShell } from "@/components/shell/workspace-shell";
-import { WorkspaceShellSkeleton } from "@/components/shell/workspace-shell-skeleton";
+import type { ReactNode } from "react";
+import { ActiveWorkspaceProvider } from "@/components/shell/workspace-context";
 import { requireSession } from "@/lib/auth/session";
 import { findWorkspaceMembership } from "@/lib/mock/org";
-import { getQueryClient } from "@/lib/query/get-query-client";
-import { orgQueries } from "@/lib/query/org";
-import { getCurrentTenancy } from "@/lib/query/tenancy";
-import { TenancyProvider } from "@/lib/query/tenancy-context";
 import LastVisitedWorkspaceWriter from "@/lib/workspace/last-visited-writer";
 
-// Sync outer layout — async data resolution moves into WorkspaceShellHost
-// behind a Suspense boundary so cross-shell entries paint the workspace
-// skeleton chrome (sidebar + topbar shape, URL-derived nav) immediately
-// while session/tenancy/workspace data resolves in parallel. The skeleton
-// reuses the same ShellFrame primitive the real shell consumes, so the
-// swap from skeleton -> real shell can't reflow. Within-workspace
-// transitions (resources <-> settings, same slug) re-use the resolved
-// host — Suspense fallback fires only when the host's deps change, which
-// is exactly the cross-shell / cross-workspace cases.
+// Workspace-scoped layout under the unified shell. The shell itself is
+// mounted higher up by (app)/layout.tsx — this layout only resolves the
+// active workspace, gates inaccessible/non-existent ones with notFound(),
+// and pushes the resolved Org into context so the already-mounted shell
+// can render the right workspace name in the topbar switcher + sub-shell
+// return header.
+//
+// Sub-shell routes (/profile/*, /account/*) do NOT pass through this layout —
+// they read the last-visited workspace from localStorage via the shell.
 
 interface LayoutProps {
   children: ReactNode;
   params: Promise<{ workspaceSlugOrId: string }>;
 }
 
-export default function WorkspaceLayout({ children, params }: LayoutProps) {
-  return (
-    <Suspense fallback={<WorkspaceShellSkeleton />}>
-      <WorkspaceShellHost params={params}>{children}</WorkspaceShellHost>
-    </Suspense>
-  );
-}
-
-const ACCOUNT_TIER = "Tier 1";
-
-interface WorkspaceShellHostProps {
-  children: ReactNode;
-  params: Promise<{ workspaceSlugOrId: string }>;
-}
-
-// A miss on findWorkspaceMembership could be a non-existent workspace OR
-// one the signed-in user can't see — we don't distinguish, both 404.
-// Leaking the existence of inaccessible workspaces is a multi-tenant
-// footgun.
-async function WorkspaceShellHost({ children, params }: WorkspaceShellHostProps) {
-  // Permission gate only — session + workspace membership. Tenancy and
-  // workspace-list prefetches are NOT part of the gate; they ride the
-  // child Suspense boundary so the gate fires only on the permission
-  // check, not on every downstream account/workspace fetch.
-  const [session, { workspaceSlugOrId }] = await Promise.all([
-    requireSession(),
-    params,
-  ]);
+export default async function WorkspaceLayout({
+  children,
+  params,
+}: LayoutProps) {
+  // requireSession() runs once at (app)/layout.tsx for the data layer; we
+  // re-verify here because the permission gate (membership) needs the
+  // session-bound user. A miss on findWorkspaceMembership could be a
+  // non-existent workspace OR one the signed-in user can't see — either way
+  // 404; leaking the existence of inaccessible workspaces is a multi-tenant
+  // footgun.
+  await requireSession();
+  const { workspaceSlugOrId } = await params;
   const currentOrg = findWorkspaceMembership(workspaceSlugOrId)?.org;
   if (!currentOrg) notFound();
 
-  const user = {
-    name: session.name || "User",
-    email: session.email,
-    tier: ACCOUNT_TIER,
-  };
-
   return (
-    <WorkspaceShellData currentOrg={currentOrg} user={user}>
+    <ActiveWorkspaceProvider workspace={currentOrg}>
+      <LastVisitedWorkspaceWriter slug={currentOrg.slug} />
       {children}
-    </WorkspaceShellData>
-  );
-}
-
-interface WorkspaceShellDataProps {
-  children: ReactNode;
-  currentOrg: NonNullable<ReturnType<typeof findWorkspaceMembership>>["org"];
-  user: { name: string; email: string; tier: string };
-}
-
-async function WorkspaceShellData({
-  children,
-  currentOrg,
-  user,
-}: WorkspaceShellDataProps) {
-  const tenancy = await getCurrentTenancy();
-  const queryClient = getQueryClient();
-  await Promise.all([
-    queryClient.prefetchQuery(orgQueries.account(tenancy.accountId)),
-    queryClient.prefetchQuery(orgQueries.accounts()),
-  ]);
-  const memberships = await queryClient.ensureQueryData(orgQueries.accounts());
-  const workspaces = memberships.map((m) => m.org);
-
-  return (
-    <TenancyProvider value={tenancy}>
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <LastVisitedWorkspaceWriter slug={currentOrg.slug} />
-        <WorkspaceShell
-          currentOrg={currentOrg}
-          workspaces={workspaces}
-          user={user}
-        >
-          {children}
-        </WorkspaceShell>
-      </HydrationBoundary>
-    </TenancyProvider>
+    </ActiveWorkspaceProvider>
   );
 }
