@@ -48,7 +48,7 @@ export function OrganizationAdminView() {
     register,
     handleSubmit,
     reset,
-    formState: { isDirty, isSubmitting, isValid, errors },
+    formState: { isDirty, isSubmitting, errors },
   } = form;
 
   const onSubmit = handleSubmit(async (values) => {
@@ -130,7 +130,6 @@ export function OrganizationAdminView() {
             onCancel={() => reset()}
             onSave={onSubmit}
             saving={isSubmitting}
-            disableSave={!isValid}
           />
         </form>
       </Panel>

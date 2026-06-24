@@ -330,6 +330,7 @@ function CreatePolicyForm({
       </div>
 
       <FormFooter
+        isDirty={isDirty}
         onCancel={onCancel}
         submitting={form.formState.isSubmitting}
       />
@@ -345,7 +346,7 @@ function CreatePolicyForm({
           </DialogHeader>
           <DialogBody>
             <p className="typography-body text-foreground">
-              Leave this page without creating the policy?
+              Your unsaved changes will be lost.
             </p>
           </DialogBody>
           <DialogFooter>
@@ -641,28 +642,32 @@ function indent(text: string, spaces: number): string {
 }
 
 function FormFooter({
+  isDirty,
   onCancel,
   submitting,
 }: {
+  isDirty: boolean;
   onCancel: () => void;
   submitting: boolean;
 }) {
   return (
     <div
       role="region"
-      aria-label="Create policy actions"
+      aria-label={isDirty ? "Unsaved changes" : "Create policy actions"}
       className="shrink-0 border-t border-border pt-3 lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-8"
     >
       {/* Buttons anchor under the form column on lg+ (3fr cell), keeping the
           primary CTA on the form's F-reading axis. Code panel (2fr cell on the
           right) intentionally has no footer affordance — the form-filler is
           the primary actor; the code viewer is consulting reference. */}
-      <div className="flex items-center justify-between gap-2 sm:justify-end">
-        <Button type="button" variant="ghost" onClick={onCancel}>
-          Cancel
-        </Button>
+      <div className="flex items-center justify-end gap-2">
+        {isDirty && !submitting && (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
         <Button type="submit" variant="primary" disabled={submitting}>
-          Create policy
+          {submitting ? "Creating…" : "Create policy"}
         </Button>
       </div>
     </div>
