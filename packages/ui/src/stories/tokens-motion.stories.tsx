@@ -46,7 +46,7 @@ function DurationRow({ token, label, usage, widthPct }: DurationRowProps) {
           flex: 1,
           height: 6,
           background: "var(--color-secondary-surface)",
-          borderRadius: "var(--radius-full)",
+          borderRadius: 9999,
           overflow: "hidden",
         }}
       >
@@ -55,7 +55,7 @@ function DurationRow({ token, label, usage, widthPct }: DurationRowProps) {
             height: "100%",
             width: `${widthPct}%`,
             background: "var(--color-foreground)",
-            borderRadius: "var(--radius-full)",
+            borderRadius: 9999,
           }}
         />
       </div>
@@ -291,7 +291,7 @@ export const SemanticRoles: StoryObj = {
       >
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
           <thead>
-            <tr style={{ background: "var(--color-muted)" }}>
+            <tr style={{ background: "var(--color-muted-surface)" }}>
               {["Token", "Resolves to", "Use when…"].map((h) => (
                 <th
                   key={h}
