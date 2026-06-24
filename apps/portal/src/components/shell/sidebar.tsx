@@ -13,21 +13,20 @@ interface SidebarProps {
   header?: ReactNode;
   collapsed?: boolean;
   onToggle?: () => void;
-  /** False during the initial mount paint — suppresses the width transition
-   * on shell remount (e.g. switching workspaces while collapsed). */
-  transitionEnabled?: boolean;
 }
 
-export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle, transitionEnabled = false }: SidebarProps) {
+// Width transition is owned by the wrapper CSS in globals.css (.shell-rail).
+// Asymmetric timing (open/close uses different duration tokens) is keyed off
+// data-sub-shell-open on the shell frame, which the Sidebar primitive does
+// not know about — keep the primitive transition-agnostic.
+export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle }: SidebarProps) {
   const isRail = useIsSidebarRail();
 
   return (
     <aside
       aria-label={ariaLabel}
-      style={{ viewTransitionName: "shell-sidebar" }}
       className={cn(
-        "relative hidden shrink-0 border-r border-sidebar-border bg-background md:block",
-        transitionEnabled && "transition-[width] duration-subtle ease-out-standard",
+        "relative h-full shrink-0 border-r border-sidebar-border bg-background",
         collapsed ? "lg:w-(--sidebar-rail-w)" : "lg:w-(--sidebar-w)",
         "md:w-(--sidebar-rail-w)",
       )}
