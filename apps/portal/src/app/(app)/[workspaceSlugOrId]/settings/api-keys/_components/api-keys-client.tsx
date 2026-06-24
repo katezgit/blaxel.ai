@@ -79,7 +79,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => (
-          <span className="typography-label font-medium text-foreground">
+          <span className="font-medium text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -92,7 +92,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("masked", {
         header: "Key prefix",
         cell: (info) => (
-          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 font-mono typography-caption text-muted-foreground">
+          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 typography-code text-muted-foreground">
             {info.getValue()}
           </code>
         ),
@@ -104,7 +104,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("createdAt", {
         header: "Created at (UTC-7)",
         cell: (info) => (
-          <span className="font-mono typography-label text-muted-foreground">
+          <span className="typography-code text-muted-foreground">
             {DATE_FMT.format(new Date(info.getValue()))}
           </span>
         ),
@@ -256,18 +256,18 @@ function daysUntil(isoDate: string): number {
 function ExpiresCell({ expiresAt }: { expiresAt: string | null }) {
   const kind = classifyExpiry(expiresAt);
   if (kind === "never") {
-    return <span className="typography-label text-muted-foreground">Never</span>;
+    return <span className="text-muted-foreground">Never</span>;
   }
   if (kind === "expired") {
     return (
-      <span className="font-mono typography-label text-destructive">Expired</span>
+      <span className="typography-code text-destructive">Expired</span>
     );
   }
   const days = daysUntil(expiresAt as string);
   return (
     <span
       className={cn(
-        "font-mono typography-label",
+        "typography-code",
         kind === "near" ? "text-state-warning" : "text-muted-foreground",
       )}
     >
@@ -278,14 +278,14 @@ function ExpiresCell({ expiresAt }: { expiresAt: string | null }) {
 
 function IssuedToCell({ apiKey }: { apiKey: ApiKey }) {
   if (!apiKey.issuedTo) {
-    return <span className="typography-label text-meta-foreground">—</span>;
+    return <span className="text-meta-foreground">—</span>;
   }
   const Icon = apiKey.issuedTo.kind === "member" ? User : UserCog;
   return (
-    <span className="inline-flex items-center gap-1.5 typography-label text-foreground">
+    <span className="inline-flex items-center gap-1.5 text-foreground">
       <Icon aria-hidden="true" className="size-3.5 shrink-0 text-meta-foreground" />
       <span>{apiKey.issuedTo.name}</span>
-      <span className="font-mono typography-meta text-meta-foreground">
+      <span className="typography-code text-meta-foreground">
         {apiKey.issuedTo.kind === "member" ? "member" : "service"}
       </span>
     </span>

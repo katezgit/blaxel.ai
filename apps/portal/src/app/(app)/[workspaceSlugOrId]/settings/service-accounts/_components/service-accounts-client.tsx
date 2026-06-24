@@ -85,7 +85,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => (
-          <span className="typography-label font-medium text-foreground">
+          <span className="font-medium text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -94,7 +94,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         header: "Client ID",
         cell: (info) => (
           <span className="inline-flex items-center gap-1.5">
-            <code className="font-mono typography-caption text-muted-foreground">
+            <code className="typography-code text-muted-foreground">
               {info.getValue()}
             </code>
             <CopyButton
@@ -110,7 +110,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           const role = info.getValue();
           const Icon = ROLE_ICON[role];
           return (
-            <span className="inline-flex items-center gap-1.5 typography-label text-foreground">
+            <span className="inline-flex items-center gap-1.5 text-foreground">
               <Icon aria-hidden="true" className="size-3.5 shrink-0 text-meta-foreground" />
               <span>{ROLE_LABEL[role]}</span>
             </span>
@@ -120,7 +120,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
       columnHelper.accessor("createdAt", {
         header: "Created at (UTC-7)",
         cell: (info) => (
-          <span className="font-mono typography-label text-muted-foreground">
+          <span className="typography-code text-muted-foreground">
             {DATE_FMT.format(new Date(info.getValue()))}
           </span>
         ),

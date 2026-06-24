@@ -30,12 +30,12 @@ const columns = [
   columnHelper.accessor("name", {
     header: "Name",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono typography-label" },
+    meta: { cellClassName: "typography-code text-foreground" },
   }),
   columnHelper.accessor("tag", {
     header: "Tag",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono typography-label text-muted-foreground" },
+    meta: { cellClassName: "typography-code text-muted-foreground" },
   }),
   columnHelper.accessor("status", {
     header: "Status",
@@ -50,7 +50,7 @@ const columns = [
     cell: (info) => formatSize(info.getValue()),
     meta: {
       headerClassName: "text-right",
-      cellClassName: "text-right font-mono typography-label text-muted-foreground tabular-nums",
+      cellClassName: "text-right typography-code text-muted-foreground tabular-nums",
     },
   }),
 ];

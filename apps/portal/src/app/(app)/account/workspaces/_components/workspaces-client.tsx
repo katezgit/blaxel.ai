@@ -288,7 +288,7 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
     <div className="flex min-w-0 flex-col gap-0.5">
       <Link
         href={`/${workspace.slug}/settings/general`}
-        className="truncate font-mono typography-body text-foreground transition-colors duration-fast ease-out-standard group-hover/row:text-primary group-hover/row:underline hover:text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm outline-hidden"
+        className="truncate font-mono typography-body text-foreground underline-offset-4 group-hover/row:underline focus-visible:shadow-focus-ring rounded-sm outline-hidden"
       >
         {workspace.name}
       </Link>
@@ -296,7 +296,7 @@ function WorkspaceCell({ workspace }: { workspace: Org }) {
         className="flex min-w-0 items-center gap-1"
         onClick={(event) => event.stopPropagation()}
       >
-        <span className="truncate font-mono typography-caption text-meta-foreground">
+        <span className="truncate typography-code text-meta-foreground">
           {workspace.workspaceId}
         </span>
         <CopyButton
