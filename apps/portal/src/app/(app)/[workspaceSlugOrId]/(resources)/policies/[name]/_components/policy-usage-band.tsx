@@ -52,7 +52,7 @@ export default function PolicyUsageBand({
     const deleteCommand = `bl policy delete ${policy.metadata.name}`;
     return (
       <BandFrame label="Usage" className="border-t-0 pt-0">
-        <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-background p-6">
+        <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-card p-6">
           <h3 className="typography-body font-semibold text-foreground">
             No workloads reference this policy.
           </h3>
