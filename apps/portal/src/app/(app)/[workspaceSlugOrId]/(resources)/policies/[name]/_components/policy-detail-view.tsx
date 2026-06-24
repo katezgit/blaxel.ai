@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
+import ResourceNotFound from "@/components/shell/resource-not-found";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { policyQueries } from "@/lib/query/policies";
 import { queryKeys } from "@/lib/query/keys";
@@ -126,26 +127,20 @@ export function PolicyDetailView({
 
   const policy = policyQuery.data;
   if (policy == null) {
-    // Per docs/design/guidelines/resource-not-found.md §7 — inline content
-    // event in the content area, no card chrome, ~360px column, vertically +
-    // horizontally centered. Breadcrumb stays as normal page chrome above.
     return (
       <div className="page-shell min-h-full">
         <Breadcrumb
           parent={{ href: listHref, label: "Policies" }}
           current={policyName}
         />
-        <div className="flex flex-1 items-center justify-center">
-          <div className="flex w-full max-w-(--inline-empty-column-w) flex-col gap-4">
-            <h2 className="typography-subtitle font-semibold text-foreground">
-              Policy <code className="font-mono">{policyName}</code>{" "}
-              isn&apos;t available.
-            </h2>
-            <Button asChild variant="primary" className="self-start">
-              <Link href={listHref}>Go to Policies</Link>
-            </Button>
-          </div>
-        </div>
+        <ResourceNotFound
+          resourceLabel="Policy"
+          resourceTypeSlug="policy"
+          id={policyName}
+          supportingLine="This policy isn't available in this workspace."
+          listHref={listHref}
+          listLabel="Go to Policies"
+        />
       </div>
     );
   }

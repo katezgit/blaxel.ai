@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
+import ResourceNotFound from "@/components/shell/resource-not-found";
 
 interface CustomDomainNotFoundProps {
   workspaceSlug: string;
@@ -14,23 +13,15 @@ export default function CustomDomainNotFound({
   const listHref = `/${workspaceSlug}/custom-domains`;
   return (
     <>
-      <div className="flex flex-col gap-3">
-        <Breadcrumb parent={{ href: listHref, label: "Custom domains" }} current={name} />
-      </div>
-
-      <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-card p-6">
-        <p className="typography-body text-foreground">
-          Custom domain{" "}
-          <span className="font-mono">{name}</span> not found in this workspace.
-        </p>
-        <Link
-          href={listHref}
-          className="inline-flex items-center gap-1 rounded-sm typography-label text-primary outline-hidden hover:underline focus-visible:shadow-focus-ring"
-        >
-          <ArrowLeft className="size-3.5" aria-hidden="true" />
-          Back to Custom domains
-        </Link>
-      </div>
+      <Breadcrumb parent={{ href: listHref, label: "Custom domains" }} current={name} />
+      <ResourceNotFound
+        resourceLabel="Custom domain"
+        resourceTypeSlug="custom-domain"
+        id={name}
+        supportingLine="This custom domain isn't available in this workspace."
+        listHref={listHref}
+        listLabel="Go to Custom domains"
+      />
     </>
   );
 }
