@@ -200,7 +200,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
         </div>
 
         <div
-          className="flex max-h-[640px] flex-col divide-y divide-border overflow-y-auto"
+          className="flex max-h-[640px] flex-col divide-y divide-border overflow-y-auto pt-3"
           style={{ scrollbarGutter: "stable" }}
         >
         {showTier0 ? null : (
