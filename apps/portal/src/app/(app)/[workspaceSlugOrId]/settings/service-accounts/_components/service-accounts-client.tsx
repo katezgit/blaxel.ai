@@ -120,7 +120,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
       columnHelper.accessor("createdAt", {
         header: "Created at (UTC-7)",
         cell: (info) => (
-          <span className="font-mono text-muted-foreground">
+          <span className="typography-code text-muted-foreground">
             {DATE_FMT.format(new Date(info.getValue()))}
           </span>
         ),

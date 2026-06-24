@@ -26,7 +26,7 @@ const columns = [
   columnHelper.accessor("name", {
     header: "Name",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono text-foreground" },
+    meta: { cellClassName: "typography-code text-foreground" },
   }),
   columnHelper.accessor("status", {
     header: "Status",
@@ -49,7 +49,7 @@ const columns = [
     },
     meta: {
       headerClassName: "text-right",
-      cellClassName: "text-right font-mono text-muted-foreground tabular-nums",
+      cellClassName: "text-right typography-code text-muted-foreground tabular-nums",
     },
   }),
 ];

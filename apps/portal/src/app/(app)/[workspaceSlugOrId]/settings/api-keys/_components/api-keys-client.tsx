@@ -104,7 +104,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("createdAt", {
         header: "Created at (UTC-7)",
         cell: (info) => (
-          <span className="font-mono text-muted-foreground">
+          <span className="typography-code text-muted-foreground">
             {DATE_FMT.format(new Date(info.getValue()))}
           </span>
         ),
@@ -260,14 +260,14 @@ function ExpiresCell({ expiresAt }: { expiresAt: string | null }) {
   }
   if (kind === "expired") {
     return (
-      <span className="font-mono text-destructive">Expired</span>
+      <span className="typography-code text-destructive">Expired</span>
     );
   }
   const days = daysUntil(expiresAt as string);
   return (
     <span
       className={cn(
-        "font-mono",
+        "typography-code",
         kind === "near" ? "text-state-warning" : "text-muted-foreground",
       )}
     >
@@ -285,7 +285,7 @@ function IssuedToCell({ apiKey }: { apiKey: ApiKey }) {
     <span className="inline-flex items-center gap-1.5 text-foreground">
       <Icon aria-hidden="true" className="size-3.5 shrink-0 text-meta-foreground" />
       <span>{apiKey.issuedTo.name}</span>
-      <span className="font-mono typography-caption text-meta-foreground">
+      <span className="typography-code text-meta-foreground">
         {apiKey.issuedTo.kind === "member" ? "member" : "service"}
       </span>
     </span>

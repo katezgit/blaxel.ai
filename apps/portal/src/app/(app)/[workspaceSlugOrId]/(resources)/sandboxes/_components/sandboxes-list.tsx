@@ -29,7 +29,7 @@ const columns = [
   columnHelper.accessor("name", {
     header: "Name",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono text-foreground" },
+    meta: { cellClassName: "typography-code text-foreground" },
   }),
   columnHelper.accessor("status", {
     header: "Status",
@@ -42,14 +42,14 @@ const columns = [
   columnHelper.accessor("image", {
     header: "Image",
     cell: (info) => info.getValue(),
-    meta: { cellClassName: "font-mono text-muted-foreground" },
+    meta: { cellClassName: "typography-code text-muted-foreground" },
   }),
   columnHelper.accessor("lastActive", {
     header: "Last active",
     cell: (info) => DATE_FMT.format(new Date(info.getValue())),
     meta: {
       headerClassName: "text-right",
-      cellClassName: "text-right font-mono text-muted-foreground tabular-nums",
+      cellClassName: "text-right typography-code text-muted-foreground tabular-nums",
     },
   }),
 ];
