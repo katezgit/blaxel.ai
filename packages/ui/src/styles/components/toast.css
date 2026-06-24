@@ -128,7 +128,7 @@
  *    present on the toaster root, light OR dark) to reach (0,5,0) and win
  *    cleanly in both modes. ─────────────────────────────────────────────── */
 [data-sonner-toaster][data-sonner-theme] [data-sonner-toast][data-styled='true'] [data-close-button] {
-  top: 1rem;
+  top: 0.5rem;
   right: 0.5rem;
   left: auto;
   bottom: auto;
