@@ -203,6 +203,11 @@ function EditPolicyForm({ policy, onClose }: EditPolicyFormProps) {
         <DrawerBody className="flex flex-col gap-6">
           <PolicyTypeReadOnlyField policyType={policyType} />
 
+          <IdentityEditableNameOnlyFields
+            form={form}
+            fixedName={policy.metadata.name}
+          />
+
           {policyType === "location" ? (
             <FieldGroup label="Allowed locations">
               <LocationBody value={locations} onChange={setLocations} />
@@ -224,11 +229,6 @@ function EditPolicyForm({ policy, onClose }: EditPolicyFormProps) {
           >
             <ResourceTypesField form={form} />
           </FieldGroup>
-
-          <IdentityEditableNameOnlyFields
-            form={form}
-            fixedName={policy.metadata.name}
-          />
 
           <FieldGroup
             label="Labels"
