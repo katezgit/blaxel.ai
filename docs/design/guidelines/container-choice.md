@@ -1,6 +1,6 @@
 # Container Choice — Page vs Drawer vs Dialog
 
-**Scope:** Choosing between a full page, a right-side drawer (sheet), and a centered dialog for any task in the Blaxel dashboard. Applies to all resource creation, editing, confirmation, and inspection surfaces across Sandboxes, Hosting, and Security.
+**Scope:** Project-agnostic guidelines for B2B / enterprise SaaS dashboards. Choosing between a full page, a right-side drawer (sheet), and a centered dialog for any task — resource creation, editing, confirmation, or inspection. When forking this repo, project-specific surface mapping lives in the project's spec; keep this file intact.
 
 ---
 
@@ -29,50 +29,16 @@ Score each dimension to land on the right container. If two or more dimensions p
 
 ---
 
-## 3. Blaxel surface mapping
-
-Applying the matrix to Blaxel's primitive surface (see `docs/product/platform.md` for canonical terms):
-
-### Use **page**
-
-- Sandbox detail — deep-linked forensics surface Alex navigates to directly from a list
-- Agent detail — status, logs, deployed config all live here; this is a primary destination
-- Batch Job detail — run-level forensics with multi-section content (overview, logs, tasks)
-- MCP Server detail — status + invocation metrics + endpoint config
-- Policy create / edit — multi-field governance authoring with ≥10 fields; Alex and Sam need to reference other docs while writing region / flavor / token-limit rules
-- API key create — generates a credential whose token is shown **once**; this warrants a page with clear ceremony, not a drawer that can be accidentally dismissed
-- Volume create — enough fields (name, region, size, attachment target) and enough consequence (regional mismatch = attach failure) to deserve a page
-- Settings sub-sections (Workspace, Members, Account)
-
-### Use **drawer**
-
-- Sandbox quick-edit (TTL / label / region override) from the Sandbox list — 4–6 fields, user wants to see the list context
-- Agent Drive attach / detach — a sub-action on a Sandbox or Agent detail, moderate field count
-- Image detail inspect — read-mostly properties panel, user stays on the Sandboxes list
-- Network / Custom domains config edit — moderate field count, update-in-place while seeing the parent resource
-- Member invite — 2–3 fields, but the user is looking at the Members list while inviting
-
-### Use **dialog**
-
-- Sandbox delete confirm — "Type the name to confirm deletion" (1 field + destructive confirmation)
-- API key revoke — one confirm action, irreversible
-- Agent start / stop / restart — single action confirmation
-- Rename any resource — single text field
-- Batch Job cancel — single confirm
-- Copy / reveal token (displayed after API key creation) — a read-only dialog with a copy affordance
-
----
-
-## 4. Anti-patterns — FAIL triggers for reviewers
+## 3. Anti-patterns — FAIL triggers for reviewers
 
 These are the patterns that get caught in review. Each entry includes a one-line FAIL a reviewer can quote.
 
 ### Dialog stacked on a drawer
-A dialog opens on top of a drawer to confirm a sub-action (e.g. discard-changes confirm inside the Member invite drawer).
+A dialog opens on top of a drawer to confirm a sub-action (e.g. a discard-changes confirm inside a form drawer).
 **FAIL: dialog-on-drawer stacking — resolve by moving the confirm inline or closing the drawer first.**
 
 ### Drawer for create-from-scratch on a high-stakes resource
-Creating a Policy or API key in a drawer because "it's just a form." Both have ≥8 fields, non-trivial consequences, and benefit from a URL the user can return to.
+Creating a high-stakes resource (≥8 fields, non-trivial consequences such as security policy, credentials, billing config) in a drawer because "it's just a form." These benefit from a URL the user can return to and full-page ceremony.
 **FAIL: high-stakes resource creation in a drawer — move to a page; cite field count + stakes.**
 
 ### Page for a confirm-only action
@@ -88,7 +54,7 @@ A multi-step wizard (step 1 → step 2 → step 3) inside a right-side sheet, wh
 **FAIL: multi-step wizard in a drawer — move to a dedicated page; drawers are for single-pass linear forms.**
 
 ### No surrounding-context need, but still in a drawer
-An Agent deploy form that has 10+ fields and the user has nothing to reference on the page behind the drawer — the drawer is just covering a blank list.
+A create form that has 10+ fields and the user has nothing to reference on the page behind the drawer — the drawer is just covering a blank list.
 **FAIL: drawer where context is irrelevant — move to a page; surrounding-context need is the drawer's justification.**
 
 ### Card-wrap inside dialog / drawer
@@ -97,7 +63,7 @@ Wrapping form sections in `<Card>` components inside an overlay because "section
 
 ---
 
-## 5. Dismiss behavior
+## 4. Dismiss behavior
 
 Every container must have a dismiss handler that checks **both** dirty state **and** stakes before deciding whether to block the dismiss with a confirmation.
 
@@ -105,11 +71,11 @@ Every container must have a dismiss handler that checks **both** dirty state **a
 - **Drawer** — dismiss on Esc, overlay-click, or close button. Dismiss handler reads dirty + stakes; see `form-actions.md` §7 for the exact condition and copy.
 - **Dialog** — Esc and overlay-click dismiss. Only the content inside the dialog determines whether a nested confirm is needed (rare: discard-changes confirm inside a dialog is unusual since dialogs rarely have substantial forms — move to a drawer / page first).
 
-**The dismiss handler must never assume.** A lazy implementation that always fires a "You have unsaved changes" prompt on every drawer close — even when the form is clean — degrades the pattern into reflexive dismissal. See `form-actions.md` §7 for the two-condition gate and the Policy create cautionary example.
+**The dismiss handler must never assume.** A lazy implementation that always fires a "You have unsaved changes" prompt on every drawer close — even when the form is clean — degrades the pattern into reflexive dismissal. See `form-actions.md` §7 for the two-condition gate.
 
 ---
 
-## 6. Width guidance
+## 5. Width guidance
 
 Drawer widths follow `app-shell-layout.md` §"Right inspector / drawer":
 
@@ -131,7 +97,7 @@ Do not size drawers or dialogs wider than the main content area minus the sideba
 
 ---
 
-## 7. Cross-references
+## 6. Cross-references
 
 - `form-actions.md` — footer Save/Cancel rule (§1–6) and dismiss confirmation rule (§7)
 - `app-shell-layout.md` — drawer widths in §"Right inspector / drawer"; sidebar and content cap values
@@ -139,7 +105,7 @@ Do not size drawers or dialogs wider than the main content area minus the sideba
 
 ---
 
-## 8. FAIL summary (reviewer checklist)
+## 7. FAIL summary (reviewer checklist)
 
 | Scenario | FAIL quote |
 |---|---|

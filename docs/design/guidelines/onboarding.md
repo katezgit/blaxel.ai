@@ -1,5 +1,7 @@
 # Design: Onboarding
 
+**Scope:** Project-agnostic guidelines for B2B / enterprise SaaS dashboards with developer-facing APIs.
+
 ## Rules
 
 1. **Optimize for TTFHW under 5 minutes.** Time to First Hello World is the north-star metric. Instrument everything around it.

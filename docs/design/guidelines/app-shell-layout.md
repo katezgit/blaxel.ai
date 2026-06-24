@@ -74,11 +74,11 @@ All values in `px`. Tailwind utility shown where the value matches a default sca
 | **Fluid (no cap)** | full available width | Data-dense surfaces: tables with many columns, traces, observability, log views. Linear lists, W&B, Datadog, Grafana. |
 | **Reading cap (nested inside above)** | **640–720** (`max-w-prose` / `max-w-2xl`) | Forms, settings panes, long-form docs. Apply as an *inner* cap, not as the page cap. |
 
-**Cap value: `1536px`, declared as `--page-max-width` in `apps/portal/src/app/globals.css`.** The token name is the source of truth; references in markup use the utility class below.
+**Cap value:** declare as `--page-max-width` in app-level globals. The token name is the source of truth; references in markup use the utility class below.
 
 **Centering:** center the content region inside its container (`mx-auto`) so the cap behaves predictably on ultrawide monitors. Do not left-align against the sidebar — text drifts away from the user's cursor as viewport widens.
 
-**Implementation:** Wrap `(app)/**` page content in a container with the `page-shell` utility class. `page-shell` packs the centered cap + responsive horizontal padding ladder + default `gap-8 py-6` vertical layout. Pages override `gap-` / `py-` / `pt-` as needed by appending Tailwind utilities.
+**Implementation:** Wrap page content in a container with a `page-shell` utility class. `page-shell` packs the centered cap + responsive horizontal padding ladder + default vertical layout. Pages override `gap-` / `py-` / `pt-` as needed by appending Tailwind utilities.
 
 **Padding ladder inside `page-shell`:**
 
@@ -91,7 +91,7 @@ All values in `px`. Tailwind utility shown where the value matches a default sca
 
 These values are baked into `page-shell`'s internal media queries — do not list the responsive Tailwind classes on each wrapper directly.
 
-**Where the utility lives:** `apps/portal/src/app/globals.css` (portal-specific, not `@repo/ui`). The design-system primitives stay in `packages/ui`; `page-shell` is app chrome.
+**Where the utility lives:** app-level globals, not your shared design-system package. `page-shell` is app chrome — design-system primitives have no opinion on page layout.
 
 **Sticky-header carve-out pattern** (for pages with a sticky filter/toolbar row):
 
@@ -162,7 +162,7 @@ Do not narrow the sidebar to gain content width — users perceive narrower nav 
 | Sidebar width? | **256** unless deep tree (then 280–320) |
 | Sidebar collapsed? | **56–64** |
 | Topbar height? | **56** |
-| Content cap on dashboards? | **1536px** — token `--page-max-width`, utility `page-shell` |
+| Content cap on dashboards? | **1280–1536px** — token `--page-max-width`, utility `page-shell` |
 | Content cap on tables / traces? | **Fluid** |
 | Content cap on forms / settings? | **640–720** nested inside the dashboard cap |
 | Horizontal padding ladder? | 16 / 24 / 32 / 80 (default / md / lg / xl) — baked into `page-shell`; do not list responsive classes on wrappers directly |
@@ -183,40 +183,7 @@ Do not narrow the sidebar to gain content width — users perceive narrower nav 
 
 ---
 
-## 7. Page header vertical rhythm
-
-**Rule:** All `(app)` page top padding is `pt-8` (32px), measured from the top bar border to the page title. One value. No role-based variation.
-
-**Rationale:** A single value means the eye learns one resting position for page titles across every route in the shell. Landing/summary and catalog/data-table surfaces use the same value — this is stronger than role-derived nuance for a dense data product where the user is already context-aware. 32px is the on-canon maximum per `docs/design/foundations/spacing.md`; it clears the topbar's visual band cleanly without introducing an off-scale value. Peer benchmarks (Linear, Vercel, GitHub) cluster at 40–48px, but those products do not enforce the same off-scale ban — the spacing canon takes precedence here.
-
-**Other values on the header block** (do not change these):
-
-- H1 → subtitle: `mt-1` (4px). Tight coupling so the subtitle reads as a direct modifier of the H1, not a separate element. They fuse into one display unit.
-- Header block → first content section: `gap-8` (32px). Separates the title group from the content group. Large enough to signal a hierarchy break; small enough not to add ceremony to the transition.
-
----
-
-## 9. Main scroll-region backdrop
-
-HUD portal renders a subtle dot/grid backdrop behind the main scroll region to give the surface depth without competing with content.
-
-**Token and utility location:** Both `--color-grid-line` and the `@utility bg-grid-backdrop` are defined in `apps/portal/src/app/globals.css`. They are **not** in `packages/ui/src/styles/theme.css` or `packages/ui/src/styles/utilities.css`. Rationale: the grid is portal-specific app chrome (AppShell decoration), not a design-system primitive that other consumers of `@repo/ui` would need.
-
-**Specification (do not change these values):**
-
-| Property | Value |
-|---|---|
-| Block size (grid cell) | **56px** |
-| Line alpha (light mode) | **0.01** |
-| Line alpha (dark mode) | **0.008** |
-| Scroll behavior | Default (backdrop scrolls with content — no `background-attachment: fixed`) |
-| Applies to | Main scroll region only — not sidebar, not topbar |
-
-**Usage:** Apply `bg-grid-backdrop` to the `<main>` scroll container inside the AppShell. Do not apply it to cards, panels, or any nested surface — the backdrop is a single layer behind all content.
-
----
-
-## 8. References
+## 7. References
 
 - Linear — sidebar 240, content fluid (lists) / ~1024 (settings)
 - Vercel dashboard — sidebar 256, content 1200 (`max-w-screen-xl`)

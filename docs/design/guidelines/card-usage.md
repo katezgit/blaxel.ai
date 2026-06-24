@@ -1,6 +1,6 @@
 # Card Usage — Anti-Pattern Guardrails
 
-**Scope:** When a designer or engineer reaches for a `<Card>` wrapper. Governs whether the card is doing real work or adding visual chrome. Applies to all dashboard surfaces — index pages, detail pages, modals, drawers, settings, empty states.
+**Scope:** Project-agnostic guidelines for B2B / enterprise SaaS dashboards. Governs whether a `<Card>` wrapper is doing real work or adding visual chrome. Applies to all dashboard surfaces — index pages, detail pages, modals, drawers, settings, empty states.
 
 ---
 
@@ -20,7 +20,7 @@ If any criterion fails, the card is decoration. Remove it.
 
 ## 2. Rationale
 
-HUD is a developer dashboard for technical users (Alex the RL researcher, Sam the applied agent engineer, Riley the environment vendor). Every screen is read by someone fluent in JSON, comfortable with CLI output, and impatient with marketing-style visual softness. The peer products — Linear, Vercel's developer dashboard, Weights & Biases — earn trust through **information density, fast scan, and quiet chrome**. Bento-grid card landscapes belong on marketing sites.
+B2B / enterprise dashboards targeting technical users earn trust through **information density, fast scan, and quiet chrome** — see Linear, Vercel, Weights & Biases for the pattern. Every screen is read by someone fluent in JSON, comfortable with CLI output, and impatient with marketing-style visual softness. Bento-grid card landscapes belong on marketing sites, not operator tools.
 
 A card carries cost:
 
@@ -35,11 +35,11 @@ The pattern this guideline rejects: **card-as-default-container**, where every s
 
 ## 3. When to use a card — green-light examples
 
-- **Index page list items.** A row in a list of models, jobs, tasksets, environments where each row is a discrete object the user can navigate into. The card is the affordance.
-- **Selection grid.** A "pick one" interface — environment template picker, taskset template gallery — where each card represents one of N peer choices.
-- **Resource summary widget on a dashboard.** A self-contained module like "Credit balance" or "Active jobs" that has internal structure (label + value + delta + sparkline) and can be hovered/clicked as one unit.
-- **KPI tile.** A metric with a name, a value, a delta, and optionally a baseline — see `dashboard-design-guidelines.md`. These earn their chrome because they're peer tiles scanned together.
-- **Discrete authoring objects.** A task in a taskset editor, a grader rule in a grader builder — things the user adds, edits, deletes, reorders.
+- **Index page list items.** A row in a list of resources where each row is a discrete object the user can navigate into. The card is the affordance.
+- **Selection grid.** A "pick one" interface — a template picker, a connector gallery — where each card represents one of N peer choices.
+- **Resource summary widget on a dashboard.** A self-contained module (e.g. "Credit balance," "Active jobs") that has internal structure (label + value + delta + sparkline) and can be hovered/clicked as one unit.
+- **KPI tile.** A metric with a name, a value, a delta, and optionally a baseline. These earn their chrome because they're peer tiles scanned together.
+- **Discrete authoring objects.** An item in a list editor, a rule in a rule builder — things the user adds, edits, deletes, reorders.
 
 ---
 
@@ -123,4 +123,4 @@ Ask: *if I remove the card chrome, does the page become harder to scan, or just 
 - Harder to scan → the card was doing work, keep it.
 - Less busy → the card was decoration, remove it.
 
-The default answer is "less busy." Most cards in a developer dashboard are removable.
+The default answer is "less busy." Most cards in a dashboard are removable.
