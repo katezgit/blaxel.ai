@@ -74,11 +74,11 @@ All values in `px`. Tailwind utility shown where the value matches a default sca
 | **Fluid (no cap)** | full available width | Data-dense surfaces: tables with many columns, traces, observability, log views. Linear lists, W&B, Datadog, Grafana. |
 | **Reading cap (nested inside above)** | **640–720** (`max-w-prose` / `max-w-2xl`) | Forms, settings panes, long-form docs. Apply as an *inner* cap, not as the page cap. |
 
-**Cap value:** declare as `--page-max-width` in app-level globals. The token name is the source of truth; references in markup use the utility class below.
+**Cap value: `1536px`, declared as `--page-max-width` in app-level globals.** The token name is the source of truth; references in markup use the utility class below.
 
 **Centering:** center the content region inside its container (`mx-auto`) so the cap behaves predictably on ultrawide monitors. Do not left-align against the sidebar — text drifts away from the user's cursor as viewport widens.
 
-**Implementation:** Wrap page content in a container with a `page-shell` utility class. `page-shell` packs the centered cap + responsive horizontal padding ladder + default vertical layout. Pages override `gap-` / `py-` / `pt-` as needed by appending Tailwind utilities.
+**Implementation:** Wrap page content in a container with a `page-shell` utility class. `page-shell` packs the centered cap + responsive horizontal padding ladder + default `gap-8 py-6` vertical layout. Pages override `gap-` / `py-` / `pt-` as needed by appending Tailwind utilities.
 
 **Padding ladder inside `page-shell`:**
 
@@ -162,7 +162,7 @@ Do not narrow the sidebar to gain content width — users perceive narrower nav 
 | Sidebar width? | **256** unless deep tree (then 280–320) |
 | Sidebar collapsed? | **56–64** |
 | Topbar height? | **56** |
-| Content cap on dashboards? | **1280–1536px** — token `--page-max-width`, utility `page-shell` |
+| Content cap on dashboards? | **1536px** — token `--page-max-width`, utility `page-shell` |
 | Content cap on tables / traces? | **Fluid** |
 | Content cap on forms / settings? | **640–720** nested inside the dashboard cap |
 | Horizontal padding ladder? | 16 / 24 / 32 / 80 (default / md / lg / xl) — baked into `page-shell`; do not list responsive classes on wrappers directly |
