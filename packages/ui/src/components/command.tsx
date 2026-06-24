@@ -89,7 +89,7 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex items-center gap-2 border-b border-border bg-background px-3 py-2 focus-within:border-ring"
+      className="flex items-center gap-2 border-b border-border-strong px-3 py-2 focus-within:border-ring"
     >
       <SearchIcon
         aria-hidden="true"
