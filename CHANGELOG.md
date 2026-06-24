@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-06-24 — fix(portal): network empty state + usage breakdown scoping ([#114](https://github.com/katezgit/blaxel.ai/pull/114))
+
+### Fixed
+
+- Network page now shows a proper empty state instead of a bare heading and "Coming soon." text
+- Usage breakdown options are scoped per active tab and resource filter; the Usage tab is no longer disabled
+
+---
+
 ## 2026-06-24 — feat(portal): 404 family — sub-shell preservation + resource-detail unification ([#92](https://github.com/katezgit/blaxel.ai/pull/92))
 
 ### Fixed
