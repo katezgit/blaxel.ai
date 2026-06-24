@@ -40,11 +40,6 @@ import {
   SelectTrigger,
 } from "@repo/ui/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@repo/ui/components/tooltip";
 import { cn } from "@repo/ui/lib/cn";
 import { useAccountState } from "@/lib/mock/account-context";
 
@@ -226,20 +221,25 @@ const DEFAULT_FILTERS = {
   // Billing dimension is the only break-down where USAGE values across series
   // share a unit boundary — GB-s, request count, GB-month, etc. are already
   // separated. Defaulting here keeps USAGE meaningful out of the box.
-  // (See unit-consistency rule in usage-view's "usageAvailable" derivation.)
   breakdown: "billing-dimension" as BreakdownDim,
   chartType: "stacked-bar" as ChartType,
 };
 
-// USAGE values mix incompatible units (GB-s, count, hours) when neither a
-// specific resource type is filtered nor the breakdown is billing-dimension.
-// COST is always meaningful because everything resolves to dollars.
-function isUsageAvailable(breakdown: BreakdownDim, resource: string): boolean {
-  return breakdown === "billing-dimension" || resource !== RESOURCE_ALL;
-}
+const ALL_BREAKDOWNS: ReadonlyArray<BreakdownDim> = BREAKDOWN_OPTIONS.map(
+  (opt) => opt.value,
+);
 
-const USAGE_DISABLED_TOOLTIP =
-  "Usage values mix incompatible units (GB-s, count, hours). Pick a resource type or break down by billing dimension to enable.";
+// COST is always meaningful — everything resolves to dollars, so every
+// breakdown stacks legibly. USAGE only stacks legibly when each series shares
+// a unit: either the user filtered to one resource type, or the breakdown
+// dimension itself separates units (Billing dimension).
+function validBreakdownsForTab(
+  tab: "usage" | "cost",
+  resource: string,
+): ReadonlyArray<BreakdownDim> {
+  if (tab === "cost" || resource !== RESOURCE_ALL) return ALL_BREAKDOWNS;
+  return ["billing-dimension"];
+}
 
 function initialDateRange() {
   const now = new Date();
@@ -345,14 +345,24 @@ export default function UsageView() {
   }, [state.monthToDateSpendUsd, filters.breakdown]);
 
   const balanceLabel = `$${state.balanceUsd.toFixed(2)}`;
-  const usageAvailable = isUsageAvailable(filters.breakdown, filters.resource);
+  const validBreakdowns = useMemo(
+    () => validBreakdownsForTab(tab, filters.resource),
+    [tab, filters.resource],
+  );
+  const validBreakdownSet = useMemo(
+    () => new Set(validBreakdowns),
+    [validBreakdowns],
+  );
 
-  // When the user moves into an invalid USAGE state (e.g. switches breakdown
-  // to "Resource type" with all resources selected), fall back to COST so
-  // the page never displays a unit-mixed total.
+  // Snap breakdown back to Billing dimension whenever the active tab + resource
+  // combo invalidates the current breakdown (e.g. user is on Cost / Resource
+  // type, then switches to Usage with All resources). Billing dimension is the
+  // one breakdown always valid for both tabs.
   useEffect(() => {
-    if (!usageAvailable && tab === "usage") setTab("cost");
-  }, [usageAvailable, tab]);
+    if (!validBreakdownSet.has(filters.breakdown)) {
+      setFilters((prev) => ({ ...prev, breakdown: "billing-dimension" }));
+    }
+  }, [validBreakdownSet, filters.breakdown]);
 
   const breakdownLabel =
     BREAKDOWN_OPTIONS.find((opt) => opt.value === filters.breakdown)?.label ??
@@ -380,22 +390,7 @@ export default function UsageView() {
         <div className="flex items-start justify-between gap-3">
           <h1 className="typography-display font-semibold text-foreground">Usage</h1>
           <TabsList variant="segmented" aria-label="Usage or cost view">
-            {usageAvailable ? (
-              <TabsTrigger value="usage">Usage</TabsTrigger>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  {/* Span wrapper keeps tooltip activation alive on the
-                      disabled button (disabled buttons swallow pointer events). */}
-                  <span>
-                    <TabsTrigger value="usage" disabled>
-                      Usage
-                    </TabsTrigger>
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>{USAGE_DISABLED_TOOLTIP}</TooltipContent>
-              </Tooltip>
-            )}
+            <TabsTrigger value="usage">Usage</TabsTrigger>
             <TabsTrigger value="cost">Cost</TabsTrigger>
           </TabsList>
         </div>
@@ -437,7 +432,9 @@ export default function UsageView() {
                 <span className="text-foreground">{breakdownLabel}</span>
               </ControlTrigger>
               <SelectContent align="end">
-                {BREAKDOWN_OPTIONS.map((opt) => (
+                {BREAKDOWN_OPTIONS.filter((opt) =>
+                  validBreakdownSet.has(opt.value),
+                ).map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>
@@ -553,7 +550,6 @@ export default function UsageView() {
             dataset={dataset}
             tab="usage"
             balanceLabel={balanceLabel}
-            usageAvailable={usageAvailable}
             deltaComparable={Boolean(matchingPreset)}
           />
           <UsagePanel
@@ -568,7 +564,6 @@ export default function UsageView() {
             dataset={dataset}
             tab="cost"
             balanceLabel={balanceLabel}
-            usageAvailable={usageAvailable}
             deltaComparable={Boolean(matchingPreset)}
           />
           <UsagePanel
@@ -741,7 +736,6 @@ interface BillingHeaderStripProps {
   dataset: UsageDataset | null;
   tab: "usage" | "cost";
   balanceLabel: string;
-  usageAvailable: boolean;
   /** True when the active range matches a fixed preset so Δ vs last period is
    * meaningful. Custom ranges have no comparable prior period, so the cell
    * shows "—" with an explanation. */
@@ -754,7 +748,6 @@ function BillingHeaderStrip({
   dataset,
   tab,
   balanceLabel,
-  usageAvailable,
   deltaComparable,
 }: BillingHeaderStripProps) {
   const creditsValue = dataset ? dataset.totalUsage.toLocaleString() : "0";
@@ -773,10 +766,7 @@ function BillingHeaderStrip({
 
   let creditsSecondary: string;
   let creditsSecondaryColor = "text-muted-foreground";
-  if (!usageAvailable) {
-    creditsSecondary =
-      "Mixed units — filter by resource type or break down by billing dimension";
-  } else if (!dataset) {
+  if (!dataset) {
     creditsSecondary = "No usage yet";
   } else if (deltaComparable) {
     creditsSecondary = `${deltaLabel} vs last period`;
@@ -789,12 +779,8 @@ function BillingHeaderStrip({
     <Card className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
       <HeaderCell
         label="Period credits"
-        primary={usageAvailable ? creditsValue : "—"}
-        primaryClassName={
-          usageAvailable && tab === "usage"
-            ? "text-foreground"
-            : "text-muted-foreground"
-        }
+        primary={creditsValue}
+        primaryClassName={tab === "usage" ? "text-foreground" : "text-muted-foreground"}
         secondary={creditsSecondary}
         secondaryClassName={creditsSecondaryColor}
       />
