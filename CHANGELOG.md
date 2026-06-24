@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-06-24 — feat(portal): 404 family — sub-shell preservation + resource-detail unification ([#92](https://github.com/katezgit/blaxel.ai/pull/92))
+
+### Fixed
+
+- Sub-shell layouts (Profile, Account, Plan & billing, Settings) now render an in-shell 404 block on unmatched URLs instead of falling through to the chrome-less global not-found page.
+- Policy and Custom Domain resource-detail not-found surfaces unified into the shared centered-block 404 pattern.
+
+---
+
 ## 2026-06-23 — refactor(portal): align custom domains UI with documented API ([#84](https://github.com/katezgit/blaxel.ai/pull/84))
 
 ### Changed
