@@ -191,37 +191,35 @@ function ScrollBodyExample() {
           </FormField>
         </form>
         <div className="mb-3 rounded-md border border-border bg-card px-3 py-2">
-          <p className="typography-body font-medium text-foreground">eval-run-042</p>
+          <p className="typography-body text-foreground">eval-run-042</p>
           <p className="typography-caption text-muted-foreground">
             claude-3-7-sonnet · step 36 of 200 · sandbox-env-007
           </p>
         </div>
-        <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <p className="mb-2 typography-caption text-muted-foreground uppercase tracking-wide">
           Trajectory — steps executed
         </p>
         <div className="flex flex-col divide-y divide-border rounded-md border border-border">
           {TRAJECTORY_STEPS.map(({ step, action, status, ms }) => (
             <div key={step} className="flex items-center justify-between px-3 py-1.5">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="w-5 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                <span className="w-5 shrink-0 text-right typography-caption tabular-nums text-muted-foreground">
                   {step}
                 </span>
-                <span className="truncate text-sm text-foreground font-mono">{action}</span>
+                <span className="truncate typography-body text-foreground font-mono">{action}</span>
               </div>
               <div className="flex items-center gap-3 shrink-0 ml-4">
                 <span
                   className={
                     status === "err"
-                      ? "text-xs text-destructive font-medium"
-                      : status === "pending"
-                        ? "text-xs text-muted-foreground"
-                        : "text-xs text-muted-foreground"
+                      ? "typography-caption text-destructive"
+                      : "typography-caption text-muted-foreground"
                   }
                 >
                   {status === "pending" ? "pending" : status === "err" ? "err" : "ok"}
                 </span>
                 {ms > 0 && (
-                  <span className="text-xs tabular-nums text-muted-foreground w-14 text-right">
+                  <span className="typography-caption tabular-nums text-muted-foreground w-14 text-right">
                     {ms >= 1_000 ? `${(ms / 1_000).toFixed(2)}s` : `${ms}ms`}
                   </span>
                 )}
@@ -313,7 +311,7 @@ export const Variants: Story = {
           </DialogHeader>
           <DialogBody>
             <div className="rounded-md border border-border bg-card p-3">
-              <p className="typography-body font-medium text-foreground">eval-run-007</p>
+              <p className="typography-body text-foreground">eval-run-007</p>
               <p className="typography-caption text-muted-foreground">claude-3-5-sonnet · 128 steps</p>
             </div>
           </DialogBody>
@@ -421,8 +419,8 @@ function MobileFullscreenExample() {
                   key={tier}
                   className="flex items-center justify-between rounded-md border border-border px-4 py-3"
                 >
-                  <div className="flex flex-col gap-0.5">
-                    <p className="typography-body font-medium text-foreground">{label}</p>
+                  <div className="flex flex-col gap-1">
+                    <p className="typography-body text-foreground">{label}</p>
                     <p className="typography-caption text-muted-foreground">{credits} / month</p>
                   </div>
                   <Button variant="secondary">Select</Button>
@@ -446,7 +444,8 @@ export const MobileFullscreen: Story = {
     layout: "fullscreen",
     // Chromatic: capture at 375px (mobile sheet) and 768px (desktop modal) to
     // verify both presentation modes and catch regressions.
-    chromatic: { viewports: [375, 768] },
+    // pauseAnimationAtEnd: snapshot the open-steady-state, not mid-slide.
+    chromatic: { viewports: [375, 768], pauseAnimationAtEnd: true },
   },
 }
 
@@ -529,7 +528,7 @@ function NewEvalRunForm({ initialErrors, open: controlledOpen, onOpenChange }: N
       setErrors(errs)
       return
     }
-    console.log("New evaluation run payload:", values)
+    // payload would be submitted to the server here
     setValues(EMPTY_VALUES)
     setErrors({})
     setOpen(false)
@@ -616,7 +615,7 @@ function NewEvalRunForm({ initialErrors, open: controlledOpen, onOpenChange }: N
             </FormField>
 
             {/* Retries */}
-            <div className="flex items-center gap-2 min-h-[var(--size-input-h)]">
+            <div className="flex items-center gap-2">
               <Checkbox
                 id="eval-run-retries"
                 checked={values.retries}

@@ -65,15 +65,19 @@ const dialogContentVariants = cva(
     "fixed inset-0 z-overlay",
     "flex flex-col w-full",
     "bg-popover",
+    // Safe-area insets: prevent iOS home-indicator from hiding footer on mobile sheet.
+    // Reset at sm+ where the panel is a bounded modal, not a viewport-filling sheet.
+    "pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)]",
+    "sm:pb-0 sm:pt-0",
     // outline-none: focus managed by Radix; panel itself is not a focus target
     "outline-none",
     "data-[state=open]:animate-slide-up-from-bottom",
     "data-[state=closed]:animate-slide-down-to-bottom",
     // Restore panel chrome: rounded corners, drop shadow (no border — shadow alone
     // defines the panel edge; a 1px border next to a soft halo reads as double edge).
-    // max-h-[80vh] scoped to sm+ so mobile fullscreen is not height-capped.
-    "sm:inset-auto sm:top-[10vh] sm:left-1/2 sm:-translate-x-1/2",
-    "sm:max-h-[80vh]",
+    // sm:top-dialog-top-offset / sm:max-h-dialog-max-h scoped to sm+ so mobile fullscreen is not height-capped.
+    "sm:inset-auto sm:top-(--dialog-top-offset) sm:left-1/2 sm:-translate-x-1/2",
+    "sm:max-h-(--dialog-max-h)",
     "sm:shadow-modal",
     "sm:rounded-lg",
     "sm:data-[state=open]:animate-slide-up-in",
@@ -102,18 +106,6 @@ export interface DialogContentProps
   showCloseButton?: boolean
 }
 
-/**
- * Responsive modal panel.
- * - **Mobile (< sm):** fullscreen sheet — fills viewport edge-to-edge, slides up from bottom.
- *   Body scrolls natively; no height cap so all content is reachable.
- * - **Desktop (≥ sm):** top-anchored centered modal at the size variant width
- *   with rounded corners, shadow halo, and fade-up entrance.
- *
- * @example Disable overlay click-to-close (keep Escape working):
- * <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
- *   ...
- * </DialogContent>
- */
 function DialogContent({
   className,
   children,
@@ -151,27 +143,38 @@ function DialogContent({
           // context doesn't cover the button (header DOM is now before button,
           // hit-testing reaches button), and (b) Radix FocusScope's "first
           // focusable" auto-focus lands on the form input, not this close button.
-          <DialogPrimitive.Close
-            data-slot="dialog-close-button"
-            className={cn(
-              // top-[18px]: structural compensation — aligns button optical center with DialogTitle optical center
-              // Inter cap-height ≈ 0.73em; at typography-subtitle 16px → cap = 11.68px, optical center = 5.84px above cap top
-              // DialogHeader pt-6 (24px) + 5.84 = 29.84px; button size-6 center = top + 12px → top = 17.84px ≈ 18px
-              "absolute top-[18px] right-4 z-sticky",
-              "size-6",
-              "inline-flex items-center justify-center shrink-0",
-              "bg-transparent hover:bg-hover-surface",
-              "text-muted-foreground",
-              "rounded-md",
-              "transition-colors prop-(--motion-state-change)",
-              // Focus ring — *:focus-visible in base.css (WCAG 2.4.11). outline-none removed; base layer owns it.
-              "disabled:pointer-events-none cursor-pointer",
-              "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-            )}
-          >
-            <XIcon />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+          <>
+            {/* Grab handle — mobile sheet discoverability affordance only.
+                Decorative bar; aria-hidden. Close X + Escape remain the actual dismiss paths. */}
+            <div
+              aria-hidden="true"
+              className="absolute top-2 inset-x-0 flex justify-center sm:hidden"
+            >
+              <div className="h-1 w-10 rounded-full bg-border" />
+            </div>
+            <DialogPrimitive.Close
+              data-slot="dialog-close-button"
+              className={cn(
+                // top-[18px]: structural compensation — aligns button optical center with DialogTitle optical center
+                // Inter cap-height ≈ 0.73em; at typography-subtitle 16px → cap = 11.68px, optical center = 5.84px above cap top
+                // DialogHeader pt-6 (24px) + 5.84 = 29.84px; button size-6 center = top + 12px → top = 17.84px ≈ 18px
+                "absolute top-[18px] right-4 z-sticky",
+                // Mobile: 44px touch target (WCAG 2.5.5). Desktop: size-6 where cursor precision applies.
+                "size-11 sm:size-6",
+                "inline-flex items-center justify-center shrink-0",
+                "bg-transparent hover:bg-hover-surface",
+                "text-muted-foreground",
+                "rounded-md",
+                "transition-colors prop-(--motion-state-change)",
+                // Focus ring — *:focus-visible in base.css (WCAG 2.4.11). outline-none removed; base layer owns it.
+                "disabled:pointer-events-none cursor-pointer",
+                "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+              )}
+            >
+              <XIcon />
+              <span className="sr-only">Close</span>
+            </DialogPrimitive.Close>
+          </>
         )}
       </DialogPrimitive.Content>
     </DialogPortal>
@@ -186,7 +189,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="dialog-header"
       className={cn(
         "relative z-sticky",
-        "flex flex-col gap-1",
+        "flex flex-col gap-1 shrink-0",
         // px-6: symmetric horizontal inset matching body inner — visual right edges of header, body content, and footer all sit at panel_right − 24px.
         "pt-6 pb-3 px-6",
         // Always render border-b so box model is stable (no 1px layout shift on state change).
@@ -257,8 +260,8 @@ function DialogBody({ className, children, ...props }: React.ComponentProps<"div
         className={cn(
           "overflow-y-auto flex-1 min-h-0",
           "px-6 pt-2 pb-4",
-          // Defense-in-depth: suppress any browser-variant focus ring on this node.
-          "focus-visible:outline-none focus-visible:shadow-none",
+          // outline-none: tabIndex={-1} is scroll-management only; base.css *:focus-visible owns the ring.
+          "outline-none",
           className
         )}
         {...props}
@@ -276,7 +279,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-row items-center justify-end",
+        "flex flex-row items-center justify-end shrink-0",
         "gap-2",
         // px-6: symmetric horizontal inset matching body inner — visual right edges of header, body content, and footer all sit at panel_right − 24px.
         "pt-3 pb-4 px-6",

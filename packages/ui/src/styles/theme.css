@@ -341,6 +341,12 @@
   --radius-badge: var(--radius-sm);
   /* --radius-surface mirrors --radius-lg (8px) from primitive.css */
   --radius-surface: var(--radius-surface);
+
+  /* Dialog spatial tokens — desktop modal geometry.
+   * max-h-[80vh] scoped to sm+ so mobile fullscreen is not height-capped.
+   * top-[10vh] anchors the panel 10% from the viewport top on desktop. */
+  --dialog-top-offset: 10vh;
+  --dialog-max-h: 80vh;
 }
 
 /* ─── Reduced motion ─────────────────────────────────────────────────────────
