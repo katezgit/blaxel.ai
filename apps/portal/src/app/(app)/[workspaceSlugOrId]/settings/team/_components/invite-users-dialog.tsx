@@ -172,8 +172,8 @@ export function InviteUsersDialog({
                     <div
                       role="group"
                       className={cn(
-                        "flex min-h-9 w-full flex-wrap items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5",
-                        "focus-within:border-primary focus-within:shadow-focus-ring",
+                        "flex min-h-8 w-full flex-wrap items-center gap-1.5 rounded-lg border border-form-field-border bg-transparent px-2.5 py-1 transition-[color,background-color,border-color,box-shadow,outline] duration-fast ease-out-standard",
+                        "focus-within:outline-none focus-within:shadow-focus-ring focus-within:bg-form-field-surface",
                       )}
                       onClick={() => inputRef.current?.focus()}
                     >
@@ -198,7 +198,7 @@ export function InviteUsersDialog({
                           }
                         }}
                         placeholder={chips.length === 0 ? "name@company.com" : ""}
-                        className="min-w-[10ch] flex-1 bg-transparent typography-label text-foreground outline-none placeholder:text-meta-foreground"
+                        className="min-w-[10ch] flex-1 bg-transparent typography-label text-foreground outline-none focus-visible:shadow-none placeholder:text-meta-foreground"
                         autoComplete="off"
                         aria-label="Add invite email"
                       />
