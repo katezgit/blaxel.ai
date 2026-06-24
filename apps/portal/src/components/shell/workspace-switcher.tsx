@@ -59,7 +59,7 @@ export default function WorkspaceSwitcher({
           "transition-colors duration-fast ease-out-standard",
           "hover:bg-secondary-surface hover:border-border focus-visible:shadow-focus-ring",
           isRail
-            ? "size-8 p-0 justify-center"
+            ? "size-8 shrink-0 max-w-none p-0 justify-center"
             : "w-full gap-1.5 px-2 max-md:gap-1 max-md:px-1.5",
         )}
       >
