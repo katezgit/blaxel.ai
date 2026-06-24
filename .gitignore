@@ -53,6 +53,7 @@ apps/.claude/
 
 # Project management (private)
 /index.md
+/todo.md
 private/
 docs/design/materials/
 .gstack/
