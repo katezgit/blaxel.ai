@@ -56,7 +56,7 @@ export function SubShellSidebarReturnHeader({
   );
 
   return (
-    <div className="pt-1">
+    <div className="pt-1 pb-2 border-b border-sidebar-border">
       {isRail ? (
         <Tooltip>
           <TooltipTrigger asChild>{link}</TooltipTrigger>
