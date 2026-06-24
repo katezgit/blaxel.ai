@@ -94,7 +94,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         header: "Client ID",
         cell: (info) => (
           <span className="inline-flex items-center gap-1.5">
-            <code className="font-mono typography-caption text-muted-foreground">
+            <code className="typography-code text-muted-foreground">
               {info.getValue()}
             </code>
             <CopyButton
