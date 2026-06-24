@@ -14,27 +14,24 @@ interface IntegrationsTableProps<TData> {
   table: Table<TData>;
 }
 
-// Local mirror of `(app)/_components/resource-table.tsx`. Two intentional
-// differences from the canonical wrapper: (1) the integrations catalog is a
-// scan list — Alex reads 28 rows looking for one to configure — so the row
-// hover uses the subtler `hover-surface-subtle` token. (2) The wrapper caps
-// at `max-h-[calc(100vh-18rem)]` (matches the models-catalog precedent —
+// Local mirror of `(app)/_components/resource-table.tsx`. One intentional
+// difference from the canonical wrapper: the wrapper caps at
+// `max-h-[calc(100vh-18rem)]` (matches the models-catalog precedent —
 // same chrome shape: workspace topbar + page header + filter bar) so long
 // lists scroll inside the container instead of pushing the page. The 18rem
 // budget covers ~6rem topbar + ~6rem page header + ~3rem filter bar + ~3rem
 // breathing room. `sticky top-0` on thead pins headers to *this* scroll
 // container — it's the nearest scrolling ancestor.
 //
+// Catalog archetype: row body has no hover affordance — only the inline
+// Connect/Manage button is interactive. Row click is not wired.
+//
 // `bg-field-rest` repeats on the `<th>` cells (not just the `<thead>`) because
 // HTML spec: `position: sticky` on a `<thead>` is a no-op — only the cells
 // stick. When they stick alone with a transparent bg, scrolled rows bleed
 // through the header text. The thead-level token + per-cell token together
 // keep the strip opaque both at rest and while scrolling.
-const rowClass = cn(
-  "border-b border-border",
-  "transition-[background-color] duration-fast ease-out-standard",
-  "[tbody_&]:hover:bg-hover-surface-subtle",
-);
+const rowClass = "border-b border-border";
 
 export default function IntegrationsTable<TData>({
   table,

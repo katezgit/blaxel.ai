@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import { SearchInput } from "@repo/ui/components/search-input";
 import {
@@ -137,14 +136,13 @@ export default function CustomDomainsTable({ domains }: CustomDomainsTableProps)
               <th className={tableHeadVariants()}>Region</th>
               <th className={tableHeadVariants()}>Status</th>
               <th className={tableHeadVariants()}>Last verified</th>
-              <th className={cn(tableHeadVariants(), "w-10")} aria-hidden="true" />
             </tr>
           </thead>
           <tbody className={tableBodyClass}>
             {filteredAndSorted.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={4}
                   className="px-4 py-10 text-center typography-body text-muted-foreground"
                 >
                   No domains match these filters.
@@ -251,12 +249,6 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
         <td className={cn(tableCellVariants(), "typography-label text-muted-foreground")}>
           {formatRelative(spec.lastVerifiedAt)}
         </td>
-        <td className={cn(tableCellVariants(), "w-10 text-right")}>
-          <ArrowRight
-            aria-hidden="true"
-            className="size-4 text-meta-foreground transition-colors group-hover:text-foreground"
-          />
-        </td>
       </tr>
       {isFailed && spec.verificationError && (
         // Continuation of the failed row above: shares the errored-subtle bg
@@ -266,7 +258,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
         // to shout a state-errored border at the page; the bg + left bar
         // carry the "this is part of the failure" signal on their own.
         <tr className="bg-state-errored-subtle border-b border-border">
-          <td colSpan={5} className="relative px-6 pb-3 typography-caption text-state-errored-text">
+          <td colSpan={4} className="relative px-6 pb-3 typography-caption text-state-errored-text">
             <span
               aria-hidden="true"
               className="absolute inset-y-0 left-0 w-0.5 bg-state-errored"

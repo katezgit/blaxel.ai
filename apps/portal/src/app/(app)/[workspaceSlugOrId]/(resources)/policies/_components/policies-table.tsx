@@ -111,7 +111,7 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
           return (
             <div className="flex items-center gap-1.5">
               <div className="flex flex-col leading-tight">
-                <span className="typography-body text-foreground">
+                <span className="typography-body text-foreground underline-offset-4 group-hover/policy-row:underline">
                   {policy.metadata.displayName}
                 </span>
                 <span className="font-mono typography-meta text-muted-foreground">
