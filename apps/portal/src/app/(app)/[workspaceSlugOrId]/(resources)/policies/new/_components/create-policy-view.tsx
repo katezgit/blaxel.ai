@@ -243,6 +243,15 @@ function CreatePolicyForm({
       <section className="flex flex-col gap-4">
         <StepHeading
           index={2}
+          title="Name the policy"
+          description="Display name is the dashboard label; the slug is auto-derived for CLI."
+        />
+        <IdentityEditableFields form={form} />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <StepHeading
+          index={3}
           title="Configure the rule"
           description={POLICY_TYPE_BY_VALUE[policyType].hint}
         />
@@ -257,20 +266,11 @@ function CreatePolicyForm({
 
       <section className="flex flex-col gap-4">
         <StepHeading
-          index={3}
+          index={4}
           title="Choose target workloads"
           description="Attaches only to the workload types selected here."
         />
         <ResourceTypesField form={form} />
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <StepHeading
-          index={4}
-          title="Name the policy"
-          description="Display name is the dashboard label; the slug is auto-derived for CLI."
-        />
-        <IdentityEditableFields form={form} />
       </section>
 
       <section className="flex flex-col gap-4">
