@@ -250,51 +250,63 @@
   }
 }
 
-/* ─── Sidebar route transition (app ↔ manage) ────────────────────────────────
- * Spec: docs/design/foundations/animations/sidebar-route-transition.md
+/* ─── Sub-shell sidebar slide (workspace ↔ profile / account / settings) ─────
  *
- * Direction is selected via html[data-route-direction], set by
- * RouteDirectionTagger in the root layout. Default (no value match) is
- * "none" — in-shell navigations (e.g. /manage/profile → /manage/billing)
- * get an instant swap, not a half-applied slide.
+ * Both panels are always mounted as siblings inside `.shell-pane-stack`:
+ *   - `.shell-rail`     — the workspace rail (top-level nav)
+ *   - `.shell-sub-pane` — the sub-shell nav (settings / profile / account)
  *
- * Reduced motion: --duration-fast and --duration-subtle collapse to 0ms
- * under prefers-reduced-motion: reduce (see theme.css).
+ * The stack reserves a single column whose width follows the rail's
+ * collapsed/expanded state on main routes, and snaps to the full sidebar
+ * width on sub-shell routes. Both `<aside>` elements are absolute-positioned
+ * to fill the stack and overlap. Only ONE is visible at rest — the other is
+ * translated 100% to the side:
  *
- * Main content area is NOT tagged (spec §F) — it cross-fades only. */
+ *   Main route (data-sub-shell-open absent):
+ *     rail     → translateX(0)       (visible)
+ *     sub-pane → translateX(100%)    (off-screen right)
+ *
+ *   Sub-shell route (data-sub-shell-open present):
+ *     rail     → translateX(-100%)   (off-screen left)
+ *     sub-pane → translateX(0)       (visible)
+ *
+ * Symmetric timing — both directions use --motion-enter so the rail's exit
+ * and the sub-pane's entry land in lockstep, no perceptual gap. Reduced
+ * motion collapses --duration-base to 0ms upstream (theme.css), no extra
+ * media query needed here. First paint runs no transition because the
+ * initial style application is not a property change. */
 
-::view-transition-old(shell-sidebar),
-::view-transition-new(shell-sidebar) {
-  animation: none;
+.shell-pane-stack {
+  position: relative;
+  width: var(--shell-left-w, var(--sidebar-w));
+  height: 100%;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: width var(--motion-enter);
 }
+.shell-rail,
+.shell-sub-pane {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  transition: transform var(--motion-enter);
+}
+/* Inner <aside> fills its wrapper so the bg-background fully covers the slide
+ * surface — no gap shows through when the rail's own width (from the Sidebar
+ * primitive's responsive classes) is narrower than the stack column (e.g.
+ * sub-shell open while ⌘B-collapsed). The stack governs the column width;
+ * the asides simply fill it. */
+.shell-rail > aside,
+.shell-sub-pane > aside {
+  width: 100%;
+}
+.shell-rail { transform: translateX(0); }
+.shell-sub-pane { transform: translateX(100%); }
+[data-sub-shell-open] .shell-rail { transform: translateX(-100%); }
+[data-sub-shell-open] .shell-sub-pane { transform: translateX(0); }
 
-html[data-route-direction="to-manage"]::view-transition-old(shell-sidebar) {
-  animation: shell-sidebar-exit-left var(--duration-fast) var(--ease-in-accelerated) forwards;
-}
-html[data-route-direction="to-manage"]::view-transition-new(shell-sidebar) {
-  animation: shell-sidebar-enter-right var(--duration-subtle) var(--ease-out-emphasized) 50ms forwards;
-}
-
-html[data-route-direction="to-app"]::view-transition-old(shell-sidebar) {
-  animation: shell-sidebar-exit-right var(--duration-fast) var(--ease-in-accelerated) forwards;
-}
-html[data-route-direction="to-app"]::view-transition-new(shell-sidebar) {
-  animation: shell-sidebar-enter-left var(--duration-subtle) var(--ease-out-emphasized) 50ms forwards;
-}
-
-@keyframes shell-sidebar-exit-left {
-  to { transform: translateX(-100%); opacity: 0; }
-}
-@keyframes shell-sidebar-exit-right {
-  to { transform: translateX(100%); opacity: 0; }
-}
-@keyframes shell-sidebar-enter-right {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-@keyframes shell-sidebar-enter-left {
-  from { transform: translateX(-100%); opacity: 0; }
-  to   { transform: translateX(0);     opacity: 1; }
+.shell-sub-pane[aria-hidden="true"] {
+  pointer-events: none;
 }
 
 /* Lives here, not @repo/ui, because the DS intentionally has no opacity-*
