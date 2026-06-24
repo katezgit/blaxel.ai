@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@repo/ui/components/input";
 import DirtyActionBar from "@/app/(manage)/_components/dirty-action-bar";
-import { Field, FieldRow, Panel } from "@/app/(manage)/_components/page-primitives";
+import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import type { ProfileIdentity } from "@/lib/mock/profile";
 
 const profileSchema = z.object({
@@ -48,54 +48,52 @@ export default function ProfileForm({ identity }: ProfileFormProps) {
   });
 
   return (
-    <Panel title="Identity">
-      <form onSubmit={onSubmit} noValidate>
-        <FieldRow cols={2}>
-          <Field label="Given name" error={errors.givenName?.message}>
-            <Input
-              aria-invalid={errors.givenName ? true : undefined}
-              autoComplete="given-name"
-              {...register("givenName")}
-            />
-          </Field>
-          <Field label="Family name" error={errors.familyName?.message}>
-            <Input
-              aria-invalid={errors.familyName ? true : undefined}
-              autoComplete="family-name"
-              {...register("familyName")}
-            />
-          </Field>
-        </FieldRow>
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <FieldRow cols={1}>
+        <Field label="Given name" error={errors.givenName?.message}>
+          <Input
+            aria-invalid={errors.givenName ? true : undefined}
+            autoComplete="given-name"
+            {...register("givenName")}
+          />
+        </Field>
+      </FieldRow>
 
-        <FieldRow
-          cols={1}
-          className="mt-4"
+      <FieldRow cols={1}>
+        <Field label="Family name" error={errors.familyName?.message}>
+          <Input
+            aria-invalid={errors.familyName ? true : undefined}
+            autoComplete="family-name"
+            {...register("familyName")}
+          />
+        </Field>
+      </FieldRow>
+
+      <FieldRow cols={1}>
+        <Field
+          label="Email"
+          hint={
+            identity.emailFromOAuth
+              ? "Linked to your Google sign-in. Manage it from the provider."
+              : undefined
+          }
         >
-          <Field
-            label="Email"
-            hint={
-              identity.emailFromOAuth
-                ? "Linked to your Google sign-in. Manage it from the provider."
-                : undefined
-            }
-          >
-            <Input
-              type="email"
-              value={identity.email}
-              readOnly
-              autoComplete="email"
-            />
-          </Field>
-        </FieldRow>
+          <Input
+            type="email"
+            value={identity.email}
+            readOnly
+            autoComplete="email"
+          />
+        </Field>
+      </FieldRow>
 
-        <DirtyActionBar
-          isDirty={isDirty}
-          onCancel={() => reset()}
-          onSave={onSubmit}
-          saving={isSubmitting}
-          className="border-t-0 pt-0"
-        />
-      </form>
-    </Panel>
+      <DirtyActionBar
+        isDirty={isDirty}
+        onCancel={() => reset()}
+        onSave={onSubmit}
+        saving={isSubmitting}
+        className="mt-2 border-t-0 pt-0"
+      />
+    </form>
   );
 }
