@@ -31,7 +31,7 @@ export function ProfileForm() {
     register,
     handleSubmit,
     reset,
-    formState: { isDirty, isSubmitting, errors, isValid },
+    formState: { isDirty, isSubmitting, errors },
   } = form;
 
   const onSubmit = handleSubmit(async (values) => {
@@ -66,7 +66,6 @@ export function ProfileForm() {
           onCancel={() => reset()}
           onSave={onSubmit}
           saving={isSubmitting}
-          disableSave={!isValid}
           className="border-t-0 pt-0"
         />
       </form>

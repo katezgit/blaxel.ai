@@ -9,7 +9,6 @@ interface DirtyActionBarProps {
   onSave: () => void;
   saveLabel?: string;
   saving?: boolean;
-  disableSave?: boolean;
   /**
    * Merged onto the bar's outer wrapper. Callers can opt out of the default
    * top separator (e.g. `border-t-0 pt-0`) when the surrounding panel already
@@ -24,7 +23,6 @@ export default function DirtyActionBar({
   onSave,
   saveLabel = "Save",
   saving = false,
-  disableSave = false,
   className,
 }: DirtyActionBarProps) {
   return (
@@ -36,16 +34,12 @@ export default function DirtyActionBar({
         className,
       )}
     >
-      {isDirty && (
-        <Button variant="secondary" onClick={onCancel} disabled={saving}>
+      {isDirty && !saving && (
+        <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
       )}
-      <Button
-        variant="primary"
-        onClick={onSave}
-        disabled={saving || disableSave}
-      >
+      <Button variant="primary" onClick={onSave} disabled={saving}>
         {saving ? "Saving…" : saveLabel}
       </Button>
     </div>
