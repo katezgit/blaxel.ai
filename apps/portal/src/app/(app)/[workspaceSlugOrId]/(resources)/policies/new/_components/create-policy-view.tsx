@@ -295,7 +295,9 @@ function CreatePolicyForm({
           form-left / code-right with each column scrolling independently.
           Footer stays pinned in both layouts. */}
       <ScrollArea className="block min-h-0 flex-1 lg:hidden">
-        <div className="flex flex-col gap-10 pr-4 pb-2">
+        {/* pl-1 clears the 4px focus halo (base.css) from the ScrollArea
+            viewport's overflow:hidden boundary; pr-4 keeps the scrollbar gutter. */}
+        <div className="flex flex-col gap-10 pb-2 pl-1 pr-4">
           {formSections}
           <CodeReferencePanel
             policyType={policyType}
@@ -310,11 +312,11 @@ function CreatePolicyForm({
 
       <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-8">
         <ScrollArea className="min-h-0">
-          <div className="flex flex-col gap-10 pr-4 pb-2">{formSections}</div>
+          <div className="flex flex-col gap-10 pb-2 pl-1 pr-4">{formSections}</div>
         </ScrollArea>
 
         <ScrollArea className="min-h-0">
-          <div className="pr-4 pb-2">
+          <div className="pb-2 pl-1 pr-4">
             <CodeReferencePanel
               policyType={policyType}
               name={cleanName}
@@ -493,7 +495,7 @@ function buildYamlBody(ctx: SnippetBuildContext): string {
       `    total: ${ctx.tokenLimits.total}`,
     );
   } else if (ctx.policyType === "flavor") {
-    lines.push("  flavors:", "    - name: t4", "      type: cpu");
+    lines.push("  flavors:", "    - name: t4", "      type: gpu");
   }
   return lines.join("\n");
 }
@@ -552,7 +554,7 @@ function buildGoSnippet(ctx: SnippetBuildContext): string {
   } else if (ctx.policyType === "flavor") {
     lines.push(
       `\t\tFlavors: []blaxel.PolicyFlavor{`,
-      `\t\t\t{Name: "t4", Type: "cpu"},`,
+      `\t\t\t{Name: "t4", Type: "gpu"},`,
       `\t\t},`,
     );
   }
@@ -622,7 +624,7 @@ function buildPolicyObjectLiteral(
   } else if (ctx.policyType === "flavor") {
     lines.push(`    ${quoteKey("flavors")}: [`);
     lines.push(
-      `      { ${quoteKey("name")}: ${str("t4")}, ${quoteKey("type")}: ${str("cpu")} },`,
+      `      { ${quoteKey("name")}: ${str("t4")}, ${quoteKey("type")}: ${str("gpu")} },`,
     );
     lines.push(`    ],`);
   }
