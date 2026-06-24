@@ -72,7 +72,7 @@ export const Sizing: StoryObj = {
           alignItems: "center",
           gap: 8,
           padding: "8px 12px",
-          background: "var(--color-muted)",
+          background: "var(--color-muted-surface)",
           border: "1px solid var(--color-border)",
           borderRadius: "var(--radius-sm)",
           marginBottom: 8,
@@ -117,7 +117,7 @@ export const Sizing: StoryObj = {
             display: "grid",
             gridTemplateColumns: "18px 1fr 120px 80px 48px",
             columnGap: 12,
-            background: "var(--color-muted)",
+            background: "var(--color-muted-surface)",
             padding: "6px 12px",
             borderBottom: "1px solid var(--color-border)",
             alignItems: "center",
@@ -287,7 +287,7 @@ export const Sizing: StoryObj = {
       <div
         style={{
           padding: "10px 14px",
-          background: "var(--color-muted)",
+          background: "var(--color-muted-surface)",
           borderRadius: "var(--radius-sm)",
           border: "1px solid var(--color-border)",
         }}

@@ -77,20 +77,55 @@ export const Surface: StoryObj = {
   name: "Surface",
   render: () => (
     <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
-      <Section title="Surface">
+      <Section title="Foundation surfaces">
         <SwatchRow token="--color-background" label="Page canvas — outermost background" bordered />
         <SwatchRow token="--color-page" label="Recessed page — deep background layer" bordered />
         <SwatchRow token="--color-panel" label="Panel / card — white surface above canvas" bordered />
-        <SwatchRow token="--color-elevated" label="Elevated — popover, tooltip, dropdown" bordered />
-        <SwatchRow token="--color-muted" label="Muted fill — section dividers, empty states" bordered />
-        <SwatchRow token="--color-secondary" label="Secondary fill — chip bg, selected rows" bordered />
-        <SwatchRow token="--color-surface-hover" label="Surface hover — interactive highlight" bordered />
-        {/* Component-alias surfaces — alias of panel */}
-        <SwatchRow token="--color-card" label="Card surface (alias of panel) — Card component fill" bordered />
-        <SwatchRow token="--color-popover" label="Popover surface (alias of panel) — Popover/Tooltip/Dropdown fill" bordered />
-        {/* Interaction state surfaces */}
-        <SwatchRow token="--color-selected" label="Selected row / item (alias of secondary)" bordered />
-        <SwatchRow token="--color-hover" label="Hover surface highlight (alias of elevated)" bordered />
+        <SwatchRow token="--color-elevated-surface" label="Elevated surface — popovers, tooltips, dropdowns" bordered />
+        <SwatchRow token="--color-muted-surface" label="Muted fill — section dividers, table header strips, empty states" bordered />
+        <SwatchRow token="--color-secondary-surface" label="Secondary fill — chip bg, selected rows" bordered />
+      </Section>
+      <Section title="Control-raised alias chain — card / popover / form-field">
+        <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 10, lineHeight: 1.6 }}>
+          <code style={{ fontFamily: "var(--font-sans)" }}>--color-control-raised</code> is the foundation
+          that card, popover, and focused form-field alias into. Light: equals panel (border + shadow carry
+          the boundary). Dark: elevated lifts above panel so the control reads as a distinct layer.
+        </p>
+        <SwatchRow token="--color-control-raised" label="Foundation — light: panel  dark: elevated-surface" bordered />
+        <SwatchRow token="--color-card" label="Card surface → alias of --color-control-raised" bordered />
+        <SwatchRow token="--color-popover" label="Popover surface → alias of --color-control-raised" bordered />
+        <SwatchRow token="--color-form-field-surface" label="Focused form-field fill → alias of --color-control-raised" bordered />
+      </Section>
+      <Section title="Field-rest surface">
+        <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 10, lineHeight: 1.6 }}>
+          Resting background for Input, Textarea, Select, and Combobox — also table-header strips.
+          Distinct from <code style={{ fontFamily: "var(--font-sans)" }}>--color-form-field-surface</code>{" "}
+          which is the <em>focus</em> state fill. Light: matches background (subtle sink into the canvas);
+          dark: 30% bg + 70% panel mix avoids a hard contrast band.
+        </p>
+        <SwatchRow token="--color-field-rest" label="Form field resting fill — light: background  dark: bg/panel mix" bordered />
+      </Section>
+      <Section title="Interaction surfaces — hover / selected / highlight">
+        <SwatchRow token="--color-hover-surface" label="Row / item hover — interactive backdrops; neutral, no brand tint" bordered />
+        <SwatchRow token="--color-hover-surface-subtle" label="Scan-aid hover for non-interactive rows — half-intensity of hover-surface" bordered />
+        <SwatchRow token="--color-selected-surface" label="Selected row / item — orange tint over panel (brand-tinted)" bordered />
+        <SwatchRow
+          token="--color-highlight-surface"
+          label="Popover item hover within Select / Command / DropdownMenu — mixed step away from popover bg (not elevated directly, which would equal the container)"
+          bordered
+        />
+      </Section>
+      <Section title="Accent — shadcn bg-accent (Command / DropdownMenu active item)">
+        <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 10, lineHeight: 1.6 }}>
+          Drives <code style={{ fontFamily: "var(--font-sans)" }}>bg-accent</code> used by shadcn internals.
+          Defined as a literal <code style={{ fontFamily: "var(--font-sans)" }}>color-mix()</code> expression
+          (not an alias of <code style={{ fontFamily: "var(--font-sans)" }}>--color-hover-surface</code>) so
+          that <code style={{ fontFamily: "var(--font-sans)" }}>getComputedStyle</code> returns a resolved
+          value on <code style={{ fontFamily: "var(--font-sans)" }}>:root</code>. 92% elevated + 8% orange
+          tint in both modes.
+        </p>
+        <SwatchRow token="--color-accent" label="shadcn bg-accent — Command / DropdownMenu active item fill" bordered />
+        <SwatchRow token="--color-accent-foreground" label="Foreground on accent fill — alias of foreground" />
       </Section>
     </div>
   ),
@@ -172,7 +207,7 @@ export const TextSecondaryTiers: StoryObj = {
               style={{
                 marginTop: 12,
                 padding: "8px 10px",
-                background: "var(--color-muted)",
+                background: "var(--color-muted-surface)",
                 borderRadius: "var(--radius-sm)",
                 fontSize: 10,
                 fontFamily: "var(--font-sans)",
@@ -202,7 +237,7 @@ export const TextSecondaryTiers: StoryObj = {
                 gridTemplateColumns: "2fr 1fr 1fr",
                 padding: "8px 16px",
                 borderBottom: "1px solid var(--color-border)",
-                background: "var(--color-muted)",
+                background: "var(--color-muted-surface)",
               }}
             >
               {["Model", "Score", "Runs"].map((h) => (
@@ -260,10 +295,10 @@ export const TextSecondaryTiers: StoryObj = {
                 fontSize: 10,
                 fontFamily: "var(--font-sans)",
                 color: "var(--color-muted-foreground)",
-                background: "var(--color-muted)",
+                background: "var(--color-muted-surface)",
               }}
             >
-              --color-meta
+              --color-meta-foreground
             </div>
             <p style={{ fontSize: 11, color: "var(--color-meta-foreground)", padding: "4px 16px 12px" }}>
               Weak secondary. Scanning recede. Column headers / mono IDs under primary.
@@ -282,7 +317,12 @@ export const Border: StoryObj = {
   render: () => (
     <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
       <Section title="Border">
-        <SwatchRow token="--color-border" label="Border — rgba alpha tint, composites on any surface" />
+        <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 10, lineHeight: 1.6 }}>
+          <code style={{ fontFamily: "var(--font-sans)" }}>--color-form-field-border</code> is a direct alias
+          of <code style={{ fontFamily: "var(--font-sans)" }}>--color-border</code> — no separate row needed;
+          it resolves to the same computed value in both themes.
+        </p>
+        <SwatchRow token="--color-border" label="Border — rgba alpha tint, composites on any surface (--color-form-field-border is a direct alias)" />
         <SwatchRow token="--color-border-strong" label="+10pp alpha for selected/active edges" />
         <SwatchRow token="--color-border-disabled" label="PINNED neutral-adjacent — disabled control borders" />
       </Section>
@@ -296,17 +336,17 @@ export const Primary: StoryObj = {
   name: "Primary",
   render: () => (
     <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
-      <Section title="Primary — teal CTA fill (Primary button, switches, tabs active, checkbox, progress)">
+      <Section title="Primary — orange CTA fill (Primary button, switches, tabs active, checkbox, progress)">
         <SwatchRow
           token="--color-primary"
-          label="Teal CTA fill — light: #087A6C  dark: #2BE0C8. Powers Button primary, Switch ON, Tabs active, Checkbox checked, Progress default."
+          label="Orange CTA fill — light: #c95618 (orange-800)  dark: #f06128 (orange-500). Powers Button primary, Switch ON, Tabs active, Checkbox checked, Progress default."
         />
         <SwatchRow token="--color-primary-foreground" label="Text on --color-primary fill" bordered />
         <SwatchRow token="--color-primary-hover" label="Hover state of primary" />
         <SwatchRow token="--color-primary-glow" label="Glow halo — focus / active primary chrome" bordered />
         <SwatchRow token="--color-primary-soft" label="10% alpha tint — badges, selection pills" bordered />
         <SwatchRow token="--color-primary-border" label="25% alpha tint — outlined chips" bordered />
-        <SwatchRow token="--color-primary-disabled" label="PINNED desaturated teal — disabled primary state (reads as less prominent, not darker)" bordered />
+        <SwatchRow token="--color-primary-disabled" label="PINNED desaturated orange — disabled primary state (light: #E8BBA8 / dark: #4A2010; not in palette ramp)" bordered />
       </Section>
     </div>
   ),
@@ -528,10 +568,10 @@ export const FocusChrome: StoryObj = {
             </div>
             <div style={{ marginTop: 10 }}>
               <code style={{ fontFamily: "var(--font-sans)", fontSize: 10, color: "var(--color-muted-foreground)", display: "block" }}>
-                --color-ring → teal-700/teal-500 (light: #087A6C / dark: #1A9183)
+                --color-ring → orange-800/orange-500 (light: #c95618 / dark: #f06128)
               </code>
               <code style={{ fontFamily: "var(--font-sans)", fontSize: 10, color: "var(--color-muted-foreground)", display: "block" }}>
-                --color-ring-glow → rgba teal glow
+                --color-ring-glow → rgba orange glow (12–18% alpha)
               </code>
             </div>
           </div>
@@ -592,16 +632,16 @@ export const BrandIsolation: StoryObj = {
           Brand tokens are defined in <code style={{ fontFamily: "var(--font-sans)" }}>@theme</code> and generate
           Tailwind utilities (<code style={{ fontFamily: "var(--font-sans)" }}>bg-brand</code>, etc.).
           Use only for logo/mark surfaces — never as interactive CTA fill.
-          Distinct hue from warning to avoid status ambiguity.
+          Brand is orange-800 (#c95618) — anchored to the same hue family as primary but PINNED so it never shifts with theme.
         </p>
-        <SwatchRow token="--color-brand" label="--gold (#f7b717) — logo stripe, mark fill" />
-        <SwatchRow token="--color-brand-foreground" label="AA-contrast foreground on brand fill" />
-        <SwatchRow token="--color-brand-hover" label="#D49A0E — darkened gold for hover; not a palette step (PINNED)" />
-        <SwatchRow token="--color-brand-glow" label="16% alpha gold — glow halo for brand chrome" bordered />
+        <SwatchRow token="--color-brand" label="orange-800 (#c95618) — logo stripe, mark fill. PINNED — never shifts with theme." />
+        <SwatchRow token="--color-brand-foreground" label="white — AA-contrast foreground on brand fill. PINNED." />
+        <SwatchRow token="--color-brand-hover" label="orange-900 (#9b4212) — darker orange step for hover. PINNED." />
+        <SwatchRow token="--color-brand-glow" label="16% alpha orange — glow halo for brand chrome" bordered />
         <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginTop: 12 }}>
           Warning state uses{" "}
           <code style={{ fontFamily: "var(--font-sans)" }}>--color-state-warning</code>{" "}
-          (light: <samp>#C47A0A</samp> / dark: <samp>#E5A52E</samp>) — a distinct oranger hue.
+          (light: <samp>#c37d0d</samp> / dark: <samp>#F9B23B</samp>) — amber family, distinct from brand orange.
         </p>
       </Section>
     </div>
@@ -763,13 +803,14 @@ export const ChartSeries: StoryObj = {
           <ul style={{ margin: "6px 0 0 16px", padding: 0 }}>
             <li>
               <code style={{ fontFamily: "var(--font-sans)" }}>--color-chart-1</code>{" "}
-              = <code style={{ fontFamily: "var(--font-sans)" }}>--color-primary</code>{" "}
-              (light: chart-1 <samp>#0E9888</samp> / primary <samp>#087A6C</samp> — very close; dark: both <samp>#2BE0C8</samp> — <strong>identical</strong>)
+              anchors to brand orange:{" "}
+              light: <samp>#d96520</samp> (orange-700) / dark: <samp>#f06128</samp> (orange-500).
+              Chart-1 is intentionally the brand series.
             </li>
             <li>
               <code style={{ fontFamily: "var(--font-sans)" }}>--color-chart-7</code>{" "}
               = <code style={{ fontFamily: "var(--font-sans)" }}>--color-state-running</code>{" "}
-              (light: both <samp>#2462C5</samp> — <strong>identical</strong>; dark: both <samp>#4FA8FF</samp> — <strong>identical</strong>)
+              (light: both <samp>#3772cf</samp> — <strong>identical</strong>; dark: both <samp>#33A1FF</samp> — <strong>identical</strong>)
             </li>
             <li>
               Dark only: chart-3 <samp>#F46EB0</samp> vs chart-6 <samp>#FF7066</samp> — distinct hues but similar warmth / lightness
@@ -983,6 +1024,220 @@ export const ChartSeries: StoryObj = {
         </div>
       </section>
 
+    </div>
+  ),
+};
+
+/* ─── Code block surfaces ────────────────────────────────────────────────── */
+
+export const CodeBlock: StoryObj = {
+  name: "Code Block Surfaces",
+  render: () => (
+    <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
+      <Section title="Code block surfaces — PINNED dark in both themes">
+        <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 10, lineHeight: 1.6 }}>
+          These tokens are <strong style={{ color: "var(--color-foreground)" }}>PINNED</strong> — they resolve
+          to flat dark literals in both light and dark mode.{" "}
+          <code style={{ fontFamily: "var(--font-sans)" }}>--color-code-bg</code> uses{" "}
+          <code style={{ fontFamily: "var(--font-sans)" }}>var(--ink-900)</code> (#18212E) — visibly lighter
+          than the dark canvas (#0C1016) so the block reads as a distinct surface even in dark mode.
+        </p>
+        <div
+          style={{
+            background: "var(--color-code-bg)",
+            border: "1px solid var(--color-code-border)",
+            borderRadius: "var(--radius-md)",
+            padding: "12px 16px",
+            marginBottom: 16,
+          }}
+        >
+          <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center" }}>
+            <span
+              style={{
+                fontSize: 10,
+                fontFamily: "var(--font-sans)",
+                color: "var(--color-code-muted)",
+                textTransform: "uppercase" as const,
+                letterSpacing: "0.08em",
+              }}
+            >
+              typescript
+            </span>
+          </div>
+          <pre
+            style={{
+              margin: 0,
+              fontSize: 12,
+              lineHeight: 1.6,
+              fontFamily: "var(--font-sans)",
+              color: "var(--color-code-fg)",
+            }}
+          >
+            {`const sandbox = await blaxel.sandboxes.create();\nawait sandbox.run("node index.js");`}
+          </pre>
+        </div>
+        <SwatchRow token="--color-code-bg" label="Block body + header fill — PINNED: var(--ink-900) = #18212E in both themes" />
+        <SwatchRow token="--color-code-fg" label="Primary code text — PINNED: var(--ink-50) = #E8EEF5 in both themes" />
+        <SwatchRow token="--color-code-muted" label="Language label / de-emphasized tokens — PINNED: var(--ink-100) = #B3BFCE in both themes" />
+        <SwatchRow token="--color-code-border" label="Hairline on dark surface — PINNED: rgba(255 255 255 / .06) in both themes" bordered />
+      </Section>
+    </div>
+  ),
+};
+
+/* ─── Alert backgrounds ──────────────────────────────────────────────────── */
+
+export const AlertBackgrounds: StoryObj = {
+  name: "Alert Backgrounds",
+  render: () => (
+    <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
+      <Section title="Alert backgrounds — light / dark comparison">
+        <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 16, lineHeight: 1.6 }}>
+          Light: 10% alpha of the status hue on transparent (same floor as{" "}
+          <code style={{ fontFamily: "var(--font-sans)" }}>state-*-subtle</code>). Dark: solid mix of the
+          status hue into <code style={{ fontFamily: "var(--font-sans)" }}>--surface-bg-dark</code> (20% hue
+          + 80% dark canvas) — avoids the near-black alpha amplification that makes pure alpha tints read as
+          oversaturated casts in dark mode.
+        </p>
+        {[
+          {
+            token: "--color-alert-destructive-bg" as const,
+            name: "Destructive",
+            border: "--color-state-errored",
+            textToken: "--color-state-errored-text",
+            sample: "Sandbox exceeded memory limit — container terminated.",
+          },
+          {
+            token: "--color-alert-warning-bg" as const,
+            name: "Warning",
+            border: "--color-state-warning",
+            textToken: "--color-state-warning-text",
+            sample: "Rate limit approaching — 87% of monthly quota used.",
+          },
+          {
+            token: "--color-alert-success-bg" as const,
+            name: "Success",
+            border: "--color-state-scored",
+            textToken: "--color-state-scored-text",
+            sample: "Agent deployed successfully to us-east-1.",
+          },
+          {
+            token: "--color-alert-info-bg" as const,
+            name: "Info",
+            border: "--color-state-running",
+            textToken: "--color-state-running-text",
+            sample: "Build in progress — estimated 45 s remaining.",
+          },
+        ].map(({ token, name, border, textToken, sample }) => (
+          <div key={token} style={{ marginBottom: 10 }}>
+            <div
+              style={{
+                background: `var(${token})`,
+                border: `1px solid var(${border})`,
+                borderRadius: "var(--radius-md)",
+                padding: "10px 14px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: 12,
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: `var(${textToken})`,
+                    display: "block",
+                    marginBottom: 2,
+                  }}
+                >
+                  {name}
+                </span>
+                <span style={{ fontSize: 11, color: "var(--color-foreground)", lineHeight: 1.5 }}>
+                  {sample}
+                </span>
+              </div>
+              <code
+                style={{
+                  fontFamily: "var(--font-sans)",
+                  fontSize: 9,
+                  color: "var(--color-muted-foreground)",
+                  flexShrink: 0,
+                  whiteSpace: "nowrap" as const,
+                  paddingTop: 2,
+                }}
+              >
+                {token}
+              </code>
+            </div>
+          </div>
+        ))}
+        <div style={{ marginTop: 8 }}>
+          <SwatchRow token="--color-alert-destructive-bg" label="Destructive alert fill — light: 10% errored alpha  dark: 20% errored-400 mixed into bg-dark" bordered />
+          <SwatchRow token="--color-alert-warning-bg" label="Warning alert fill — light: 10% warning alpha  dark: 20% warning-400 mixed into bg-dark" bordered />
+          <SwatchRow token="--color-alert-success-bg" label="Success alert fill — light: 10% scored alpha  dark: 20% scored-400 mixed into bg-dark" bordered />
+          <SwatchRow token="--color-alert-info-bg" label="Info alert fill — light: 10% running alpha  dark: 20% running-400 mixed into bg-dark" bordered />
+        </div>
+      </Section>
+    </div>
+  ),
+};
+
+/* ─── Progress ───────────────────────────────────────────────────────────── */
+
+export const Progress: StoryObj = {
+  name: "Progress",
+  render: () => (
+    <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
+      <Section title="Progress track + fill">
+        <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 16, lineHeight: 1.6 }}>
+          <code style={{ fontFamily: "var(--font-sans)" }}>--color-progress-track</code> is a dedicated token
+          because <code style={{ fontFamily: "var(--font-sans)" }}>--color-muted-surface</code> dark equals
+          the card dark — reusing it makes the track vanish on table rows.
+          Light: muted-surface. Dark: rgba border-seed at 12% alpha.
+          <br />
+          <code style={{ fontFamily: "var(--font-sans)" }}>--color-progress-fill-neutral</code> is{" "}
+          <strong style={{ color: "var(--color-foreground)" }}>PINNED</strong> at{" "}
+          <samp>#B3BFCE</samp> in both themes (ink-100 literal) — see Progress spec Q10.
+        </p>
+
+        {/* Progress bar demos */}
+        {[
+          { fill: "--color-primary", label: "--color-primary (default branded fill)", pct: 65 },
+          { fill: "--color-progress-fill-neutral", label: "--color-progress-fill-neutral PINNED #B3BFCE", pct: 40 },
+          { fill: "--color-state-scored", label: "--color-state-scored (success state)", pct: 100 },
+          { fill: "--color-state-errored", label: "--color-state-errored (error state)", pct: 78 },
+        ].map(({ fill, label, pct }) => (
+          <div key={fill} style={{ marginBottom: 14 }}>
+            <div
+              style={{
+                height: 8,
+                background: "var(--color-progress-track)",
+                borderRadius: 4,
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  height: "100%",
+                  width: `${pct}%`,
+                  background: `var(${fill})`,
+                  borderRadius: 4,
+                }}
+              />
+            </div>
+            <code style={{ fontFamily: "var(--font-sans)", fontSize: 10, color: "var(--color-muted-foreground)", display: "block", marginTop: 4 }}>
+              {label}
+            </code>
+          </div>
+        ))}
+
+        <div style={{ marginTop: 16 }}>
+          <SwatchRow token="--color-progress-track" label="Track fill — light: muted-surface  dark: rgba border-seed 12% (avoids vanishing on card)" bordered />
+          <SwatchRow token="--color-progress-fill-neutral" label="Neutral fill — PINNED: #B3BFCE (ink-100 literal) in both themes — see Progress spec Q10" bordered />
+        </div>
+      </Section>
     </div>
   ),
 };

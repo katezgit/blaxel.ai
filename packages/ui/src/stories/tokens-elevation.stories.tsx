@@ -37,7 +37,7 @@ function DashboardBehindOverlay() {
               fontWeight: 500,
               padding: "1px 6px",
               borderRadius: "var(--radius-full)",
-              background: "var(--color-secondary)",
+              background: "var(--color-secondary-surface)",
               color: "var(--color-secondary-foreground)",
             }}
           >
@@ -51,7 +51,7 @@ function DashboardBehindOverlay() {
               paddingLeft: 8,
               paddingRight: 8,
               borderRadius: "var(--radius-sm)",
-              background: "var(--color-secondary)",
+              background: "var(--color-secondary-surface)",
               border: "1px solid var(--color-border)",
               display: "flex",
               alignItems: "center",
@@ -113,7 +113,7 @@ function DashboardBehindOverlay() {
           style={{
             display: "grid",
             gridTemplateColumns: "2fr 1fr 1fr",
-            background: "var(--color-muted)",
+            background: "var(--color-muted-surface)",
             padding: "4px 8px",
             color: "var(--color-muted-foreground)",
             fontWeight: 600,
@@ -534,7 +534,7 @@ const Z_TIERS = [
     value: "10",
     utility: "z-sticky",
     role: "Sticky elements within scroll — table thead, sticky toolbars",
-    color: "var(--color-muted)",
+    color: "var(--color-muted-surface)",
     labelColor: "var(--color-foreground)",
   },
   {
@@ -730,7 +730,7 @@ export const Overlays: StoryObj = {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 32 }}>
         <OverlayCard
           bgToken="--color-overlay-dialog"
-          bgResolvedValue="color-mix(in srgb, var(--neutral-950) 10%, transparent) → #1c20241a"
+          bgResolvedValue="color-mix(in srgb, var(--neutral-950) 10%, transparent) → #09090b1a"
           blurToken="--blur-overlay-dialog"
           blurResolvedValue="var(--blur-xs) → 4px"
           label="overlay-dialog"
@@ -738,7 +738,7 @@ export const Overlays: StoryObj = {
         />
         <OverlayCard
           bgToken="--color-overlay-drawer"
-          bgResolvedValue="color-mix(in srgb, var(--neutral-950) 2%, transparent) → #1c202405"
+          bgResolvedValue="color-mix(in srgb, var(--neutral-950) 2%, transparent) → #09090b05"
           blurToken="--blur-overlay-drawer"
           blurResolvedValue="2px"
           label="overlay-drawer"
