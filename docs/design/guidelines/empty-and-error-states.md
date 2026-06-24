@@ -117,7 +117,7 @@ the container at that scale adds visual weight without spatial gain. Text only.
 ### Universal principles (apply to every project)
 
 **DO:**
-- Name the content type or feature in the title. "No active runs" or "Couldn't load runs" — not
+- Name the content type or feature in the title. "No active [content type]" or "Couldn't load [content type]" — not
   "Nothing here" or "Error".
 - Keep the title to five words or fewer.
 - Keep the subtitle to one or two short sentences.
@@ -136,8 +136,8 @@ the container at that scale adds visual weight without spatial gain. Text only.
 - Use blame language ("You may have lost connection") — frame failure as a system event.
 - Use two CTAs on EmptyState (one maximum).
 
-**zero-state copy form:** State what is absent, present tense. "No active runs." Then state what
-will fill the space. "Runs you start will appear here." Forward-looking without encouraging
+**zero-state copy form:** State what is absent, present tense. "No active [content type]." Then state what
+will fill the space. "[Content type] you start will appear here." Forward-looking without encouraging
 narrative.
 
 **no-results copy form:** Name the failure mode. "No matches." Then give the fix. "Adjust your

@@ -113,7 +113,7 @@ A dismiss confirmation dialog must fire **only when both conditions hold simulta
 1. **The form is dirty** — at least one field's current value differs from its loaded state (same definition as §3).
 2. **The data entry is high-stakes** — defined as any of:
    - Irreversible save (the resource cannot be reconstructed once submitted — e.g. an API key whose token is shown once)
-   - Complex multi-field resource creation where reconstructing the input is non-trivial (Policy, API key with permission scopes, Network config, Volume region + attachment config)
+   - Complex multi-field resource creation where reconstructing the input is non-trivial (governance policy, credential with permission scopes, network/routing config, resource with regional or dependency constraints)
    - A paid action (upgrade, add-on activation, credit purchase)
    - Any form where the user would need more than 30 seconds to re-enter what they typed
 
@@ -124,21 +124,21 @@ If **either** condition is absent, dismiss silently with no prompt.
 | Context | Treatment |
 |---|---|
 | Single-field inline rename | Silent dismiss — trivial to retype |
-| Toggle or boolean setting (e.g. standby enabled, email notifications) | Silent dismiss — one click to revert |
+| Toggle or boolean setting (e.g. email notifications, beta opt-in) | Silent dismiss — one click to revert |
 | Theme or display preference | Silent dismiss — no data loss risk |
-| Sandbox TTL edit (one numeric field) | Silent dismiss — single field, easily reset |
-| Member invite (email + role — 2 fields, low reconstruction cost) | Silent dismiss |
+| Single-numeric-field edit (e.g. TTL, limit) | Silent dismiss — single field, easily reset |
+| Two-field invite (email + role) | Silent dismiss — low reconstruction cost |
 | Any form where dirty state is < 2 fields of work | Silent dismiss |
 
 ### What counts as high-stakes (confirm when dirty)
 
 | Context | Why it qualifies |
 |---|---|
-| **Policy create / edit** | ≥ 8 fields; region + flavor + token-limit rules are non-trivial to reconstruct; applies governance to live workloads | 
-| **API key create** | The API key token is shown exactly once on submit — dismissing mid-create means re-creating and revoking a previous key if the user was editing permissions |
-| **Network / Custom domains config** | Misconfiguration has production routing consequences; multi-field, non-trivial reconstruction |
-| **Volume create** | Region mismatch breaks Agent attachment; reconstruction requires knowing the correct region + attachment target |
-| **Agent deploy / config with custom environment or entrypoint** | Multi-section form; deploy config is non-trivial |
+| **Multi-field policy / governance config** (≥ 8 fields) | Non-trivial to reconstruct (region, flavor, limit rules, etc.); applies governance to live workloads |
+| **Credential / token creation** | Secret is shown exactly once on submit — dismissing mid-create means re-creating and revoking |
+| **Network / routing config** | Misconfiguration has production routing consequences; multi-field, non-trivial reconstruction |
+| **Resource with regional or dependency constraints** | Misconfigured dependencies (e.g. region mismatch) break downstream attachment; reconstruction requires knowing the correct region + target |
+| **Multi-section deploy or workload config** | Multi-section form; deploy config is non-trivial |
 
 ### Confirmation dialog copy
 
@@ -157,7 +157,7 @@ Your unsaved changes will be lost.
 
 ### Cautionary example — the lazy implementation
 
-The Policy create flow (as of the initial release) fires a discard-changes confirmation on **every** dismiss — including when the form has never been touched. This trains users to click through the prompt as a reflex, defeating the guard entirely. When the confirm fires on a genuinely high-stakes dirty form, the user dismisses it without reading because the prompt has been noise every other time.
+A high-stakes create flow fires a discard-changes confirmation on **every** dismiss — including when the form has never been touched. This trains users to click through the prompt as a reflex, defeating the guard entirely. When the confirm fires on a genuinely high-stakes dirty form, the user dismisses it without reading because the prompt has been noise every other time.
 
 **The failure mode:** condition (1) missing — the gate fires on clean forms.
 
@@ -171,5 +171,5 @@ The fix is not to remove the guard — it is to evaluate both conditions before 
 
 ### Cross-references
 
-- `container-choice.md` §5 — each container's dismiss wiring; dismiss handler must read dirty + stakes, never assume
+- `container-choice.md` §4 — each container's dismiss wiring; dismiss handler must read dirty + stakes, never assume
 - `form-actions.md` §3 — canonical "dirty" definition (field value differs from loaded state; resets on successful save or explicit Cancel revert)
