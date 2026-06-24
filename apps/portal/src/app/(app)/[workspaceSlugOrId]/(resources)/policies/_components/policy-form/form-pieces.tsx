@@ -6,8 +6,9 @@ import {
   useFieldArray,
   type UseFormReturn,
 } from "react-hook-form";
-import { AlertTriangle, Globe, MapPin, Plus, X } from "lucide-react";
+import { AlertTriangle, Globe, MapPin, Plus, Server, X } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
+import { Chip, ChipGroup } from "@repo/ui/components/chip";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
 import {
@@ -232,13 +233,10 @@ export function PolicyTypeReadOnlyField({
       <span className="typography-label text-muted-foreground">
         Policy type
       </span>
-      <span className="inline-flex w-fit items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 typography-caption text-foreground">
-        <Icon
-          aria-hidden="true"
-          className="size-3.5 shrink-0 text-muted-foreground"
-        />
+      <Chip interactive={false} className="w-fit">
+        <Icon aria-hidden="true" className="text-muted-foreground" />
         {option.label}
-      </span>
+      </Chip>
       <p className="typography-caption text-meta-foreground">
         Policy type is fixed at creation. Create a new policy to change it.
       </p>
@@ -268,52 +266,53 @@ interface LocationBodyProps {
 }
 
 export function LocationBody({ value, onChange }: LocationBodyProps) {
-  function toggle(item: LocationItem) {
-    const exists = value.some(
-      (s) => s.type === item.type && s.name === item.name,
+  // Derive a stable string key for each location item so ChipGroup can track it.
+  function locationKey(item: LocationItem) {
+    return `${item.type}:${item.name}`;
+  }
+
+  const selectedKeys = value.map(locationKey);
+
+  function handleGroupChange(next: ReadonlyArray<string>) {
+    const nextItems = SAMPLE_LOCATIONS.filter((item) =>
+      next.includes(locationKey(item)),
     );
-    onChange(
-      exists
-        ? value.filter((s) => !(s.type === item.type && s.name === item.name))
-        : [...value, item],
-    );
+    onChange(nextItems);
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-1.5">
+      <ChipGroup
+        value={selectedKeys}
+        onChange={handleGroupChange}
+        color="info"
+        variant="light"
+        aria-label="Allowed locations"
+      >
         {SAMPLE_LOCATIONS.map((item) => {
-          const checked = value.some(
-            (s) => s.type === item.type && s.name === item.name,
-          );
-          const Icon = item.type === "continent" ? Globe : MapPin;
-          const typeLabel = item.type === "continent" ? "Continent" : "Country";
+          const Icon =
+            item.type === "continent"
+              ? Globe
+              : item.type === "country"
+                ? MapPin
+                : Server;
+          const typeLabel =
+            item.type === "continent"
+              ? "Continent"
+              : item.type === "country"
+                ? "Country"
+                : "Data center";
           return (
-            <button
-              type="button"
-              key={`${item.type}:${item.name}`}
-              onClick={() => toggle(item)}
-              aria-pressed={checked}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 typography-caption transition-colors duration-fast ease-out-standard",
-                checked
-                  ? "border-border-strong bg-muted-surface text-foreground"
-                  : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
-              )}
-            >
-              <Icon
-                aria-hidden="true"
-                className="size-3.5 shrink-0 text-muted-foreground"
-              />
+            <Chip key={locationKey(item)} value={locationKey(item)}>
+              <Icon aria-hidden="true" className="text-muted-foreground" />
               <span className="sr-only">{typeLabel}: </span>
               {item.name}
-            </button>
+            </Chip>
           );
         })}
-      </div>
+      </ChipGroup>
       <p className="typography-caption text-muted-foreground">
-        Continents and countries union — workloads may run in any matching
-        data center.
+        Locations union — workloads may run in any matching data center.
       </p>
     </div>
   );
@@ -429,33 +428,21 @@ export function ResourceTypesField({ form }: ResourceTypesFieldProps) {
       name="resourceTypes"
       render={({ field, fieldState }) => (
         <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap gap-1.5">
-            {RESOURCE_TYPE_OPTIONS.map((option) => {
-              const checked = field.value.includes(option.value);
-              return (
-                <button
-                  type="button"
-                  key={option.value}
-                  onClick={() => {
-                    const nextValues: ReadonlyArray<PolicyResourceType> =
-                      checked
-                        ? field.value.filter((v) => v !== option.value)
-                        : [...field.value, option.value];
-                    field.onChange(nextValues);
-                  }}
-                  aria-pressed={checked}
-                  className={cn(
-                    "inline-flex items-center rounded-md border px-2.5 py-1 typography-caption transition-colors duration-fast ease-out-standard",
-                    checked
-                      ? "border-border-strong bg-muted-surface text-foreground"
-                      : "border-border bg-background text-muted-foreground hover:border-border-strong hover:text-foreground",
-                  )}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
+          <ChipGroup
+            value={field.value as ReadonlyArray<string>}
+            onChange={(next) =>
+              field.onChange(next as ReadonlyArray<PolicyResourceType>)
+            }
+            color="info"
+            variant="light"
+            aria-label="Allowed resource types"
+          >
+            {RESOURCE_TYPE_OPTIONS.map((option) => (
+              <Chip key={option.value} value={option.value}>
+                {option.label}
+              </Chip>
+            ))}
+          </ChipGroup>
           {fieldState.error ? (
             <span
               role="alert"
