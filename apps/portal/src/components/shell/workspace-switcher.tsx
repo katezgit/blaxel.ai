@@ -13,6 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@repo/ui/components/tooltip";
 import { cn } from "@repo/ui/lib/cn";
 import { useIsSidebarRail } from "@/components/shell/use-is-sidebar-rail";
 import type { Org } from "@/lib/mock/types";
@@ -50,29 +55,48 @@ export default function WorkspaceSwitcher({
     return () => window.removeEventListener("hashchange", sync);
   }, []);
 
+  const trigger = (
+    <DropdownMenuTrigger
+      aria-label={triggerAriaLabel}
+      className={cn(
+        "flex h-8 min-w-0 max-w-full items-center rounded-md border border-transparent typography-label font-medium text-foreground",
+        "transition-colors duration-fast ease-out-standard",
+        "hover:bg-secondary-surface hover:border-border focus-visible:shadow-focus-ring",
+        isRail
+          ? "size-8 shrink-0 max-w-none cursor-pointer p-0 justify-center"
+          : "w-full gap-1.5 px-2 max-md:gap-1 max-md:px-1.5",
+      )}
+    >
+      <Boxes
+        aria-hidden="true"
+        className={cn(
+          "size-4 shrink-0 text-meta-foreground",
+          isRail && "size-5",
+        )}
+      />
+      {!isRail && (
+        <>
+          <span className="min-w-0 flex-1 truncate max-md:text-sm">
+            {currentOrg.name}
+          </span>
+          <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />
+        </>
+      )}
+    </DropdownMenuTrigger>
+  );
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        aria-label={triggerAriaLabel}
-        className={cn(
-          "flex h-8 min-w-0 max-w-full items-center rounded-md border border-transparent typography-label font-medium text-foreground",
-          "transition-colors duration-fast ease-out-standard",
-          "hover:bg-secondary-surface hover:border-border focus-visible:shadow-focus-ring",
-          isRail
-            ? "size-8 p-0 justify-center"
-            : "w-full gap-1.5 px-2 max-md:gap-1 max-md:px-1.5",
-        )}
-      >
-        <Boxes aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />
-        {!isRail && (
-          <>
-            <span className="min-w-0 flex-1 truncate max-md:text-sm">
-              {currentOrg.name}
-            </span>
-            <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />
-          </>
-        )}
-      </DropdownMenuTrigger>
+      {isRail ? (
+        <Tooltip>
+          <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+          <TooltipContent side="right">
+            Current workspace: {currentOrg.name}
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        trigger
+      )}
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuLabel className="font-mono uppercase tracking-[0.16em]">Switch workspace</DropdownMenuLabel>
         {workspaces.map((ws) => {
