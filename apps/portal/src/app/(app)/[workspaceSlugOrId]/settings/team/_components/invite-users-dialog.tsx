@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, type KeyboardEvent } from "react";
 import { Controller, useForm, useWatch, type Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { X } from "lucide-react";
 import {
   Dialog,
   DialogBody,
@@ -23,21 +22,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import { cn } from "@repo/ui/lib/cn";
+import { Textarea } from "@repo/ui/components/textarea";
 import type { Role } from "@/lib/mock/types";
 import { ROLE_META } from "./team-mock-helpers";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-interface EmailChip {
-  value: string;
-  valid: boolean;
+function parseEmails(text: string): {
+  valid: ReadonlyArray<string>;
+  invalid: ReadonlyArray<string>;
+} {
+  const seen = new Set<string>();
+  const valid: string[] = [];
+  const invalid: string[] = [];
+  for (const part of text
+    .split(/[\s,;]+/)
+    .map((p) => p.trim())
+    .filter(Boolean)) {
+    const key = part.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (EMAIL_REGEX.test(part)) valid.push(part);
+    else invalid.push(part);
+  }
+  return { valid, invalid };
 }
 
 const FORM_SCHEMA = z.object({
-  chips: z
-    .array(z.object({ value: z.string(), valid: z.boolean() }))
-    .refine((c) => c.some((x) => x.valid), {
+  emailsText: z
+    .string()
+    .refine((text) => parseEmails(text).valid.length > 0, {
       message: "Add at least one valid email.",
     }),
   role: z.enum(["admin", "member"]),
@@ -63,55 +77,35 @@ export function InviteUsersDialog({
   onOpenChange,
   onSubmit: onInvite,
 }: InviteUsersDialogProps) {
-  const [draft, setDraft] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const {
     control,
     handleSubmit,
     reset,
-    setValue,
-    getValues,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(FORM_SCHEMA),
-    defaultValues: { chips: [], role: "member" },
+    defaultValues: { emailsText: "", role: "member" },
   });
 
   useEffect(() => {
     if (open) return;
-    reset({ chips: [], role: "member" });
-    setDraft("");
+    reset({ emailsText: "", role: "member" });
   }, [open, reset]);
 
-  const commitDraft = (raw: string) => {
-    const parts = raw
-      .split(/[\s,;]+/)
-      .map((p) => p.trim())
-      .filter(Boolean);
-    if (parts.length === 0) return;
-    const prev = getValues("chips");
-    const seen = new Set(prev.map((c) => c.value.toLowerCase()));
-    const next: EmailChip[] = [...prev];
-    for (const value of parts) {
-      if (seen.has(value.toLowerCase())) continue;
-      seen.add(value.toLowerCase());
-      next.push({ value, valid: EMAIL_REGEX.test(value) });
-    }
-    setValue("chips", next, { shouldDirty: true, shouldValidate: true });
-    setDraft("");
-  };
-
-  const onValid = ({ chips, role }: FormValues) => {
-    const finalChips: EmailChip[] = draft.trim()
-      ? [...chips, { value: draft.trim(), valid: EMAIL_REGEX.test(draft.trim()) }]
-      : chips;
-    const emails = finalChips.filter((c) => c.valid).map((c) => c.value);
-    if (emails.length === 0) return;
-    onInvite({ emails, role });
+  const onValid = ({ emailsText, role }: FormValues) => {
+    const { valid } = parseEmails(emailsText);
+    if (valid.length === 0) return;
+    onInvite({ emails: valid, role });
   };
 
   const onSubmitForm = handleSubmit(onValid);
+
+  const handleTextareaKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      event.preventDefault();
+      onSubmitForm();
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -120,93 +114,33 @@ export function InviteUsersDialog({
           <DialogHeader>
             <DialogTitle>Invite users</DialogTitle>
             <DialogDescription>
-              Invite multiple emails with the same role. They will receive a sign-up
-              link.
+              Invite multiple emails with the same role. They will receive a
+              sign-up link.
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-4">
             <FormField
-              id="invite-emails-group"
+              id="invite-emails"
               label="Emails"
-              helper="Press Enter or comma to add. Paste a CSV to add many at once."
-              error={errors.chips?.message}
+              helper="Separate multiple emails with commas, spaces, or newlines. Paste a CSV to add many at once."
+              error={errors.emailsText?.message}
               required
             >
               <Controller
                 control={control}
-                name="chips"
-                render={({ field }) => {
-                  const chips = field.value;
-                  const removeChip = (value: string) => {
-                    field.onChange(chips.filter((c) => c.value !== value));
-                  };
-                  const handleKeyDown = (
-                    event: KeyboardEvent<HTMLInputElement>,
-                  ) => {
-                    if (event.key === "Enter" || event.key === ",") {
-                      event.preventDefault();
-                      commitDraft(draft);
-                      return;
-                    }
-                    if (
-                      event.key === "Backspace" &&
-                      draft === "" &&
-                      chips.length > 0
-                    ) {
-                      event.preventDefault();
-                      const last = chips[chips.length - 1];
-                      if (!last) return;
-                      field.onChange(chips.slice(0, -1));
-                      setDraft(last.value);
-                      return;
-                    }
-                    if (
-                      (event.metaKey || event.ctrlKey) &&
-                      event.key === "Enter"
-                    ) {
-                      event.preventDefault();
-                      onSubmitForm();
-                    }
-                  };
-                  return (
-                    <div
-                      role="group"
-                      className={cn(
-                        "flex min-h-9 w-full flex-wrap items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5",
-                        "focus-within:border-primary focus-within:shadow-focus-ring",
-                      )}
-                      onClick={() => inputRef.current?.focus()}
-                    >
-                      {chips.map((chip) => (
-                        <EmailChipView
-                          key={chip.value}
-                          chip={chip}
-                          onRemove={() => removeChip(chip.value)}
-                        />
-                      ))}
-                      <input
-                        ref={inputRef}
-                        value={draft}
-                        onChange={(event) => setDraft(event.target.value)}
-                        onKeyDown={handleKeyDown}
-                        onBlur={() => commitDraft(draft)}
-                        onPaste={(event) => {
-                          const text = event.clipboardData.getData("text");
-                          if (/[\s,;]/.test(text)) {
-                            event.preventDefault();
-                            commitDraft(text);
-                          }
-                        }}
-                        placeholder={chips.length === 0 ? "name@company.com" : ""}
-                        className="min-w-[10ch] flex-1 bg-transparent typography-label text-foreground outline-none placeholder:text-meta-foreground"
-                        autoComplete="off"
-                        aria-label="Add invite email"
-                      />
-                    </div>
-                  );
-                }}
+                name="emailsText"
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    id="invite-emails"
+                    placeholder="name@company.com, another@company.com"
+                    rows={4}
+                    onKeyDown={handleTextareaKeyDown}
+                  />
+                )}
               />
             </FormField>
+            <InvalidEmailsHint control={control} />
             <FormField id="invite-role" label="Role">
               <Controller
                 control={control}
@@ -243,10 +177,7 @@ export function InviteUsersDialog({
             >
               Cancel
             </Button>
-            <ValidCountSubmit
-              control={control}
-              draft={draft}
-            />
+            <ValidCountSubmit control={control} />
           </DialogFooter>
         </form>
       </DialogContent>
@@ -254,50 +185,25 @@ export function InviteUsersDialog({
   );
 }
 
-function ValidCountSubmit({
-  control,
-  draft,
-}: {
-  control: Control<FormValues>;
-  draft: string;
-}) {
-  const chips = useWatch({ control, name: "chips" });
-  const validFromChips = chips.filter((c) => c.valid).length;
-  const trimmedDraft = draft.trim();
-  const draftValid = trimmedDraft.length > 0 && EMAIL_REGEX.test(trimmedDraft);
-  const total = validFromChips + (draftValid ? 1 : 0);
+function ValidCountSubmit({ control }: { control: Control<FormValues> }) {
+  const emailsText = useWatch({ control, name: "emailsText" });
+  const validCount = parseEmails(emailsText ?? "").valid.length;
   return (
-    <Button type="submit" variant="primary" disabled={total === 0}>
-      Invite {total > 0 ? `(${total})` : ""}
+    <Button type="submit" variant="primary" disabled={validCount === 0}>
+      Invite {validCount > 0 ? `(${validCount})` : ""}
     </Button>
   );
 }
 
-interface EmailChipViewProps {
-  chip: EmailChip;
-  onRemove: () => void;
-}
-
-function EmailChipView({ chip, onRemove }: EmailChipViewProps) {
+function InvalidEmailsHint({ control }: { control: Control<FormValues> }) {
+  const emailsText = useWatch({ control, name: "emailsText" });
+  const { invalid } = parseEmails(emailsText ?? "");
+  if (invalid.length === 0) return null;
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 typography-caption font-medium",
-        chip.valid
-          ? "border-border bg-secondary-surface text-foreground"
-          : "border-destructive/40 bg-destructive/5 text-destructive",
-      )}
-      title={chip.valid ? undefined : "Invalid email"}
-    >
-      <span className="font-mono">{chip.value}</span>
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label={`Remove ${chip.value}`}
-        className="inline-flex size-4 items-center justify-center rounded-sm text-meta-foreground hover:bg-secondary-hover hover:text-foreground"
-      >
-        <X aria-hidden="true" className="size-3" />
-      </button>
-    </span>
+    <p className="typography-caption text-state-errored">
+      {invalid.length === 1
+        ? `Skipped 1 invalid entry: ${invalid[0]}`
+        : `Skipped ${invalid.length} invalid entries: ${invalid.join(", ")}`}
+    </p>
   );
 }
