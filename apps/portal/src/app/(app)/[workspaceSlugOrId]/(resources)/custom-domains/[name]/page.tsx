@@ -13,7 +13,7 @@ export default async function CustomDomainDetailPage({
   const { workspaceSlugOrId, name } = await params;
   const decoded = decodeURIComponent(name);
   return (
-    <div className="page-shell">
+    <div className="page-shell min-h-full">
       <CustomDomainDetailView workspaceSlug={workspaceSlugOrId} name={decoded} />
     </div>
   );

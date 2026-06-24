@@ -38,7 +38,7 @@ export default function GlobalError({
       </head>
       <body className="min-h-screen bg-background">
         <div className="flex min-h-screen w-full items-center justify-center">
-          <div className="flex max-w-[480px] flex-col items-center gap-4 px-6 text-center">
+          <div className="flex max-w-(--not-found-column-w) flex-col items-center gap-4 px-6 text-center">
             <span className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1.5 font-mono typography-label font-medium text-muted-foreground">
               FATAL
             </span>
@@ -48,7 +48,7 @@ export default function GlobalError({
             </h1>
 
             {hasDiagnosticBlock && (
-              <div className="flex max-w-[440px] flex-col gap-1">
+              <div className="flex max-w-(--not-found-text-w) flex-col gap-1">
                 {diagnostic &&(
                   <p className="line-clamp-2 font-mono typography-code text-muted-foreground">
                     {diagnostic}

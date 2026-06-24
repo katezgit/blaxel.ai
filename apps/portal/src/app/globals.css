@@ -141,6 +141,13 @@
    * a soft halt in the middle of the content slot, not a top-loaded block. */
   --inline-empty-column-w: 360px;
 
+  /* Full-page 404 / error surfaces (root not-found, route-group not-founds,
+   * in-shell URL-not-found, global-error). Outer column holds the badge +
+   * headline + actions stack; inner text column narrows the diagnostic/body
+   * line one ramp tighter for a clean rag. */
+  --not-found-column-w: 480px;
+  --not-found-text-w: 440px;
+
   /* Near-subliminal alpha — grid is ambient texture, not measurement
    * scaffolding. */
   --color-grid-line: light-dark(

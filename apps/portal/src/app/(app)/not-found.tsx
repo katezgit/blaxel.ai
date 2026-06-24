@@ -12,7 +12,7 @@ export default function AppNotFound() {
 
   return (
     <div className="flex min-h-full w-full items-center justify-center py-12">
-      <div className="flex max-w-[480px] flex-col items-center gap-4 px-6 text-center">
+      <div className="flex max-w-(--not-found-column-w) flex-col items-center gap-4 px-6 text-center">
         <span className="inline-flex items-center rounded-md border border-border bg-muted-surface px-3 py-1.5 font-mono typography-label font-medium text-muted-foreground">
           404
         </span>
@@ -21,7 +21,7 @@ export default function AppNotFound() {
           Page not found
         </h1>
 
-        <p className="line-clamp-2 max-w-[440px] font-mono typography-body text-muted-foreground">
+        <p className="line-clamp-2 max-w-(--not-found-text-w) font-mono typography-body text-muted-foreground">
           {diagnostic}
         </p>
 

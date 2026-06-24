@@ -64,7 +64,7 @@ export default async function GlobalNotFound() {
               <h1 className="text-title font-semibold text-foreground">
                 Page not found
               </h1>
-              <p className="max-w-[480px] typography-body text-muted-foreground">
+              <p className="max-w-(--not-found-column-w) typography-body text-muted-foreground">
                 We couldn&apos;t find that page.
               </p>
             </div>
