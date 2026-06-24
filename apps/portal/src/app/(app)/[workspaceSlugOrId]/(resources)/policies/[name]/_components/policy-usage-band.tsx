@@ -86,7 +86,7 @@ export default function PolicyUsageBand({
   return (
     <BandFrame label="Usage" className="border-t-0 pt-0">
       <div className="flex flex-col gap-3">
-        <div className="flex flex-col rounded-md border border-border bg-background">
+        <div className="flex flex-col rounded-md border border-border bg-card">
           <div className="border-b border-border px-4 py-2">
             <h3 className="typography-body font-semibold text-foreground">
               Workloads referencing this policy
