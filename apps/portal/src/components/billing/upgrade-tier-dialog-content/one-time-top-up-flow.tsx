@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/button";
-import { ScrollArea } from "@repo/ui/components/scroll-area";
+import { DialogBody, DialogFooter } from "@repo/ui/components/dialog";
 import { type DisplayTier, type SelectableTier } from "@/lib/mock/billing-tiers";
 import SelectedTierSummary from "./selected-tier-summary";
 import TierPicker from "./tier-picker";
@@ -65,29 +65,27 @@ export default function OneTimeTopUpFlow({
   return (
     // Single-column flow — no right-rail About panel. Step 1 surfaces the
     // tier grid + selected-tier summary; step 2 leads with a one-line tier
-    // banner so the user keeps context while configuring protection.
+    // banner so the user keeps context while configuring protection. The
+    // <form> wraps DialogBody + DialogFooter as siblings: body owns scroll,
+    // footer pins to the dialog bottom, and the submit button still reaches
+    // this form's onSubmit because the footer is inside the <form>.
     <form
       onSubmit={onSubmit}
       noValidate
-      className="flex min-h-0 flex-1 flex-col gap-6"
+      className="flex min-h-0 flex-1 flex-col"
     >
-      {step === 1 ? (
-        <div className="flex min-h-0 flex-col gap-6">
-          <div className="flex flex-col gap-1">
-            <h3 className="typography-subtitle font-semibold text-foreground">
-              Choose your target tier
-            </h3>
-            <p className="typography-body text-muted-foreground">
-              Credits will be added to your Blaxel balance immediately after
-              checking out.
-            </p>
-          </div>
-
-          {/* -mr-3 pr-3: ScrollArea's overlay scrollbar floats inside the
-              content box; without negative-margin compensation it overlaps
-              right-edge fields. Net effect — scrollbar sits in the dialog
-              gutter, content keeps its 12px right padding. */}
-          <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
+      <DialogBody>
+        {step === 1 ? (
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
+              <h3 className="typography-subtitle font-semibold text-foreground">
+                Choose your target tier
+              </h3>
+              <p className="typography-body text-muted-foreground">
+                Credits will be added to your Blaxel balance immediately after
+                checking out.
+              </p>
+            </div>
             <div className="flex flex-col gap-4">
               <TierPicker
                 value={values.selectedTier}
@@ -104,25 +102,18 @@ export default function OneTimeTopUpFlow({
                 currentTier={currentTier}
               />
             </div>
-          </ScrollArea>
-        </div>
-      ) : (
-        <div className="flex min-h-0 flex-col gap-6">
-          <div className="flex flex-col gap-1">
-            <h3 className="typography-subtitle font-semibold text-foreground">
-              Configure balance protection
-            </h3>
-            <p className="typography-body text-muted-foreground">
-              Optional settings that keep your balance above a floor and help
-              avoid downgrades.
-            </p>
           </div>
-
-          {/* -mr-3 pr-3: ScrollArea's overlay scrollbar floats inside the
-              content box; without negative-margin compensation it overlaps
-              right-edge fields. Net effect — scrollbar sits in the dialog
-              gutter, content keeps its 12px right padding. */}
-          <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3">
+        ) : (
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
+              <h3 className="typography-subtitle font-semibold text-foreground">
+                Configure balance protection
+              </h3>
+              <p className="typography-body text-muted-foreground">
+                Optional settings that keep your balance above a floor and help
+                avoid downgrades.
+              </p>
+            </div>
             <div className="flex flex-col gap-4">
               <TierContextBanner
                 targetTier={targetTier}
@@ -137,12 +128,11 @@ export default function OneTimeTopUpFlow({
                 monthlyLimitEnabled={values.monthlyLimitEnabled}
               />
             </div>
-          </ScrollArea>
-        </div>
-      )}
-
+          </div>
+        )}
+      </DialogBody>
       {step === 1 ? (
-        <div className="flex shrink-0 items-center justify-end gap-2">
+        <DialogFooter>
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
@@ -153,9 +143,9 @@ export default function OneTimeTopUpFlow({
           >
             Continue
           </Button>
-        </div>
+        </DialogFooter>
       ) : (
-        <div className="flex shrink-0 items-center justify-between gap-2">
+        <DialogFooter className="justify-between">
           <Button
             type="button"
             variant="ghost"
@@ -177,7 +167,7 @@ export default function OneTimeTopUpFlow({
               {isSubmitting ? "Processing…" : "Checkout"}
             </Button>
           </div>
-        </div>
+        </DialogFooter>
       )}
     </form>
   );

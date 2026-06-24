@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import {
-  DialogBody,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -90,29 +89,26 @@ export default function UpgradeTierDialogContent({
           </SegmentedControl.Item>
         </SegmentedControl>
       </DialogHeader>
-      {/* className flex-col makes DialogBody's inner scroll container a flex
-          column so the flow form's flex-1 min-h-0 resolves against it — the
-          tier list / balance protection ScrollAreas then bound themselves and
-          the action row stays pinned at the dialog bottom. */}
-      <DialogBody className="flex flex-col">
-        {mode === "one-time" ? (
-          <OneTimeTopUpFlow
-            key="one-time"
-            currentTier={currentTier}
-            recommendedTier={recommendedTier}
-            onCancel={onClose}
-            onCheckout={handleCheckout}
-          />
-        ) : (
-          <MonthlyTopUpFlow
-            key="monthly"
-            currentTier={currentTier}
-            recommendedTier={recommendedTier}
-            onCancel={onClose}
-            onCheckout={handleCheckout}
-          />
-        )}
-      </DialogBody>
+      {/* The flow component owns its own <form> wrapping DialogBody +
+          DialogFooter as siblings — that's what pins the action row to the
+          dialog bottom while letting the body scroll independently. */}
+      {mode === "one-time" ? (
+        <OneTimeTopUpFlow
+          key="one-time"
+          currentTier={currentTier}
+          recommendedTier={recommendedTier}
+          onCancel={onClose}
+          onCheckout={handleCheckout}
+        />
+      ) : (
+        <MonthlyTopUpFlow
+          key="monthly"
+          currentTier={currentTier}
+          recommendedTier={recommendedTier}
+          onCancel={onClose}
+          onCheckout={handleCheckout}
+        />
+      )}
     </>
   );
 }

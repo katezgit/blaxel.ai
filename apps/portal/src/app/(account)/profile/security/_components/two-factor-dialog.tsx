@@ -59,11 +59,9 @@ export function TwoFactorDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="lg"
-        // size="lg" pins a fixed 720px; cap to viewport on phones so the
-        // dialog stays inside the gutter. max-h-[90vh] gives narrow-viewport
-        // wizards more vertical room than the DS default 80vh — the four-step
-        // stepper + body + footer otherwise crowd against the 80vh cap.
-        className="max-h-[90vh] max-w-[calc(100vw-2rem)]"
+        // Stepper header + per-step body+footer needs extra desktop height
+        // beyond the DS default 85vh.
+        className="sm:max-h-[90vh]"
       >
         <DialogHeader>
           <DialogTitle>Set up two-factor authentication</DialogTitle>

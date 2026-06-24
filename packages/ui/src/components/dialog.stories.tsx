@@ -191,37 +191,35 @@ function ScrollBodyExample() {
           </FormField>
         </form>
         <div className="mb-3 rounded-md border border-border bg-card px-3 py-2">
-          <p className="text-sm font-medium text-foreground">eval-run-042</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="typography-body text-foreground">eval-run-042</p>
+          <p className="typography-caption text-muted-foreground">
             claude-3-7-sonnet · step 36 of 200 · sandbox-env-007
           </p>
         </div>
-        <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <p className="mb-2 typography-caption text-muted-foreground uppercase tracking-wide">
           Trajectory — steps executed
         </p>
         <div className="flex flex-col divide-y divide-border rounded-md border border-border">
           {TRAJECTORY_STEPS.map(({ step, action, status, ms }) => (
             <div key={step} className="flex items-center justify-between px-3 py-1.5">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="w-5 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                <span className="w-5 shrink-0 text-right typography-caption tabular-nums text-muted-foreground">
                   {step}
                 </span>
-                <span className="truncate text-sm text-foreground font-mono">{action}</span>
+                <span className="truncate typography-body text-foreground font-mono">{action}</span>
               </div>
               <div className="flex items-center gap-3 shrink-0 ml-4">
                 <span
                   className={
                     status === "err"
-                      ? "text-xs text-destructive font-medium"
-                      : status === "pending"
-                        ? "text-xs text-muted-foreground"
-                        : "text-xs text-muted-foreground"
+                      ? "typography-caption text-destructive"
+                      : "typography-caption text-muted-foreground"
                   }
                 >
                   {status === "pending" ? "pending" : status === "err" ? "err" : "ok"}
                 </span>
                 {ms > 0 && (
-                  <span className="text-xs tabular-nums text-muted-foreground w-14 text-right">
+                  <span className="typography-caption tabular-nums text-muted-foreground w-14 text-right">
                     {ms >= 1_000 ? `${(ms / 1_000).toFixed(2)}s` : `${ms}ms`}
                   </span>
                 )}
@@ -313,8 +311,8 @@ export const Variants: Story = {
           </DialogHeader>
           <DialogBody>
             <div className="rounded-md border border-border bg-card p-3">
-              <p className="text-sm font-medium text-foreground">eval-run-007</p>
-              <p className="text-xs text-muted-foreground mt-0.5">claude-3-5-sonnet · 128 steps</p>
+              <p className="typography-body text-foreground">eval-run-007</p>
+              <p className="typography-caption text-muted-foreground">claude-3-5-sonnet · 128 steps</p>
             </div>
           </DialogBody>
           <DialogFooter>
@@ -326,6 +324,129 @@ export const Variants: Story = {
     </div>
   ),
   parameters: { layout: "padded" },
+}
+
+// ── NarrowViewport ────────────────────────────────────────────────────────────
+// Confirms that each size variant caps at (100vw − 2rem) on narrow viewports
+// rather than overflowing the screen edge. Resize the Storybook canvas to
+// ≤ 400 px to observe all three sizes collapsing to the same constrained width.
+// At desktop widths the dialog reverts to its target px value.
+
+const WIDTH_FOR_SIZE = { sm: "400", md: "560", lg: "720" } as const
+
+type DialogSize = keyof typeof WIDTH_FOR_SIZE
+
+function NarrowViewportExample() {
+  const [activeSize, setActiveSize] = React.useState<DialogSize | null>(null)
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <Dialog
+          key={size}
+          open={activeSize === size}
+          onOpenChange={(open) => setActiveSize(open ? size : null)}
+        >
+          <DialogTrigger asChild>
+            <Button variant="secondary">size=&quot;{size}&quot;</Button>
+          </DialogTrigger>
+          <DialogContent size={size}>
+            <DialogHeader>
+              <DialogTitle>size=&quot;{size}&quot; viewport test</DialogTitle>
+              <DialogDescription>
+                At {WIDTH_FOR_SIZE[size]}px target width. On narrow
+                viewports this panel must stay within the screen gutter — no horizontal overflow,
+                close button fully visible.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogBody>
+              <p className="text-muted-foreground">Resize the canvas to ≤ 375 px to verify capping.</p>
+            </DialogBody>
+            <DialogFooter>
+              <DialogCancelButton />
+              <DialogConfirmButton />
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ))}
+    </div>
+  )
+}
+
+export const NarrowViewport: Story = {
+  render: () => <NarrowViewportExample />,
+  parameters: {
+    layout: "fullscreen",
+    // Chromatic snapshot at narrow viewport to catch regressions
+    chromatic: { viewports: [375, 768, 1280] },
+  },
+}
+
+// ── MobileFullscreen ──────────────────────────────────────────────────────────
+// At < 640px (Tailwind sm breakpoint) DialogContent switches to a fullscreen
+// sheet presentation: fills viewport edge-to-edge, no rounded corners, no shadow,
+// slides up from the bottom. Body scrolls natively against the viewport so any
+// amount of content is reachable and the action row stays accessible.
+//
+// Set the Storybook canvas to 375 px wide to observe the sheet mode.
+// At ≥ 640 px the panel reverts to the centered desktop modal presentation.
+
+const MOBILE_TIER_ROWS = Array.from({ length: 8 }, (_, i) => ({
+  tier: i + 1,
+  label: `Tier ${i + 1}`,
+  credits: `$${(i + 1) * 100}`,
+}))
+
+function MobileFullscreenExample() {
+  const [open, setOpen] = React.useState(true)
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <Button variant="secondary" onClick={() => setOpen(true)}>Open sheet</Button>
+      </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent size="lg">
+          <DialogHeader>
+            <DialogTitle>Choose your target tier</DialogTitle>
+            <DialogDescription>
+              Select a target quota tier to determine your monthly top-up.
+              All topped-up funds go directly toward your Blaxel usage.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <div className="flex flex-col gap-3">
+              {MOBILE_TIER_ROWS.map(({ tier, label, credits }) => (
+                <div
+                  key={tier}
+                  className="flex items-center justify-between rounded-md border border-border px-4 py-3"
+                >
+                  <div className="flex flex-col gap-1">
+                    <p className="typography-body text-foreground">{label}</p>
+                    <p className="typography-caption text-muted-foreground">{credits} / month</p>
+                  </div>
+                  <Button variant="secondary">Select</Button>
+                </div>
+              ))}
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <DialogCancelButton />
+            <DialogConfirmButton>Continue</DialogConfirmButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+export const MobileFullscreen: Story = {
+  render: () => <MobileFullscreenExample />,
+  parameters: {
+    layout: "fullscreen",
+    // Chromatic: capture at 375px (mobile sheet) and 768px (desktop modal) to
+    // verify both presentation modes and catch regressions.
+    // pauseAnimationAtEnd: snapshot the open-steady-state, not mid-slide.
+    chromatic: { viewports: [375, 768], pauseAnimationAtEnd: true },
+  },
 }
 
 // ── Form helpers ──────────────────────────────────────────────────────────────
@@ -407,7 +528,7 @@ function NewEvalRunForm({ initialErrors, open: controlledOpen, onOpenChange }: N
       setErrors(errs)
       return
     }
-    console.log("New evaluation run payload:", values)
+    // payload would be submitted to the server here
     setValues(EMPTY_VALUES)
     setErrors({})
     setOpen(false)
@@ -494,7 +615,7 @@ function NewEvalRunForm({ initialErrors, open: controlledOpen, onOpenChange }: N
             </FormField>
 
             {/* Retries */}
-            <div className="flex items-center gap-2 min-h-[var(--size-input-h)]">
+            <div className="flex items-center gap-2">
               <Checkbox
                 id="eval-run-retries"
                 checked={values.retries}
