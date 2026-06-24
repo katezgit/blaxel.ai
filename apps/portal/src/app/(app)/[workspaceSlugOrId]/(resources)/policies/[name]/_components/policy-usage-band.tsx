@@ -49,7 +49,7 @@ export default function PolicyUsageBand({
   const total = totalUsage(policy.usage);
 
   if (total === 0) {
-    const deleteCommand = `bl policy delete ${policy.metadata.name}`;
+    const deleteCommand = `bl delete policy ${policy.metadata.name}`;
     return (
       <BandFrame label="Usage" className="border-t-0 pt-0">
         <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-card p-6">

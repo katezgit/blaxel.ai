@@ -13,7 +13,7 @@ import {
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import DetailPageHeader from "@/components/shell/detail-page-header";
 import type { Policy } from "@/lib/mock/policies";
-import { POLICY_TYPE_BY_VALUE } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
+import { policySummary } from "@/lib/mock/policies";
 
 interface PolicyDetailHeaderProps {
   policy: Policy;
@@ -32,7 +32,6 @@ export default function PolicyDetailHeader({
 }: PolicyDetailHeaderProps) {
   const heading = policy.metadata.displayName || policy.metadata.name;
   const listHref = `/${workspaceSlug}/policies`;
-  const typeOption = POLICY_TYPE_BY_VALUE[policy.spec.type];
 
   return (
     <DetailPageHeader
@@ -43,7 +42,7 @@ export default function PolicyDetailHeader({
         />
       }
       heading={heading}
-      description={typeOption.narrative}
+      description={policySummary(policy)}
       action={
         <>
           <Button variant="secondary" onClick={onRequestEdit}>
