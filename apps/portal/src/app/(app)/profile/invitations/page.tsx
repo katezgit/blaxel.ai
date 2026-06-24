@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function InvitationsPage() {
   return (
-    <div className="page-shell">
+    <>
       <header className="page-header">
         <h1 className="typography-display font-semibold text-foreground">Invitations</h1>
         <p className="text-muted-foreground">
@@ -17,6 +17,6 @@ export default function InvitationsPage() {
       </header>
 
       <InvitationsClient initialInvitations={workspaceInvitations} />
-    </div>
+    </>
   );
 }

@@ -72,7 +72,7 @@ All values in `px`. Tailwind utility shown where the value matches a default sca
 | **Standard cap** | **1200–1280** (`max-w-7xl`) | Default for dashboards. Modal value across peer set (Vercel, Stripe, Ant, shadcn, GitHub). |
 | **Wide cap** | **1440** | Boards, timelines, Gantt views (Jira). |
 | **Fluid (no cap)** | full available width | Data-dense surfaces: tables with many columns, traces, observability, log views. Linear lists, W&B, Datadog, Grafana. |
-| **Reading cap (nested inside above)** | **640–720** (`max-w-prose` / `max-w-2xl`) | Forms, settings panes, long-form docs. Apply as an *inner* cap, not as the page cap. |
+| **Reading cap (nested inside above)** | **768** (`max-w-3xl`) | Forms, settings panes, long-form docs. Apply as an *inner* cap, not as the page cap. |
 
 **Cap value: `1536px`, declared as `--page-max-width` in app-level globals.** The token name is the source of truth; references in markup use the utility class below.
 
@@ -164,7 +164,7 @@ Do not narrow the sidebar to gain content width — users perceive narrower nav 
 | Topbar height? | **56** |
 | Content cap on dashboards? | **1536px** — token `--page-max-width`, utility `page-shell` |
 | Content cap on tables / traces? | **Fluid** |
-| Content cap on forms / settings? | **640–720** nested inside the dashboard cap |
+| Content cap on forms / settings? | **768** (`max-w-3xl`) nested inside the dashboard cap |
 | Horizontal padding ladder? | 16 / 24 / 32 / 80 (default / md / lg / xl) — baked into `page-shell`; do not list responsive classes on wrappers directly |
 | Right inspector width? | **360** standard, **480–560** for rich detail |
 | When to use sidebar + topbar? | Enterprise SaaS with workspace switcher in topbar + deep nav in sidebar |

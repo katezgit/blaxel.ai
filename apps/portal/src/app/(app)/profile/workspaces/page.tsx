@@ -8,17 +8,17 @@ export const metadata: Metadata = {
 
 export default function ProfileWorkspacesPage() {
   return (
-    <div className="page-shell">
+    <>
       <header className="page-header">
         <h1 className="typography-display font-semibold text-foreground">
           Workspaces
         </h1>
         <p className="text-muted-foreground">
-          Workspaces you belong to. Leave the ones you no longer need.
+          Workspaces you belong to.
         </p>
       </header>
 
       <MembershipsClient initialMemberships={workspaceMemberships} />
-    </div>
+    </>
   );
 }
