@@ -32,8 +32,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@repo/ui/components/drawer";
+import { Chip } from "@repo/ui/components/chip";
 import { EmptyState } from "@repo/ui/components/empty-state";
-import { FilterChip } from "@repo/ui/components/filter-chip";
 import { MultiSelect } from "@repo/ui/components/multi-select";
 import { SearchInput } from "@repo/ui/components/search-input";
 import {
@@ -797,20 +797,28 @@ export default function ModelsCatalog() {
               meaningful axis). */}
           <div className="hidden flex-1 flex-wrap items-center gap-2 xl:flex">
             {!isPrivateTab && (
-              <FilterChip
-                label="Trainable"
-                selected={filters.trainable}
-                count={toggleCounts.trainable}
-                onSelectedChange={(next) => updateFilters({ trainable: next })}
-              />
+              <Chip
+                color="info"
+                variant="light"
+                checked={filters.trainable}
+                onCheckedChange={(next) => updateFilters({ trainable: next })}
+                aria-label={`Trainable, ${toggleCounts.trainable}`}
+              >
+                Trainable
+                <FilterCount value={toggleCounts.trainable} />
+              </Chip>
             )}
 
-            <FilterChip
-              label="Reasoning"
-              selected={filters.reasoning}
-              count={toggleCounts.reasoning}
-              onSelectedChange={(next) => updateFilters({ reasoning: next })}
-            />
+            <Chip
+              color="info"
+              variant="light"
+              checked={filters.reasoning}
+              onCheckedChange={(next) => updateFilters({ reasoning: next })}
+              aria-label={`Reasoning, ${toggleCounts.reasoning}`}
+            >
+              Reasoning
+              <FilterCount value={toggleCounts.reasoning} />
+            </Chip>
 
             {isPrivateTab ? (
               <MultiSelect
@@ -844,12 +852,16 @@ export default function ModelsCatalog() {
               />
             )}
 
-            <FilterChip
-              label="Favorites"
-              selected={filters.favoritesOnly}
-              count={toggleCounts.favorites}
-              onSelectedChange={(next) => updateFilters({ favoritesOnly: next })}
-            />
+            <Chip
+              color="info"
+              variant="light"
+              checked={filters.favoritesOnly}
+              onCheckedChange={(next) => updateFilters({ favoritesOnly: next })}
+              aria-label={`Favorites, ${toggleCounts.favorites}`}
+            >
+              Favorites
+              <FilterCount value={toggleCounts.favorites} />
+            </Chip>
 
             <div className="ml-auto flex items-center gap-2">
               <span className="typography-label text-muted-foreground">
@@ -1131,6 +1143,20 @@ export default function ModelsCatalog() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Trailing count badge for filter chips. inline-flex + leading-none aligns the
+// 10px mono glyph optical center with the chip's 12px label rather than the
+// label's line-box center (otherwise the count sits visibly below baseline).
+function FilterCount({ value }: { value: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex items-center leading-none font-mono typography-meta tabular-nums"
+    >
+      {value}
+    </span>
   );
 }
 
