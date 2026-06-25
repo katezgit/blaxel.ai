@@ -29,7 +29,7 @@ Three-tier reading hierarchy for all portal tables. Every cell, sub-line, badge,
 
 ## Mono-role cells (typography-code)
 
-> Role ≠ size — see [`docs/conventions/typography-utility-usage.md` §Role ≠ size](../../conventions/typography-utility-usage.md) for the principle this section applies.
+> Role ≠ size — see [`docs/conventions/typography-utility-usage.md` §Role ≠ size](../../../conventions/typography-utility-usage.md) for the principle this section applies.
 
 **What:** Any table cell whose role is monospace content — regardless of whether that cell is the primary scan target or a secondary/metric column. The role drives the token, not the pixel size.
 
@@ -138,4 +138,4 @@ Tabular figures are included in `typography-code` — character widths align acr
 
 ## Cross-reference
 
-The identifier-hover affordance in resource rows (underline on row hover, no color shift) is specified in [Row Interaction → Archetype B](../guidelines/row-interaction.md). The sub-line of a two-line resource-row cell uses Tier 2 or Tier 3 from this doc depending on whether the content is prose or a hash.
+The identifier-hover affordance in resource rows (underline on row hover, no color shift) is specified in [Tables → §1 Archetype B](../../guidelines/tables.md#archetype-b--resource-row). The sub-line of a two-line resource-row cell uses Tier 2 or Tier 3 from this doc depending on whether the content is prose or a hash.

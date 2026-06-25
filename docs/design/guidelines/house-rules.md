@@ -80,11 +80,11 @@ Industry consensus we follow does not need to be recorded here; only the deliber
 
 ## 7. Resource-row click affordance — whole-row vs identifier-only
 
-**Question:** When a table row IS the entity (Archetype B in `row-interaction.md`), what's the click affordance — whole-row click, identifier-only link, or a trailing action button?
+**Question:** When a table row IS the entity (Archetype B in `tables.md` §1), what's the click affordance — whole-row click, identifier-only link, or a trailing action button?
 
 **Industry landscape:** Stripe Customers and GitHub repo lists use identifier-only link. shadcn/ui's data-table example uses kebab-only with no row navigation. Cloudflare DNS uses per-row Edit buttons. None of these widely-cited B2B references make the full row clickable.
 
-**Our call:** Whole-row click + identifier underline-on-hover. `row-interaction.md` §1 Archetype B.
+**Our call:** Whole-row click + identifier underline-on-hover. `tables.md` §1 Archetype B.
 
 **Why for our context:** Operator dashboards run dense rows (40px default density), and the primary task on a Resource row is open-the-entity. Whole-row click gives the largest hit target — tapping anywhere on a wide row is faster than hunting for a link-text target. Identifier-only link costs scan time and misclicks at speed; trailing action buttons consume a column we'd rather give to data. The cost is one weak signal (hover underline) instead of one strong signal (link color); we accept it because operators learn the pattern after one session.
 
