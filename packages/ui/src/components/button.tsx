@@ -101,26 +101,6 @@ const buttonVariants = cva(
           "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
         ],
 
-        link: [
-          // Link pattern: text + underline-on-hover, no bg fill. Mirrors anchor
-          // behavior and visually differentiates from ghost (which fills bg on hover).
-          "bg-transparent text-foreground underline-offset-4",
-          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:underline",
-          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
-          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
-          "disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
-          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
-        ],
-
-        "destructive-link": [
-          "bg-transparent text-state-errored underline-offset-4",
-          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:underline",
-          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:text-state-errored-text",
-          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
-          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
-          "disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
-          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
-        ],
       },
     },
     compoundVariants: [

@@ -133,7 +133,7 @@ export default function RegisterForm() {
           </Button>
           <Button
             type="button"
-            variant="link"
+            variant="ghost"
             className="w-full"
             onClick={handleDifferentEmail}
           >

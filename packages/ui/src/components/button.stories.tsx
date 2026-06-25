@@ -19,8 +19,6 @@ const meta: Meta<typeof Button> = {
         "ghost",
         "destructive",
         "destructive-ghost",
-        "link",
-        "destructive-link",
       ],
     },
     disabled: { control: "boolean" },
@@ -53,8 +51,6 @@ const ALL_VARIANTS = [
   "ghost",
   "destructive",
   "destructive-ghost",
-  "link",
-  "destructive-link",
 ] as const
 
 type ButtonVariant = (typeof ALL_VARIANTS)[number]
@@ -65,8 +61,6 @@ const VARIANT_LABEL: Record<ButtonVariant, string> = {
   ghost: "Ghost",
   destructive: "Destructive",
   "destructive-ghost": "Destr. Ghost",
-  link: "Link",
-  "destructive-link": "Destr. Link",
 }
 
 export const AllVariantsMatrix: Story = {

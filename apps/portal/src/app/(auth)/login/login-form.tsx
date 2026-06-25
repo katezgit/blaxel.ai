@@ -127,7 +127,7 @@ export default function LoginForm() {
           </Button>
           <Button
             type="button"
-            variant="link"
+            variant="ghost"
             className="w-full"
             onClick={handleDifferentEmail}
           >
