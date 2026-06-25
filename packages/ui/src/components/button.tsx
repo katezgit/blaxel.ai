@@ -6,33 +6,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@repo/ui/lib/cn"
 import { buttonBaseClasses } from "./button-base"
 
-// ── Disabled selector strategy ────────────────────────────────────────────────
-// Three disabled paths:
-//   1. Native `disabled` — non-focusable, click blocked by browser, CSS via :disabled
-//   2. aria-disabled="true" — stays in tab order; onClick suppressed in component;
-//      visual parity with (1). Use for tooltips, permission gates, loading states.
-//   3. loading — aria-disabled="true" + data-loading="true"; spinner overlays label;
-//      MUST NOT pick up disabled bg tokens (loading is "busy", not "invalid").
-//      Guards: disabled:[&:not([data-loading])]:* and aria-disabled:[&:not([data-loading])]:*
-//
-// Selector correctness (Tailwind v4):
-//   - aria-disabled: built-in modifier → generates [aria-disabled="true"] selector ✓
-//   - [aria-disabled='true']: arbitrary form → generates broken :is() selector ✗ (bug)
-//   - disabled: built-in modifier → :disabled pseudo-class ✓
-//   - not-disabled: / not-aria-disabled: → v4.1 built-in negations for hover guard ✓
-//
-// Text color: disabled state does NOT change text color per new rule.
-// Only bg is dimmed; text stays at variant default. This preserves variant intent
-// (destructive text stays red, primary text stays white) even in the off state.
-//
-// Hover/active: suppressed when disabled, aria-disabled, or loading.
-//   not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-*
-//
-// Ghost variants on tinted surfaces (e.g. --color-muted-surface) have a known
-// disabled-readability issue — text-disabled over muted-surface is low contrast.
-// Out of scope for this PR; flagged in issue #116 for a follow-up contrast audit.
-// ─────────────────────────────────────────────────────────────────────────────
-
+// Disabled has three paths: native :disabled (browser blocks click + focus),
+// aria-disabled="true" (focusable, click suppressed in handleClick), and loading
+// (aria-disabled + data-loading, click suppressed, keeps variant bg — Mantine
+// /Primer "busy ≠ off" pattern). Bg/text/cursor selectors all guard with
+// :not([data-loading]) so loading doesn't pick up the disabled visual.
+// Tailwind v4: use the built-in `aria-disabled:` modifier — the arbitrary
+// `[aria-disabled='true']:` form compiles to a broken `:is()` selector.
 const buttonVariants = cva(
   [
     ...buttonBaseClasses,
@@ -43,14 +23,10 @@ const buttonVariants = cva(
       variant: {
         primary: [
           "font-mono bg-primary text-primary-foreground",
-          // Hover/active only when interactive (not disabled, not aria-disabled, not loading).
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-primary-hover",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-primary-hover",
-          // Disabled bg — desaturated primary (light: peach, dark: brown).
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled",
-          // Disabled text — light: variant white (no visible change). Dark: dim grey;
-          // dark-brown bg under white text would otherwise read as ACTIVE primary.
           "disabled:[&:not([data-loading])]:text-button-disabled-text-primary",
           "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-primary",
         ],
@@ -59,7 +35,6 @@ const buttonVariants = cva(
           "border border-border bg-transparent text-foreground",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-secondary-surface",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-selected-surface",
-          // Ghost-family: transparent bg in all disabled paths — text dim IS the signal.
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
@@ -76,15 +51,13 @@ const buttonVariants = cva(
           "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
         ],
 
-        // Teal ring clashes on a red fill — override to destructive outline + errored glow.
+        // Teal focus ring clashes on a red fill — override to destructive outline.
         destructive: [
           "bg-destructive text-destructive-foreground",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-destructive-hover",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-destructive-active",
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled-destructive",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled-destructive",
-          // Disabled text — light: variant white (no visible change). Dark: dim grey
-          // (same rationale as primary — tinted disabled bg under white reads active).
           "disabled:[&:not([data-loading])]:text-button-disabled-text-destructive",
           "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-destructive",
           "focus-visible:outline-destructive focus-visible:shadow-focus-errored",
@@ -100,7 +73,6 @@ const buttonVariants = cva(
           "disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
           "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
         ],
-
       },
     },
     compoundVariants: [
@@ -113,10 +85,8 @@ const buttonVariants = cva(
   }
 )
 
-// ── Loading spinner ───────────────────────────────────────────────────────────
-// Smallest possible inline SVG; no separate Spinner component exists in @repo/ui.
+// Inline spinner — no separate Spinner component exists in @repo/ui.
 // motion-safe:animate-spin respects prefers-reduced-motion.
-// aria-hidden — spinner is decorative; aria-busy on the button root carries the signal.
 const SpinnerIcon = () => (
   <svg
     aria-hidden="true"
@@ -141,22 +111,18 @@ const SpinnerIcon = () => (
   </svg>
 )
 
-// ── Props ─────────────────────────────────────────────────────────────────────
-
 export interface ButtonProps
   extends React.ComponentPropsWithoutRef<"button">,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
   /**
-   * Renders a spinner in place of label content, sets aria-disabled + aria-busy,
-   * and suppresses onClick. The button stays focusable so screen readers can
-   * announce the busy state. Does NOT apply the disabled visual treatment —
-   * loading is "busy but valid", not "invalid".
+   * Renders a spinner instead of label, sets aria-disabled + aria-busy, and
+   * suppresses onClick. The button stays focusable so screen readers can
+   * announce the busy state. Does NOT apply the disabled visual — loading is
+   * "busy but valid", not "invalid".
    */
   loading?: boolean
 }
-
-// ── Component ─────────────────────────────────────────────────────────────────
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -166,7 +132,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       asChild = false,
       loading = false,
       onClick,
-      "aria-disabled": ariaDiabledProp,
+      "aria-disabled": ariaDisabledProp,
       children,
       ...props
     },
@@ -174,12 +140,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot.Root : "button"
 
-    // Treat both loading and caller-supplied aria-disabled as "focusable disabled".
-    // When true: native disabled is NOT set, button stays in tab order.
-    const isAriaDisabled = loading || ariaDiabledProp === true || ariaDiabledProp === "true"
+    // Loading + caller-supplied aria-disabled both render as "focusable disabled":
+    // aria-disabled is set, native disabled is NOT, button stays in tab order.
+    const isAriaDisabled = loading || ariaDisabledProp === true || ariaDisabledProp === "true"
 
-    // Suppress click when aria-disabled or loading. Native disabled blocks clicks
-    // at the browser level; aria-disabled does not, so we must suppress manually.
+    // aria-disabled doesn't block clicks at the browser level (native disabled does),
+    // so suppress manually.
     const handleClick = React.useCallback(
       (e: React.MouseEvent<HTMLButtonElement>) => {
         if (isAriaDisabled) {
