@@ -12,24 +12,26 @@ import { buttonBaseClasses } from "./button-base"
 //   2. aria-disabled="true" — stays in tab order; onClick suppressed in component;
 //      visual parity with (1). Use for tooltips, permission gates, loading states.
 //   3. loading — aria-disabled="true" + data-loading="true"; spinner overlays label;
-//      MUST NOT pick up disabled bg/text tokens (loading is "busy", not "invalid").
-//      Guards: disabled:[&:not([data-loading])]:* and [aria-disabled='true']:[&:not([data-loading])]:*
+//      MUST NOT pick up disabled bg tokens (loading is "busy", not "invalid").
+//      Guards: disabled:[&:not([data-loading])]:* and aria-disabled:[&:not([data-loading])]:*
 //
-// Mantine/Primer pattern: :disabled:not([data-loading]) / [aria-disabled]:not([data-loading])
-// prevents the loading state from inheriting the greyed-disabled look.
+// Selector correctness (Tailwind v4):
+//   - aria-disabled: built-in modifier → generates [aria-disabled="true"] selector ✓
+//   - [aria-disabled='true']: arbitrary form → generates broken :is() selector ✗ (bug)
+//   - disabled: built-in modifier → :disabled pseudo-class ✓
+//   - not-disabled: / not-aria-disabled: → v4.1 built-in negations for hover guard ✓
+//
+// Text color: disabled state does NOT change text color per new rule.
+// Only bg is dimmed; text stays at variant default. This preserves variant intent
+// (destructive text stays red, primary text stays white) even in the off state.
+//
+// Hover/active: suppressed when disabled, aria-disabled, or loading.
+//   not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-*
 //
 // Ghost variants on tinted surfaces (e.g. --color-muted-surface) have a known
 // disabled-readability issue — text-disabled over muted-surface is low contrast.
 // Out of scope for this PR; flagged in issue #116 for a follow-up contrast audit.
 // ─────────────────────────────────────────────────────────────────────────────
-
-// Disabled bg guard: applies only when NOT loading. Both native disabled and aria-disabled paths.
-// Utility classes reference named @theme tokens → rank-1 generated utilities (Tailwind v4 §1).
-const disabledBg = (utilityClass: string) =>
-  [
-    `disabled:[&:not([data-loading])]:${utilityClass}`,
-    `[aria-disabled='true']:[&:not([data-loading])]:${utilityClass}`,
-  ] as const
 
 const buttonVariants = cva(
   [
@@ -41,60 +43,67 @@ const buttonVariants = cva(
       variant: {
         primary: [
           "font-mono bg-primary text-primary-foreground",
-          "hover:bg-primary-hover",
-          "active:bg-primary-hover",
-          // Dim background only — text inherits base disabled:text-text-disabled.
+          // Hover/active only when interactive (not disabled, not aria-disabled, not loading).
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-primary-hover",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-primary-hover",
+          // Dim bg only when disabled or aria-disabled (not loading — loading ≠ off).
           // bg-button-disabled-bg-filled aliases --color-muted-surface via @theme.
-          // The neutral muted surface reads as "off" rather than "soft primary" —
-          // orange-tinted disabled bgs would read as tinted secondaries.
-          ...disabledBg("bg-button-disabled-bg-filled"),
+          // Neutral muted reads as "off" rather than "soft primary"; no text-color change.
+          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled",
+          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled",
         ],
 
         secondary: [
           "border border-border bg-transparent text-foreground",
-          "hover:bg-secondary-surface",
-          "active:bg-selected-surface",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-secondary-surface",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-selected-surface",
           // Ghost-family: transparent bg in all disabled paths
-          ...disabledBg("bg-button-disabled-bg-ghost"),
+          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
         ],
 
         ghost: [
           "bg-transparent text-foreground",
-          "hover:bg-hover-surface",
-          "active:bg-selected-surface",
-          ...disabledBg("bg-button-disabled-bg-ghost"),
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-hover-surface",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-selected-surface",
+          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
         ],
 
         // Teal ring clashes on a red fill — override to destructive outline + errored glow.
+        // Text color stays text-destructive-foreground on disabled (no text-color change per rule).
         destructive: [
           "bg-destructive text-destructive-foreground",
-          "hover:bg-destructive-hover",
-          "active:bg-destructive-active",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-destructive-hover",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-destructive-active",
           // bg-button-disabled-bg-filled-destructive aliases --color-state-errored-subtle.
-          // Destructive disabled keeps errored text token (not base text-disabled) so the
-          // severity signal is preserved even in the off state.
-          ...disabledBg("bg-button-disabled-bg-filled-destructive"),
-          "disabled:[&:not([data-loading])]:text-state-errored-text [aria-disabled='true']:[&:not([data-loading])]:text-state-errored-text",
+          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled-destructive",
+          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled-destructive",
           "focus-visible:outline-destructive focus-visible:shadow-focus-errored",
         ],
 
         "destructive-ghost": [
           "bg-transparent text-state-errored",
-          "hover:bg-state-errored-subtle hover:text-state-errored-text",
-          "active:bg-state-errored-subtle",
-          ...disabledBg("bg-button-disabled-bg-ghost"),
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-state-errored-subtle",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:text-state-errored-text",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-state-errored-subtle",
+          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
         ],
 
         link: [
           "bg-transparent text-foreground",
-          "hover:bg-secondary-surface",
-          ...disabledBg("bg-button-disabled-bg-ghost"),
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-secondary-surface",
+          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
         ],
 
         "destructive-link": [
           "bg-transparent text-state-errored underline-offset-4",
-          "hover:underline hover:text-state-errored-text",
-          ...disabledBg("bg-button-disabled-bg-ghost"),
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:underline",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:text-state-errored-text",
+          "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
         ],
       },
     },

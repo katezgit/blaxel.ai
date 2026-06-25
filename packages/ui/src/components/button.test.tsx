@@ -122,4 +122,35 @@ describe("Button", () => {
     const btn = screen.getByRole("button", { name: "Sec" })
     expect(btn).toHaveAttribute("data-variant", "secondary")
   })
+
+  // ── Disabled state — text color unchanged ─────────────────────────────────
+  // Per the disabled state rule: only bg is dimmed; text color stays at variant default.
+  // CSS hover/active suppression classes are present in the className string but only
+  // apply when the button is interactive. jsdom cannot evaluate :hover computed styles;
+  // real hover suppression is verified in Storybook (AllVariantsMatrix disabled column)
+  // and in-browser via Chrome DevTools on the live portal.
+
+  it("disabled button has correct class guards — bg-disabled class present, not text-disabled", () => {
+    render(<Button variant="primary" disabled>Disabled</Button>)
+    const btn = screen.getByRole("button", { name: "Disabled" })
+    expect(btn.className).toContain("disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled")
+    // Text-disabled class must NOT be present — text color is unchanged on disabled
+    expect(btn.className).not.toContain("text-text-disabled")
+  })
+
+  it("aria-disabled button has correct class guards — bg-disabled class present, not text-disabled", () => {
+    render(<Button variant="primary" aria-disabled>Aria disabled</Button>)
+    const btn = screen.getByRole("button", { name: "Aria disabled" })
+    expect(btn.className).toContain("aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled")
+    expect(btn.className).not.toContain("text-text-disabled")
+  })
+
+  it("hover-suppression classes are present on disabled primary button", () => {
+    render(<Button variant="primary" disabled>Disabled</Button>)
+    const btn = screen.getByRole("button", { name: "Disabled" })
+    // Hover/active fire only when not-disabled + not-aria-disabled + not-loading.
+    // jsdom cannot test :hover computed styles; assert the guard class strings are present.
+    // Real suppression is verified in Storybook (hover state in disabled column).
+    expect(btn.className).toContain("not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-primary-hover")
+  })
 })
