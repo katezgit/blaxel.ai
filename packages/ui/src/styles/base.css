@@ -54,6 +54,22 @@ body {
   box-shadow: inset 0 0 0 2px light-dark(color-mix(in srgb, var(--orange-800) 14%, white), #fff), inset 0 0 0 4px var(--color-ring);
 }
 
+/* Tailwind preflight resets <button> to cursor: default. Restore the interactive
+ * cursor at the base layer so every <button> in the app — Button, IconButton,
+ * and raw <button> callsites (code-block copy, table sort, popover items) —
+ * gets the affordance without each component repeating cursor-pointer.
+ * Disabled + aria-disabled fall back to not-allowed.
+ * `[data-loading="true"]` is exempt: loading is "busy but valid" — Mantine/Primer
+ * pattern in button-base.ts — so the cursor stays interactive even while aria-disabled. */
+button:not(:disabled):not([aria-disabled="true"]),
+button[data-loading="true"] {
+  cursor: pointer;
+}
+button:disabled:not([data-loading="true"]),
+button[aria-disabled="true"]:not([data-loading="true"]) {
+  cursor: not-allowed;
+}
+
 /* Thumb colors track <ScrollArea> — keep in sync. */
 ::-webkit-scrollbar { width: var(--size-scrollbar); height: var(--size-scrollbar); }
 ::-webkit-scrollbar-track { background: transparent; }
