@@ -138,4 +138,4 @@ Tabular figures are included in `typography-code` — character widths align acr
 
 ## Cross-reference
 
-The identifier-hover affordance in resource rows (underline on row hover, no color shift) is specified in [Row Interaction → Archetype B](./row-interaction.md). The sub-line of a two-line resource-row cell uses Tier 2 or Tier 3 from this doc depending on whether the content is prose or a hash.
+The identifier-hover affordance in resource rows (underline on row hover, no color shift) is specified in [Row Interaction → Archetype B](../guidelines/row-interaction.md). The sub-line of a two-line resource-row cell uses Tier 2 or Tier 3 from this doc depending on whether the content is prose or a hash.
