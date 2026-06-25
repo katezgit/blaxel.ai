@@ -46,20 +46,24 @@ const buttonVariants = cva(
           // Hover/active only when interactive (not disabled, not aria-disabled, not loading).
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-primary-hover",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-primary-hover",
-          // Dim bg only when disabled or aria-disabled (not loading — loading ≠ off).
-          // bg-button-disabled-bg-filled aliases --color-muted-surface via @theme.
-          // Neutral muted reads as "off" rather than "soft primary"; no text-color change.
+          // Disabled bg — desaturated primary (light: peach, dark: brown).
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled",
+          // Disabled text — light: variant white (no visible change). Dark: dim grey;
+          // dark-brown bg under white text would otherwise read as ACTIVE primary.
+          "disabled:[&:not([data-loading])]:text-button-disabled-text-primary",
+          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-primary",
         ],
 
         secondary: [
           "border border-border bg-transparent text-foreground",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-secondary-surface",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-selected-surface",
-          // Ghost-family: transparent bg in all disabled paths
+          // Ghost-family: transparent bg in all disabled paths — text dim IS the signal.
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
+          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
         ],
 
         ghost: [
@@ -68,17 +72,21 @@ const buttonVariants = cva(
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-selected-surface",
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
+          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
         ],
 
         // Teal ring clashes on a red fill — override to destructive outline + errored glow.
-        // Text color stays text-destructive-foreground on disabled (no text-color change per rule).
         destructive: [
           "bg-destructive text-destructive-foreground",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-destructive-hover",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-destructive-active",
-          // bg-button-disabled-bg-filled-destructive aliases --color-state-errored-subtle.
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled-destructive",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-filled-destructive",
+          // Disabled text — light: variant white (no visible change). Dark: dim grey
+          // (same rationale as primary — tinted disabled bg under white reads active).
+          "disabled:[&:not([data-loading])]:text-button-disabled-text-destructive",
+          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-destructive",
           "focus-visible:outline-destructive focus-visible:shadow-focus-errored",
         ],
 
@@ -89,13 +97,19 @@ const buttonVariants = cva(
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-state-errored-subtle",
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
+          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
         ],
 
         link: [
-          "bg-transparent text-foreground",
-          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-secondary-surface",
+          // Link pattern: text + underline-on-hover, no bg fill. Mirrors anchor
+          // behavior and visually differentiates from ghost (which fills bg on hover).
+          "bg-transparent text-foreground underline-offset-4",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:underline",
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
+          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-ghost",
         ],
 
         "destructive-link": [
@@ -104,6 +118,8 @@ const buttonVariants = cva(
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:text-state-errored-text",
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
+          "disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
+          "aria-disabled:[&:not([data-loading])]:text-button-disabled-text-destructive-ghost",
         ],
       },
     },
