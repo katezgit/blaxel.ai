@@ -6,11 +6,10 @@ Entry point for all portal-level UX patterns. Each file below is a decision reco
 
 ## Tables
 
-Tables are the primary navigation surface in the portal. The standard is split across three locations — read them in order.
+Tables are the primary navigation surface in the portal. The standard splits across two locations — read them in order.
 
-1. [Tables — Behavior + Composition](../guidelines/tables.md) — row interaction archetypes (Catalog / Resource / Membership), column ordering, row action placement, loading / empty composition, row selection enablement, Pattern A vs B layout decision. Start here: the archetype determines everything downstream.
-2. [Table Component Spec](../components/table/spec.md) — anatomy, tokens, row states, density math.
-3. [Table Typography](../components/table/typography.md) — three-tier reading hierarchy (primary / secondary / metadata) + token mapping.
+1. [Tables — Behavior + Composition](../guidelines/tables.md) — row interaction archetypes (Catalog / Resource / Membership), column ordering, action placement, loading / empty composition, row selection, Pattern A vs B. Start here.
+2. [Table Component Reference](../components/table/spec.md) — visual reference: anatomy, tokens, row states, density math. Sibling [`typography.md`](../components/table/typography.md) covers cell typography tiers.
 
 ---
 
