@@ -159,6 +159,13 @@ Load only what the task requires. Don't prefetch the whole list.
 | **Motion-related behavior**                             | [docs/design/components/&lt;name&gt;/animations.md](../../docs/design/components/) · [motion-principles.md](../../docs/design/guidelines/motion-principles.md) |
 | **shadcn has no match (skill returned no shadcn match)** | Wrap the underlying primitive from `radix-ui` umbrella. If Radix also has nothing → STOP, escalate. |
 | **Duplicate check before building**                     | [packages/ui/index.md](../../packages/ui/index.md)                                                                                       |
+| **Building or revising a `<Card>` primitive**           | [card-usage.md](../../docs/design/guidelines/card-usage.md) — three-criteria rule and anti-patterns governing when a `<Card>` is legitimate. Constrains the primitive's prop surface and demo / story scope; do not bake anti-pattern shapes into the API. |
+| **Justifying a divergence from industry default**       | [house-rules.md](../../docs/design/guidelines/house-rules.md) — deliberate forks from industry consensus (e.g. no drawer-based wizards). Read before reaching for an external precedent (shadcn / Radix / MUI / Carbon) to justify a component shape. |
+| **Building or revising the `<Table>` primitive (engineering API)** | [table.md](../../docs/conventions/table.md) — JSX primitive vs CSS-string shape; constrains the primitive's prop surface and composition contract with consumers |
+| **Table anatomy / tokens / states**                     | [components/table/spec.md](../../docs/design/components/table/spec.md) — anatomy, token bindings, required states (default / hover / selected / loading / empty) |
+| **Table composition patterns (selection, sort, sticky, etc.)** | [components/table/patterns.md](../../docs/design/components/table/patterns.md) — sanctioned composition patterns the primitive must support |
+| **Table cell typography**                               | [components/table/typography.md](../../docs/design/components/table/typography.md) — per-cell typography tiers (header / numeric / monospace / muted) |
+| **Stack / framework lookup (versions, primitives)**     | [tech-stack.md](../../docs/tech-stack.md) — project stack (React 19 / Tailwind v4 / Radix / cva / shadcn) |
 
 ---
 

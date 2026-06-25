@@ -59,6 +59,13 @@ If a URL 404s, fall back to the docs root <https://docs.blaxel.ai/> and search �
 
 **Rule of thumb:** the live docs raise the bar for the *vocabulary* and *primitive-behavior* checks (sections 3 + 4 below). They do not override the *persona* and *workflow-phase* checks (sections 1, 2, 5) — those live in our local design contract and are not derivable from product docs.
 
+## Pattern references — load on demand
+
+Local pattern docs that constrain *how* a flow / wireframe expresses cross-component composition. Load when the artifact under review touches the relevant pattern; otherwise skip.
+
+- [`docs/design/patterns/index.md`](../../docs/design/patterns/index.md) — pattern entry point. Consult before clearing a flow that pattern-matches external precedent rather than a documented Blaxel pattern.
+- [`docs/design/patterns/notifications.md`](../../docs/design/patterns/notifications.md) — channel binding (toast vs alert vs inline) per event class; orchestrator vs consumer ownership. Load when a flow / wireframe describes a feedback, notification, or status-broadcast surface; FAIL the artifact if the channel binding contradicts the pattern.
+
 ## Process
 
 For every review:
