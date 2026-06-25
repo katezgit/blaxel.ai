@@ -160,19 +160,14 @@
     color-mix(in srgb, var(--orange-500) 14%, transparent)
   );
 
-  /* Destructive — irreversible action affordance. Shares the errored hue family.
-   * Normal sits at the darker palette step; hover lifts to the brighter step
-   * (matches primary's hover-brightens-in-dark / hover-darkens-in-light pattern). */
+  /* Destructive — irreversible action affordance. Errored hue family.
+   * Normal at the off-palette darker step; hover lifts to the palette step
+   * (matches primary's hover-brightens-in-dark / hover-darkens-in-light pattern).
+   * Active steps further in the hover direction: darker in light, brighter in dark. */
   --color-destructive:            light-dark(#bb3636,                         #e84444);
   --color-destructive-foreground: light-dark(var(--white),                    var(--white));
   --color-destructive-hover:      light-dark(var(--errored-600),              var(--errored-400));
-  /* PINNED — press feedback. Light: darker than hover (conventional depress).
-   * Dark: brighter than hover, derived from errored-400 + 18% white (follows
-   * the hover-brightens direction so press doesn't reverse the cue). */
-  --color-destructive-active:     light-dark(
-    #a02e2e,
-    color-mix(in srgb, var(--errored-400), white 18%)
-  );
+  --color-destructive-active:     light-dark(#a02e2e,                         #f68d8d);
 
   /* Status states — process / outcome semantics.
    *   scored:  success / passed
@@ -346,48 +341,24 @@
 
 /* ─── Component aliases ──────────────────────────────────────────────────────*/
 @theme {
-  /* Button disabled — bg + text tokens per variant family.
-   * Filled variants dim the bg AND (in dark mode only) the text. The dark-mode
-   * text dim is required because a brand-tinted dim bg under variant-white text
-   * reads as "active dim primary" rather than "off". In light mode the bg drop
-   * is the only signal — text stays variant for crisper enabled/disabled parity.
-   * Ghost variants have no bg signal (transparent), so text dim carries the
-   * off-state in both modes.
-   * Selector guard: button.tsx scopes these to :not([data-loading="true"]). */
+  /* Button disabled. Selector guard: button.tsx scopes these to :not([data-loading="true"]). */
 
-  /* Filled primary disabled bg — color-mix from brand primary so disabled
-   * tracks brand changes. */
-  --color-button-disabled-bg-filled:             light-dark(
+  --color-button-disabled-bg-filled: light-dark(
     color-mix(in srgb, var(--color-primary) 45%, white),
     color-mix(in srgb, var(--color-primary) 60%, black)
   );
-  /* Filled destructive disabled bg — explicit OKLCH because mixing the brand
-   * red toward black darkens to "death red" and mixing toward neutral collapses
-   * to grey. OKLCH gives direct control: L tuned to "dim" (not dark), C low but
-   * non-zero (visibly red, not alarming), H at the brand hue. */
+  /* OKLCH not color-mix: red mixed toward black darkens to "death red",
+   * red mixed toward neutral collapses to grey. Explicit L,C,H sidesteps both. */
   --color-button-disabled-bg-filled-destructive: light-dark(
     oklch(0.80 0.10 27),
     oklch(0.48 0.10 27)
   );
-  --color-button-disabled-bg-ghost:              transparent;
+  --color-button-disabled-bg-ghost: transparent;
 
-  /* Filled disabled text — variant white in light (no change vs enabled), dim
-   * grey in dark. ink-300 hits the legible-but-dim sweet spot; ink-500 reads as
-   * "desperate" against the tinted disabled bg. */
-  --color-button-disabled-text-primary:     light-dark(var(--color-primary-foreground),     var(--ink-300));
-  --color-button-disabled-text-destructive: light-dark(var(--color-destructive-foreground), var(--ink-300));
-
-  /* Ghost-family disabled text — dim in both modes (no bg signal). */
-  --color-button-disabled-text-ghost:       light-dark(var(--ink-400), var(--ink-300));
-
-  /* Destructive-ghost / destructive-link disabled text — dim red, not dim grey.
-   * Preserves "destructive family" context (variant text is red when enabled,
-   * stays red-family when disabled). OKLCH for explicit L (dim, not dark) and
-   * low chroma (visibly red without alarm). Matches brand hue (27°). */
-  --color-button-disabled-text-destructive-ghost: light-dark(
-    oklch(0.65 0.08 27),
-    oklch(0.62 0.08 27)
-  );
+  --color-button-disabled-text-primary:           light-dark(var(--color-primary-foreground),     var(--ink-300));
+  --color-button-disabled-text-destructive:       light-dark(var(--color-destructive-foreground), var(--ink-300));
+  --color-button-disabled-text-ghost:             light-dark(var(--ink-400),                      var(--ink-300));
+  --color-button-disabled-text-destructive-ghost: light-dark(oklch(0.65 0.08 27),                 oklch(0.62 0.08 27));
 
   --radius-badge: var(--radius-sm);
   /* --radius-surface mirrors --radius-lg (8px) from primitive.css */
