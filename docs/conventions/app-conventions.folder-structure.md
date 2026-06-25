@@ -19,7 +19,7 @@ Two reasons to keep `(app)` and `(manage)` separate even though both are authed:
 1. Different shell chrome — operations sidebar vs settings sidebar.
 2. Different mental mode — "doing work" vs "configuring the workspace".
 
-Drop a group if the project does not need it. `(onboarding)` is optional; small apps may collapse `(manage)` into `(app)/settings/`.
+Drop a group if the project does not need it. `(onboarding)` is optional. Collapse `(manage)` into `(app)/settings/` only when there are fewer than ~5 distinct settings sub-pages — at scale, the chrome split (operations sidebar vs settings sidebar) earns its keep.
 
 ## Tree
 
@@ -50,16 +50,16 @@ src/
 │   │       ├── _components/
 │   │       ├── _data/
 │   │       └── [id]/
-│   │           ├── page.tsx          # Detail
-│   │           ├── not-found.tsx     # Resource-specific 404
+│   │           ├── page.tsx          # Detail — renders <ResourceNotFound /> inline (see § Resource-detail 404)
 │   │           └── _components/
 │   │
 │   └── (manage)/
 │       ├── layout.tsx                # requireSession + <ManageShell>
-│       ├── not-found.tsx
+│       ├── not-found.tsx             # 404 rendered inside ManageShell
 │       └── manage/
 │           ├── layout.tsx            # Section header / shared context
-│           └── {section}/page.tsx
+│           ├── [...catchAll]/page.tsx # notFound() — funnels typo'd URLs into the sub-shell's not-found.tsx
+│           └── {section}/page.tsx    # Settings section (members, billing, …)
 │
 ├── components/                       # Cross-route shared UI
 │   └── shell/                        # App shell internals (nav, avatar, brand mark)
@@ -68,7 +68,7 @@ src/
 │   ├── auth/                         # session.ts (get/set/require), actions.ts (sign-in/out)
 │   └── cn.ts
 │
-└── middleware.ts                     # Reverse-gate: authed users away from /login
+└── middleware.ts                     # Reverse-gate: authed users away from /login (renamed to proxy.ts in Next.js 19.x)
 ```
 
 ## Layout layering
@@ -113,13 +113,15 @@ Onboarding completion is a server action that sets `session.onboarded = true` th
 
 Most-specific wins. See [loading-and-errors](app-conventions.loading-and-errors.md) for when to add per-route variants.
 
-| File                                       | Fires when                                              | In root layout?               |
-| ------------------------------------------ | ------------------------------------------------------- | ----------------------------- |
-| `app/global-error.tsx`                     | Root layout itself crashed                              | **No** — own `<html>/<body>`  |
-| `app/global-not-found.tsx`                 | URL matches no segment                                  | **No** — own `<html>/<body>`  |
-| `app/(app)/error.tsx`                      | Page/layout under `(app)` threw                         | Yes — toaster/theme intact    |
-| `app/(app)/not-found.tsx`                  | `notFound()` under `(app)` with no closer handler       | Yes                           |
-| `app/(app)/{resource}/[id]/not-found.tsx`  | `notFound()` from that detail page                      | Yes — entity-specific copy    |
+| File                                            | Fires when                                                          | In root layout?               |
+| ----------------------------------------------- | ------------------------------------------------------------------- | ----------------------------- |
+| `app/global-error.tsx`                          | Root layout itself crashed                                          | **No** — own `<html>/<body>`  |
+| `app/global-not-found.tsx`                      | URL matches no segment and no nearer catch-all intercepts           | **No** — own `<html>/<body>`  |
+| `app/(app)/error.tsx`                           | Page/layout under `(app)` threw                                     | Yes — toaster/theme intact    |
+| `app/(app)/not-found.tsx`                       | `notFound()` under `(app)` with no closer handler                   | Yes                           |
+| `app/(group)/{sub-shell}/[...catchAll]/page.tsx` | URL inside a sub-shell matches no segment (§ Sub-shell catch-all)   | Yes — funnels into sub-shell's `not-found.tsx` |
+| Inline `<ResourceNotFound />`                   | Resource detail query resolves to "doesn't exist" (§ Resource-detail 404) | Yes — rendered as a state branch of the detail page |
+| ~~`app/(app)/{resource}/[id]/not-found.tsx`~~   | **FORBIDDEN** — render inline in the detail page instead (§ Resource-detail 404) | — |
 
 Notes:
 - `global-error.tsx` and `global-not-found.tsx` render **outside** the root layout, so they must define their own `<html>` and `<body>`. There is no `ThemeProvider` in scope, so pin a theme via `data-theme` and inline a `<style>` block to opt dark-mode users into `color-scheme: dark`:
@@ -146,6 +148,63 @@ Notes:
 - Any `error.tsx` is a **client component** (`"use client"`) — it receives `reset()` as a prop.
 - Per-segment `error.tsx` / `not-found.tsx` are optional. Add only when the copy or recovery action differs from the parent.
 - Expected errors (API 404, validation, permission) are **not** for boundaries — handle inline.
+
+### Resource-detail 404 — render inline, not via `[id]/not-found.tsx`
+
+For dynamic resource detail routes (`[id]`, `[name]`, etc.), render the "doesn't exist" state **inline within the detail view** as one branch of the page's query-state switch. Do not create a sibling `[id]/not-found.tsx`.
+
+Why: a detail page already branches on query state (loading → error → not-found → success) and all four branches share the same chrome — breadcrumb, parent context, page-shell padding. Splitting not-found into `notFound()` + `[id]/not-found.tsx` forces rebuilding that context outside the page component, and collapses two distinct states ("load failed — retryable" vs. "doesn't exist — not retryable") into a single boundary file.
+
+```tsx
+// {resource}/[id]/_components/detail-view.tsx
+const query = useQuery(...);
+if (query.isPending) return <DetailSkeleton />;
+if (query.isError)   return <ErrorState onRetry={query.refetch} />;
+if (query.data == null) return <ResourceNotFound {...resourceCopy} />;
+return <DetailView data={query.data} />;
+```
+
+Factor the not-found visual into a shared primitive (a `ResourceNotFound` component) so every resource type renders the same shape; the detail view supplies resource-specific copy and the parent list link.
+
+Server-side `notFound()` from `page.tsx` is reserved for resources fetched synchronously on the server with no client hydration boundary. When the page uses `HydrationBoundary` + a client view, existence checks belong in the client view as above.
+
+### Sub-shell catch-all
+
+Without an explicit catch-all, Next.js 16's `global-not-found.tsx` shadows the group-level boundary on URLs that match no segment — the user loses the sub-shell sidebar on a typo'd URL. Fix: add `[...catchAll]/page.tsx` that calls `notFound()`, which walks UP to the closest `not-found.tsx` (preserving every layout above it).
+
+```tsx
+// app/(group)/{sub-shell}/[...catchAll]/page.tsx
+import { notFound } from "next/navigation";
+export default function CatchAll() { notFound(); }
+```
+
+#### Decision tree — per folder
+
+```
+For every folder in app/, ask one question:
+
+  Does this folder have its OWN layout.tsx?
+  (sidebar / sub-nav / chrome that the parent doesn't have)
+         │
+    ┌────┴─────┐
+    │          │
+   YES        NO
+    │          │
+    ▼          ▼
+   BOTH      NEITHER
+   ┌────────────────────┐    ← parent's chrome
+   │ not-found.tsx      │      already covers this
+   │ [...catchAll]/     │      level; the parent or
+   │   page.tsx         │      root not-found.tsx
+   │   → notFound()     │      handles it
+   └────────────────────┘
+
+Exception: app/ root always gets not-found.tsx (global fallback).
+```
+
+**Hard rule:** every segment with its own `layout.tsx` gets BOTH files. No exceptions. If you skip the catch-all, typos under that segment lose the sub-shell chrome — silently, and the engineer who added the segment is the one who notices last.
+
+Full mechanics in [loading-and-errors § Next.js 16: `global-not-found.tsx` shadows group-level `not-found.tsx`](app-conventions.loading-and-errors.md#nextjs-16-global-not-foundtsx-shadows-group-level-not-foundtsx).
 
 ## Per-segment mechanics
 
@@ -190,9 +249,7 @@ Add `_data/` and `_hooks/` only when the segment has enough to warrant the split
 | `src/components/shell/`  | App shell internals (nav links, avatar menu, brand mark, sidebar context) |
 | `src/lib/`               | Non-UI utilities (auth, formatting, fetch wrappers)                   |
 
-Two conventions for cross-route UI both work; pick one per project and stick with it:
-- **`src/components/`** — flat, project-wide. Easier to find, no relationship to routing.
-- **`app/_components/`** — colocated with `app/`. Signals "shared across routes" via folder placement.
+**Use `src/components/`** for cross-route UI. Flat, project-wide, no relationship to routing. The `app/_components/` alternative (colocated with `app/`) is rejected here — it conflates "route-private" (underscore-prefixed folders) with "cross-route shared," which makes ownership ambiguous.
 
 When a component is consumed by only one route group, put it inside that group's `_components/` instead.
 
@@ -203,7 +260,8 @@ Starting a new dashboard from this structure:
 - [ ] Update `app/layout.tsx` metadata template (`"%s | <Product>"`)
 - [ ] Replace brand mark imports
 - [ ] Wire real auth in `lib/auth/`
-- [ ] Define resource-specific `not-found.tsx` for entities where "deleted" / "moved" is common
+- [ ] Wire `<ResourceNotFound />` copy per resource type (parent list link, entity noun) — see § Resource-detail 404
+- [ ] Add `[...catchAll]/page.tsx` to every sub-shell that has its own `layout.tsx` — see § Sub-shell catch-all
 - [ ] Decide which groups apply: drop `(onboarding)` or `(manage)` if not needed
 - [ ] Edit middleware matcher if auth route names change
 - [ ] Edit `global-not-found.tsx` support email and home-link target
