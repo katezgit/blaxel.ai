@@ -160,11 +160,14 @@
     color-mix(in srgb, var(--orange-500) 14%, transparent)
   );
 
-  /* Destructive — irreversible action affordance. Shares the errored hue family. */
-  --color-destructive:            light-dark(var(--errored-600),              var(--errored-400));
+  /* Destructive — irreversible action affordance. Errored hue family.
+   * Normal at the off-palette darker step; hover lifts to the palette step
+   * (matches primary's hover-brightens-in-dark / hover-darkens-in-light pattern).
+   * Active steps further in the hover direction: darker in light, brighter in dark. */
+  --color-destructive:            light-dark(#bb3636,                         #e84444);
   --color-destructive-foreground: light-dark(var(--white),                    var(--white));
-  --color-destructive-hover:      light-dark(#bb3636, #e84444); /* PINNED — errored-600/400 –10%L / –8%L; not a palette step */
-  --color-destructive-active:     light-dark(#a02e2e, #d42020); /* PINNED — pressed state –17%L / –16%L below hover; not a palette step */
+  --color-destructive-hover:      light-dark(var(--errored-600),              var(--errored-400));
+  --color-destructive-active:     light-dark(#a02e2e,                         #f68d8d);
 
   /* Status states — process / outcome semantics.
    *   scored:  success / passed
@@ -338,6 +341,25 @@
 
 /* ─── Component aliases ──────────────────────────────────────────────────────*/
 @theme {
+  /* Button disabled. Selector guard: button.tsx scopes these to :not([data-loading="true"]). */
+
+  --color-button-disabled-bg-filled: light-dark(
+    color-mix(in srgb, var(--color-primary) 45%, white),
+    color-mix(in srgb, var(--color-primary) 60%, black)
+  );
+  /* OKLCH not color-mix: red mixed toward black darkens to "death red",
+   * red mixed toward neutral collapses to grey. Explicit L,C,H sidesteps both. */
+  --color-button-disabled-bg-filled-destructive: light-dark(
+    oklch(0.80 0.10 27),
+    oklch(0.48 0.10 27)
+  );
+  --color-button-disabled-bg-ghost: transparent;
+
+  --color-button-disabled-text-primary:           light-dark(var(--color-primary-foreground),     var(--ink-300));
+  --color-button-disabled-text-destructive:       light-dark(var(--color-destructive-foreground), var(--ink-300));
+  --color-button-disabled-text-ghost:             light-dark(var(--ink-400),                      var(--ink-300));
+  --color-button-disabled-text-destructive-ghost: light-dark(oklch(0.65 0.08 27),                 oklch(0.62 0.08 27));
+
   --radius-badge: var(--radius-sm);
   /* --radius-surface mirrors --radius-lg (8px) from primitive.css */
   --radius-surface: var(--radius-surface);

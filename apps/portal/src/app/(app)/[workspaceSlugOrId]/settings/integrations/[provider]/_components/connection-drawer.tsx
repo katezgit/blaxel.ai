@@ -280,7 +280,7 @@ function EditConnectionForm({
         {rotating && (
           <Button
             type="button"
-            variant="link"
+            variant="ghost"
             onClick={cancelRotate}
             className="-mt-2 h-auto self-start py-1"
           >

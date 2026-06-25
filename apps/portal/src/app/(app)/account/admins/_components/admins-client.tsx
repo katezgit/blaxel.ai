@@ -263,7 +263,7 @@ function PendingRowActions({
   return (
     <div className="inline-flex h-8 items-center">
       <Button
-        variant="link"
+        variant="ghost"
         onClick={onResend}
         aria-label={`Resend invitation to ${admin.email}`}
       >
@@ -279,7 +279,7 @@ function PendingRowActions({
         className="mx-1 data-[orientation=vertical]:h-3.5"
       />
       <Button
-        variant="destructive-link"
+        variant="destructive-ghost"
         onClick={onRevoke}
         aria-label={`Revoke invitation to ${admin.email}`}
       >
@@ -298,7 +298,7 @@ function ActiveRowActions({ admin, onRemove }: ActiveRowActionsProps) {
   return (
     <div className="inline-flex h-8 items-center">
       <Button
-        variant="destructive-link"
+        variant="destructive-ghost"
         onClick={onRemove}
         aria-label={`Remove ${admin.name}`}
       >
