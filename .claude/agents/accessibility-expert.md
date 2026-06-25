@@ -119,6 +119,8 @@ Severity levels:
 
 - **Always read first:** [`docs/design/guidelines/accessibility.md`](../../docs/design/guidelines/accessibility.md) — project-specific accessibility policies. The general WCAG checklist above is the floor; the project guideline is the binding contract. A violation of the project guideline is a CRITICAL/MAJOR finding regardless of WCAG severity.
 - [`docs/design/guidelines/index.md`](../../docs/design/guidelines/index.md) — discover any additional guideline that may apply (e.g., motion-related reduced-motion sections).
+- [`docs/design/guidelines/empty-and-error-states.md`](../../docs/design/guidelines/empty-and-error-states.md) — read § Accessibility for the announcement / focus / live-region contract on empty / error / loading surfaces. Violations are CRITICAL/MAJOR findings.
+- [`docs/design/guidelines/tables.md`](../../docs/design/guidelines/tables.md) — row interaction archetypes determine the a11y contract (clickable row vs inline-action-only, selection semantics, keyboard model). Wrong archetype = wrong keyboard / screen-reader behavior; flag accordingly.
 - [WCAG 2.1 Quick Reference](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Radix UI Accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility)
 - [packages/ui/index.md](../../packages/ui/index.md) — design system components

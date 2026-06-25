@@ -122,6 +122,7 @@ Load only what the task requires. Don't prefetch the whole list.
 | **HTTP client work**                 | [packages/libs/src/http-client.ts](../../packages/libs/src/http-client.ts) — existing patterns  |
 | **Worktree commit + return**         | [.claude/workflows/worktree-return-protocol.md](../workflows/worktree-return-protocol.md)       |
 | **Pixel-rendering work (hand off)**  | [.claude/agents/design-system-architect.md](design-system-architect.md)                         |
+| **Stack / framework / version lookup** | [tech-stack.md](../../docs/tech-stack.md) — project stack (TypeScript / Node / ESM / package layout) |
 
 ---
 

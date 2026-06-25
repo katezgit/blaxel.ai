@@ -44,8 +44,16 @@ Tactical rules that constrain HOW the design choices land in any screen / compon
 - [`empty-and-error-states.md`](../../docs/design/guidelines/empty-and-error-states.md) — state copy + structure for empty/error views.
 - [`resource-not-found.md`](../../docs/design/guidelines/resource-not-found.md) — 404 / missing-resource handling.
 - [`app-shell-layout.md`](../../docs/design/guidelines/app-shell-layout.md) — top-level dashboard shell.
+- [`tables.md`](../../docs/design/guidelines/tables.md) — row interaction archetypes (catalog / navigation / selection), column order, action placement, when to add row selection. Read before specifying any list / index view.
+- [`toolbar.md`](../../docs/design/guidelines/toolbar.md) — split-anchor rule (search LEFT, segments / filters / refinements RIGHT, locked internal order) for the filter row above any table.
+- [`stepper-actions.md`](../../docs/design/guidelines/stepper-actions.md) — Prev / Cancel / forward button group + container constraints for any multi-step form.
+- [`house-rules.md`](../../docs/design/guidelines/house-rules.md) — deliberate divergence from industry consensus (e.g. no drawer-based wizards). Read before reaching for an external precedent to justify a pattern.
 - [`onboarding.md`](../../docs/design/guidelines/onboarding.md) — minimalist onboarding rules.
 - [`motion-principles.md`](../../docs/design/guidelines/motion-principles.md) — motion-designer territory; read only for cross-handoff.
+- [`foundations/empty-state.md`](../../docs/design/foundations/empty-state.md) — rendering decision for zero-record surfaces: when identity / chrome persists around the empty content vs when the whole surface dissolves into a single message. Read before specifying any empty state on a surface that has stable identity (named list, scoped detail, header-anchored view).
+- [`foundations/header-rhythm.md`](../../docs/design/foundations/header-rhythm.md) — vertical spacing between title, subtitle, breadcrumbs, action row, and first content block on a page header. Read before specifying any page-header layout.
+- [`patterns/notifications.md`](../../docs/design/patterns/notifications.md) — channel binding decision (toast vs alert vs inline) per event class; ownership between orchestrator and consumer. Read before specifying any feedback / notification surface.
+- [`patterns/index.md`](../../docs/design/patterns/index.md) — pattern entry point; consult before pattern-matching against external precedent.
 
 # Boundaries
 
