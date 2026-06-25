@@ -166,7 +166,13 @@
   --color-destructive:            light-dark(#bb3636,                         #e84444);
   --color-destructive-foreground: light-dark(var(--white),                    var(--white));
   --color-destructive-hover:      light-dark(var(--errored-600),              var(--errored-400));
-  --color-destructive-active:     light-dark(#a02e2e, #d42020); /* PINNED — pressed step, not on the palette */
+  /* PINNED — press feedback. Light: darker than hover (conventional depress).
+   * Dark: brighter than hover, derived from errored-400 + 18% white (follows
+   * the hover-brightens direction so press doesn't reverse the cue). */
+  --color-destructive-active:     light-dark(
+    #a02e2e,
+    color-mix(in srgb, var(--errored-400), white 18%)
+  );
 
   /* Status states — process / outcome semantics.
    *   scored:  success / passed
