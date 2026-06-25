@@ -8,8 +8,9 @@ Entry point for all portal-level UX patterns. Each file below is a decision reco
 
 Tables are the primary navigation surface in the portal. Two docs define the complete standard; read them in order.
 
-1. [Row Interaction](row-interaction.md) — archetype assignment (Catalog / Resource / Membership) and the interaction spec that follows from each archetype. Start here: the archetype determines everything downstream.
-2. [Table Typography](table-typography.md) — three-tier reading hierarchy (primary / secondary / metadata), token mapping, and sizing rules per archetype. Apply after archetype is assigned.
+1. [Row Interaction](../guidelines/row-interaction.md) — archetype assignment (Catalog / Resource / Membership) and the interaction spec that follows from each archetype. Start here: the archetype determines everything downstream. *(Lives in `guidelines/` — behavior rule, not a composition pattern.)*
+2. [Table Behavior + Composition](../guidelines/tables.md) — column ordering, row action placement, loading / empty composition, row selection enablement, Pattern A vs B layout decision.
+3. [Table Typography](table-typography.md) — three-tier reading hierarchy (primary / secondary / metadata), token mapping, and sizing rules per archetype. Apply after archetype is assigned.
 
 ### Upstream context
 
