@@ -338,6 +338,13 @@
 
 /* ─── Component aliases ──────────────────────────────────────────────────────*/
 @theme {
+  /* Button disabled backgrounds — one token per variant family (Ant/Primer/MUI pattern).
+   * All alias existing semantic tokens via var() so no new primitive values are introduced.
+   * Selector guard: these only apply when :not([data-loading="true"]) — see button.tsx. */
+  --color-button-disabled-bg-filled:             var(--color-muted-surface);
+  --color-button-disabled-bg-filled-destructive: var(--color-state-errored-subtle);
+  --color-button-disabled-bg-ghost:              transparent;
+
   --radius-badge: var(--radius-sm);
   /* --radius-surface mirrors --radius-lg (8px) from primitive.css */
   --radius-surface: var(--radius-surface);
