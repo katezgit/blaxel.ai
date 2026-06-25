@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Panel } from "@/app/(manage)/_components/page-primitives";
 import AutoTopUpRule from "./auto-top-up-rule";
 import MonthlyTopUpRule from "./monthly-top-up-rule";
 
@@ -14,10 +13,15 @@ export default function TopUpSettingsCard() {
   const collapseRow = () => setExpandedRow(null);
 
   return (
-    <Panel
-      title="Automatic top-ups"
-      subtitle="Rules that keep your balance from running out."
-    >
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h2 className="typography-subtitle font-semibold text-foreground">
+          Automatic top-ups
+        </h2>
+        <p className="typography-body text-muted-foreground">
+          Rules that keep your balance from running out.
+        </p>
+      </div>
       <div className="flex flex-col gap-3">
         <AutoTopUpRule
           isExpanded={expandedRow === "auto"}
@@ -30,6 +34,6 @@ export default function TopUpSettingsCard() {
           onCollapse={collapseRow}
         />
       </div>
-    </Panel>
+    </section>
   );
 }

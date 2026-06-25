@@ -51,7 +51,9 @@ export default function AddOnRow({ addon }: AddOnRowProps) {
             Active
           </Badge>
         ) : (
-          <Badge variant="neutral">Coming soon</Badge>
+          <span className="typography-caption text-meta-foreground">
+            Coming soon
+          </span>
         )}
       </div>
     </article>
