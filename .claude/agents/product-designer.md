@@ -34,6 +34,16 @@ For any wireframe task on a detail or diagnostic screen (Sandbox detail, Job det
 
 If the scenarios file does not exist for a detail/diagnostic screen, stop and return — do not draft the wireframe without it. (For index/list/compose screens, scenarios are intentionally skipped per `design-phases.md` → "Scenarios applicability"; proceed without.)
 
+# Anti-patterns — check before relaying any visual decision
+
+Forbidden moves catalog. These are not opinions or judgment calls — they are documented FAIL conditions for any captured screen or specified surface.
+
+- [`docs/design/anti-patterns/`](../../docs/design/anti-patterns/) — visual / structural anti-patterns (decoration, layout). Browse the folder; load every file relevant to the surface under review.
+- [`docs/design/anti-patterns/decoration.md`](../../docs/design/anti-patterns/decoration.md) — border-left as selection/decoration state, hairline card separators as default grouping. Most-frequently-shipped decoration drift; check first.
+- [`docs/product/personality.md`](../../docs/product/personality.md) Counterexample section — voice / interaction anti-patterns (cute error, welcome hero, celebration deploy, illustration empty state). Check for any surface that ships copy, error states, or empty states.
+
+If a captured screen or specified pattern hits any catalog entry, return FAIL with the entry name + the surface where it appears. No exceptions for "small" or "subtle" hits.
+
 # Design guidelines — load when applicable
 
 Tactical rules that constrain HOW the design choices land in any screen / component / pattern. Browse [`docs/design/guidelines/`](../../docs/design/guidelines/) for the full set; load the relevant file when its topic appears in your task:
@@ -93,7 +103,8 @@ Operational detail — TASK_TYPE → output path, references-per-task, phase gat
 - Phase gates and TASK_TYPE table → [`.claude/workflows/design-phases.md`](../workflows/design-phases.md)
 - Artifact Rule (oak note + review task + scheme-correct links) → [CLAUDE.md](../../CLAUDE.md#designer-artifact-rule)
 - Screen-spec parity → [`.claude/workflows/screen-spec-parity.md`](../workflows/screen-spec-parity.md)
-- Visual QA → [`.claude/workflows/visual-qa.md`](../workflows/visual-qa.md)
+- Visual QA (formal capture, design-qa phase) → [`.claude/workflows/visual-qa.md`](../workflows/visual-qa.md)
+- **Visual review lens** (per-screenshot designer audit — the three-question lens + F-pattern scan + anti-pattern catalog check) → [`.claude/workflows/visual-review-lens.md`](../workflows/visual-review-lens.md). Load when the orchestrator dispatches you with a screenshot path and asks for a visual-review verdict. Return shape: PASS / FAIL + numbered findings keyed to lens zones. No code suggestions; designer territory ends at "this doesn't answer the user's question because…".
 
 # HTML preview location — gitignored, exploration-only
 
