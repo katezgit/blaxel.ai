@@ -27,6 +27,21 @@ Per memory: verify visual changes yourself — never relay a sub-agent's "verifi
 
 When the PR has no runtime UI (docs, workflow files, libs without consumers, backend, config), skip step 3 but write one line in your end-of-turn summary explaining the skip ("no runtime UI in this diff — workflow doc only").
 
+**Step 3.5 — Visual review lens (designer audit).** Applies only when the PR touches a runtime UI surface — same trigger as step 3. After the engineer's browser-verify captures are in `.intermediate/audits/<topic>/`, the orchestrator dispatches `product-designer` with:
+
+- the screenshot paths for default + every reachable state captured in step 3,
+- the route and persona context (which persona, which workflow phase, which entry path — pulled from `docs/product/personas.md` + `alex-user-stories.md` or `scenarios.md` if present),
+- the brief: *"Run the visual review lens. Return PASS / FAIL + numbered findings."*
+
+The designer loads [`visual-review-lens.md`](./visual-review-lens.md) and returns the structured verdict defined there — three-question lens (why here / 10s job / F-pattern scan) + anti-pattern catalog check. The verdict format is fixed; do not paraphrase.
+
+- **PASS** — proceed to step 4.
+- **FAIL** — orchestrator routes each numbered finding to the path-owning engineer (`staff-frontend-engineer` for `apps/**`, `design-system-architect` for `packages/ui/**`). Engineer addresses every finding, re-captures the state grid, re-dispatches the designer. Loop until PASS.
+
+Skip step 3.5 only when step 3 was also skipped (no runtime UI in the diff). Per memory: the lens substitutes for the operator's manual visual-audit relay — the loop is the gate they used to run by hand.
+
+**Mid-feature opt-in.** A frontend engineer may request the lens *before* PR time by tagging their return message with `[designer-review-requested]` and a screenshot path. The orchestrator runs the same dispatch above immediately, routes findings back, and resumes the engineer. This is opt-in for the engineer (uncertain whether a layout call lands) and mandatory at PR time regardless.
+
 **Step 4 — Adversarial re-read.** Read the diff as a peer reviewer who didn't write it. List every finding — do not cap. Format: `<file:line> — <issue> — <severity>`. Pull from the categories below. If you surface five or more findings, the diff is not ready; address them before considering another loop iteration.
 
 Exit only when every applicable step returns zero unresolved findings AND the outcome restated in step 1 demonstrably matches the diff.
