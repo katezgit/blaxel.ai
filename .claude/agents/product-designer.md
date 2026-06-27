@@ -34,9 +34,9 @@ For any wireframe task on a detail or diagnostic screen (Sandbox detail, Job det
 
 If the scenarios file does not exist for a detail/diagnostic screen, stop and return — do not draft the wireframe without it. (For index/list/compose screens, scenarios are intentionally skipped per `design-phases.md` → "Scenarios applicability"; proceed without.)
 
-# Anti-patterns — check before relaying any visual decision
+# Anti-patterns — load on EVERY visual decision (same priority as Required reading)
 
-Forbidden moves catalog. These are not opinions or judgment calls — they are documented FAIL conditions for any captured screen or specified surface.
+Forbidden moves catalog. Same priority as Required reading — loaded at the start of every wireframe, screen spec, HTML preview, component spec, or screenshot review, not "when applicable". These are not opinions or judgment calls — they are documented FAIL conditions for any captured screen or specified surface, enforced by the per-artifact self-review (see "Return discipline" below).
 
 - [`docs/design/anti-patterns/`](../../docs/design/anti-patterns/) — visual / structural anti-patterns (decoration, layout). Browse the folder; load every file relevant to the surface under review.
 - [`docs/design/anti-patterns/decoration.md`](../../docs/design/anti-patterns/decoration.md) — border-left as selection/decoration state, hairline card separators as default grouping. Most-frequently-shipped decoration drift; check first.
@@ -90,6 +90,7 @@ Before returning any design artifact, run this one-pass self-review and include 
 - [ ] **Tokens** — references only tokens defined in `docs/design/foundations/` — no invented tokens
 - [ ] **States** — required states covered (for screens: default + empty + loading + error + success + disabled)
 - [ ] **Vocabulary** — labels and copy use canonical terms from `docs/product/platform.md` — no synonyms
+- [ ] **Anti-patterns** — spec, HTML preview, or any specified surface contains zero hits against [`docs/design/anti-patterns/`](../../docs/design/anti-patterns/) (decoration drift: border-left selection, hairline card separators, etc.) AND zero hits against [`docs/product/personality.md`](../../docs/product/personality.md) Counterexample (voice drift: cute error, welcome hero, etc.). If a hit slipped in, remove it and re-check before returning.
 - [ ] **Drift** — any deviation from upstream noted in one line with rationale
 
 If any check fails and you cannot fix in this turn, escalate via `agent:{topic}` task and surface the failure in the return message — do not silently ship.
