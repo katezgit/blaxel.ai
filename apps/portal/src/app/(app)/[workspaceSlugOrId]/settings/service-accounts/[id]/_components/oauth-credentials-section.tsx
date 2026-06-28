@@ -1,6 +1,5 @@
 "use client";
 
-import { CodeBlock } from "@repo/ui/components/code-block";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import type { ServiceAccount } from "@/lib/mock/types";
 
@@ -11,11 +10,6 @@ interface OauthCredentialsSectionProps {
 export default function OauthCredentialsSection({
   serviceAccount,
 }: OauthCredentialsSectionProps) {
-  const rotateCli = [
-    `bl service-account delete ${serviceAccount.name}`,
-    `bl service-account create --name ${serviceAccount.name}`,
-  ].join("\n");
-
   return (
     <section
       aria-labelledby="sa-oauth-heading"
@@ -62,11 +56,6 @@ export default function OauthCredentialsSection({
         <p className="typography-caption text-meta-foreground">
           This is a Blaxel API limitation.
         </p>
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <span className="typography-caption text-meta-foreground">CLI</span>
-        <CodeBlock variant="block" language="bash" code={rotateCli} />
       </div>
     </section>
   );
