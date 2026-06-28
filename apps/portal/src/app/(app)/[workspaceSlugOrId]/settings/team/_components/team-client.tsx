@@ -53,9 +53,7 @@ import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import {
   ROLE_META,
-  ROLE_VALUES,
   SOURCE_META,
-  SOURCE_VALUES,
   STATUS_META,
   STATUS_VALUES,
 } from "./team-mock-helpers";
@@ -86,8 +84,6 @@ export default function TeamClient({ workspace }: TeamClientProps) {
 
   const [members, setMembers] = useState<ReadonlyArray<TeamMember>>(serverMembers);
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<Role | null>(null);
-  const [sourceFilter, setSourceFilter] = useState<MemberSource | null>(null);
   const [statusFilter, setStatusFilter] = useState<MemberStatus | null>(null);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [sorting, setSorting] = useState<SortingState>([
@@ -103,20 +99,21 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       if (q && !m.name.toLowerCase().includes(q) && !m.email.toLowerCase().includes(q)) {
         return false;
       }
-      if (roleFilter !== null && m.role !== roleFilter) return false;
-      if (sourceFilter !== null && m.source !== sourceFilter) return false;
       if (statusFilter !== null && m.status !== statusFilter) return false;
       return true;
     });
-  }, [members, search, roleFilter, sourceFilter, statusFilter]);
+  }, [members, search, statusFilter]);
 
-  const roleCounts = useCounts(members, "role", ROLE_VALUES);
-  const sourceCounts = useCounts(members, "source", SOURCE_VALUES);
-  const statusCounts = useCounts(members, "status", STATUS_VALUES);
-
-  const roleOptions = useFilterOptions(ROLE_VALUES, ROLE_META, roleCounts);
-  const sourceOptions = useFilterOptions(SOURCE_VALUES, SOURCE_META, sourceCounts);
-  const statusOptions = useFilterOptions(STATUS_VALUES, STATUS_META, statusCounts);
+  // Status filter options carry per-bucket counts so admins see "Pending (3)"
+  // without clicking through — the count IS the actionable signal at small team sizes.
+  const statusOptions = useMemo<ComboboxOption[]>(() => {
+    const counts: Record<MemberStatus, number> = { accepted: 0, pending: 0, expired: 0 };
+    for (const m of members) counts[m.status] += 1;
+    return STATUS_VALUES.map((v) => ({
+      value: v,
+      label: `${STATUS_META[v].label} (${counts[v]})`,
+    }));
+  }, [members]);
 
   const columns = useMemo(
     () => [
@@ -221,16 +218,10 @@ export default function TeamClient({ workspace }: TeamClientProps) {
   });
 
   const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id]);
-  const hasFilters =
-    search.trim().length > 0 ||
-    roleFilter !== null ||
-    sourceFilter !== null ||
-    statusFilter !== null;
+  const hasFilters = search.trim().length > 0 || statusFilter !== null;
 
   const clearFilters = () => {
     setSearch("");
-    setRoleFilter(null);
-    setSourceFilter(null);
     setStatusFilter(null);
   };
 
@@ -294,29 +285,14 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           className="max-w-xs"
           aria-label="Search workspace members"
         />
-        <div className="ml-auto flex items-center gap-2">
-          <Combobox
-            options={roleOptions}
-            value={roleFilter}
-            onValueChange={(v) => setRoleFilter(v as Role | null)}
-            placeholder="Filter by role"
-            className="w-44"
-          />
-          <Combobox
-            options={sourceOptions}
-            value={sourceFilter}
-            onValueChange={(v) => setSourceFilter(v as MemberSource | null)}
-            placeholder="Filter by source"
-            className="w-44"
-          />
-          <Combobox
-            options={statusOptions}
-            value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as MemberStatus | null)}
-            placeholder="Filter by status"
-            className="w-44"
-          />
-        </div>
+        <Combobox
+          options={statusOptions}
+          value={statusFilter}
+          onValueChange={(v) => setStatusFilter(v as MemberStatus | null)}
+          label="Status"
+          placeholder="All"
+          className="ml-auto w-44"
+        />
       </div>
 
       {selectedIds.length > 0 && (
@@ -402,36 +378,6 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         }}
       />
     </section>
-  );
-}
-
-function useCounts<T extends string>(
-  members: ReadonlyArray<TeamMember>,
-  key: "role" | "source" | "status",
-  values: ReadonlyArray<T>,
-): Record<T, number> {
-  return useMemo(() => {
-    const out = Object.fromEntries(values.map((v) => [v, 0])) as Record<T, number>;
-    for (const m of members) {
-      const v = m[key] as T;
-      out[v] = (out[v] ?? 0) + 1;
-    }
-    return out;
-  }, [members, key, values]);
-}
-
-function useFilterOptions<T extends string>(
-  values: ReadonlyArray<T>,
-  meta: Record<T, { label: string }>,
-  counts: Record<T, number>,
-): ComboboxOption[] {
-  return useMemo(
-    () =>
-      values.map((value) => ({
-        value,
-        label: `${meta[value].label} (${counts[value] ?? 0})`,
-      })),
-    [values, meta, counts],
   );
 }
 
