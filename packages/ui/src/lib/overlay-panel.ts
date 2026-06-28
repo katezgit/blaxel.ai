@@ -26,7 +26,8 @@ export const overlayPanelHeaderBase = [
   "shrink-0",
   "pt-6 pb-3 px-6",
   "border-b border-transparent shadow-none",
-  "transition-[border-color,box-shadow] prop-(--motion-state-change)",
+  // T2 — prop-(--motion-state-change) sets transition-property not duration; explicit tokens resolve correctly
+  "transition-[border-color,box-shadow] duration-fast ease-out-standard",
 ].join(" ")
 
 /**
@@ -52,7 +53,8 @@ export const overlayPanelFooterBase = [
   "gap-2",
   "pt-3 pb-4 px-6",
   "border-t border-transparent shadow-none",
-  "transition-[border-color,box-shadow] prop-(--motion-state-change)",
+  // T2 — prop-(--motion-state-change) sets transition-property not duration; explicit tokens resolve correctly
+  "transition-[border-color,box-shadow] duration-fast ease-out-standard",
 ].join(" ")
 
 /**

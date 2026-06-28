@@ -239,16 +239,16 @@
  * Resolve at runtime since --duration-* and --ease-* are on :root. */
 :root {
   --animate-fade-in:        fade-in          var(--duration-base)   var(--ease-out-standard);
-  --animate-fade-out:       fade-out         var(--duration-fast)   var(--ease-in-accelerated);
-  --animate-slide-up-in:    slide-up-in      var(--duration-base)   var(--ease-out-emphasized); /* dialog/popover enter — 6px translate */
-  --animate-slide-down-out: slide-down-out   var(--duration-fast)   var(--ease-in-accelerated);
-  --animate-row-reveal:     row-reveal       var(--duration-subtle) var(--ease-out-standard) both; /* streaming table row arrival — 4px translate, fill-mode both for staggered reveal */
-  --animate-shimmer:        shimmer          1800ms                  var(--ease-linear) infinite;
-  --animate-running-pulse:  running-pulse    1600ms                  var(--ease-linear) infinite;
-  --animate-slide-right-in:         slide-right-in         var(--duration-base)   var(--ease-out-emphasized);   /* Trace panel enters from right */
-  --animate-slide-left-out:         slide-left-out         var(--duration-fast)   var(--ease-in-accelerated);   /* Trace panel exits to right */
-  --animate-slide-up-from-bottom:   slide-up-from-bottom   var(--duration-base)   var(--ease-out-emphasized);   /* Mobile sheet enters from bottom edge */
-  --animate-slide-down-to-bottom:   slide-down-to-bottom   var(--duration-fast)   var(--ease-in-accelerated);   /* Mobile sheet exits to bottom edge */
+  --animate-fade-out:       fade-out         var(--duration-instant) var(--ease-in-accelerated);  /* exits clear the stage before the next action — 80ms accelerated */
+  --animate-slide-up-in:    slide-up-in      var(--duration-base)    var(--ease-out-emphasized); /* dialog/popover enter — 6px translate */
+  --animate-slide-down-out: slide-down-out   var(--duration-instant) var(--ease-in-accelerated);  /* exits clear the stage before the next action — 80ms accelerated */
+  --animate-row-reveal:     row-reveal       var(--duration-subtle)  var(--ease-out-standard) both; /* streaming table row arrival — 4px translate, fill-mode both for staggered reveal */
+  --animate-shimmer:        shimmer          1800ms                   var(--ease-linear) infinite;
+  --animate-running-pulse:  running-pulse    1600ms                   var(--ease-linear) infinite;
+  --animate-slide-right-in:         slide-right-in         var(--duration-base)    var(--ease-out-emphasized);   /* Trace panel enters from right */
+  --animate-slide-left-out:         slide-left-out         var(--duration-instant) var(--ease-in-accelerated);   /* Trace panel exits to right — 80ms accelerated */
+  --animate-slide-up-from-bottom:   slide-up-from-bottom   var(--duration-base)    var(--ease-out-emphasized);   /* Mobile sheet enters from bottom edge */
+  --animate-slide-down-to-bottom:   slide-down-to-bottom   var(--duration-instant) var(--ease-in-accelerated);   /* Mobile sheet exits to bottom edge — 80ms accelerated */
 }
 
 @keyframes fade-in {
@@ -286,15 +286,6 @@
   50%       { opacity: 0.45; }
 }
 
-/* TODO(motion-audit): copy-confirm-pulse is a scale-bounce celebration (scale 1→1.18→1) that violates
- * the Sparing adjective. code-block.tsx references it directly — remove after code-block is updated
- * to use an icon/color swap at --motion-state-change instead. */
-@keyframes copy-confirm-pulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.18); }
-  100% { transform: scale(1); }
-}
-
 @keyframes slide-right-in {
   from { opacity: 0; transform: translateX(-12px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -329,7 +320,7 @@
   --motion-state-change: var(--duration-fast) var(--ease-out-standard);    /* hover bg, focus ring, badge state swap */
   --motion-micro:        var(--duration-subtle) var(--ease-out-standard);  /* button press scale, row select highlight */
   --motion-enter:        var(--duration-base) var(--ease-out-emphasized);  /* modal/popover open, row reveal, tooltip appear */
-  --motion-exit:         var(--duration-fast) var(--ease-in-accelerated);  /* modal/popover close, tooltip dismiss */
+  --motion-exit:         var(--duration-instant) var(--ease-in-accelerated);  /* modal/popover close, tooltip dismiss — 80ms accelerated */
   --motion-continuous:   1800ms var(--ease-linear) infinite;               /* skeleton shimmer, indeterminate progress — loops only */
 }
 

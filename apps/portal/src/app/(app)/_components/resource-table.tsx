@@ -31,6 +31,13 @@ interface ResourceTableProps<TData> {
  * Identical structural primitive but kept separate so manage and app surfaces
  * can diverge on chrome (selection bars, density, etc.) without forking a
  * shared component back.
+ *
+ * MOTION (B7 — keep-instant): rows render without --animate-row-reveal by
+ * design. These are dense operational tables (Sandboxes, API Keys, Policies,
+ * Agents, Jobs); row insertion animation in a fast-updating list hides the
+ * change — the slide-up completes while the user is reading the previous row.
+ * --animate-row-reveal is reserved for sparse arrival-ordered contexts (e.g.
+ * a Job event timeline). See docs/design/foundations/motion-application.md §B7.
  */
 export function ResourceTable<TData>({
   table,

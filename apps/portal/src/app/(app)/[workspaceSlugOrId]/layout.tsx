@@ -14,6 +14,13 @@ import LastVisitedWorkspaceWriter from "@/lib/workspace/last-visited-writer";
 //
 // Sub-shell routes (/profile/*, /account/*) do NOT pass through this layout —
 // they read the last-visited workspace from localStorage via the shell.
+//
+// MOTION (B6 — keep-instant): route changes inside this layout must NOT fade
+// or slide the content area. The shell persists across workspace routes; the
+// only visible loading signal is the skeleton shimmer on new data. Adding an
+// enter animation here delays Alex's orientation signal and turns navigation
+// (a structural already-confirmed event) into ceremony. See
+// docs/design/foundations/motion-application.md §B6.
 
 interface LayoutProps {
   children: ReactNode;

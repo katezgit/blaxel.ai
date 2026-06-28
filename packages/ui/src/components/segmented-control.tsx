@@ -131,7 +131,8 @@ export const segmentedControlItemVariants = cva([
   "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
   // Text color fades simultaneously with the thumb slide.
-  "transition-colors prop-(--motion-state-change)",
+  // T2 — prop-(--motion-state-change) doesn't set --tw-duration; explicit tokens resolve correctly
+  "transition-colors duration-fast ease-out-standard",
 ])
 
 export interface SegmentedControlProps
