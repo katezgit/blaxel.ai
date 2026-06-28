@@ -158,6 +158,10 @@
                 0 6px 6px -3px rgba(9,9,11,.06),
                 0 6px 12px rgba(0,0,0,.22)
               );
+  /* Last layer dropped: dark-mode `inset 0 1px 0 rgba(255,255,255,.07)` sat 1px
+   * inside the outset 1px ring → two parallel light lines on the top edge → every
+   * dialog and command panel read as double-bordered. Light-mode's paired
+   * `0 24px 24px -12px rgba(9,9,11,.06)` was nearly invisible; both go together. */
   --shadow-3: light-dark(
                 0 0 0 1px rgba(9,9,11,.06),
                 0 0 0 1px rgba(255,255,255,.06)
@@ -177,10 +181,6 @@
               light-dark(
                 0 12px 12px -6px rgba(9,9,11,.06),
                 0 16px 32px rgba(0,0,0,.24)
-              ),
-              light-dark(
-                0 24px 24px -12px rgba(9,9,11,.06),
-                inset 0 1px 0 rgba(255,255,255,.07)
               );
   --shadow-chip: light-dark(
                    0 0 0 1px rgba(9,9,11,.06),
