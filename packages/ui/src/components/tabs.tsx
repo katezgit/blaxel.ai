@@ -128,9 +128,9 @@ function TabsList({
   ...props
 }: TabsListProps) {
   const listRef = React.useRef<HTMLDivElement>(null)
-  const geo = useSlideIndicator(variant === "segmented" ? listRef : { current: null })
+  const geo = useSlideIndicator(listRef)
 
-  // Sliding indicator — aria-hidden span positioned behind triggers.
+  // Sliding indicator — aria-hidden span positioned behind/under triggers.
   // transition uses CSS var() directly (not Tailwind utility) because it lives in
   // an inline style. --motion-state-change = var(--duration-fast) var(--ease-out-standard).
   const indicatorStyle: React.CSSProperties = geo.ready
@@ -160,12 +160,21 @@ function TabsList({
         )}
         {...props}
       >
-        {/* Sliding indicator — rendered first so it sits behind triggers (z-10) */}
+        {/* Sliding indicator — rendered first so it sits behind triggers (z-10).
+            segmented: pill behind triggers; underline: hairline below triggers. */}
         {variant === "segmented" && (
           <span
             aria-hidden
             data-slot="tabs-indicator"
             className="absolute top-0.5 bottom-0.5 rounded-[4px] bg-primary pointer-events-none" // eslint-disable-line no-restricted-syntax -- rounded-[4px]: no token for 4px radius on this component
+            style={indicatorStyle}
+          />
+        )}
+        {variant === "underline" && (
+          <span
+            aria-hidden
+            data-slot="tabs-indicator"
+            className="absolute bottom-0 h-0.5 bg-primary pointer-events-none"
             style={indicatorStyle}
           />
         )}
@@ -203,10 +212,11 @@ function TabsTrigger({
         variant === "underline" && [
           "relative z-10 cursor-pointer",
           "px-1.5 py-2 typography-body font-medium whitespace-nowrap",
-          // CSS-only — no measurement, no JS indicator span for this variant.
+          // Transparent base border reserves vertical space so triggers don't shift
+          // height when the hover preview appears. Active border is owned by the
+          // indicator span (data-slot="tabs-indicator"), not a per-trigger class.
           "border-b-2 border-transparent",
           "data-[state=inactive]:hover:border-border-strong",
-          "data-[state=active]:border-primary",
           "transition-colors prop-(--motion-state-change)",
           // Inactive: muted text
           "text-meta-foreground",

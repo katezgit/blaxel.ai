@@ -102,11 +102,27 @@ describe("Tabs", () => {
 
   // ── Sliding indicator ─────────────────────────────────────────────────────
 
-  it("renders a sliding indicator element inside the list", () => {
+  it("renders a sliding indicator element inside the list (segmented)", () => {
     render(<SimpleTabs defaultValue="tab-a" />)
     // Indicator is rendered once a data-state=active child is found (useLayoutEffect).
     // jsdom has no layout engine so offsetLeft/Width are 0, but the element is present
     // and its style attribute contains a translateX transform (ready=true after measure).
+    const indicator = document.querySelector("[data-slot='tabs-indicator']")
+    expect(indicator).toBeInTheDocument()
+    expect(indicator?.getAttribute("style")).toContain("translateX")
+  })
+
+  it("renders a sliding indicator element inside the list (underline)", () => {
+    render(
+      <Tabs defaultValue="tab-a">
+        <TabsList variant="underline">
+          <TabsTrigger value="tab-a">Tab A</TabsTrigger>
+          <TabsTrigger value="tab-b">Tab B</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-a">Content A</TabsContent>
+        <TabsContent value="tab-b">Content B</TabsContent>
+      </Tabs>
+    )
     const indicator = document.querySelector("[data-slot='tabs-indicator']")
     expect(indicator).toBeInTheDocument()
     expect(indicator?.getAttribute("style")).toContain("translateX")
