@@ -288,11 +288,15 @@ const chipVariants = cva(
       },
 
       // ── light × info ────────────────────────────────────────────────────────
+      // bg + border use solid-mix tokens (alert-info-bg, state-running) instead
+      // of the state-*-subtle alpha tints — low-alpha fills and borders
+      // perceptually collapse against the dark card surface, leaving selection
+      // signalled by text color alone.
       {
         variant: "light",
         color: "info",
         checked: true,
-        className: "bg-state-running-subtle border-state-running-subtle text-state-running-text",
+        className: "bg-alert-info-bg border-state-running text-state-running-text",
       },
       {
         variant: "light",
@@ -312,7 +316,7 @@ const chipVariants = cva(
         color: "info",
         checked: true,
         interactive: true,
-        className: "hover:bg-state-running-subtle hover:border-state-running-subtle",
+        className: "hover:bg-alert-info-bg hover:border-state-running",
       },
 
       // ── light × warning ─────────────────────────────────────────────────────
