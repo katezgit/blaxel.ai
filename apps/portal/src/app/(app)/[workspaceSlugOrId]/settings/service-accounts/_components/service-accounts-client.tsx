@@ -22,7 +22,6 @@ import {
 } from "@repo/ui/components/dropdown-menu";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { toast } from "sonner";
-import { cn } from "@repo/ui/lib/cn";
 import type { Org, ServiceAccount } from "@/lib/mock/types";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
@@ -86,23 +85,17 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
       }),
       columnHelper.accessor((row) => row.apiKeys.length, {
         id: "apiKeyCount",
-        header: () => <span className="block text-right">#&nbsp;API keys</span>,
-        cell: (info) => (
-          <span className="block text-right font-mono">{info.getValue()}</span>
-        ),
-        meta: { cellClassName: "w-[100px]" },
+        header: "API keys",
+        cell: (info) => info.getValue(),
+        meta: {
+          headerClassName: "text-right",
+          cellClassName: "text-right typography-code text-muted-foreground tabular-nums",
+        },
       }),
       columnHelper.accessor((row) => row.apiKeys.length, {
         id: "oldestKey",
         header: "Oldest key",
-        cell: ({ row }) => {
-          const age = oldestKeyAgeFor(row.original);
-          return age === null ? (
-            <span className="text-meta-foreground">—</span>
-          ) : (
-            <span className="text-foreground">{age}</span>
-          );
-        },
+        cell: ({ row }) => oldestKeyAgeFor(row.original) ?? "—",
         sortingFn: (a, b) => {
           const oldestOf = (sa: ServiceAccount) =>
             sa.apiKeys.length === 0
@@ -113,24 +106,19 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
                 );
           return oldestOf(a.original) - oldestOf(b.original);
         },
-        meta: { cellClassName: "w-[120px]" },
+        meta: {
+          headerClassName: "text-right",
+          cellClassName: "text-right typography-code text-muted-foreground tabular-nums",
+        },
       }),
       columnHelper.accessor("lastUsedAt", {
         header: "Last used",
-        cell: (info) => {
-          const iso = info.getValue();
-          return (
-            <span
-              className={cn(
-                iso === null ? "text-meta-foreground" : "text-foreground",
-              )}
-            >
-              {formatRelativePast(iso)}
-            </span>
-          );
-        },
+        cell: (info) => formatRelativePast(info.getValue()),
         enableSorting: false,
-        meta: { cellClassName: "w-[140px]" },
+        meta: {
+          headerClassName: "text-right",
+          cellClassName: "text-right typography-code text-muted-foreground tabular-nums",
+        },
       }),
       columnHelper.display({
         id: "actions",
