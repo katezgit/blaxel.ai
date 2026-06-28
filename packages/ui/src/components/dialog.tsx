@@ -223,79 +223,18 @@ function DialogTitle({
   )
 }
 
-/**
- * **DialogDescription** — one-line subtitle rendered in muted caption styling
- * directly beneath DialogTitle. Radix surfaces this as the accessible description
- * for the dialog (`aria-describedby`).
- *
- * **For:** a brief orienting phrase that completes the title (one grammatical
- * sentence, ≤ ~120 chars). Examples:
- * - "This action can't be undone."
- * - "Select a model and environment to begin."
- * - "The checkpoint will be preserved."
- *
- * **NOT for:** consequence prose, multi-sentence explanations, or body-level
- * content. Move that text into `<DialogBody>` as a `<p>` element with
- * `typography-body text-foreground`. DialogDescription's muted styling was
- * designed for a subtitle — prose in this slot is visually de-emphasised and
- * easy to miss.
- *
- * If you need an accessible description without a visible subtitle, render:
- * `<DialogDescription className="sr-only">…</DialogDescription>`.
- *
- * Dev-only: a `console.warn` fires when children look like body prose
- * (multi-sentence or > 120 chars). It does not fire in production.
- */
 function DialogDescription({
   className,
-  children,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  if (process.env.NODE_ENV !== "production") { // eslint-disable-line turbo/no-undeclared-env-vars -- NODE_ENV is Next.js/Node.js-provided, not a repo env var
-    // Heuristic: extract the flat text content of children, then check for
-    // body-prose signals: length > 120 chars, OR two or more sentence endings.
-    // Only inspects plain string / number children to avoid false positives on
-    // React nodes (icons, <code>, <strong>, etc.).
-    const text =
-      typeof children === "string"
-        ? children
-        : typeof children === "number"
-          ? String(children)
-          : null
-
-    if (text !== null) {
-      const trimmed = text.trim()
-      const tooLong = trimmed.length > 120
-      // Sentence-end = [.!?] followed by whitespace + uppercase letter, OR at
-      // end-of-string. Avoids matching decimal numbers (1.2) and abbreviations
-      // (e.g., i.e.) because those are followed by a lowercase letter or digit.
-      const sentenceEnds = trimmed.match(/[.!?](?:\s+[A-Z]|$)/g)
-      const multiSentence = sentenceEnds !== null && sentenceEnds.length >= 2
-
-      if (tooLong || multiSentence) {
-        console.warn(
-          "[DialogDescription] Body-level prose detected in DialogDescription.\n" +
-            "DialogDescription is a muted subtitle slot (≤ ~120 chars, one sentence).\n" +
-            "Move consequence text or multi-sentence content into:\n" +
-            "  <DialogBody><p className=\"typography-body text-foreground\">…</p></DialogBody>\n" +
-            "For a hidden accessible description use: <DialogDescription className=\"sr-only\">…</DialogDescription>\n" +
-            `Received (${trimmed.length} chars): "${trimmed.slice(0, 80)}${trimmed.length > 80 ? "…" : ""}"`
-        )
-      }
-    }
-  }
-
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(overlayPanelDescription, className)}
       {...props}
-    >
-      {children}
-    </DialogPrimitive.Description>
+    />
   )
 }
-DialogDescription.displayName = "DialogDescription"
 
 const DIALOG_BODY_STYLE: React.CSSProperties = { scrollbarGutter: "stable both-edges" }
 
