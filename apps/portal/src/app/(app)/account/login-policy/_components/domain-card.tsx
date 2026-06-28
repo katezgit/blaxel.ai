@@ -103,7 +103,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
           <p className="typography-caption text-muted-foreground">
             Verify domain ownership via DNS TXT record.
           </p>
-          <div className="grid grid-cols-[6rem_1fr_auto] items-center gap-2 rounded-md border border-border bg-muted px-3 py-2 font-mono typography-caption">
+          <div className="grid grid-cols-[6rem_1fr_auto] items-center gap-2 rounded-md border border-border bg-muted-surface px-3 py-2 font-mono typography-caption">
             <span className="text-muted-foreground">Type</span>
             <span className="text-foreground">TXT</span>
             <span />

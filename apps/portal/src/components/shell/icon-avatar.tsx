@@ -20,7 +20,7 @@ export function IconAvatar({ icon: Icon, label, className }: IconAvatarProps) {
   return (
     <span
       className={cn(
-        "flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground",
+        "flex size-10 shrink-0 items-center justify-center rounded-full bg-muted-surface text-muted-foreground",
         className,
       )}
       role={label ? "img" : undefined}

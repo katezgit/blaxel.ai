@@ -39,7 +39,7 @@ export default function GlobalError({
       <body className="min-h-screen bg-background">
         <div className="flex min-h-screen w-full items-center justify-center">
           <div className="flex max-w-(--not-found-column-w) flex-col items-center gap-4 px-6 text-center">
-            <span className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1.5 font-mono typography-label font-medium text-muted-foreground">
+            <span className="inline-flex items-center rounded-md border border-border bg-muted-surface px-3 py-1.5 font-mono typography-label font-medium text-muted-foreground">
               FATAL
             </span>
 
