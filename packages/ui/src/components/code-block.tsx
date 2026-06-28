@@ -157,22 +157,18 @@ function CopyButton({ value, surface, className }: CopyButtonProps) {
         }}
       />
 
-      {/* Success: Check icon */}
+      {/* Success: Check icon — color-only confirmation (no animation; icon swap is the signal) */}
       <Check
         aria-hidden="true"
         className={cn(
           iconBase,
           "absolute",
-          "text-state-scored",
+          "text-state-scored-text",
           state === "success" ? "opacity-100" : "opacity-0",
-          state === "success" ? "animate-copy-confirm" : "",
         )}
         style={{
           transitionDuration: "var(--duration-fast)",
           transitionTimingFunction: "var(--ease-out-standard)",
-          ...(state === "success" ? {
-            animation: `copy-confirm-pulse var(--duration-subtle) var(--ease-out-standard) 1`,
-          } : {}),
         }}
       />
 
@@ -188,9 +184,6 @@ function CopyButton({ value, surface, className }: CopyButtonProps) {
         style={{
           transitionDuration: "var(--duration-fast)",
           transitionTimingFunction: "var(--ease-out-standard)",
-          ...(state === "error" ? {
-            animation: `copy-confirm-pulse var(--duration-subtle) var(--ease-out-standard) 1`,
-          } : {}),
         }}
       />
     </button>

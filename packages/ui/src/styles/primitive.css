@@ -286,15 +286,6 @@
   50%       { opacity: 0.45; }
 }
 
-/* TODO(motion-audit): copy-confirm-pulse is a scale-bounce celebration (scale 1→1.18→1) that violates
- * the Sparing adjective. code-block.tsx references it directly — remove after code-block is updated
- * to use an icon/color swap at --motion-state-change instead. */
-@keyframes copy-confirm-pulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.18); }
-  100% { transform: scale(1); }
-}
-
 @keyframes slide-right-in {
   from { opacity: 0; transform: translateX(-12px); }
   to   { opacity: 1; transform: translateX(0); }

@@ -154,7 +154,7 @@ function PopoverItem({
         "flex w-full cursor-pointer items-center rounded-md px-2 py-1",
         "typography-body font-normal text-foreground",
         "bg-transparent hover:bg-border",
-        "transition-colors",
+        "transition-colors duration-fast ease-out-standard",
         "disabled:pointer-events-none disabled:opacity-mid",
         className
       )}

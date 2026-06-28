@@ -175,7 +175,8 @@ function DialogContent({
                 "bg-transparent hover:bg-hover-surface",
                 "text-muted-foreground",
                 "rounded-md",
-                "transition-colors prop-(--motion-state-change)",
+                // T2 — prop-(--motion-state-change) doesn't set --tw-duration; explicit tokens resolve correctly
+                "transition-colors duration-fast ease-out-standard",
                 // Focus ring — *:focus-visible in base.css (WCAG 2.4.11). outline-none removed; base layer owns it.
                 "disabled:pointer-events-none cursor-pointer",
                 "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"

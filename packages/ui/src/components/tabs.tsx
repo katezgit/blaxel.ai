@@ -206,7 +206,8 @@ function TabsTrigger({
           "data-[state=active]:text-primary-foreground",
           "disabled:text-text-disabled disabled:bg-transparent disabled:cursor-not-allowed",
           // Text color fades on --motion-state-change simultaneously with indicator slide.
-          "transition-colors prop-(--motion-state-change)",
+          // T2 — prop-(--motion-state-change) doesn't set --tw-duration; explicit tokens resolve correctly
+          "transition-colors duration-fast ease-out-standard",
           "gap-1.5 [&_svg]:size-3",
         ],
         variant === "underline" && [
@@ -217,7 +218,8 @@ function TabsTrigger({
           // indicator span (data-slot="tabs-indicator"), not a per-trigger class.
           "border-b-2 border-transparent",
           "data-[state=inactive]:hover:border-border-strong",
-          "transition-colors prop-(--motion-state-change)",
+          // T2 — prop-(--motion-state-change) doesn't set --tw-duration; explicit tokens resolve correctly
+          "transition-colors duration-fast ease-out-standard",
           // Inactive: muted text
           "text-meta-foreground",
           // Hover inactive: foreground text

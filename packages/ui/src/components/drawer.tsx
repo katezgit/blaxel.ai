@@ -67,7 +67,7 @@ function DrawerOverlay({
         "fixed inset-0 z-overlay bg-overlay-drawer backdrop-blur-overlay-drawer",
         // Enter — 200ms natural ease (work surface, non-zero initial velocity)
         "data-[state=open]:animate-in data-[state=open]:fade-in-0",
-        "data-[state=open]:duration-[200ms] data-[state=open]:ease-natural",
+        "data-[state=open]:duration-base data-[state=open]:ease-natural",
         // Exit — 120ms accelerated (same as --motion-drawer-exit)
         "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
         "data-[state=closed]:duration-fast data-[state=closed]:ease-in-accelerated",
@@ -364,7 +364,8 @@ const DrawerCloseButton = React.forwardRef<
       // Mobile: 44px touch target (WCAG 2.5.5). Desktop: size-6 where cursor precision applies.
       "size-11 sm:size-6 rounded-md",
       "text-muted-foreground",
-      "transition-colors prop-(--motion-state-change)",
+      // T2 — prop-(--motion-state-change) doesn't set --tw-duration; explicit tokens resolve correctly
+      "transition-colors duration-fast ease-out-standard",
       "hover:bg-hover-surface",
       "disabled:pointer-events-none cursor-pointer",
       "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
