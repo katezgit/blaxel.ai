@@ -184,6 +184,9 @@ const TriggerInput = React.forwardRef<HTMLInputElement, TriggerInputProps>(
           data-state={open ? "open" : "closed"}
           className={cn(
             "flex min-w-0 flex-1 items-center bg-transparent outline-none",
+            // Wrapper owns the focus/open ring (data-[state=open]:shadow-focus-ring).
+            // Suppress the global *:focus-visible box-shadow on the input to avoid a stacked double ring.
+            "focus-visible:shadow-none",
             !dimensionLabel && (size === "md" ? "pl-2.5" : "pl-2"),
             size === "md" ? "pr-8" : "pr-7",
             "typography-body text-foreground placeholder:text-meta-foreground",
@@ -351,6 +354,17 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
     }
   }, [value])
 
+  // Click on an already-focused input doesn't re-fire focus, so handleFocus can't
+  // re-open after handleClear's refocus-and-suppress. Click handler covers that gap.
+  const handleInputClick = React.useCallback(() => {
+    if (!openRef.current) {
+      initialValueRef.current = value
+      committedRef.current = false
+      openRef.current = true
+      setOpen(true)
+    }
+  }, [value])
+
   React.useEffect(() => () => { if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current) }, [])
 
   // Clear: mousedown on X already preventDefault()d the blur, so no close race window.
@@ -437,6 +451,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
             activeItemId={undefined}
             onBlur={handleBlur}
             onFocus={handleFocus}
+            onClick={handleInputClick}
             dimensionLabel={label}
             hasValue={value !== null}
             onClear={handleClear}
