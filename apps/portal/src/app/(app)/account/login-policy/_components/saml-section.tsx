@@ -101,8 +101,8 @@ export default function SamlSection() {
         ) : null}
 
         {!isTierZero && !isConfigured ? (
-          <form onSubmit={onSave} noValidate className="mt-6 flex flex-col gap-4 pl-6">
-            <section className="flex flex-col gap-3">
+          <form onSubmit={onSave} noValidate className="mt-6 flex flex-col gap-6 pl-6">
+            <section className="flex flex-col gap-4">
               <h3 className="typography-body font-semibold text-foreground">
                 Service Provider details
               </h3>
@@ -128,7 +128,7 @@ export default function SamlSection() {
               </div>
             </section>
 
-            <section className="flex flex-col gap-3">
+            <section className="flex flex-col gap-4">
               <h3 className="typography-body font-semibold text-foreground">
                 Identity Provider details
               </h3>
