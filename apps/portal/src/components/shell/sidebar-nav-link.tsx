@@ -41,7 +41,10 @@ export function SidebarNavLink({ href, label, icon, count, badge }: SidebarNavLi
       <span
         aria-hidden="true"
         className={cn(
-          "flex shrink-0",
+          // Match .sidebar-row-hover (B3): 80ms instant on color so the icon
+          // tracks the row's hover tint in lockstep — otherwise the icon visibly
+          // lags the row background by the default-utility delta.
+          "flex shrink-0 transition-colors duration-instant ease-out-standard",
           isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
         )}
       >

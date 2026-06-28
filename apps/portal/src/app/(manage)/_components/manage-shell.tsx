@@ -93,9 +93,20 @@ export default function ManageShell({ email, name, children }: ManageShellProps)
           <aside
             // Paired with AppShell's lg+ aside via view-transition-name —
             // see app-shell.tsx for the cross-route bridge details.
-            style={{ viewTransitionName: "shell-sidebar" }}
+            //
+            // Width transition aligned with B1/B2 motion spec: --motion-enter
+            // (220ms emphasized) on expand, --motion-exit (120ms accelerated)
+            // on collapse. Style-attr drives the two-phase swap because
+            // Tailwind v4 has no `prop-(--motion-*)` shorthand for
+            // transition-duration + transition-timing-function composite values.
+            style={{
+              viewTransitionName: "shell-sidebar",
+              transition: collapsed
+                ? "width var(--motion-exit)"
+                : "width var(--motion-enter)",
+            }}
             className={cn(
-              "hidden shrink-0 flex-col border-r border-border transition-[width] duration-subtle ease-out-standard lg:flex",
+              "hidden shrink-0 flex-col border-r border-border lg:flex",
               collapsed ? "lg:w-[52px]" : "lg:w-[248px]",
             )}
           >
