@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card } from "@repo/ui/components/card";
 import { Switch } from "@repo/ui/components/switch";
 import { toast } from "sonner";
 
@@ -14,7 +15,7 @@ export default function SandboxSettingsClient({
   const [logsDisabled, setLogsDisabled] = useState(initial);
 
   return (
-    <div className="flex w-full max-w-3xl items-start justify-between gap-4 rounded-md border border-border bg-muted-surface px-4 py-3">
+    <Card className="w-full max-w-3xl flex-row items-start justify-between gap-4 px-4 py-3">
       <div className="flex flex-col gap-0.5">
         <label
           htmlFor="disable-process-logging"
@@ -40,6 +41,6 @@ export default function SandboxSettingsClient({
         }}
         aria-label="Disable process logging"
       />
-    </div>
+    </Card>
   );
 }
