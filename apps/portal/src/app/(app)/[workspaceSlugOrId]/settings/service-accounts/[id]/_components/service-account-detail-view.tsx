@@ -74,7 +74,7 @@ export default function ServiceAccountDetailView({
         aria-live="assertive"
         className="rounded-lg border border-border bg-card px-6 py-8"
       >
-        <h2 className="typography-subtitle font-semibold text-foreground">
+        <h2 className="typography-subtitle text-foreground">
           Couldn&rsquo;t load service account
         </h2>
         <p className="mt-1 typography-body text-muted-foreground">

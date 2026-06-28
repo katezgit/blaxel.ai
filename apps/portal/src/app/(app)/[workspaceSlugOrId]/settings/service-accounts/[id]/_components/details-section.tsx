@@ -16,11 +16,11 @@ export default function DetailsSection({
   return (
     <section
       aria-labelledby="sa-details-heading"
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 border-t border-border pt-6"
     >
       <h2
         id="sa-details-heading"
-        className="typography-subtitle font-semibold text-foreground"
+        className="typography-subtitle text-foreground"
       >
         Details
       </h2>

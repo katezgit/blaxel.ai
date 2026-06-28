@@ -92,9 +92,6 @@ function EditForm({ serviceAccount, onSave, onClose }: EditFormProps) {
     },
   });
 
-  // Low-stakes per docs/design/guidelines/form-actions.md §7:
-  // 2 fields, easily retypeable, no irreversible save. Silent dismiss on
-  // Esc / overlay / X — no discard-changes confirmation.
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
     await new Promise((r) => setTimeout(r, 200));
     onSave({ name: values.name, description: values.description });

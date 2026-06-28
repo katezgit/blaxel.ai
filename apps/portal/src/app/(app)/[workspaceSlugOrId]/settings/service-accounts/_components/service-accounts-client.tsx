@@ -147,7 +147,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
     <section className="flex flex-col gap-6">
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
-          <h1 className="typography-display font-semibold text-foreground">
+          <h1 className="typography-display text-foreground">
             Service accounts
           </h1>
           <p className="text-muted-foreground">

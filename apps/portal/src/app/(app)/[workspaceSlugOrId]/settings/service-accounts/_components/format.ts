@@ -33,25 +33,6 @@ export function formatRelativePast(iso: string | null): string {
   return `${Math.floor(delta / YR_MS)} yrs ago`;
 }
 
-/** Detail page Created field — `MMM D, YYYY · HH:mm UTC`. */
-export function formatCreatedAtUtc(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  const dateFmt = new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  });
-  const timeFmt = new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "UTC",
-  });
-  return `${dateFmt.format(date)} · ${timeFmt.format(date)} UTC`;
-}
-
 /** Keys table Created at column — short date only. */
 export function formatShortDate(iso: string): string {
   const date = new Date(iso);
@@ -65,9 +46,9 @@ export function formatShortDate(iso: string): string {
 }
 
 /** Keys expiring within 14 days render in warning state. */
-export const EXPIRY_WARN_DAYS = 14;
+const EXPIRY_WARN_DAYS = 14;
 
-export type ExpiryClass = "never" | "expired" | "near" | "future";
+type ExpiryClass = "never" | "expired" | "near" | "future";
 
 export function classifyExpiry(expiresAt: string | null): ExpiryClass {
   if (!expiresAt) return "never";

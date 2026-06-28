@@ -129,11 +129,14 @@ export default function ApiKeysSection({
   const showSearch = serviceAccount.apiKeys.length >= 5;
 
   return (
-    <section aria-labelledby="sa-keys-heading" className="flex flex-col gap-4">
+    <section
+      aria-labelledby="sa-keys-heading"
+      className="flex flex-col gap-4 border-t border-border pt-6"
+    >
       <div className="flex flex-col gap-1">
         <h2
           id="sa-keys-heading"
-          className="typography-subtitle font-semibold text-foreground"
+          className="typography-subtitle text-foreground"
         >
           API keys
         </h2>
@@ -197,7 +200,8 @@ function KeysZeroState({ serviceAccount, onCreate }: KeysZeroStateProps) {
       className="flex flex-col items-center gap-4 rounded-md border border-border bg-card px-6 py-12"
     >
       <p className="typography-body text-foreground">
-        No API keys. This service account uses OAuth client credentials below.
+        No API keys. This service account authenticates with the client ID and
+        secret in Details below.
       </p>
       <CliLine
         className="w-full max-w-2xl"
