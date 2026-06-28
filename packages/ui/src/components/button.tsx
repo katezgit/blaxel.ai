@@ -17,7 +17,6 @@ const buttonVariants = cva(
   [
     ...buttonBaseClasses,
     "h-8 px-3.5 py-0 typography-body font-medium rounded-lg gap-2 [&_svg]:size-4",
-    // A1 — hover color transition on all variants; duration-fast (120ms) + ease-out-standard
     "transition-[background-color,color,border-color] duration-fast ease-out-standard",
   ],
   {

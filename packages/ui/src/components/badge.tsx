@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@repo/ui/lib/cn"
 
 const badgeVariants = cva(
-  // A4 — state color acknowledgment transition (120ms state-change; collapses to 0ms under reduced-motion via --duration-fast)
+  // collapses to 0ms under prefers-reduced-motion (--duration-fast override in theme.css)
   "inline-flex w-fit shrink-0 items-center gap-1 overflow-hidden rounded-badge border px-1 typography-caption font-medium whitespace-nowrap transition-[background-color,color,border-color] duration-fast ease-out-standard",
   {
     variants: {
