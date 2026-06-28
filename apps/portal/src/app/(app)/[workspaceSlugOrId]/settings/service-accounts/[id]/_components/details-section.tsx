@@ -16,7 +16,7 @@ export default function DetailsSection({
   return (
     <section
       aria-labelledby="sa-details-heading"
-      className="flex flex-col gap-4 pt-6"
+      className="flex flex-col gap-4"
     >
       <h2
         id="sa-details-heading"
@@ -26,7 +26,7 @@ export default function DetailsSection({
       </h2>
 
       <dl className="flex flex-col gap-2">
-        <div className="group flex items-center gap-3">
+        <div className="flex items-center gap-3">
           <dt className="w-32 shrink-0 text-meta-foreground">
             Client ID
           </dt>
@@ -34,12 +34,10 @@ export default function DetailsSection({
             <code className="font-mono typography-code text-foreground">
               {serviceAccount.clientId}
             </code>
-            <span className="opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-              <CopyButton
-                value={serviceAccount.clientId}
-                ariaLabel="Copy client ID"
-              />
-            </span>
+            <CopyButton
+              value={serviceAccount.clientId}
+              ariaLabel="Copy client ID"
+            />
           </dd>
         </div>
         <div className="flex items-center gap-3">

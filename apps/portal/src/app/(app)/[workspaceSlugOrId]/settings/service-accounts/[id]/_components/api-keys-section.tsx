@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal, Search } from "lucide-react";
+import { ArrowUpRight, MoreHorizontal, Search } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
@@ -131,7 +131,7 @@ export default function ApiKeysSection({
   return (
     <section
       aria-labelledby="sa-keys-heading"
-      className="flex flex-col gap-4 border-t border-border pt-6"
+      className="flex flex-col gap-4"
     >
       <div className="flex flex-col gap-1">
         <h2
@@ -142,7 +142,17 @@ export default function ApiKeysSection({
         </h2>
         <p className="text-muted-foreground">
           API keys are long-lived access tokens that authenticate to Blaxel
-          by API or CLI.
+          by API or CLI.{" "}
+          <a
+            href="https://docs.blaxel.ai/Security/Access-tokens"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Access tokens documentation, opens in new tab"
+            className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
+          >
+            Docs
+            <ArrowUpRight aria-hidden="true" className="size-3 self-center" />
+          </a>
         </p>
       </div>
 
