@@ -51,8 +51,6 @@
   --color-text-disabled:     light-dark(var(--ink-400), var(--ink-500));
 
   --color-muted-surface:        light-dark(var(--surface-muted-light),     var(--surface-muted-dark));
-  --color-secondary-surface:    light-dark(var(--surface-secondary-light), var(--surface-secondary-dark));
-  --color-secondary-foreground: light-dark(var(--ink-900),                 var(--ink-50));
 
   /* Borders — alpha-tinted hairlines, compose on any surface.
    *   border:        default hairline
@@ -125,8 +123,7 @@
   --color-primary-disabled: light-dark(#E8BBA8, #4A2010); /* PINNED — desaturated orange steps; not in palette ramp */
   --color-border-disabled:  light-dark(#C8CDD6, #2D3440); /* PINNED — neutral-adjacent; not in palette ramp */
 
-  /* Hover surface — rows and interactive backdrops. Aligns with --color-secondary-surface
-   * family (neutral, no brand tint) so hover reads quiet against content tiers. */
+  /* Hover surface — rows and interactive backdrops. Neutral, no brand tint — reads quiet against content tiers. */
   --color-hover-surface:    light-dark(
     var(--surface-secondary-light),
     color-mix(in srgb, var(--surface-card-dark) 92%, white 8%)

@@ -81,7 +81,6 @@ export const Surface: StoryObj = {
         <SwatchRow token="--color-background" label="Workspace base — brightest reading surface. Cards recess INTO this." bordered />
         <SwatchRow token="--color-card" label="Card / popover — recessed pocket (darker than workspace). Metaphor: well cut into desk." bordered />
         <SwatchRow token="--color-muted-surface" label="Muted strip — sunken inside card (thead, code-block, sub-sections). 2-unit deeper recess." bordered />
-        <SwatchRow token="--color-secondary-surface" label="Secondary fill — chip bg, selected rows" bordered />
       </Section>
       <Section title="Control-raised alias chain — card / popover / form-field">
         <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 10, lineHeight: 1.6 }}>
@@ -142,7 +141,6 @@ export const Text: StoryObj = {
         <SwatchRow token="--color-meta-foreground" label="Scaffolding / glance — table column headers, mono IDs under primary cell values, count badges, separators, axis labels, placeholders" />
         <SwatchRow token="--color-text-disabled" label="Disabled text — non-interactive labels" />
         {/* Component-alias foregrounds */}
-        <SwatchRow token="--color-secondary-foreground" label="Foreground on secondary fill (alias of foreground)" />
         <SwatchRow token="--color-card-foreground" label="Foreground on card surface (alias of foreground)" />
         <SwatchRow token="--color-popover-foreground" label="Foreground on popover surface (alias of foreground)" />
       </Section>

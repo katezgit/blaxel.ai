@@ -38,7 +38,7 @@ function DashboardBehindOverlay() {
               padding: "1px 6px",
               borderRadius: 9999,
               background: "var(--color-muted-surface)",
-              color: "var(--color-secondary-foreground)",
+              color: "var(--color-foreground)",
             }}
           >
             active

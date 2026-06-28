@@ -176,7 +176,7 @@
   );
 
   /* Sidebar hover — two variants for two shell surfaces.
-   *   App shell sidebar  → aliases secondary-surface (sits on bg-background).
+   *   App shell sidebar  → aliases hover-surface (neutral, no brand tint).
    *   Manage shell sidebar → custom mix (sits on bg-card / panel surface; orange
    *   mix in light, neutral white mix in dark to avoid clashing on dark-navy bg). */
   --color-sidebar-hover: var(--color-hover-surface);
