@@ -18,12 +18,10 @@ interface DeleteServiceAccountApiKeyDialogProps {
   onConfirm: (apiKey: ServiceAccountApiKey) => void;
 }
 
-/**
- * Lighter one-click confirmation (spec §8). Deleting a single key is scoped
- * and recoverable (create a replacement immediately), so a type-the-name
- * gate would be disproportionate. The type-the-name pattern is reserved for
- * the SA-level removal which destroys identity + every key.
- */
+// Single-key deletion is scoped + immediately recoverable (create a
+// replacement key in seconds), so the type-the-name gate would be
+// disproportionate. That gate is reserved for SA-level removal which
+// destroys identity + every key.
 export default function DeleteServiceAccountApiKeyDialog({
   apiKey,
   onClose,

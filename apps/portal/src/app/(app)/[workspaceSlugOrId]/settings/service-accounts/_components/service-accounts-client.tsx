@@ -208,18 +208,22 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
       />
 
       <ConfirmByNameDialog
-        open={pendingDelete !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingDelete(null);
+        dialog={{
+          open: pendingDelete !== null,
+          onOpenChange: (open) => {
+            if (!open) setPendingDelete(null);
+          },
         }}
-        actionLabel="Delete service account"
-        targetLabel={pendingDelete?.name ?? ""}
-        targetName={pendingDelete?.name ?? ""}
-        onConfirm={() => {
-          if (!pendingDelete) return;
-          setAccounts((prev) => prev.filter((a) => a.id !== pendingDelete.id));
-          toast.success(`Deleted service account ${pendingDelete.name}.`);
-          setPendingDelete(null);
+        prompt={{
+          actionLabel: "Delete service account",
+          targetLabel: pendingDelete?.name ?? "",
+          confirmName: pendingDelete?.name ?? "",
+          onConfirm: () => {
+            if (!pendingDelete) return;
+            setAccounts((prev) => prev.filter((a) => a.id !== pendingDelete.id));
+            toast.success(`Deleted service account ${pendingDelete.name}.`);
+            setPendingDelete(null);
+          },
         }}
       >
         <p className="typography-body text-foreground">
@@ -266,9 +270,9 @@ interface RowMenuProps {
 function RowMenu({ account, onDelete }: RowMenuProps) {
   return (
     <div
-      // Kebab visible on row hover only — spec §3.3 reduces visual noise in
-      // dense lists. stopPropagation keeps the menu trigger from doubling as
-      // a row-navigation click handled by ResourceTable.onRowClick.
+      // Kebab visible on row hover only — reduces visual noise in dense
+      // lists. stopPropagation keeps the menu trigger from doubling as a
+      // row-navigation click handled by ResourceTable.onRowClick.
       className="flex justify-end opacity-0 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100"
       onClick={(event) => event.stopPropagation()}
     >

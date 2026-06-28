@@ -109,9 +109,7 @@ export default function ServiceAccountDetailView({
     );
   }
 
-  // Mock-only mutation path: write straight to the query cache so the detail
-  // view re-renders. A future backend hookup swaps this for a mutation +
-  // invalidate; the consumer call sites stay identical.
+  // Mock-only: writes directly to the query cache.
   const updateSa = (next: ServiceAccount) => {
     queryClient.setQueryData(
       queryKeys.resourceDetail(
@@ -231,14 +229,18 @@ export default function ServiceAccountDetailView({
       />
 
       <ConfirmByNameDialog
-        open={pendingRemove}
-        onOpenChange={(open) => {
-          if (!open) setPendingRemove(false);
+        dialog={{
+          open: pendingRemove,
+          onOpenChange: (open) => {
+            if (!open) setPendingRemove(false);
+          },
         }}
-        actionLabel="Delete service account"
-        targetLabel={sa.name}
-        targetName={sa.name}
-        onConfirm={handleRemoveConfirm}
+        prompt={{
+          actionLabel: "Delete service account",
+          targetLabel: sa.name,
+          confirmName: sa.name,
+          onConfirm: handleRemoveConfirm,
+        }}
       >
         <p className="typography-body text-foreground">
           This will delete <span className="font-mono">{sa.name}</span>

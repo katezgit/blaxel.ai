@@ -166,14 +166,18 @@ export default function GeneralSettingsClient({
       </section>
 
       <ConfirmByNameDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        actionLabel="Delete workspace"
-        targetLabel={savedName}
-        targetName={savedName}
-        onConfirm={() => {
-          toast.success(`Workspace ${savedName} deleted (mock).`);
-          router.push("/");
+        dialog={{
+          open: confirmOpen,
+          onOpenChange: setConfirmOpen,
+        }}
+        prompt={{
+          actionLabel: "Delete workspace",
+          targetLabel: savedName,
+          confirmName: savedName,
+          onConfirm: () => {
+            toast.success(`Workspace ${savedName} deleted (mock).`);
+            router.push("/");
+          },
         }}
       >
         <p className="typography-body text-foreground">

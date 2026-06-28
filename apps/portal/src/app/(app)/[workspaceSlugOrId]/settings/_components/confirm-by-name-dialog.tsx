@@ -14,30 +14,34 @@ import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
 
 interface ConfirmByNameDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  actionLabel: string;
-  targetLabel: string;
-  targetName: string;
+  dialog: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+  };
+  prompt: {
+    actionLabel: string;
+    targetLabel: string;
+    confirmName: string;
+    onConfirm: () => void;
+  };
   // Consequence prose rendered inside DialogBody above the typing prompt.
   // Lives here (not DialogDescription) so it inherits body typography —
   // consequence statements are not subtitles.
   children: ReactNode;
-  onConfirm: () => void;
 }
 
-// Name-confirm pattern for destructive actions — typing the target's name
-// fails when the user is on the wrong resource, which is what makes the
-// "wrong env wipeout" incident structurally impossible.
+// Name-confirm pattern for destructive actions — typing the chosen safety
+// string fails when the user is on the wrong resource, which is what makes
+// the "wrong env wipeout" incident structurally impossible. Callers pick
+// confirmName per pattern: the target itself (type-the-target) or the
+// surrounding env (type-the-workspace).
 export default function ConfirmByNameDialog({
-  open,
-  onOpenChange,
-  actionLabel,
-  targetLabel,
-  targetName,
+  dialog,
+  prompt,
   children,
-  onConfirm,
 }: ConfirmByNameDialogProps) {
+  const { open, onOpenChange } = dialog;
+  const { actionLabel, targetLabel, confirmName, onConfirm } = prompt;
   const [typed, setTyped] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -45,7 +49,7 @@ export default function ConfirmByNameDialog({
     if (!open) setTyped("");
   }, [open]);
 
-  const matches = typed === targetName;
+  const matches = typed === confirmName;
   const statusId = "confirm-by-name-status";
 
   return (
@@ -77,7 +81,7 @@ export default function ConfirmByNameDialog({
               <>
                 Type{" "}
                 <span className="font-mono text-foreground">
-                  {targetName}
+                  {confirmName}
                 </span>{" "}
                 to confirm
               </>
@@ -87,7 +91,7 @@ export default function ConfirmByNameDialog({
               ref={inputRef}
               value={typed}
               onChange={(event) => setTyped(event.target.value)}
-              placeholder={targetName}
+              placeholder={confirmName}
               autoComplete="off"
               spellCheck={false}
               aria-describedby={statusId}

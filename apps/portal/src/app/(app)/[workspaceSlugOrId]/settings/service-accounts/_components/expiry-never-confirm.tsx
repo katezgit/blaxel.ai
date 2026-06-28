@@ -19,7 +19,7 @@ interface ExpiryNeverConfirmProps {
 }
 
 /**
- * Expires-in Select with an inline confirm for "No expiration" (spec §4.3).
+ * Expires-in Select with an inline confirm for "No expiration".
  *
  * State machine:
  *   - User picks any option != "never" → committed immediately; warning hidden.

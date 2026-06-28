@@ -211,18 +211,22 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       />
 
       <ConfirmByNameDialog
-        open={pendingRevoke !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingRevoke(null);
+        dialog={{
+          open: pendingRevoke !== null,
+          onOpenChange: (open) => {
+            if (!open) setPendingRevoke(null);
+          },
         }}
-        actionLabel="Revoke key"
-        targetLabel={pendingRevoke?.name ?? ""}
-        targetName={workspace.name}
-        onConfirm={() => {
-          if (!pendingRevoke) return;
-          setKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));
-          toast.success(`Revoked ${pendingRevoke.name}.`);
-          setPendingRevoke(null);
+        prompt={{
+          actionLabel: "Revoke key",
+          targetLabel: pendingRevoke?.name ?? "",
+          confirmName: workspace.name,
+          onConfirm: () => {
+            if (!pendingRevoke) return;
+            setKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));
+            toast.success(`Revoked ${pendingRevoke.name}.`);
+            setPendingRevoke(null);
+          },
         }}
       >
         <p className="typography-body text-foreground">

@@ -64,7 +64,7 @@ export function formatShortDate(iso: string): string {
   }).format(date);
 }
 
-/** Window per spec §6.4 — keys expiring within 14 days render in warning state. */
+/** Keys expiring within 14 days render in warning state. */
 export const EXPIRY_WARN_DAYS = 14;
 
 export type ExpiryClass = "never" | "expired" | "near" | "future";

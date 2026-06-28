@@ -103,8 +103,7 @@ export interface ServiceAccount {
   apiKeys: ReadonlyArray<ServiceAccountApiKey>;
   /**
    * ISO timestamp of the most recent request authenticated with any of this
-   * SA's credentials, or null when never used. Forward backend ask #1 —
-   * surfaces as "Last used" column on the list page.
+   * SA's credentials, or null when never used.
    */
   lastUsedAt: string | null;
 }

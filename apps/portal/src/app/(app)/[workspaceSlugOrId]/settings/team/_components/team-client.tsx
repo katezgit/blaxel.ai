@@ -362,18 +362,22 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       />
 
       <ConfirmByNameDialog
-        open={pendingRemoval !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingRemoval(null);
+        dialog={{
+          open: pendingRemoval !== null,
+          onOpenChange: (open) => {
+            if (!open) setPendingRemoval(null);
+          },
         }}
-        actionLabel="Remove member"
-        targetLabel={pendingRemoval?.name ?? ""}
-        targetName={workspace.name}
-        onConfirm={() => {
-          if (!pendingRemoval) return;
-          setMembers((prev) => prev.filter((m) => m.id !== pendingRemoval.id));
-          toast.success(`Removed ${pendingRemoval.name} from ${workspace.name}.`);
-          setPendingRemoval(null);
+        prompt={{
+          actionLabel: "Remove member",
+          targetLabel: pendingRemoval?.name ?? "",
+          confirmName: workspace.name,
+          onConfirm: () => {
+            if (!pendingRemoval) return;
+            setMembers((prev) => prev.filter((m) => m.id !== pendingRemoval.id));
+            toast.success(`Removed ${pendingRemoval.name} from ${workspace.name}.`);
+            setPendingRemoval(null);
+          },
         }}
       >
         <p className="typography-body text-foreground">
