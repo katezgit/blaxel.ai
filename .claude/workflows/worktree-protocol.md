@@ -20,6 +20,7 @@ State the decision in one line before acting.
 - **Worktree for the topic already exists at `.claude/worktrees/<topic>`** → `cd` into it. If its branch matches the topic, continue; if not, ask the operator.
 - **Currently in a worktree matching the topic** → continue in it.
 - **In a worktree NOT matching the work** → stop and ask: continue here, or spawn a new worktree from `main`?
+- **An open PR I authored this session already covers the same surface** (same file, same screen, same review unit) → `cd` into that PR's worktree and add the new change there. Do NOT spawn a new worktree, do NOT open a second PR. The trigger is **surface continuity**, not change-type — refinements, new features, bug fixes, and additions on the same surface all belong in one PR while that PR is in flight. The operator's review unit is the surface, not the individual change.
 - **Never branch off another feature branch.** Worktree-per-topic enforces this structurally — see [`docs/conventions/git.md`](../../docs/conventions/git.md) § Branch Lifecycle.
 
 Operator weak-verb authorization ("go", "yes", "ship it") applies to the most recent proposed worktree/branch decision the same way it applies to commit/push.
@@ -136,6 +137,7 @@ A worktree-isolated agent (`staff-frontend-engineer`, `staff-backend-engineer`, 
 ## Anti-patterns
 
 - **Spawning chained agents without a feature worktree** — produces divergent branches and multiple merges. Caught only at merge time as drift.
+- **Spawning a new worktree for a related improvement when an open PR already covers the same surface this session** — fragments a single coherent improvement across multiple chained PRs that the operator has to mentally merge. The audit findings or follow-up work all go in the existing PR's branch until that PR merges. Pattern-trap: treating "the cell refinement is shipped (PR open) → the column add is a new vertical (new PR)" as if change-type defines scope. Scope is **surface continuity**, not change-type.
 - **Running `git reset --hard main` in a feature worktree** with prior agent commits — destroys upstream work. Hard rule: in `FEATURE_WORKTREE` mode, the agent never resets.
 - **Committing to `main` directly from the orchestrator** to "fix up" docs after an agent's merge — this is the original divergent-merge problem in disguise. If docs need to come along with code, they go in the feature worktree before the single merge. (In `production` lifecycle phase, direct commits to `main` are forbidden regardless — see `.state/phases.md`.)
 - **Manually setting `PORT` env var or `-p` flag** when running `pnpm dev` — disables Next.js's auto-retry and forces a port collision.
