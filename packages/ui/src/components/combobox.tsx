@@ -13,6 +13,7 @@ import {
 } from "cmdk"
 
 import { cn } from "@repo/ui/lib/cn"
+import { formFieldBoxVariants } from "@repo/ui/lib/form-field-box"
 import { CommandGroup, CommandItem } from "@repo/ui/components/command"
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -141,11 +142,17 @@ const TriggerInput = React.forwardRef<HTMLInputElement, TriggerInputProps>(
         onFocus={() => setIsFocusedInside(true)}
         onBlur={() => setIsFocusedInside(false)}
         className={cn(
-          "relative flex w-full items-center border border-border bg-field-rest",
-          size === "md" ? "h-8 rounded-lg" : "h-7 rounded-md",
-          "has-[input:focus]:bg-form-field-surface has-[input[data-state=open]]:bg-form-field-surface",
+          // Box recipe aligned with Select/Input — bg, border, radius, sizing, transition.
+          // formFieldBoxVariants targets native elements (disabled:, aria-invalid:) which are
+          // dead weight on a div — handled below via has-[] and the disabled conditional.
+          formFieldBoxVariants({ size }),
+          "relative flex w-full items-center",
+          // Keyboard-focus bg lift (focus-visible: only, not focus: — mouse clicks don't lift).
+          "has-[input:focus-visible]:bg-form-field-surface",
+          // Open state: bg lift + focus ring (matches Select's data-[state=open] treatment).
+          "data-[state=open]:bg-form-field-surface data-[state=open]:shadow-focus-ring",
+          // Validation border — div can't use aria-invalid: directly, use has-[] selector.
           "has-[input[aria-invalid='true']]:border-state-errored",
-          "transition-[background-color,border-color] duration-fast ease-out-standard",
           disabled && "cursor-not-allowed bg-muted-surface",
           className,
         )}
