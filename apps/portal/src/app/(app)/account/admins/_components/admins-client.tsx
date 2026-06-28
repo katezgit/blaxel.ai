@@ -160,9 +160,7 @@ export default function AdminsClient() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar size="sm" className={cn(isPending && "opacity-50")}>
-                        <AvatarFallback>
-                          {getInitials(admin.name)}
-                        </AvatarFallback>
+                        <AvatarFallback>{getInitials(admin.name)}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
                         <span className="flex items-center gap-2">

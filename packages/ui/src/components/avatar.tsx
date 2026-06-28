@@ -65,9 +65,9 @@ function AvatarImage({
 }
 
 // ── AvatarFallback ───────────────────────────────────────────────────────────
-// Inverted surface: bg-foreground (dark in light theme, light in dark theme)
-// with text-panel (panel bg color) — readable contrast in both themes.
-// Font: mono semibold, size keyed to parent size via data-size on group.
+// Quiet surface: bg-secondary-surface + text-muted-foreground — same pattern as
+// section icon containers (e.g. addon-row). Defers visual weight to the name
+// alongside it. Font: mono semibold, size keyed to parent size via data-size.
 
 export type AvatarFallbackProps = React.ComponentProps<typeof AvatarPrimitive.Fallback>
 
@@ -76,9 +76,8 @@ function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        // base layout + inverted surface
         "flex size-full items-center justify-center",
-        "bg-foreground text-panel font-mono font-semibold rounded-full",
+        "bg-secondary-surface text-muted-foreground font-mono font-semibold rounded-full",
         // text sizes keyed to parent size via data-size on group
         "text-[10px]", // eslint-disable-line no-restricted-syntax -- no token for 10px; xs size only
         "group-data-[size=sm]/avatar:typography-label",

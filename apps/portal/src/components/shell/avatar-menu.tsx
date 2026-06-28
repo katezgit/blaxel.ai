@@ -37,7 +37,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
         aria-label="Open account menu"
         className={cn(
           "flex size-8 items-center justify-center rounded-full focus-visible:shadow-focus-ring",
-          "hover:ring-2 hover:ring-primary-border",
+          "hover:bg-hover-surface",
         )}
       >
         <Avatar size="sm">
