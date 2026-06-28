@@ -138,7 +138,7 @@ function CreateKeyForm({
       <DialogHeader>
         <DialogTitle>Create API key</DialogTitle>
         <DialogDescription>
-          Issued to:{" "}
+          Service account:{" "}
           <span className="font-mono text-foreground">
             {serviceAccount.name}
           </span>

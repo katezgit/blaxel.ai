@@ -163,9 +163,8 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
             Service accounts
           </h1>
           <p className="text-muted-foreground">
-            Non-human identities for CI/CD, agents, and external systems that
-            need to act on this workspace &mdash; without tying access to a
-            person. Permissions are assigned on the Team page.
+            Service accounts are identities representing an external system
+            that needs to access this Blaxel workspace.
           </p>
         </header>
         <Button variant="primary" onClick={() => setCreateOpen(true)}>
@@ -225,25 +224,22 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         onOpenChange={(open) => {
           if (!open) setPendingDelete(null);
         }}
-        actionLabel="Remove service account"
+        actionLabel="Delete service account"
         targetLabel={pendingDelete?.name ?? ""}
         workspaceName={pendingDelete?.name ?? ""}
         onConfirm={() => {
           if (!pendingDelete) return;
           setAccounts((prev) => prev.filter((a) => a.id !== pendingDelete.id));
-          toast.success(`Removed service account ${pendingDelete.name}.`);
+          toast.success(`Deleted service account ${pendingDelete.name}.`);
           setPendingDelete(null);
         }}
       >
         <p className="typography-body text-foreground">
-          This will permanently remove{" "}
+          This will delete{" "}
           <span className="font-mono">{pendingDelete?.name}</span>
-          {" "}and revoke all of its API keys. Any consumer using this
-          service account&apos;s credentials will lose access immediately.
-        </p>
-        <p className="typography-body text-foreground">
-          OAuth client credentials cannot be restored. If you need access
-          again, create a new service account.
+          {" "}and revoke all of its API keys. Any external system using
+          this service account&apos;s credentials will lose access
+          immediately.
         </p>
       </ConfirmByNameDialog>
     </section>
@@ -303,7 +299,7 @@ function RowMenu({ account, onDelete }: RowMenuProps) {
             onSelect={onDelete}
             className="text-destructive focus:text-destructive"
           >
-            Remove service account
+            Delete service account
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

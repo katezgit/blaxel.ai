@@ -45,8 +45,8 @@ export default function DeleteServiceAccountApiKeyDialog({
         </DialogHeader>
         <DialogBody>
           <p className="typography-body text-foreground">
-            Any consumer using this key will lose access immediately. This
-            cannot be undone.
+            Any external system using this key will lose access immediately.
+            This cannot be undone.
           </p>
         </DialogBody>
         <DialogFooter>

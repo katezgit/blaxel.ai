@@ -137,9 +137,8 @@ export default function ApiKeysSection({
           API keys
         </h2>
         <p className="text-muted-foreground">
-          API keys are optional secondary credentials for consumers that
-          don&rsquo;t support OAuth client credentials &mdash; CI runners,
-          curl, and CLI direct access.
+          API keys are long-lived access tokens that authenticate to Blaxel
+          by API or CLI.
         </p>
       </div>
 

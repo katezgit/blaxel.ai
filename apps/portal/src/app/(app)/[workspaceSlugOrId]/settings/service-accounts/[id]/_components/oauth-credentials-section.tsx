@@ -37,17 +37,12 @@ export default function OauthCredentialsSection({
             />
           </dd>
         </div>
-        <div className="flex gap-3">
-          <dt className="typography-body w-32 shrink-0 pt-px font-medium text-meta-foreground">
+        <div className="flex items-center gap-3">
+          <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
             Client secret
           </dt>
-          <dd className="flex min-w-0 flex-col gap-0.5">
-            <span className="typography-body text-meta-foreground">
-              Not available &mdash; shown once at creation.
-            </span>
-            <span className="typography-caption leading-tight text-meta-foreground">
-              To rotate, delete this service account and create a new one.
-            </span>
+          <dd className="typography-body min-w-0 text-meta-foreground">
+            Not available &mdash; shown once at creation.
           </dd>
         </div>
       </dl>

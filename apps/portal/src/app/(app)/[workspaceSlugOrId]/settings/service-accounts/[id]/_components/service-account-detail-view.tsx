@@ -34,7 +34,6 @@ import EditServiceAccountDrawer, {
   type EditServiceAccountDrawerState,
 } from "./edit-service-account-drawer";
 import OauthCredentialsSection from "./oauth-credentials-section";
-import RecentActivitySection from "./recent-activity-section";
 import ServiceAccountDetailSkeleton from "./service-account-detail-skeleton";
 
 interface ServiceAccountDetailViewProps {
@@ -150,7 +149,7 @@ export default function ServiceAccountDetailView({
 
   const handleRemoveConfirm = () => {
     setPendingRemove(false);
-    toast.success(`Removed service account ${sa.name}.`);
+    toast.success(`Deleted service account ${sa.name}.`);
     queryClient.invalidateQueries({
       queryKey: queryKeys.resourceList(accountId, workspaceId, "service-accounts"),
     });
@@ -202,7 +201,7 @@ export default function ServiceAccountDetailView({
                     setPendingRemove(true);
                   }}
                 >
-                  Remove service account
+                  Delete service account
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -217,8 +216,6 @@ export default function ServiceAccountDetailView({
       />
 
       <OauthCredentialsSection serviceAccount={sa} />
-
-      <RecentActivitySection />
 
       <CreateServiceAccountApiKeyDialog
         open={createKeyOpen}
@@ -238,20 +235,16 @@ export default function ServiceAccountDetailView({
         onOpenChange={(open) => {
           if (!open) setPendingRemove(false);
         }}
-        actionLabel="Remove service account"
+        actionLabel="Delete service account"
         targetLabel={sa.name}
         workspaceName={sa.name}
         onConfirm={handleRemoveConfirm}
       >
         <p className="typography-body text-foreground">
-          This will permanently remove{" "}
-          <span className="font-mono">{sa.name}</span>
-          {" "}and revoke all of its API keys. Any consumer using this
-          service account&rsquo;s credentials will lose access immediately.
-        </p>
-        <p className="typography-body text-foreground">
-          OAuth client credentials cannot be restored. If you need access
-          again, create a new service account.
+          This will delete <span className="font-mono">{sa.name}</span>
+          {" "}and revoke all of its API keys. Any external system using
+          this service account&rsquo;s credentials will lose access
+          immediately.
         </p>
       </ConfirmByNameDialog>
     </>
