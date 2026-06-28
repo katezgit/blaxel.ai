@@ -2,10 +2,9 @@
 
 import { useSearchParams } from "next/navigation";
 import { ArrowUpRightIcon } from "lucide-react";
-import { cn } from "@repo/ui/lib/cn";
 import { useAccountState } from "@/lib/mock/account-context";
 import { parseCustomDomainsFixture } from "@/lib/mock/custom-domains";
-import TierLockedPanel from "./tier-locked-panel";
+import CustomDomainsTierLockedView from "./custom-domains-tier-locked-view";
 import CustomDomainsHeader from "./custom-domains-header";
 import CustomDomainsLoaded from "./custom-domains-loaded";
 import AddDomainButton from "./add-domain-button";
@@ -25,16 +24,18 @@ export default function CustomDomainsView() {
   const { state } = useAccountState();
   const searchParams = useSearchParams();
   const fixture = parseCustomDomainsFixture(searchParams.get("fixture"));
-  const tierLocked = state.tier < 3;
+
+  if (state.tier < 3) {
+    return <CustomDomainsTierLockedView />;
+  }
 
   return (
-    <div className={cn("page-shell", tierLocked && "gap-8")}>
+    <div className="page-shell">
       <CustomDomainsHeader
-        action={tierLocked ? null : <AddDomainButton />}
-        tierLocked={tierLocked}
-        description={tierLocked ? LOCKED_DESCRIPTION : LIST_DESCRIPTION}
+        action={<AddDomainButton />}
+        description={LIST_DESCRIPTION}
       />
-      {tierLocked ? <TierLockedPanel /> : <CustomDomainsLoaded fixture={fixture} />}
+      <CustomDomainsLoaded fixture={fixture} />
     </div>
   );
 }
@@ -64,12 +65,5 @@ const LIST_DESCRIPTION = (
       API reference
       <ArrowUpRightIcon aria-hidden="true" className="size-3 self-center" />
     </a>
-  </p>
-);
-
-const LOCKED_DESCRIPTION = (
-  <p className="max-w-2xl typography-body text-muted-foreground">
-    Route Sandbox previews through domains you own, with managed TLS and region
-    pinning — available on Tier 3 and above.
   </p>
 );
