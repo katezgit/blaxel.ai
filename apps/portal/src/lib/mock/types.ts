@@ -77,7 +77,12 @@ export interface TeamMember {
   isYou?: boolean;
 }
 
-/** A non-human identity scoped to the workspace. */
+/** A non-human identity scoped to the workspace.
+ *
+ * Permissions are not modelled here. SA permissions are assigned via the
+ * workspace team-members endpoint (`PUT /users/{subOrEmail}`) — the same path
+ * human members use — so the role lives with the membership, not with the SA.
+ * `PUT /service_accounts/{id}` accepts only `name` + `description`. */
 export interface ServiceAccount {
   id: string;
   name: string;
@@ -85,7 +90,6 @@ export interface ServiceAccount {
   description: string;
   /** Public identifier the workspace shows to integrations. */
   clientId: string;
-  role: Role;
   /** ISO timestamp (full createdAt — `MMM D, YYYY · HH:mm UTC` on detail page). */
   createdAt: string;
   /** API keys issued from this service account. */

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, MoreHorizontal, Plus } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
@@ -47,7 +47,6 @@ export default function ServiceAccountDetailView({
   const router = useRouter();
   const queryClient = useQueryClient();
   const listHref = `/${workspace.slug}/settings/service-accounts`;
-  const teamHref = `/${workspace.slug}/settings/team`;
 
   const { data, isPending, isError, refetch } = useQuery(
     workspaceServiceAccountQueries.detail(
@@ -153,11 +152,6 @@ export default function ServiceAccountDetailView({
     router.push(listHref);
   };
 
-  // Workspace-scope roles are admin | member. Any leaked `owner` from the
-  // shared mock type collapses to admin for display — workspace tenants
-  // don't carry an owner tier (verified docs.blaxel.ai 2026-06-28).
-  const roleLabel = sa.role === "member" ? "Member" : "Admin";
-
   return (
     <>
       <DetailPageHeader
@@ -184,20 +178,25 @@ export default function ServiceAccountDetailView({
           />
         }
         description={
-          <InlineEditable
-            value={sa.description}
-            onSave={handleDescriptionSave}
-            ariaLabel="Edit description"
-            renderDisplay={(value, startEdit) => (
-              <button
-                type="button"
-                onClick={startEdit}
-                className="cursor-text rounded-sm text-left hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                {value}
-              </button>
-            )}
-          />
+          <span className="flex flex-col gap-0.5">
+            <InlineEditable
+              value={sa.description}
+              onSave={handleDescriptionSave}
+              ariaLabel="Edit description"
+              renderDisplay={(value, startEdit) => (
+                <button
+                  type="button"
+                  onClick={startEdit}
+                  className="cursor-text rounded-sm text-left hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  {value}
+                </button>
+              )}
+            />
+            <span className="typography-caption text-meta-foreground">
+              Created {formatShortDate(sa.createdAt)}
+            </span>
+          </span>
         }
         action={
           <>
@@ -223,22 +222,6 @@ export default function ServiceAccountDetailView({
           </>
         }
       />
-
-      <p className="typography-caption text-meta-foreground">
-        <span>
-          Role: <span className="text-foreground">{roleLabel}</span>
-        </span>
-        <span aria-hidden="true"> · </span>
-        <span>Created {formatShortDate(sa.createdAt)}</span>
-        <span aria-hidden="true"> · </span>
-        <Link
-          href={teamHref}
-          className="inline-flex items-center gap-0.5 text-foreground underline-offset-2 hover:underline"
-        >
-          Manage role in Team
-          <ArrowRight aria-hidden="true" className="size-3" />
-        </Link>
-      </p>
 
       <ApiKeysSection
         serviceAccount={sa}

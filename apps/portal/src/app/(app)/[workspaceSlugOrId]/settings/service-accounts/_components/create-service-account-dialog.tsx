@@ -18,13 +18,6 @@ import { Button } from "@repo/ui/components/button";
 import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
 import { Switch } from "@repo/ui/components/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui/components/select";
 import type {
   ServiceAccount,
   ServiceAccountApiKey,
@@ -55,7 +48,6 @@ const FORM_SCHEMA = z
   .object({
     name: NAME_SCHEMA,
     description: DESCRIPTION_SCHEMA,
-    role: z.enum(["admin", "member"]),
     alsoIssueKey: z.boolean(),
     keyName: z.string().trim().max(48, "Max 48 characters.").optional(),
     expiresIn: z.enum(EXPIRY_OPTIONS.map((o) => o.value) as [ExpiryOption, ...ExpiryOption[]]),
@@ -144,7 +136,6 @@ function CreateForm({ onCancel, onCreated }: CreateFormProps) {
     defaultValues: {
       name: "",
       description: "",
-      role: "member",
       alsoIssueKey: false,
       keyName: "",
       expiresIn: "90d",
@@ -176,7 +167,6 @@ function CreateForm({ onCancel, onCreated }: CreateFormProps) {
       name: values.name,
       description: values.description,
       clientId: `bxl_sa_${randomSecret(12)}`,
-      role: values.role,
       createdAt: nowIso,
       apiKeys: apiKey ? [apiKey] : [],
       lastUsedAt: null,
@@ -194,8 +184,8 @@ function CreateForm({ onCancel, onCreated }: CreateFormProps) {
       <DialogHeader>
         <DialogTitle>Create service account</DialogTitle>
         <DialogDescription>
-          Service accounts hold credentials that act on this workspace under a
-          chosen role.
+          Service accounts hold credentials that act on this workspace.
+          Permissions are assigned on the Team page after creation.
         </DialogDescription>
       </DialogHeader>
       <DialogBody className="flex flex-col gap-4">
@@ -225,28 +215,6 @@ function CreateForm({ onCancel, onCreated }: CreateFormProps) {
             autoComplete="off"
           />
         </FormField>
-        <FormField
-          id="svc-role"
-          label="Role"
-          helper="Role determines what this service account can do in the workspace."
-        >
-          <Controller
-            control={control}
-            name="role"
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="svc-role" className="w-full max-w-56">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="member">Member</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </FormField>
-
         <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted-surface px-3 py-2">
           <label
             htmlFor="svc-also-issue-key"

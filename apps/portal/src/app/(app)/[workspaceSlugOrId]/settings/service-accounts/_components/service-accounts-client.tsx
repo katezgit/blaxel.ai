@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { MoreHorizontal, Plus, Search, Shield, User } from "lucide-react";
+import { MoreHorizontal, Plus, Search } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
@@ -31,16 +31,6 @@ import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
 import CreateServiceAccountDialog from "./create-service-account-dialog";
 import CliLine from "./cli-line";
 import { formatRelativePast, oldestKeyAgeFor } from "./format";
-
-const ROLE_LABEL = {
-  admin: "Admin",
-  member: "Member",
-} as const;
-
-const ROLE_ICON = {
-  admin: Shield,
-  member: User,
-} as const;
 
 const columnHelper = createColumnHelper<ServiceAccount>();
 
@@ -93,28 +83,6 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
             </div>
           );
         },
-      }),
-      columnHelper.accessor("role", {
-        header: "Role",
-        cell: (info) => {
-          const role = info.getValue();
-          const tier = role === "admin" ? "admin" : "member";
-          const Icon = ROLE_ICON[tier];
-          return (
-            <span className="inline-flex items-center gap-1.5 text-foreground">
-              <Icon
-                aria-hidden="true"
-                className="size-3.5 shrink-0 text-meta-foreground"
-              />
-              <span>{ROLE_LABEL[tier]}</span>
-            </span>
-          );
-        },
-        sortingFn: (a, b) => {
-          const order = { admin: 0, member: 1, owner: 0 } as const;
-          return order[a.original.role] - order[b.original.role];
-        },
-        meta: { cellClassName: "w-[120px]" },
       }),
       columnHelper.accessor((row) => row.apiKeys.length, {
         id: "apiKeyCount",
@@ -196,8 +164,8 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           </h1>
           <p className="text-muted-foreground">
             Non-human identities for CI/CD, agents, and external systems that
-            need to act on this workspace under a chosen role &mdash; without
-            tying access to a person.
+            need to act on this workspace &mdash; without tying access to a
+            person. Permissions are assigned on the Team page.
           </p>
         </header>
         <Button variant="primary" onClick={() => setCreateOpen(true)}>
@@ -302,7 +270,7 @@ function ListEmptyState({ onCreate }: ListEmptyStateProps) {
       </p>
       <CliLine
         className="w-full max-w-2xl"
-        command="bl service-account create --name github-actions-deploy --role member"
+        command="bl service-account create --name github-actions-deploy"
       />
       <Button variant="ghost" onClick={onCreate}>
         Create service account

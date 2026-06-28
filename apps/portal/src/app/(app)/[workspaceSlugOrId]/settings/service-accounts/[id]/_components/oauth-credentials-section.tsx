@@ -13,7 +13,7 @@ export default function OauthCredentialsSection({
 }: OauthCredentialsSectionProps) {
   const rotateCli = [
     `bl service-account delete ${serviceAccount.name}`,
-    `bl service-account create --name ${serviceAccount.name} --role ${serviceAccount.role === "owner" ? "admin" : serviceAccount.role}`,
+    `bl service-account create --name ${serviceAccount.name}`,
   ].join("\n");
 
   return (
@@ -28,32 +28,36 @@ export default function OauthCredentialsSection({
         OAuth credentials
       </h2>
 
-      <div className="flex flex-col gap-1.5">
-        <span className="typography-caption font-medium text-meta-foreground">
-          Client ID
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <code className="font-mono typography-code text-foreground">
-            {serviceAccount.clientId}
-          </code>
-          <CopyButton
-            value={serviceAccount.clientId}
-            ariaLabel="Copy client ID"
-          />
-        </span>
-      </div>
+      <dl className="flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+            Client ID
+          </dt>
+          <dd className="flex min-w-0 items-center gap-1.5">
+            <code className="font-mono typography-code text-foreground">
+              {serviceAccount.clientId}
+            </code>
+            <CopyButton
+              value={serviceAccount.clientId}
+              ariaLabel="Copy client ID"
+            />
+          </dd>
+        </div>
+        <div className="flex items-center gap-3">
+          <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+            Client secret
+          </dt>
+          <dd className="typography-body text-meta-foreground">
+            Not available
+          </dd>
+        </div>
+      </dl>
 
-      <div className="flex flex-col gap-2">
-        <span className="typography-caption font-medium text-meta-foreground">
-          Client secret
-        </span>
-        <span className="typography-body text-meta-foreground">
-          Not available
-        </span>
+      <div className="flex flex-col gap-1">
         <p className="typography-body text-muted-foreground">
           OAuth client secrets cannot be retrieved after creation. To rotate
           the secret, remove this service account and create a new one &mdash;
-          role bindings and any API keys will need to be re-assigned.
+          permissions and any API keys will need to be re-assigned.
         </p>
         <p className="typography-caption text-meta-foreground">
           This is a Blaxel API limitation.
