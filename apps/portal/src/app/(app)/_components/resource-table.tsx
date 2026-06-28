@@ -41,8 +41,11 @@ export function ResourceTable<TData>({
   return (
     <div
       className={cn(
+        // overflow-x-auto preserves horizontal scroll on narrow viewports;
+        // avoid the `overflow-hidden` shorthand here — it would silently override
+        // overflow-x and clip rows with no scroll affordance.
         "relative w-full overflow-x-auto rounded-md border border-border bg-card",
-        isStickyScroll ? "overflow-y-auto" : "overflow-hidden",
+        isStickyScroll && "overflow-y-auto",
       )}
       style={isStickyScroll ? { maxHeight } : undefined}
     >
