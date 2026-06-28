@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { KeyRound, MoreHorizontal, Plus, Search } from "lucide-react";
+import { MoreHorizontal, Plus, Search } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
@@ -236,16 +236,6 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
               start receiving 401 responses.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="px-6 pb-2">
-            <div className="rounded-md border border-border bg-muted-surface p-3">
-              <p className="flex items-center gap-2 typography-caption text-muted-foreground">
-                <KeyRound aria-hidden="true" className="size-3.5" />
-                <span>
-                  Mock: this would also revoke linked workspace API keys.
-                </span>
-              </p>
-            </div>
-          </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
