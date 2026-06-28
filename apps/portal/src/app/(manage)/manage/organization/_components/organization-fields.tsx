@@ -16,7 +16,7 @@ export function OrganizationFields() {
   const { data: currentOrg } = useSuspenseQuery(orgQueries.account(accountId));
   const { data: orgAddress } = useSuspenseQuery(orgQueries.address(accountId));
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <FieldRow>
         <Field label="Organization name">
           <Input defaultValue={currentOrg.name} disabled />
@@ -26,19 +26,19 @@ export function OrganizationFields() {
         </Field>
       </FieldRow>
 
-      <FieldRow cols={1} className="mt-4">
+      <FieldRow cols={1}>
         <Field label="Primary business address">
           <Input defaultValue={orgAddress.line1} disabled />
         </Field>
       </FieldRow>
 
-      <FieldRow cols={1} className="mt-4">
+      <FieldRow cols={1}>
         <Field label="Address line 2">
           <Input defaultValue={orgAddress.line2} disabled />
         </Field>
       </FieldRow>
 
-      <FieldRow cols={2} className="mt-4">
+      <FieldRow cols={2}>
         <Field label="Country">
           <Input defaultValue={orgAddress.country} disabled />
         </Field>
@@ -47,7 +47,7 @@ export function OrganizationFields() {
         </Field>
       </FieldRow>
 
-      <FieldRow cols={2} className="mt-4">
+      <FieldRow cols={2}>
         <Field label="City">
           <Input defaultValue={orgAddress.city} disabled />
         </Field>
@@ -56,10 +56,10 @@ export function OrganizationFields() {
         </Field>
       </FieldRow>
 
-      <div className="mt-4 flex items-center gap-2 font-mono typography-caption text-meta-foreground">
+      <div className="flex items-center gap-2 font-mono typography-caption text-meta-foreground">
         <span>Organization ID: {currentOrg.id}</span>
         <CopyButton value={currentOrg.id} ariaLabel="Copy organization ID" />
       </div>
-    </>
+    </div>
   );
 }
