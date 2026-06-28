@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -43,12 +42,13 @@ export default function DeleteServiceAccountApiKeyDialog({
           <DialogTitle>
             Delete &ldquo;{apiKey?.name ?? ""}&rdquo;?
           </DialogTitle>
-          <DialogDescription>
+        </DialogHeader>
+        <DialogBody>
+          <p className="typography-body text-foreground">
             Any consumer using this key will lose access immediately. This
             cannot be undone.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogBody />
+          </p>
+        </DialogBody>
         <DialogFooter>
           <Button variant="secondary" onClick={onClose}>
             Cancel

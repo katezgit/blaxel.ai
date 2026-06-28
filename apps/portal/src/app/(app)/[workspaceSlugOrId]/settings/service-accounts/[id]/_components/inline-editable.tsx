@@ -55,9 +55,13 @@ export default function InlineEditable({
     setEditing(false);
   };
 
+  // Wrapper is <span> (not <div>) because callers slot this into <p> / <h1>
+  // descriptions and headings, which only accept phrasing content. inline-flex
+  // preserves the row layout; Button/Input/IconButton are all phrasing-content
+  // elements (<button>, <input>) so the tree stays HTML-valid.
   if (editing) {
     return (
-      <div className="flex items-center gap-2">
+      <span className="inline-flex items-center gap-2">
         <Input
           ref={inputRef}
           value={draft}
@@ -90,12 +94,12 @@ export default function InlineEditable({
         >
           Cancel
         </Button>
-      </div>
+      </span>
     );
   }
 
   return (
-    <div className="group/inline-edit inline-flex items-center gap-1.5">
+    <span className="group/inline-edit inline-flex items-center gap-1.5">
       {renderDisplay(value, startEdit)}
       <IconButton
         type="button"
@@ -107,6 +111,6 @@ export default function InlineEditable({
       >
         <Pencil />
       </IconButton>
-    </div>
+    </span>
   );
 }
