@@ -16,9 +16,10 @@ import { TenancyProvider } from "@/lib/query/tenancy-context";
 // <UnifiedShell> drives the slide-in keyframe. React does not unmount and
 // remount the shell host.
 //
-// Workspace-specific data (currentOrg) resolves in the deeper
-// [workspaceSlugOrId]/layout.tsx and rides into the already-mounted shell via
-// ActiveWorkspaceProvider — that layout no longer carries the chrome.
+// Workspace-specific gating (membership 404) happens in the deeper
+// [workspaceSlugOrId]/layout.tsx; the shell resolves the active workspace
+// directly from the URL pathname rather than via React context (the shell is
+// mounted above that layout in the tree, so a context would always read null).
 
 const FALLBACK_USER_TIER = "Tier 1";
 

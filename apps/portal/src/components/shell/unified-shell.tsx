@@ -31,9 +31,9 @@ import {
 } from "@/components/shell/nav-groups";
 import {
   subShellKindForPath,
+  workspaceSlugFromAnyPath,
   workspaceSlugFromPath,
 } from "@/components/shell/sub-shell-path";
-import { useActiveWorkspace } from "@/components/shell/workspace-context";
 import WorkspaceSwitcher from "@/components/shell/workspace-switcher";
 import type { Org } from "@/lib/mock/types";
 
@@ -47,8 +47,10 @@ import type { Org } from "@/lib/mock/types";
 // walking") that came from keeping both <aside> elements mounted.
 //
 // Sub-pane content is route-derived inside the shell (settings / profile /
-// account). The active workspace on workspace routes flows in via context from
-// (app)/[workspaceSlugOrId]/layout.tsx; on /profile and /account the shell
+// account). The active workspace on workspace routes is resolved from the URL
+// pathname (workspaceSlugFromAnyPath) — UnifiedShell is mounted ABOVE the
+// (app)/[workspaceSlugOrId]/layout that knows the workspace, so a React
+// context would always read null here. On /profile and /account the shell
 // falls back to the last-visited tracker, then the fallback workspace prop.
 
 interface UnifiedShellProps {
@@ -70,12 +72,20 @@ export function UnifiedShell({
   children,
 }: UnifiedShellProps) {
   const pathname = usePathname();
-  const activeWorkspace = useActiveWorkspace();
   const subShellKind = subShellKindForPath(pathname);
   const subShellOpen = subShellKind !== null;
 
+  // Workspace resolved from the URL — null on /profile and /account, the
+  // canonical Org on any /{slug}/* route (workspace or settings). The lookup
+  // accepts either slug or id because the route segment is workspaceSlugOrId.
+  const urlSlug = workspaceSlugFromAnyPath(pathname);
+  const urlWorkspace = useMemo(() => {
+    if (!urlSlug) return null;
+    return workspaces.find((w) => w.slug === urlSlug || w.id === urlSlug) ?? null;
+  }, [urlSlug, workspaces]);
+
   // Workspace shown in the topbar switcher + sub-shell return header.
-  // Priority: URL workspace context > last-visited tracker (sub-shell routes) > fallback.
+  // Priority: URL workspace > last-visited tracker (sub-shell routes) > fallback.
   // The tracker write happens further down via useLastWorkspaceTracker —
   // mounting this unconditionally means /profile and /account always get a
   // resolved workspace even on first paint (the fallback is the seed).
@@ -85,17 +95,17 @@ export function UnifiedShell({
   }, [pathname]);
 
   const headerWorkspace: Org = useMemo(() => {
-    if (activeWorkspace) return activeWorkspace;
+    if (urlWorkspace) return urlWorkspace;
     if (trackedSlug) {
       const match = workspaces.find((w) => w.slug === trackedSlug);
       if (match) return match;
     }
     return fallbackWorkspace;
-  }, [activeWorkspace, trackedSlug, workspaces, fallbackWorkspace]);
+  }, [urlWorkspace, trackedSlug, workspaces, fallbackWorkspace]);
 
   // Tracker writes the workspace slug whenever a workspace route is active.
   // No-ops on /profile and /account (slug stays the last good value).
-  useLastWorkspaceTracker(activeWorkspace?.slug ?? "");
+  useLastWorkspaceTracker(urlWorkspace?.slug ?? "");
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
