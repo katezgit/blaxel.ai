@@ -2,6 +2,14 @@
 
 ---
 
+## 2026-06-28 — fix(ui/chip): restore info-checked selection visibility ([#136](https://github.com/katezgit/blaxel.ai/pull/136))
+
+### Fixed
+
+- `light × info × checked` chip variant: bg and border tokens swapped from alpha-tint (`state-running-subtle`) to solid-mix (`alert-info-bg` / `state-running`) so selection is perceptually visible in dark mode
+
+---
+
 ## 2026-06-27 — docs(workflow): add "no action is a valid action" hard rule ([#135](https://github.com/katezgit/blaxel.ai/pull/135))
 
 ### Changed
