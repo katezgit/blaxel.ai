@@ -64,7 +64,7 @@ const MultiSelectTrigger = React.forwardRef<
       "group/trigger",
       "flex w-full items-center justify-between gap-2",
       formFieldBoxVariants({ size }),
-      // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
+      // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-card (formerly --color-panel).
       "focus-visible:bg-form-field-surface data-[state=open]:bg-form-field-surface",
       "data-[state=open]:shadow-focus-ring",
       "[&_svg]:pointer-events-none [&_svg]:shrink-0",

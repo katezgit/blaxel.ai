@@ -26,18 +26,15 @@
    * FOUNDATION — the canvas. Neutral surfaces, typography, structural borders.
    * ═══════════════════════════════════════════════════════════════════════════ */
 
-  --color-background:        light-dark(var(--surface-bg-light),       var(--surface-bg-dark));
-  --color-panel:             light-dark(var(--surface-panel-light),    var(--surface-panel-dark));
-  --color-page:              light-dark(var(--surface-page-light),     var(--surface-page-dark));
-  --color-elevated-surface:  light-dark(var(--surface-elevated-light), var(--surface-elevated-dark));
+  --color-background:        light-dark(var(--surface-bg-light),   var(--surface-bg-dark));
 
   /* Field-rest surface — resting bg for Input / Textarea / Select / Combobox AND
    * table-header strips. Single token so form fields at rest pair visually with
    * table headings in both modes.
-   * Dark: 30% bg-background + 70% panel ≈ soft sink, avoids a hard contrast band. */
+   * Dark: 30% background + 70% card ≈ soft sink, avoids a hard contrast band. */
   --color-field-rest:        light-dark(
     var(--surface-bg-light),
-    color-mix(in srgb, var(--surface-bg-dark) 30%, var(--surface-panel-dark) 70%)
+    color-mix(in srgb, var(--surface-bg-dark) 30%, var(--surface-card-dark) 70%)
   );
   --color-form-field-border: var(--color-border);
 
@@ -70,17 +67,16 @@
   --color-progress-fill-neutral: #B3BFCE; /* PINNED */
 
   /* Code block surface — PINNED flat literals; always dark in both themes.
-   * Dark mode: --ink-900 (#18212E) reads visibly lighter than --surface-bg-dark (#0C1016). */
+   * Dark mode: --ink-900 (#18212E) reads pinned-dark vs --surface-bg-dark (#1A1A19). */
   --color-code-bg:     var(--ink-900);             /* #18212E — block body + header */
   --color-code-fg:     var(--ink-50);              /* #E8EEF5 — primary code text */
   --color-code-muted:  var(--ink-100);             /* #B3BFCE — language label */
   --color-code-border: rgba(255 255 255 / .06);    /* hairline on dark surface */
   /* Highlight surface for popover-content items (Select / Command / DropdownMenu / Combobox).
-   * Mixed against the popover's own elevated surface so the highlight reads as a step
-   * away from the popover bg — using elevated directly would equal the popover. */
+   * Mixed against the card surface so the highlight reads as a step above the popover bg. */
   --color-highlight-surface: light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 95%, black 5%),
-    color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
+    color-mix(in srgb, var(--surface-card-light) 95%, black 5%),
+    color-mix(in srgb, var(--surface-card-dark) 88%, white 12%)
   );
 
   /* ═══════════════════════════════════════════════════════════════════════════
@@ -131,26 +127,26 @@
    * family (neutral, no brand tint) so hover reads quiet against content tiers. */
   --color-hover-surface:    light-dark(
     var(--surface-secondary-light),
-    color-mix(in srgb, var(--surface-elevated-dark) 92%, white 8%)
+    color-mix(in srgb, var(--surface-card-dark) 92%, white 8%)
   );
   /* Hover surface — scan aid for non-interactive rows. Half-intensity of
    * --color-hover-surface; aids horizontal scanning without implying click affordance. */
   --color-hover-surface-subtle: light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 50%, var(--surface-secondary-light) 50%),
-    color-mix(in srgb, var(--surface-elevated-dark) 96%, white 4%)
+    color-mix(in srgb, var(--surface-card-light) 50%, var(--surface-secondary-light) 50%),
+    color-mix(in srgb, var(--surface-card-dark) 96%, white 4%)
   );
   --color-selected-surface: light-dark(
     color-mix(in srgb, var(--surface-bg-light) 84%, var(--orange-800) 16%),
     color-mix(in srgb, var(--surface-secondary-dark) 90%, var(--orange-800) 10%)
   );
-  --color-control-raised:   light-dark(var(--surface-panel-light),     var(--surface-elevated-dark));
+  --color-control-raised:   light-dark(var(--surface-card-light),  var(--surface-card-dark));
 
   /* Accent — bg-accent utility used by shadcn internals (Command / DropdownMenu active).
    * Literal expression rather than var(--color-hover-surface) so getComputedStyle returns
    * a resolved value on :root. */
   --color-accent:            light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 92%, var(--orange-500) 8%)
+    color-mix(in srgb, var(--surface-card-light) 92%, var(--orange-800) 8%),
+    color-mix(in srgb, var(--surface-card-dark) 92%, var(--orange-500) 8%)
   );
   --color-accent-foreground: light-dark(var(--ink-900), var(--ink-50));
 

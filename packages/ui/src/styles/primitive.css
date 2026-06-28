@@ -49,22 +49,22 @@
   --ink-400: oklch(.690 .029 285.612);   /* v2-gray-64 — text-disabled light ↔ ink-500 dark  */
   --ink-500: oklch(.393 .029 285.012);   /* v2-gray-30 — text-disabled dark  ↔ ink-400 light */
 
-  /* Surfaces — light / dark pairs.
-   * Light: chrome tier (--surface-bg-light) sits a faint warm off-white below the
-   *   pure-white content tier (--surface-panel-light). Cards float on white panel
-   *   via border + shadow.
-   * Dark: neutralized warm-grey tiers (low-chroma luminance ladder). Anchored
-   *   neutral so hover/highlight mixes don't inherit a violet cast. */
-  --surface-bg-light:        #F9F9F8;
-  --surface-bg-dark:         #09090A;
-  --surface-panel-light:     #FFFFFF;
-  --surface-panel-dark:      #131313;
-  --surface-page-light:      #FFFFFF;
-  --surface-page-dark:       #1A1A1A;
-  --surface-elevated-light:  #FFFFFF;
-  --surface-elevated-dark:   #1A1A1A;
-  --surface-muted-light:     #FFFFFF;
-  --surface-muted-dark:      #1B1B1B;
+  /* Surfaces — 3-tier DS system (light / dark pairs).
+   *
+   * Tier order (dark mode, darkest → lightest):
+   *   muted #111111 → card #131313 → background #1A1A19
+   * Metaphor: wells cut into a desk, not cards floating above one.
+   *   background = workspace base (brightest reading surface)
+   *   card       = recessed pocket (darker than workspace)
+   *   muted      = sunken strip inside card (2 units deeper)
+   *
+   * Chrome (sidebar/topbar) uses app-local tokens; not part of DS. */
+  --surface-bg-light:        #FFFFFF;
+  --surface-bg-dark:         #1A1A19;
+  --surface-card-light:      #F7F7F5;
+  --surface-card-dark:       #131313;
+  --surface-muted-light:     #F0F0EE;
+  --surface-muted-dark:      #111111;
   --surface-secondary-light: #EEEDE9;
   --surface-secondary-dark:  #262626;
 

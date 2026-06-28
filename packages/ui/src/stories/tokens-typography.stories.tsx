@@ -598,7 +598,7 @@ export const FontFamilies: StoryObj = {
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
         <div
           style={{
-            background: "var(--color-panel)",
+            background: "var(--color-card)",
             border: "1px solid var(--color-border)",
             borderRadius: "var(--radius-lg)",
             padding: 20,

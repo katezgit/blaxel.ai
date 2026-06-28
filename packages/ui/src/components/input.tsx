@@ -48,7 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // shadow-focus-ring matches the global *:focus-visible halo+ring (base.css) so slotted inputs
             // read identically to plain inputs in both modes.
             "focus-within:outline-none focus-within:shadow-focus-ring",
-            // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
+            // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-card (formerly --color-panel).
             "focus-within:bg-form-field-surface",
             "has-[[aria-invalid=true]]:border-state-errored",
             "has-[[aria-invalid=true]]:focus-within:shadow-focus-ring-errored",
@@ -94,7 +94,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         data-slot="input"
         className={cn(
           formFieldBoxVariants({ size: "md" }),
-          // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
+          // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-card (formerly --color-panel).
           "focus:bg-form-field-surface",
           ...inputBaseClasses,
           className

@@ -77,21 +77,20 @@ export const Surface: StoryObj = {
   name: "Surface",
   render: () => (
     <div style={{ fontFamily: "var(--font-sans)", padding: 24 }}>
-      <Section title="Foundation surfaces">
-        <SwatchRow token="--color-background" label="Page canvas — outermost background" bordered />
-        <SwatchRow token="--color-page" label="Recessed page — deep background layer" bordered />
-        <SwatchRow token="--color-panel" label="Panel / card — white surface above canvas" bordered />
-        <SwatchRow token="--color-elevated-surface" label="Elevated surface — popovers, tooltips, dropdowns" bordered />
-        <SwatchRow token="--color-muted-surface" label="Muted fill — section dividers, table header strips, empty states" bordered />
+      <Section title="Foundation surfaces — 3-tier DS system">
+        <SwatchRow token="--color-background" label="Workspace base — brightest reading surface. Cards recess INTO this." bordered />
+        <SwatchRow token="--color-card" label="Card / popover — recessed pocket (darker than workspace). Metaphor: well cut into desk." bordered />
+        <SwatchRow token="--color-muted-surface" label="Muted strip — sunken inside card (thead, code-block, sub-sections). 2-unit deeper recess." bordered />
         <SwatchRow token="--color-secondary-surface" label="Secondary fill — chip bg, selected rows" bordered />
       </Section>
       <Section title="Control-raised alias chain — card / popover / form-field">
         <p style={{ fontSize: 11, color: "var(--color-muted-foreground)", marginBottom: 10, lineHeight: 1.6 }}>
           <code style={{ fontFamily: "var(--font-sans)" }}>--color-control-raised</code> is the foundation
-          that card, popover, and focused form-field alias into. Light: equals panel (border + shadow carry
-          the boundary). Dark: elevated lifts above panel so the control reads as a distinct layer.
+          that card, popover, and focused form-field alias into. Both modes map to{" "}
+          <code style={{ fontFamily: "var(--font-sans)" }}>--surface-card-*</code> — the recessed tier.
+          Border + shadow carry the spatial boundary against the workspace.
         </p>
-        <SwatchRow token="--color-control-raised" label="Foundation — light: panel  dark: elevated-surface" bordered />
+        <SwatchRow token="--color-control-raised" label="Foundation — light: #F7F7F5  dark: #131313 (card tier)" bordered />
         <SwatchRow token="--color-card" label="Card surface → alias of --color-control-raised" bordered />
         <SwatchRow token="--color-popover" label="Popover surface → alias of --color-control-raised" bordered />
         <SwatchRow token="--color-form-field-surface" label="Focused form-field fill → alias of --color-control-raised" bordered />
@@ -101,14 +100,14 @@ export const Surface: StoryObj = {
           Resting background for Input, Textarea, Select, and Combobox — also table-header strips.
           Distinct from <code style={{ fontFamily: "var(--font-sans)" }}>--color-form-field-surface</code>{" "}
           which is the <em>focus</em> state fill. Light: matches background (subtle sink into the canvas);
-          dark: 30% bg + 70% panel mix avoids a hard contrast band.
+          dark: 30% background + 70% card mix avoids a hard contrast band.
         </p>
-        <SwatchRow token="--color-field-rest" label="Form field resting fill — light: background  dark: bg/panel mix" bordered />
+        <SwatchRow token="--color-field-rest" label="Form field resting fill — light: background  dark: bg/card mix" bordered />
       </Section>
       <Section title="Interaction surfaces — hover / selected / highlight">
         <SwatchRow token="--color-hover-surface" label="Row / item hover — interactive backdrops; neutral, no brand tint" bordered />
         <SwatchRow token="--color-hover-surface-subtle" label="Scan-aid hover for non-interactive rows — half-intensity of hover-surface" bordered />
-        <SwatchRow token="--color-selected-surface" label="Selected row / item — orange tint over panel (brand-tinted)" bordered />
+        <SwatchRow token="--color-selected-surface" label="Selected row / item — orange tint over workspace (brand-tinted)" bordered />
         <SwatchRow
           token="--color-highlight-surface"
           label="Popover item hover within Select / Command / DropdownMenu — mixed step away from popover bg (not elevated directly, which would equal the container)"
@@ -121,7 +120,7 @@ export const Surface: StoryObj = {
           Defined as a literal <code style={{ fontFamily: "var(--font-sans)" }}>color-mix()</code> expression
           (not an alias of <code style={{ fontFamily: "var(--font-sans)" }}>--color-hover-surface</code>) so
           that <code style={{ fontFamily: "var(--font-sans)" }}>getComputedStyle</code> returns a resolved
-          value on <code style={{ fontFamily: "var(--font-sans)" }}>:root</code>. 92% elevated + 8% orange
+          value on <code style={{ fontFamily: "var(--font-sans)" }}>:root</code>. 92% card + 8% orange
           tint in both modes.
         </p>
         <SwatchRow token="--color-accent" label="shadcn bg-accent — Command / DropdownMenu active item fill" bordered />
@@ -171,7 +170,7 @@ export const TextSecondaryTiers: StoryObj = {
           {/* Left: sidebar-style chrome — uses muted-foreground */}
           <div
             style={{
-              background: "var(--color-panel)",
+              background: "var(--color-card)",
               border: "1px solid var(--color-border)",
               borderRadius: "var(--radius-md)",
               padding: 16,
@@ -224,7 +223,7 @@ export const TextSecondaryTiers: StoryObj = {
           {/* Right: table row — uses meta for headers + mono ID */}
           <div
             style={{
-              background: "var(--color-panel)",
+              background: "var(--color-card)",
               border: "1px solid var(--color-border)",
               borderRadius: "var(--radius-md)",
               overflow: "hidden",
@@ -382,7 +381,7 @@ function StatusFamily({ name, usage, solid, subtle, textToken }: StatusFamilyPro
   return (
     <div
       style={{
-        background: "var(--color-panel)",
+        background: "var(--color-card)",
         border: "1px solid var(--color-border)",
         borderRadius: "var(--radius-md)",
         padding: 12,
@@ -470,7 +469,7 @@ export const StatusFamilies: StoryObj = {
         />
         <div
           style={{
-            background: "var(--color-panel)",
+            background: "var(--color-card)",
             border: "1px solid var(--color-border)",
             borderRadius: "var(--radius-md)",
             padding: 12,
@@ -553,7 +552,7 @@ export const FocusChrome: StoryObj = {
                 borderRadius: "var(--radius-md)",
                 padding: "0 12px",
                 height: 34,
-                background: "var(--color-panel)",
+                background: "var(--color-card)",
                 border: "1px solid var(--color-border)",
                 outline: "2px solid var(--color-ring)",
                 outlineOffset: 2,
@@ -593,7 +592,7 @@ export const FocusChrome: StoryObj = {
                 borderRadius: "var(--radius-md)",
                 padding: "0 12px",
                 height: 34,
-                background: "var(--color-panel)",
+                background: "var(--color-card)",
                 border: "1px solid var(--color-state-errored)",
                 outline: "2px solid var(--color-state-errored)",
                 outlineOffset: 2,
@@ -828,7 +827,7 @@ export const ChartSeries: StoryObj = {
         </p>
         <div
           style={{
-            background: "var(--color-panel)",
+            background: "var(--color-card)",
             border: "1px solid var(--color-border)",
             borderRadius: "var(--radius-md)",
             padding: 16,
@@ -890,7 +889,7 @@ export const ChartSeries: StoryObj = {
         <p style={LABEL_STYLE}>Vertical bar chart — one bar per series color</p>
         <div
           style={{
-            background: "var(--color-panel)",
+            background: "var(--color-card)",
             border: "1px solid var(--color-border)",
             borderRadius: "var(--radius-md)",
             padding: "16px 16px 8px",
@@ -933,10 +932,10 @@ export const ChartSeries: StoryObj = {
 
       {/* ── Section 4: Pie chart ──────────────────────────────────────── */}
       <section>
-        <p style={LABEL_STYLE}>Pie chart — environment distribution (6 segments, stroke = --color-panel)</p>
+        <p style={LABEL_STYLE}>Pie chart — environment distribution (6 segments, stroke = --color-card)</p>
         <div
           style={{
-            background: "var(--color-panel)",
+            background: "var(--color-card)",
             border: "1px solid var(--color-border)",
             borderRadius: "var(--radius-md)",
             padding: 16,
@@ -951,7 +950,7 @@ export const ChartSeries: StoryObj = {
                 key={label}
                 d={d}
                 fill={`var(${token})`}
-                stroke="var(--color-panel)"
+                stroke="var(--color-card)"
                 strokeWidth={2}
               />
             ))}
@@ -985,7 +984,7 @@ export const ChartSeries: StoryObj = {
         <p style={LABEL_STYLE}>Horizontal bar chart — category distribution</p>
         <div
           style={{
-            background: "var(--color-panel)",
+            background: "var(--color-card)",
             border: "1px solid var(--color-border)",
             borderRadius: "var(--radius-md)",
             padding: 16,
