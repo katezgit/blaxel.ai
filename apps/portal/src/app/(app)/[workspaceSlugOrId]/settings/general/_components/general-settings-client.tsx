@@ -13,7 +13,7 @@ import { Input } from "@repo/ui/components/input";
 import { toast } from "sonner";
 import type { Org } from "@/lib/mock/types";
 import DirtyActionBar from "@/app/(manage)/_components/dirty-action-bar";
-import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import WorkspaceDeleteDialog from "./workspace-delete-dialog";
 
 const NAME_SCHEMA = z.object({
   name: z
@@ -165,36 +165,27 @@ export default function GeneralSettingsClient({
         </Button>
       </section>
 
-      <ConfirmByNameDialog
-        dialog={{
-          open: confirmOpen,
-          onOpenChange: setConfirmOpen,
+      <WorkspaceDeleteDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        workspaceName={savedName}
+        impact={
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
+            <p className="typography-label text-foreground">
+              The following will be permanently removed:
+            </p>
+            <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 typography-caption text-muted-foreground sm:grid-cols-3">
+              {DELETION_TARGETS.map((target) => (
+                <li key={target}>{target}</li>
+              ))}
+            </ul>
+          </div>
+        }
+        onConfirm={() => {
+          toast.success(`Workspace ${savedName} deleted (mock).`);
+          router.push("/");
         }}
-        prompt={{
-          actionLabel: "Delete workspace",
-          targetLabel: savedName,
-          confirmName: savedName,
-          onConfirm: () => {
-            toast.success(`Workspace ${savedName} deleted (mock).`);
-            router.push("/");
-          },
-        }}
-      >
-        <p className="text-foreground">
-          Deleting the workspace is permanent. Every workspace-scoped resource
-          and credential below will be removed.
-        </p>
-        <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
-          <p className="typography-label text-foreground">
-            The following will be permanently removed:
-          </p>
-          <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 typography-caption text-muted-foreground sm:grid-cols-3">
-            {DELETION_TARGETS.map((target) => (
-              <li key={target}>{target}</li>
-            ))}
-          </ul>
-        </div>
-      </ConfirmByNameDialog>
+      />
     </div>
   );
 }

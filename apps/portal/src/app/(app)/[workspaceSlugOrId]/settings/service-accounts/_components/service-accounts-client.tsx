@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { MoreHorizontal, Plus, Search } from "lucide-react";
+import { KeyRound, MoreHorizontal, Plus, Search } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
@@ -26,7 +26,16 @@ import type { Org, ServiceAccount } from "@/lib/mock/types";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@repo/ui/components/alert-dialog";
 import CreateServiceAccountDialog from "./create-service-account-dialog";
 import CliLine from "./cli-line";
 import { formatRelativePast, oldestKeyAgeFor } from "./format";
@@ -207,33 +216,54 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         }}
       />
 
-      <ConfirmByNameDialog
-        dialog={{
-          open: pendingDelete !== null,
-          onOpenChange: (open) => {
-            if (!open) setPendingDelete(null);
-          },
-        }}
-        prompt={{
-          actionLabel: "Delete service account",
-          targetLabel: pendingDelete?.name ?? "",
-          confirmName: pendingDelete?.name ?? "",
-          onConfirm: () => {
-            if (!pendingDelete) return;
-            setAccounts((prev) => prev.filter((a) => a.id !== pendingDelete.id));
-            toast.success(`Deleted service account ${pendingDelete.name}.`);
-            setPendingDelete(null);
-          },
+      <AlertDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
         }}
       >
-        <p className="text-foreground">
-          This will delete{" "}
-          <span className="font-mono">{pendingDelete?.name}</span>
-          {" "}and revoke all of its API keys. Any external system using
-          this service account&apos;s credentials will lose access
-          immediately.
-        </p>
-      </ConfirmByNameDialog>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete &quot;{pendingDelete?.name ?? ""}&quot;
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Every API key issued to{" "}
+              <span className="font-mono text-foreground">
+                {pendingDelete?.name}
+              </span>{" "}
+              will be revoked. CI jobs and integrations using those keys will
+              start receiving 401 responses.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="px-6 pb-2">
+            <div className="rounded-md border border-border bg-muted-surface p-3">
+              <p className="flex items-center gap-2 typography-caption text-muted-foreground">
+                <KeyRound aria-hidden="true" className="size-3.5" />
+                <span>
+                  Mock: this would also revoke linked workspace API keys.
+                </span>
+              </p>
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!pendingDelete) return;
+                setAccounts((prev) =>
+                  prev.filter((a) => a.id !== pendingDelete.id),
+                );
+                toast.success(
+                  `Deleted service account ${pendingDelete.name}.`,
+                );
+              }}
+            >
+              Delete service account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

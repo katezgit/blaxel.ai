@@ -26,7 +26,16 @@ import type {
   ServiceAccount,
   ServiceAccountApiKey,
 } from "@/lib/mock/types";
-import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@repo/ui/components/alert-dialog";
 import ApiKeysSection from "./api-keys-section";
 import CreateServiceAccountApiKeyDialog from "./create-service-account-api-key-dialog";
 import DetailsSection from "./details-section";
@@ -217,27 +226,30 @@ export default function ServiceAccountDetailView({
         onClose={() => setEditState(null)}
       />
 
-      <ConfirmByNameDialog
-        dialog={{
-          open: pendingRemove,
-          onOpenChange: (open) => {
-            if (!open) setPendingRemove(false);
-          },
-        }}
-        prompt={{
-          actionLabel: "Delete service account",
-          targetLabel: sa.name,
-          confirmName: sa.name,
-          onConfirm: handleRemoveConfirm,
+      <AlertDialog
+        open={pendingRemove}
+        onOpenChange={(open: boolean) => {
+          if (!open) setPendingRemove(false);
         }}
       >
-        <p className="text-foreground">
-          This will delete <span className="font-mono">{sa.name}</span>
-          {" "}and revoke all of its API keys. Any external system using
-          this service account&rsquo;s credentials will lose access
-          immediately.
-        </p>
-      </ConfirmByNameDialog>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete &quot;{sa.name}&quot;</AlertDialogTitle>
+            <AlertDialogDescription>
+              Every API key issued to{" "}
+              <span className="font-mono text-foreground">{sa.name}</span>{" "}
+              will be revoked. CI jobs and integrations using those keys will
+              start receiving 401 responses.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRemoveConfirm}>
+              Delete service account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

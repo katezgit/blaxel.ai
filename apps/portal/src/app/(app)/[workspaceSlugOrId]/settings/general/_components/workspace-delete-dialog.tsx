@@ -13,35 +13,25 @@ import { Button } from "@repo/ui/components/button";
 import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
 
-interface ConfirmByNameDialogProps {
-  dialog: {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-  };
-  prompt: {
-    actionLabel: string;
-    targetLabel: string;
-    confirmName: string;
-    onConfirm: () => void;
-  };
-  // Consequence prose rendered inside DialogBody above the typing prompt.
-  // Lives here (not DialogDescription) so it inherits body typography —
-  // consequence statements are not subtitles.
-  children: ReactNode;
+interface WorkspaceDeleteDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  workspaceName: string;
+  onConfirm: () => void;
+  impact?: ReactNode;
 }
 
-// Name-confirm pattern for destructive actions — typing the chosen safety
-// string fails when the user is on the wrong resource, which is what makes
-// the "wrong env wipeout" incident structurally impossible. Callers pick
-// confirmName per pattern: the target itself (type-the-target) or the
-// surrounding env (type-the-workspace).
-export default function ConfirmByNameDialog({
-  dialog,
-  prompt,
-  children,
-}: ConfirmByNameDialogProps) {
-  const { open, onOpenChange } = dialog;
-  const { actionLabel, targetLabel, confirmName, onConfirm } = prompt;
+// Typing the workspace name fails when the user is on the wrong workspace,
+// which is what makes the "wrong env wipeout" incident structurally
+// impossible. Reserved for catastrophic + irreversible workspace deletion;
+// per-record destructive actions use AlertDialog instead.
+export default function WorkspaceDeleteDialog({
+  open,
+  onOpenChange,
+  workspaceName,
+  impact,
+  onConfirm,
+}: WorkspaceDeleteDialogProps) {
   const [typed, setTyped] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -49,16 +39,16 @@ export default function ConfirmByNameDialog({
     if (!open) setTyped("");
   }, [open]);
 
-  const matches = typed === confirmName;
-  const statusId = "confirm-by-name-status";
+  const matches = typed === workspaceName;
+  const statusId = "workspace-delete-status";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="md"
-        // DialogDescription intentionally omitted — consequence prose lives in
-        // DialogBody so it gets body typography. aria-describedby={undefined}
-        // silences Radix's missing-description warning.
+        // Description prose lives in DialogBody (body weight), not
+        // DialogDescription (muted caption styling). aria-describedby silences
+        // Radix's missing-description warning.
         aria-describedby={undefined}
         // Deterministic focus on the typing input — Radix's default would land
         // on Cancel since it's the first focusable, but the typing input is
@@ -69,19 +59,21 @@ export default function ConfirmByNameDialog({
         }}
       >
         <DialogHeader>
-          <DialogTitle>
-            {actionLabel} &quot;{targetLabel}&quot;
-          </DialogTitle>
+          <DialogTitle>Delete &quot;{workspaceName}&quot;</DialogTitle>
         </DialogHeader>
         <DialogBody className="flex flex-col gap-4">
-          {children}
+          <p className="typography-body text-foreground">
+            Deleting the workspace is permanent. Every workspace-scoped
+            resource and credential below will be removed.
+          </p>
+          {impact}
           <FormField
-            id="confirm-by-name-input"
+            id="workspace-delete-input"
             label={
               <>
                 Type{" "}
                 <span className="font-mono text-foreground">
-                  {confirmName}
+                  {workspaceName}
                 </span>{" "}
                 to confirm
               </>
@@ -91,7 +83,7 @@ export default function ConfirmByNameDialog({
               ref={inputRef}
               value={typed}
               onChange={(event) => setTyped(event.target.value)}
-              placeholder={confirmName}
+              placeholder={workspaceName}
               autoComplete="off"
               spellCheck={false}
               aria-describedby={statusId}
@@ -99,8 +91,8 @@ export default function ConfirmByNameDialog({
           </FormField>
           <p id={statusId} aria-live="polite" className="sr-only">
             {matches
-              ? `${actionLabel} is now enabled.`
-              : `Type the name to enable ${actionLabel}.`}
+              ? "Delete workspace is now enabled."
+              : "Type the workspace name to enable Delete workspace."}
           </p>
         </DialogBody>
         <DialogFooter>
@@ -117,7 +109,7 @@ export default function ConfirmByNameDialog({
               onOpenChange(false);
             }}
           >
-            {actionLabel}
+            Delete workspace
           </Button>
         </DialogFooter>
       </DialogContent>
