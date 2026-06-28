@@ -70,7 +70,7 @@ export function workspaceNavGroups(
       items: [
         { href: `${base}/sandboxes`, label: "Sandboxes", icon: Container },
         { href: `${base}/volumes`, label: "Volumes", icon: Database },
-        { href: `${base}/agent-drive`, label: "Agent Drive", icon: FolderOpen },
+        { href: `${base}/agent-drive`, label: "Agent Drive", icon: FolderOpen, badge: "Private preview" },
         { href: `${base}/images`, label: "Images", icon: Package },
       ],
     },
