@@ -23,12 +23,12 @@ import {
 } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
+import {
+  Combobox,
+  type ComboboxOption,
+} from "@repo/ui/components/combobox";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
-import {
-  MultiSelect,
-  type MultiSelectOption,
-} from "@repo/ui/components/multi-select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,13 +86,9 @@ export default function TeamClient({ workspace }: TeamClientProps) {
 
   const [members, setMembers] = useState<ReadonlyArray<TeamMember>>(serverMembers);
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<ReadonlySet<Role>>(new Set());
-  const [sourceFilter, setSourceFilter] = useState<ReadonlySet<MemberSource>>(
-    new Set(),
-  );
-  const [statusFilter, setStatusFilter] = useState<ReadonlySet<MemberStatus>>(
-    new Set(),
-  );
+  const [roleFilter, setRoleFilter] = useState<Role | null>(null);
+  const [sourceFilter, setSourceFilter] = useState<MemberSource | null>(null);
+  const [statusFilter, setStatusFilter] = useState<MemberStatus | null>(null);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [sorting, setSorting] = useState<SortingState>([
     { id: "member", desc: false },
@@ -107,9 +103,9 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       if (q && !m.name.toLowerCase().includes(q) && !m.email.toLowerCase().includes(q)) {
         return false;
       }
-      if (roleFilter.size > 0 && !roleFilter.has(m.role)) return false;
-      if (sourceFilter.size > 0 && !sourceFilter.has(m.source)) return false;
-      if (statusFilter.size > 0 && !statusFilter.has(m.status)) return false;
+      if (roleFilter !== null && m.role !== roleFilter) return false;
+      if (sourceFilter !== null && m.source !== sourceFilter) return false;
+      if (statusFilter !== null && m.status !== statusFilter) return false;
       return true;
     });
   }, [members, search, roleFilter, sourceFilter, statusFilter]);
@@ -227,15 +223,15 @@ export default function TeamClient({ workspace }: TeamClientProps) {
   const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id]);
   const hasFilters =
     search.trim().length > 0 ||
-    roleFilter.size > 0 ||
-    sourceFilter.size > 0 ||
-    statusFilter.size > 0;
+    roleFilter !== null ||
+    sourceFilter !== null ||
+    statusFilter !== null;
 
   const clearFilters = () => {
     setSearch("");
-    setRoleFilter(new Set());
-    setSourceFilter(new Set());
-    setStatusFilter(new Set());
+    setRoleFilter(null);
+    setSourceFilter(null);
+    setStatusFilter(null);
   };
 
   const handleInvite = ({ emails, role }: InviteResult) => {
@@ -299,32 +295,25 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           aria-label="Search workspace members"
         />
         <div className="ml-auto flex items-center gap-2">
-          <MultiSelect
+          <Combobox
             options={roleOptions}
-            value={Array.from(roleFilter)}
-            onValueChange={(v) => setRoleFilter(new Set(v as Role[]))}
+            value={roleFilter}
+            onValueChange={(v) => setRoleFilter(v as Role | null)}
             placeholder="Filter by role"
-            searchPlaceholder="Search roles…"
             className="w-44"
           />
-          <MultiSelect
+          <Combobox
             options={sourceOptions}
-            value={Array.from(sourceFilter)}
-            onValueChange={(v) =>
-              setSourceFilter(new Set(v as MemberSource[]))
-            }
+            value={sourceFilter}
+            onValueChange={(v) => setSourceFilter(v as MemberSource | null)}
             placeholder="Filter by source"
-            searchPlaceholder="Search sources…"
             className="w-44"
           />
-          <MultiSelect
+          <Combobox
             options={statusOptions}
-            value={Array.from(statusFilter)}
-            onValueChange={(v) =>
-              setStatusFilter(new Set(v as MemberStatus[]))
-            }
+            value={statusFilter}
+            onValueChange={(v) => setStatusFilter(v as MemberStatus | null)}
             placeholder="Filter by status"
-            searchPlaceholder="Search statuses…"
             className="w-44"
           />
         </div>
@@ -435,7 +424,7 @@ function useFilterOptions<T extends string>(
   values: ReadonlyArray<T>,
   meta: Record<T, { label: string }>,
   counts: Record<T, number>,
-): MultiSelectOption[] {
+): ComboboxOption[] {
   return useMemo(
     () =>
       values.map((value) => ({
