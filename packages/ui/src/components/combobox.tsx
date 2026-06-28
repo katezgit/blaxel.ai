@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronsUpDownIcon, CheckIcon } from "lucide-react"
+import { ChevronsUpDownIcon, CheckIcon, XIcon } from "lucide-react"
 import { matchSorter, rankings } from "match-sorter"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import {
@@ -28,12 +28,9 @@ type ComboboxPropsBase = {
   disabled?: boolean
   size?: "sm" | "md"
   className?: string
-  /**
-   * Custom row content renderer. Returns the node rendered left of the
-   * checkmark. Omit → default single-line label. Checkmark is always
-   * Combobox-owned; do not include it in the return value.
-   * Use `ComboboxTwoLineOption` for the canonical two-line layout.
-   */
+  /** Muted dimension prefix in trigger: "Role" (no value) or "Role: Owner" (value set). Visual only — does not affect input value. */
+  label?: string
+  /** Custom row renderer. Return content left of the checkmark; Combobox owns the checkmark. Use `ComboboxTwoLineOption` for two-line rows. */
   renderOption?: (option: ComboboxOption) => React.ReactNode
 }
 
@@ -48,18 +45,13 @@ type ComboboxInternalProps = ComboboxPropsBase & {
 }
 
 export interface ComboboxTwoLineOptionProps {
-  /** Primary label — typography-body 14px font-medium text-foreground. Truncates. */
+  /** Primary text — body/medium/foreground. Truncates. */
   primary: string
-  /** Secondary metadata line — typography-meta 12px font-normal text-muted-foreground. Wraps. */
+  /** Secondary text — meta/normal/muted-foreground. Wraps. */
   secondary: string
 }
 
-/**
- * Drop-in content for `renderOption` when an option needs a primary name +
- * secondary metadata line. Implements the token contract from spec §3a exactly.
- * Pass this inside `renderOption`; Combobox owns the surrounding CommandItem
- * and the trailing CheckIcon.
- */
+/** Two-line row layout for use inside `renderOption`. Combobox owns the surrounding item + checkmark. */
 export function ComboboxTwoLineOption({ primary, secondary }: ComboboxTwoLineOptionProps) {
   return (
     <span className="flex flex-col items-start gap-0.5 flex-1 min-w-0">
@@ -109,13 +101,23 @@ interface TriggerInputProps extends Omit<React.ComponentProps<"input">, "size" |
   inputRef: React.RefObject<HTMLInputElement | null>
   listboxId: string | undefined
   activeItemId: string | undefined
+  dimensionLabel?: string
+  hasValue: boolean
+  onClear: () => void
 }
 
 const TriggerInput = React.forwardRef<HTMLInputElement, TriggerInputProps>(
   ({ query, onQueryChange, open, size = "md", className, inputRef,
-     listboxId, activeItemId, onKeyDownCapture, onBlur, onFocus, disabled, placeholder, ...rest }, ref) => {
+     listboxId, activeItemId, onKeyDownCapture, onBlur, onFocus, disabled, placeholder,
+     dimensionLabel, hasValue, onClear, ...rest }, ref) => {
     const highlightedValue = useCommandState((s) => s.value)
     const derivedActiveItemId = activeItemId ?? (highlightedValue || undefined)
+
+    const [isHovered, setIsHovered] = React.useState(false)
+    const [isFocusedInside, setIsFocusedInside] = React.useState(false)
+
+    // Hidden while popover is open (backspace-to-clear covers that path).
+    const showClear = hasValue && !open && (isHovered || isFocusedInside)
 
     const mergeRef = React.useCallback(
       (node: HTMLInputElement | null) => {
@@ -126,12 +128,34 @@ const TriggerInput = React.forwardRef<HTMLInputElement, TriggerInputProps>(
       [ref] // eslint-disable-line react-hooks/exhaustive-deps
     )
 
+    // mousedown preventDefault cancels input blur (no 150ms close race window on clear).
+    const handleClearMouseDown = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault() }, [])
+    const handleClearClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => { e.stopPropagation(); onClear() }, [onClear])
+
     return (
       <div
         data-slot="combobox-trigger-wrapper"
         data-state={open ? "open" : "closed"}
-        className={cn("relative flex w-full items-center", size === "md" ? "h-8" : "h-7", className)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onFocus={() => setIsFocusedInside(true)}
+        onBlur={() => setIsFocusedInside(false)}
+        className={cn(
+          "relative flex w-full items-center border border-border bg-field-rest",
+          size === "md" ? "h-8 rounded-lg" : "h-7 rounded-md",
+          "has-[input:focus]:bg-form-field-surface has-[input[data-state=open]]:bg-form-field-surface",
+          "has-[input[aria-invalid='true']]:border-state-errored",
+          "transition-[background-color,border-color] duration-fast ease-out-standard",
+          disabled && "cursor-not-allowed bg-muted-surface",
+          className,
+        )}
       >
+        {dimensionLabel && (
+          <span aria-hidden="true" className={cn("shrink-0 select-none typography-body text-muted-foreground whitespace-nowrap pr-1", size === "md" ? "pl-2.5" : "pl-2")}>
+            {hasValue ? `${dimensionLabel}:` : dimensionLabel}
+          </span>
+        )}
+
         <input
           ref={mergeRef}
           data-slot="combobox-trigger"
@@ -145,34 +169,52 @@ const TriggerInput = React.forwardRef<HTMLInputElement, TriggerInputProps>(
           autoComplete="off"
           disabled={disabled}
           value={query}
-          placeholder={placeholder}
+          placeholder={dimensionLabel && hasValue ? "" : placeholder}
           onChange={(e) => onQueryChange(e.target.value)}
           onKeyDownCapture={onKeyDownCapture}
           onBlur={onBlur}
           onFocus={onFocus}
           data-state={open ? "open" : "closed"}
           className={cn(
-            "flex w-full items-center",
-            size === "md" ? "h-8 px-2.5 rounded-lg" : "h-7 px-2 rounded-md",
-            size === "sm" ? "pr-7" : "pr-8",
-            "border border-border bg-field-rest",
-            // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-card (formerly --color-panel).
-            "focus:bg-form-field-surface data-[state=open]:bg-form-field-surface",
-            "aria-invalid:border-state-errored",
+            "flex min-w-0 flex-1 items-center bg-transparent outline-none",
+            !dimensionLabel && (size === "md" ? "pl-2.5" : "pl-2"),
+            size === "md" ? "pr-8" : "pr-7",
             "typography-body text-foreground placeholder:text-meta-foreground",
-            // Open state: chevron rotation is the only open feedback. Keyboard nav gets the global ring via base.css.
-            "disabled:cursor-not-allowed disabled:bg-muted-surface disabled:border-border disabled:text-muted-foreground",
-            "transition-[background-color,border-color,box-shadow] duration-fast ease-out-standard",
+            "disabled:cursor-not-allowed disabled:text-muted-foreground",
           )}
           {...rest}
         />
+
+        {/* Chevron ↔ X cross-fade — same right-2.5 anchor, no layout shift */}
         <ChevronsUpDownIcon
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute right-2.5 size-4 shrink-0 text-muted-foreground opacity-mid",
-            query.length > 0 && "opacity-0",
+            "pointer-events-none absolute right-2.5 size-4 shrink-0 text-muted-foreground",
+            "transition-opacity duration-fast ease-out-standard",
+            showClear ? "opacity-0" : "opacity-mid",
           )}
         />
+
+        {hasValue && (
+          <button
+            type="button"
+            tabIndex={showClear ? 0 : -1}
+            aria-label={`Clear ${dimensionLabel ?? "selection"}`}
+            onMouseDown={handleClearMouseDown}
+            onClick={handleClearClick}
+            disabled={disabled}
+            className={cn(
+              "absolute right-2.5 z-10 flex items-center justify-center rounded",
+              "text-muted-foreground",
+              "transition-opacity duration-fast ease-out-standard",
+              showClear
+                ? "pointer-events-auto opacity-mid hover:opacity-100"
+                : "pointer-events-none opacity-0",
+            )}
+          >
+            <XIcon aria-hidden="true" className="size-4 shrink-0" />
+          </button>
+        )}
       </div>
     )
   }
@@ -184,7 +226,7 @@ TriggerInput.displayName = "ComboboxTriggerInput"
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   const {
     value, onValueChange, placeholder, emptyText, disabled = false, size = "md",
-    className, options: optionsProp = [], groups: groupsProp, renderOption,
+    className, options: optionsProp = [], groups: groupsProp, renderOption, label,
   } = props as ComboboxInternalProps
 
   const allOptions = React.useMemo(
@@ -200,6 +242,8 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
   const inputRef = React.useRef<HTMLInputElement | null>(null)
   const blurTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const openRef = React.useRef(false)
+  // Suppresses the next handleFocus popover-open after a clear action refocuses the input.
+  const suppressNextOpenRef = React.useRef(false)
   const [listboxId, setListboxId] = React.useState<string | undefined>(undefined)
 
   // External value sync — query and initialValueRef drift to new external value
@@ -279,9 +323,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
     [value, onValueChange]
   )
 
-  // Blur with 150ms race window for item-click.
-  // Uses openRef (not the closure-captured `open`) so the guard sees current state
-  // even if blur fires before the re-render that updates the stale closure value.
+  // 150ms race window: keeps popover open across item-click. openRef reads current state.
   const handleBlur = React.useCallback(() => {
     blurTimeoutRef.current = setTimeout(() => {
       if (!openRef.current) return
@@ -293,6 +335,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
 
   const handleFocus = React.useCallback(() => {
     if (blurTimeoutRef.current) { clearTimeout(blurTimeoutRef.current); blurTimeoutRef.current = null }
+    if (suppressNextOpenRef.current) { suppressNextOpenRef.current = false; return }
     if (!openRef.current) {
       initialValueRef.current = value
       committedRef.current = false
@@ -302,6 +345,19 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
   }, [value])
 
   React.useEffect(() => () => { if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current) }, [])
+
+  // Clear: mousedown on X already preventDefault()d the blur, so no close race window.
+  // suppressNextOpenRef prevents the refocus-triggered focus handler from re-opening.
+  const handleClear = React.useCallback(() => {
+    if (blurTimeoutRef.current) { clearTimeout(blurTimeoutRef.current); blurTimeoutRef.current = null }
+    onValueChange(null)
+    setQuery("")
+    initialValueRef.current = null
+    committedRef.current = false
+    openRef.current = false
+    suppressNextOpenRef.current = true
+    requestAnimationFrame(() => { inputRef.current?.focus() })
+  }, [onValueChange])
 
   const filteredFlat = useFilteredFlat(optionsProp, query)
   const filteredGroups = useFilteredGroups(groupsProp ?? [], query)
@@ -324,9 +380,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
     [value, firstFilteredItem, commit]
   )
 
-  // CheckIcon is always Combobox-owned (not by renderOption consumer) — opacity-toggle
-  // and self-center alignment must be consistent regardless of which renderer is active.
-  // py-2 override: two-line rows are taller than single-line (py-1.5); conditional on renderOption.
+  // py-2 override: two-line rows need extra height (single-line default is py-1.5).
   const renderItems = (items: ComboboxOption[]) =>
     items.map((option) => (
       <CommandItem
@@ -376,6 +430,9 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
             activeItemId={undefined}
             onBlur={handleBlur}
             onFocus={handleFocus}
+            dimensionLabel={label}
+            hasValue={value !== null}
+            onClear={handleClear}
           />
         </PopoverPrimitive.Anchor>
 
@@ -385,17 +442,11 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
             onOpenAutoFocus={(e) => e.preventDefault()}
             onCloseAutoFocus={(e) => e.preventDefault()}
             onInteractOutside={(e) => {
-              // Radix fires onInteractOutside for any pointer/focus event outside the
-              // portal — including the trigger input itself. Since we use Anchor (not
-              // Trigger), Radix's built-in targetIsTrigger guard never fires. We must
-              // guard it ourselves: when the interaction target is the input, call
-              // e.preventDefault() to stop the DismissableLayer from also calling
-              // onDismiss → onOpenChange(false). Returning early without preventDefault
-              // is insufficient — onDismiss fires regardless unless default is prevented.
+              // Anchor mode: Radix's targetIsTrigger guard doesn't fire. Guard the input
+              // ourselves — preventDefault stops DismissableLayer from closing on input clicks.
               const target = e.target as Node | null
               if (inputRef.current?.contains(target) || inputRef.current === target) {
-                e.preventDefault()
-                return
+                e.preventDefault(); return
               }
               handleOpenChange(false)
             }}
@@ -404,7 +455,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
             sideOffset={8}
             style={{ width: "var(--radix-popover-trigger-width)" }}
             className={cn(
-              // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+              // No border — shadow-popover has a built-in 1px ring; a CSS border creates a perceived double-edge.
               "z-overlay overflow-hidden rounded-lg",
               "bg-popover text-foreground shadow-popover outline-none p-1",
               "data-[state=open]:animate-in data-[state=open]:fade-in-0",
