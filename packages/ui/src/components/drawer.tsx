@@ -68,9 +68,9 @@ function DrawerOverlay({
         // Enter — 200ms natural ease (work surface, non-zero initial velocity)
         "data-[state=open]:animate-in data-[state=open]:fade-in-0",
         "data-[state=open]:duration-base data-[state=open]:ease-natural",
-        // Exit — 120ms accelerated (same as --motion-drawer-exit)
+        // Exit — 80ms accelerated (--motion-exit, Swift recalibration; was 120ms)
         "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
-        "data-[state=closed]:duration-fast data-[state=closed]:ease-in-accelerated",
+        "data-[state=closed]:duration-instant data-[state=closed]:ease-in-accelerated",
         className
       )}
       {...props}
@@ -89,7 +89,7 @@ const drawerContentVariants = cva(
     "data-[state=open]:animate-in data-[state=open]:fade-in-0",
     "data-[state=open]:ease-natural",
     "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
-    "data-[state=closed]:duration-fast data-[state=closed]:ease-in-accelerated",
+    "data-[state=closed]:duration-instant data-[state=closed]:ease-in-accelerated",
   ],
   {
     variants: {
