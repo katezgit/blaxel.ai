@@ -1193,7 +1193,7 @@ function CapabilityCheckbox({
   onCheckedChange: (next: boolean) => void;
 }) {
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-center gap-3 py-1">
+    <label htmlFor={id} className="flex cursor-pointer items-center gap-2 py-1">
       <Checkbox
         id={id}
         size="sm"
