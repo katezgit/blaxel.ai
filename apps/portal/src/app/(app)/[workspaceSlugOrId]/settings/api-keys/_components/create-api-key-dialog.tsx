@@ -142,6 +142,7 @@ export default function CreateApiKeyDialog({
       masked,
       createdAt: now.toISOString().slice(0, 10),
       expiresAt,
+      lastUsedAt: null,
       issuedTo: holder,
     };
     setCreated({ key: apiKey, secret: fullKey });

@@ -166,6 +166,7 @@ export function ApiKeysClient() {
       masked: maskApiKey(fullKey),
       createdAt: now.toISOString().slice(0, 10),
       expiresAt: resolveExpiresAt(expiration, now),
+      lastUsedAt: null,
     };
     createMutation.mutate(newKey);
     setCreateOpen(false);

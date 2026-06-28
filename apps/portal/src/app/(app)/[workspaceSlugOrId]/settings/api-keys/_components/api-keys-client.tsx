@@ -89,6 +89,10 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
         header: "Issued to",
         cell: ({ row }) => <IssuedToCell apiKey={row.original} />,
       }),
+      columnHelper.accessor("lastUsedAt", {
+        header: "Last used",
+        cell: (info) => <LastUsedCell iso={info.getValue()} />,
+      }),
       columnHelper.accessor("masked", {
         header: "Key prefix",
         cell: (info) => (
@@ -272,6 +276,37 @@ function ExpiresCell({ expiresAt }: { expiresAt: string | null }) {
       )}
     >
       in {days}d
+    </span>
+  );
+}
+
+// Null reads as the hygiene flag ("never used since issuance") rather than the
+// generic "no value" em-dash — the cell exists to surface revocation candidates.
+const MIN_MS = 60_000;
+const HR_MS = 60 * MIN_MS;
+const DY_MS = 24 * HR_MS;
+const WK_MS = 7 * DY_MS;
+const MO_MS = 30 * DY_MS;
+const YR_MS = 365 * DY_MS;
+
+function formatLastUsed(iso: string | null): string {
+  if (iso === null) return "Never used";
+  const then = Date.parse(iso);
+  if (Number.isNaN(then)) return iso;
+  const delta = Date.now() - then;
+  if (delta < MIN_MS) return "just now";
+  if (delta < HR_MS) return `${Math.floor(delta / MIN_MS)}m ago`;
+  if (delta < DY_MS) return `${Math.floor(delta / HR_MS)}h ago`;
+  if (delta < WK_MS) return `${Math.floor(delta / DY_MS)}d ago`;
+  if (delta < MO_MS) return `${Math.floor(delta / WK_MS)}w ago`;
+  if (delta < YR_MS) return `${Math.floor(delta / MO_MS)}mo ago`;
+  return `${Math.floor(delta / YR_MS)}y ago`;
+}
+
+function LastUsedCell({ iso }: { iso: string | null }) {
+  return (
+    <span className="typography-code text-muted-foreground">
+      {formatLastUsed(iso)}
     </span>
   );
 }

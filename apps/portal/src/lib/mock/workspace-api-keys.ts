@@ -10,10 +10,15 @@ import type { ApiKey } from "@/lib/mock/types";
  * "in Nd" labels and the near-expiry warning highlight stay stable as
  * wall-clock time drifts in this mock-only demo.
  */
-const DAY_MS = 86400000;
+const MINUTE_MS = 60_000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
 
 const isoDate = (offsetDays: number): string =>
   new Date(Date.now() + offsetDays * DAY_MS).toISOString().slice(0, 10);
+
+const isoAgo = (deltaMs: number): string =>
+  new Date(Date.now() - deltaMs).toISOString();
 
 const buildFixtures = (): ReadonlyArray<ApiKey> => [
   {
@@ -22,6 +27,7 @@ const buildFixtures = (): ReadonlyArray<ApiKey> => [
     masked: "bxl_xxxx…7t",
     createdAt: isoDate(-20),
     expiresAt: null,
+    lastUsedAt: isoAgo(3 * MINUTE_MS),
     issuedTo: { kind: "service-account", id: "svc_runtime", name: "runtime-orchestrator" },
   },
   {
@@ -30,6 +36,7 @@ const buildFixtures = (): ReadonlyArray<ApiKey> => [
     masked: "bxl_xxxx…Hm",
     createdAt: isoDate(-87),
     expiresAt: isoDate(3),
+    lastUsedAt: isoAgo(2 * HOUR_MS),
     issuedTo: { kind: "service-account", id: "svc_ci_deploy", name: "ci-deploy" },
   },
   {
@@ -38,6 +45,7 @@ const buildFixtures = (): ReadonlyArray<ApiKey> => [
     masked: "bxl_xxxx…Qa",
     createdAt: isoDate(-32),
     expiresAt: null,
+    lastUsedAt: isoAgo(5 * DAY_MS),
     issuedTo: { kind: "member", id: "u_maya", name: "Maya Reyes" },
   },
   {
@@ -46,6 +54,7 @@ const buildFixtures = (): ReadonlyArray<ApiKey> => [
     masked: "bxl_xxxx…ZF",
     createdAt: isoDate(-30),
     expiresAt: isoDate(60),
+    lastUsedAt: isoAgo(2 * DAY_MS),
     issuedTo: { kind: "service-account", id: "svc_eval", name: "eval-harness" },
   },
   {
@@ -54,6 +63,7 @@ const buildFixtures = (): ReadonlyArray<ApiKey> => [
     masked: "bxl_xxxx…3B",
     createdAt: isoDate(-56),
     expiresAt: isoDate(34),
+    lastUsedAt: null,
     issuedTo: { kind: "member", id: "u_avery", name: "Avery Lin" },
   },
 ];
