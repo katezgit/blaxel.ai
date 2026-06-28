@@ -199,7 +199,7 @@ function KindUsageRow({
                       <Link
                         key={peer}
                         href={`/${workspaceSlug}/policies/${peer}`}
-                        className="inline-flex items-center rounded-md border border-border bg-background px-2 py-0.5 typography-code text-muted-foreground hover:border-border-strong hover:text-foreground"
+                        className="inline-flex items-center rounded-md border border-border bg-muted-surface px-2 py-0.5 typography-code text-muted-foreground hover:border-border-strong hover:text-foreground"
                       >
                         {peer}
                       </Link>

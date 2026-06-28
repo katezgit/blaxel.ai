@@ -55,7 +55,7 @@
   padding-left: 0;
   padding-right: 1rem;
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-background);
+  background: var(--color-topbar);
 }
 .shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: stretch; min-width: 0; display: flex; align-items: center; gap: 0.5rem; }
 .shell-topbar [data-slot="ws"]       { min-width: 0; flex: 1 1 auto; display: flex; }
@@ -132,6 +132,18 @@
 }
 
 @theme {
+  /* App-local chrome surfaces. Intentionally not in the DS — sidebar and
+   * topbar values encode portal-specific shell decisions; a downstream
+   * consumer with a different shell structure would override or omit these.
+   * DS owns only content-area surfaces (--color-background / --color-card /
+   * --color-muted-surface). Spec: docs/design/foundations/surface-tiers.md.
+   *
+   * Dark: #09090A — recedes behind the workspace (#1A1A19) so the workspace
+   * stays the brightest, dominant reading surface. Light: #F9F9F8 — a warm
+   * neutral chrome that reads distinctly against pure-white workspace. */
+  --color-sidebar: light-dark(#F9F9F8, #09090A);
+  --color-topbar:  light-dark(#F9F9F8, #09090A);
+
   /* 1536px caps content so a 1920px monitor minus the 248px sidebar lands
    * cleanly; 1280 (max-w-7xl) clips dense tables on 1440 laptops. */
   --page-max-width: 1536px;
@@ -222,7 +234,7 @@
 /* background-attachment: fixed intentionally OMITTED (perf: trace/table scroll).
  * Spec: docs/design/guidelines/app-shell-layout.md §9. */
 @utility bg-grid-backdrop {
-  background-color: var(--color-panel);
+  background-color: var(--color-background);
   background-image:
     linear-gradient(to right,  var(--color-grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
@@ -230,8 +242,8 @@
 }
 
 /* No background-color clamp, so it composes over any surface utility
- * (e.g. bg-elevated-surface on the onboarding form panel). Pair with a
- * base surface class — never use alone. */
+ * (e.g. bg-card on the onboarding form panel). Pair with a base surface
+ * class — never use alone. */
 @utility bg-grid-overlay {
   background-image:
     linear-gradient(to right,  var(--color-grid-line) 1px, transparent 1px),

@@ -7,7 +7,7 @@ import { CopyableValue, formatRelative, Row, truncateUuid } from "./section-row"
 export function SystemDetailsSection({ model }: { model: Model }) {
   return (
     <section aria-labelledby="system-details-heading" className="max-w-3xl">
-      <div className="rounded-surface border border-border bg-panel px-5 py-4">
+      <div className="rounded-surface border border-border bg-card px-5 py-4">
         <h2
           id="system-details-heading"
           className="typography-subtitle font-medium text-foreground"

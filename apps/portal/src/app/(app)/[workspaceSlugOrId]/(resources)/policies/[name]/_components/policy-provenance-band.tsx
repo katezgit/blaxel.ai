@@ -67,7 +67,7 @@ export default function PolicyProvenanceBand({
               {labelEntries.map(([key, value]) => (
                 <span
                   key={key}
-                  className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 typography-code text-foreground"
+                  className="inline-flex items-center gap-1 rounded-md border border-border bg-muted-surface px-2 py-0.5 typography-code text-foreground"
                 >
                   <span className="text-muted-foreground">{key}:</span>
                   {value}

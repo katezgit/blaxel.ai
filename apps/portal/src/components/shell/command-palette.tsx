@@ -37,7 +37,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         fixed left-1/2 top-20 -translate-x-1/2
         w-(--cmdk-modal-w) max-w-(--cmdk-modal-w)
         overflow-hidden rounded-xl
-        bg-panel text-foreground shadow-command
+        bg-card text-foreground shadow-command
         p-0
         max-lg:w-[90vw] max-lg:max-w-[90vw]
         max-md:inset-0 max-md:left-0 max-md:top-0

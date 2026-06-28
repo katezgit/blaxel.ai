@@ -14,7 +14,7 @@ export function LogExpandPanel({ log }: { log: Log }) {
             className="shrink-0"
           />
         </PanelHeader>
-        <pre className="mt-2 max-h-80 overflow-auto rounded-md border border-border bg-background px-3 py-2 font-mono typography-code text-foreground whitespace-pre-wrap">
+        <pre className="mt-2 max-h-80 overflow-auto rounded-md border border-border bg-muted-surface px-3 py-2 font-mono typography-code text-foreground whitespace-pre-wrap">
           {log.input}
         </pre>
       </section>
@@ -39,7 +39,7 @@ export function LogExpandPanel({ log }: { log: Log }) {
         {log.output === null ? (
           <p className="mt-2 italic text-muted-foreground">empty</p>
         ) : (
-          <pre className="mt-2 max-h-80 overflow-auto rounded-md border border-border bg-background px-3 py-2 font-mono typography-code text-foreground whitespace-pre-wrap">
+          <pre className="mt-2 max-h-80 overflow-auto rounded-md border border-border bg-muted-surface px-3 py-2 font-mono typography-code text-foreground whitespace-pre-wrap">
             {log.output}
           </pre>
         )}

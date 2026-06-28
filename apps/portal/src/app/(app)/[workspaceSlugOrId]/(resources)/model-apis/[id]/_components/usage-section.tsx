@@ -8,7 +8,7 @@ import { CopyableValue, Row } from "./section-row";
 export function UsageSection({ model }: { model: Model }) {
   return (
     <section aria-labelledby="usage-heading" className="max-w-3xl">
-      <div className="rounded-surface border border-border bg-panel px-5 py-4">
+      <div className="rounded-surface border border-border bg-card px-5 py-4">
         <h2
           id="usage-heading"
           className="typography-subtitle font-medium text-foreground"

@@ -49,7 +49,7 @@ export default function MaxTokenClauseBand({
         </Button>
       }
     >
-      <dl className="divide-y divide-border rounded-md border border-border bg-background">
+      <dl className="divide-y divide-border rounded-md border border-border bg-muted-surface">
         <ThresholdRow label="Input tokens" value={maxTokens.input} />
         <ThresholdRow label="Output tokens" value={maxTokens.output} />
         <ThresholdRow label="Total tokens" value={maxTokens.total} />

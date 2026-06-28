@@ -324,7 +324,7 @@ function TraceThumbnail({ trace }: { trace: Trace }) {
       <div className="absolute bottom-2 left-2">
         <span
           className={cn(
-            "rounded-badge bg-panel/90 px-1.5 py-0.5",
+            "rounded-badge bg-muted-surface/90 px-1.5 py-0.5",
             "font-mono typography-meta text-foreground",
             "border border-border",
           )}

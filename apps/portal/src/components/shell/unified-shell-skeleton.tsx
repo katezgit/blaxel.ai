@@ -125,7 +125,7 @@ export function UnifiedShellSkeleton() {
               />
             </div>
           </div>
-          <main className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-panel">
+          <main className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-background">
             <RouteSpinner />
           </main>
         </div>

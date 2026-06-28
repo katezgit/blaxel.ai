@@ -265,13 +265,13 @@ export function UnifiedShell({
                 onClick={toggleVisiblePane}
                 aria-label={visibleCollapsed ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
                 aria-pressed={visibleCollapsed}
-                className="absolute top-5 left-(--shell-left-w) z-overlay hidden size-6 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-secondary-surface focus-visible:shadow-focus-ring lg:inline-flex"
+                className="absolute top-5 left-(--shell-left-w) z-overlay hidden size-6 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-sidebar text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-secondary-surface focus-visible:shadow-focus-ring lg:inline-flex"
               >
                 {visibleCollapsed ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
               </button>
               <main
                 id="main-content"
-                className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-panel"
+                className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-background"
               >
                 {children}
               </main>
