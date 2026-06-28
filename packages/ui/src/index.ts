@@ -50,6 +50,7 @@ export * from "./components/status-block";
 // Wave 3 — composites
 export * from "./components/command";
 export * from "./components/combobox";
+export * from "./components/alert-dialog";
 export * from "./components/dialog";
 export * from "./components/drawer";
 export * from "./components/dropdown-menu";
