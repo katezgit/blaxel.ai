@@ -39,7 +39,7 @@ symmetric.
 
 | Token | Value | Traces to | Use when |
 |---|---|---|---|
-| `--duration-instant` | 80ms | **Perpetual + Swift** — surface is always live, never lags; exits clear immediately | Hover background, press overlay — highest-frequency interactions; also structural exits (modal/drawer/popover/menu close) — any perceptible delay reads as lag or ceremony |
+| `--duration-instant` | 80ms | **Perpetual + Swift** (dual-axis: hover/press cite Perpetual — always-live UI never lags; dismissal exits cite Swift — clear the stage without ceremony) | Hover background, press overlay — highest-frequency interactions; also dismissal exits (modal/drawer/popover/menu close) — any perceptible delay reads as lag or ceremony |
 | `--duration-fast` | 120ms | **Composed** — state change lands cleanly, no drift | Focus ring, badge/icon state swap, hover color shifts, menu item highlight — the default for all interactive feedback; also the Swift ceiling (≤120ms to first visible frame of any action affordance) |
 | `--duration-subtle` | 180ms | **Exact** — gives the eye enough time to track spatial change | Disclosure chevron rotation, row selection highlight, segmented control indicator — spatial micro-motions |
 | `--duration-base` | 220ms | **Perpetual** — structural shifts need a moment to resolve | Modal/drawer/popover/menu enter, accordion content expand, pane slide — ceiling for all deliberate entry transitions; never exceed this for state changes |
@@ -54,7 +54,7 @@ symmetric.
 |---|---|---|---|
 | `--ease-out-standard` | `cubic-bezier(0.2, 0, 0, 1)` | **Composed** — resolves cleanly, no overshoot | Default for all color transitions and state changes; neutral and controlled |
 | `--ease-out-emphasized` | `cubic-bezier(0.05, 0.7, 0.1, 1)` | **Perpetual** — enters with intention, not ceremony | Enter transitions only: modal/popover/accordion open, pane slide-in; the near-flat start (0.05) means the element barely moves at first, then resolves confidently |
-| `--ease-in-accelerated` | `cubic-bezier(0.3, 0, 1, 1)` | **Disciplined** — clears the stage without lingering | Exit transitions only: modal/popover close, accordion collapse; accelerates early so the surface is restored before the user looks for it |
+| `--ease-in-accelerated` | `cubic-bezier(0.3, 0, 1, 1)` | **Disciplined** — clears the stage without lingering | Exit transitions only: modal/popover/menu close, toast dismiss; accelerates early so the surface is restored before the user looks for it |
 | `--ease-natural` | `cubic-bezier(0.25, 0.1, 0.25, 1)` | **Perpetual** — starts moving immediately, no windup | Drawer panel enter from viewport edge only; non-zero initial velocity so the panel moves from frame one; `--ease-out-emphasized`'s flat start introduces visible windup from the edge |
 | `--ease-linear` | `linear` | **Transparent** — uniform rate communicates ongoing process | Continuous loops only: shimmer, indeterminate progress; conveys "still working," not arrival |
 
@@ -114,6 +114,8 @@ All durations collapse to 0ms under `prefers-reduced-motion: reduce` (applied in
 
 **Rule for new animations:** If a new animation uses `--duration-*` tokens in a `transition:` declaration, the token collapse covers it — no extra work required. If it uses a raw millisecond value or an `@keyframes` animation outside the token system, it must add an explicit `prefers-reduced-motion` override.
 
+**Loop suppression gap — `--animate-shimmer` and `--animate-running-pulse`:** The Tier 2 "Suppress loop" row above lists `--motion-continuous` as the suppression mechanism. However, `--animate-shimmer` (`shimmer 1800ms var(--ease-linear) infinite`, `primitive.css:246`) and `--animate-running-pulse` (`running-pulse 1600ms var(--ease-linear) infinite`, `primitive.css:247`) use literal millisecond values — they do NOT reference `--motion-continuous`. The `--motion-continuous: none` override in `theme.css` does not reach them. Any component that applies `var(--animate-shimmer)` or `var(--animate-running-pulse)` must add its own explicit reduced-motion rule suppressing the animation. The static fallback state for each: shimmer → static `background: var(--color-secondary-surface)`; running-pulse → static indicator at full opacity using `--color-state-running` (see Exception note below). No other `--animate-*` composites in `primitive.css:241-251` use literal durations — the remaining entries reference `--duration-*` tokens and are covered by token collapse.
+
 **Exception — `running-pulse`:** Under reduced motion, the pulse stops (`animation: none`). The "running" state must still be communicated; the state color (`--color-state-running`) and a static indicator dot carry the semantic. The pulse is reinforcement, not the sole signal.
 
 ---
@@ -133,7 +135,7 @@ All durations collapse to 0ms under `prefers-reduced-motion: reduce` (applied in
 **Consumers to update before keyframe removal:**
 - `packages/ui/src/components/code-block.tsx` — currently references `copy-confirm-pulse` directly per the TODO comment in primitive.css. Replace with a CSS class swap that fires on `copied` state with no animation property.
 
-**No other deprecated animations at this time.** The catalog flags row-insertion animation as a risk (not a current implementation) — it is covered in the motion-forbidden section below rather than as a deprecation.
+The spec was tightened mid-PR (accordion taxonomy correction — accordion reclassified from dismissal to structural-continuity, 2026-06-28). The catalog of deprecated patterns currently lists only `copy-confirm-pulse`. The catalog flags row-insertion animation as a risk (not a current implementation) — it is covered in the motion-forbidden section below rather than as a deprecation.
 
 ---
 

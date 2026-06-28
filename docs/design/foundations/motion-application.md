@@ -388,7 +388,7 @@ The Swift exit cascade (commit `8695b82`, `--motion-exit` 120ms → 80ms) propag
 
 ### Accordion audit note
 
-Accordion expand/collapse is referenced in `motion.md` composite token table under `--motion-exit` for collapse. This is a **misclassification by the same logic as B1/B2**: accordion disclosure reshapes layout (content height changes), it does not dismiss a surface. Accordion collapse should use `--motion-enter` symmetric — consistent with sidebar. The `--motion-exit` use-case example in the composite token table has been corrected in `motion.md` to remove accordion from the dismissal examples. **This is a doc fix, not a behavior change** — accordion is not currently implemented with motion in this codebase; when it is, the correct token is `--motion-enter` symmetric.
+Accordion expand/collapse is a structural-continuity surface by the same logic as B1/B2: accordion disclosure reshapes layout (content height changes), it does not dismiss a surface. The correct token assignment is `--motion-enter` symmetric on both open and close — identical to sidebar. The `accordion.tsx` implementation applies `--motion-enter` on both directions, consistent with this taxonomy. The `--motion-exit` use-case example in the composite token table has been corrected in `motion.md` to remove accordion from the dismissal examples.
 
 No other surfaces in the current spec were found to be misclassified. B4 (theme switcher menu) and B5 (avatar menu) are correctly in the dismissal class — menus vanish, they do not reshape.
 
