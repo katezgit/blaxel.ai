@@ -48,7 +48,16 @@ import type {
 } from "@/lib/mock/types";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@repo/ui/components/alert-dialog";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import {
@@ -361,30 +370,40 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         onSubmit={handleInvite}
       />
 
-      <ConfirmByNameDialog
-        dialog={{
-          open: pendingRemoval !== null,
-          onOpenChange: (open) => {
-            if (!open) setPendingRemoval(null);
-          },
-        }}
-        prompt={{
-          actionLabel: "Remove member",
-          targetLabel: pendingRemoval?.name ?? "",
-          confirmName: workspace.name,
-          onConfirm: () => {
-            if (!pendingRemoval) return;
-            setMembers((prev) => prev.filter((m) => m.id !== pendingRemoval.id));
-            toast.success(`Removed ${pendingRemoval.name} from ${workspace.name}.`);
-            setPendingRemoval(null);
-          },
+      <AlertDialog
+        open={pendingRemoval !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingRemoval(null);
         }}
       >
-        <p className="text-foreground">
-          {pendingRemoval?.name ?? "This member"} will lose access to every
-          resource in this workspace.
-        </p>
-      </ConfirmByNameDialog>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Remove &quot;{pendingRemoval?.name ?? ""}&quot;
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingRemoval?.name ?? "This member"} will lose access to every
+              resource in this workspace.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!pendingRemoval) return;
+                setMembers((prev) =>
+                  prev.filter((m) => m.id !== pendingRemoval.id),
+                );
+                toast.success(
+                  `Removed ${pendingRemoval.name} from ${workspace.name}.`,
+                );
+              }}
+            >
+              Remove member
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

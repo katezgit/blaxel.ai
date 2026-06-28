@@ -5,20 +5,13 @@ import { workspaceApiKeyQueries } from "@/lib/query/workspace-api-keys";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { getCurrentTenancy } from "@/lib/query/tenancy";
-import { resolveWorkspace } from "@/lib/mock/org";
 import ApiKeysClient from "./_components/api-keys-client";
 
 export const metadata: Metadata = {
   title: "Workspace settings · API keys",
 };
 
-interface PageProps {
-  params: Promise<{ workspaceSlugOrId: string }>;
-}
-
-export default async function WorkspaceApiKeysPage({ params }: PageProps) {
-  const { workspaceSlugOrId } = await params;
-  const workspace = resolveWorkspace(workspaceSlugOrId);
+export default async function WorkspaceApiKeysPage() {
   const { accountId, workspaceId } = await getCurrentTenancy();
 
   const queryClient = getQueryClient();
@@ -35,7 +28,7 @@ export default async function WorkspaceApiKeysPage({ params }: PageProps) {
   return (
     <div className="page-shell">
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <ApiKeysClient workspace={workspace} />
+        <ApiKeysClient />
       </HydrationBoundary>
     </div>
   );

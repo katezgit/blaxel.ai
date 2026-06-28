@@ -22,12 +22,21 @@ import {
 } from "@repo/ui/components/dropdown-menu";
 import { toast } from "sonner";
 import { cn } from "@repo/ui/lib/cn";
-import type { ApiKey, Org } from "@/lib/mock/types";
+import type { ApiKey } from "@/lib/mock/types";
 import { workspaceApiKeyQueries } from "@/lib/query/workspace-api-keys";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@repo/ui/components/alert-dialog";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import CreateApiKeyDialog from "./create-api-key-dialog";
 
@@ -43,11 +52,7 @@ const DATE_FMT = new Intl.DateTimeFormat("en-US", {
 
 const columnHelper = createColumnHelper<ApiKey>();
 
-interface ApiKeysClientProps {
-  workspace: Org;
-}
-
-export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
+export default function ApiKeysClient() {
   const { accountId, workspaceId } = useCurrentTenancy();
   const { data: serverKeys } = useSuspenseQuery(
     workspaceApiKeyQueries.list(accountId, workspaceId),
@@ -210,30 +215,38 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
         }}
       />
 
-      <ConfirmByNameDialog
-        dialog={{
-          open: pendingRevoke !== null,
-          onOpenChange: (open) => {
-            if (!open) setPendingRevoke(null);
-          },
-        }}
-        prompt={{
-          actionLabel: "Revoke key",
-          targetLabel: pendingRevoke?.name ?? "",
-          confirmName: workspace.name,
-          onConfirm: () => {
-            if (!pendingRevoke) return;
-            setKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));
-            toast.success(`Revoked ${pendingRevoke.name}.`);
-            setPendingRevoke(null);
-          },
+      <AlertDialog
+        open={pendingRevoke !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingRevoke(null);
         }}
       >
-        <p className="text-foreground">
-          This will permanently revoke the key. Any CLI, SDK, or integration
-          using it will start receiving 401 responses.
-        </p>
-      </ConfirmByNameDialog>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Revoke &quot;{pendingRevoke?.name ?? ""}&quot;
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently revoke the key. Any CLI, SDK, or
+              integration using it will start receiving 401 responses.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!pendingRevoke) return;
+                setKeys((prev) =>
+                  prev.filter((k) => k.id !== pendingRevoke.id),
+                );
+                toast.success(`Revoked ${pendingRevoke.name}.`);
+              }}
+            >
+              Revoke key
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }
