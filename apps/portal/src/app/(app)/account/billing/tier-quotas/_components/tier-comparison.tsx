@@ -181,7 +181,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
       <div className="flex flex-col overflow-hidden rounded-md border border-border">
         <div
           className={cn(
-            "hidden sm:grid gap-4 border-b border-border bg-field-rest px-4 py-2",
+            "hidden sm:grid gap-4 border-b border-border bg-muted-surface px-4 py-2",
             GRID_COLS,
           )}
         >

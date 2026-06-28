@@ -31,10 +31,12 @@
   /* Field-rest surface — resting bg for Input / Textarea / Select / Combobox AND
    * table-header strips. Single token so form fields at rest pair visually with
    * table headings in both modes.
-   * Dark: 30% background + 70% card ≈ soft sink, avoids a hard contrast band. */
+   * Dark: 30% background + 70% popover ≈ soft sink, avoids a hard contrast band.
+   * Uses --surface-popover-dark (not card-dark) because card-dark is now flat against
+   * background in dark mode; fields at rest need a visible sink below the workspace. */
   --color-field-rest:        light-dark(
     var(--surface-bg-light),
-    color-mix(in srgb, var(--surface-bg-dark) 30%, var(--surface-card-dark) 70%)
+    color-mix(in srgb, var(--surface-bg-dark) 30%, var(--surface-popover-dark) 70%)
   );
   --color-form-field-border: var(--color-border);
 
@@ -139,7 +141,9 @@
     color-mix(in srgb, var(--surface-bg-light) 84%, var(--orange-800) 16%),
     color-mix(in srgb, var(--surface-secondary-dark) 90%, var(--orange-800) 10%)
   );
-  --color-control-raised:   light-dark(var(--surface-card-light),  var(--surface-card-dark));
+  /* control-raised uses popover-dark in dark mode so focused form-field highlights
+   * and switch raised bg remain visibly lifted above the flat card surface. */
+  --color-control-raised:   light-dark(var(--surface-card-light),  var(--surface-popover-dark));
 
   /* Accent — bg-accent utility used by shadcn internals (Command / DropdownMenu active).
    * Literal expression rather than var(--color-hover-surface) so getComputedStyle returns
@@ -241,13 +245,18 @@
  * Component-specific token aliases. New components add their bindings here.
  * Foundational tokens live in primitive.css. */
 @theme {
-  /* Card / popover / focused form-field — share --color-control-raised so they read
-   * at the same elevation tier. Light: panel === page bg → border + shadow carry the
-   * boundary. Dark: elevated lifts above panel. */
-  --color-card:               var(--color-control-raised);
+  /* Card — flat against workspace in dark (border+shadow carry the boundary).
+   * Light: recessed off-white pocket. */
+  --color-card:               light-dark(var(--surface-card-light), var(--surface-card-dark));
   --color-card-foreground:    var(--color-foreground);
-  --color-popover:            var(--color-control-raised);
+  /* Popover — must lift visually above the background when portaled.
+   * Dark: --surface-popover-dark (#131313) provides a slight recess vs workspace (#1A1A19)
+   * that reads as elevation when combined with --shadow-popover. Same as old card-dark.
+   * Light: card-light (same as before — border+shadow carry the boundary). */
+  --color-popover:            light-dark(var(--surface-card-light), var(--surface-popover-dark));
   --color-popover-foreground: var(--color-foreground);
+  /* Form field surface — uses control-raised (popover-dark in dark) so elevated fields
+   * read above the flat card background. */
   --color-form-field-surface: var(--color-control-raised);
 }
 

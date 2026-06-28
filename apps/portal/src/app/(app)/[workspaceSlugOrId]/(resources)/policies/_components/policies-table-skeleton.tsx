@@ -25,7 +25,7 @@ export default function PoliciesTableSkeleton() {
       <div className="relative w-full overflow-hidden rounded-md border border-border bg-card">
         <div
           className={cn(
-            "grid gap-4 border-b border-border bg-field-rest px-4 py-3 typography-table-header text-muted-foreground",
+            "grid gap-4 border-b border-border bg-muted-surface px-4 py-3 typography-table-header text-muted-foreground",
             COL_TEMPLATE,
           )}
         >

@@ -1039,7 +1039,11 @@ export default function ModelsCatalog() {
             is mandatory: collapsed borders break box-shadow + sticky together.
             Sticky lives on <thead> (not each <th>) so the entire header row
             anchors as one block — per-<th> sticky was visibly jittering
-            during vertical scroll in this layout. */}
+            during vertical scroll in this layout.
+
+            Diverges from `(app)/_components/resource-table.tsx`: column
+            pinning + table-fixed + border-separate are structural choices
+            the primitive doesn't model. */}
         <div className="overflow-hidden rounded-md border border-border bg-card">
           <div className="max-h-[calc(100vh-18rem)] overflow-auto">
             <table
@@ -1049,7 +1053,7 @@ export default function ModelsCatalog() {
               )}
               style={{ minWidth: table.getTotalSize() }}
             >
-              <thead className="sticky top-0 z-table-header bg-field-rest">
+              <thead className="sticky top-0 z-table-header bg-muted-surface">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
