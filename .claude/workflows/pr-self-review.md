@@ -1,6 +1,6 @@
 # PR Self-Review
 
-> **When this fires:** any turn about to run `gh pr create` or a direct merge into `main` that ships code, docs, or workflow changes.
+> **When this fires:** any turn about to run `git push` to a pre-merge PR branch, `gh pr create`, or a direct merge into `main` that ships code, docs, or workflow changes. Extending an open PR with new commits carries the same risk profile as opening one — the loop fires on every push, not only initial creation. The operator reviews the *current* state of the PR; any commit that lands on the branch enters the review surface.
 >
 > **Owner:** orchestrator. The loop runs in the main thread *before* `release-manager` is dispatched. When release-manager is the one calling `gh pr create`, the orchestrator has already cleared the loop and is just delegating the commit/push mechanics — release-manager does **not** re-run the loop, and does **not** open a PR while open findings exist.
 
