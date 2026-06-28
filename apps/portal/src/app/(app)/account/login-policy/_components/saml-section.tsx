@@ -101,12 +101,12 @@ export default function SamlSection() {
         ) : null}
 
         {!isTierZero && !isConfigured ? (
-          <form onSubmit={onSave} noValidate className="mt-6 flex flex-col gap-4 pl-6">
-            <section className="flex flex-col gap-3">
+          <form onSubmit={onSave} noValidate className="mt-6 flex flex-col gap-6 pl-6">
+            <section className="flex flex-col gap-4">
               <h3 className="typography-body font-semibold text-foreground">
                 Service Provider details
               </h3>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <span className="typography-caption text-muted-foreground">SSO URL</span>
                 <div className="flex items-center gap-2 rounded-md border border-border bg-muted-surface px-3 py-2">
                   <span className="flex-1 truncate font-mono typography-caption text-foreground">
@@ -115,7 +115,7 @@ export default function SamlSection() {
                   <CopyButton value={SP_SSO_URL} tooltipLabel="Copy SSO URL" />
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <span className="typography-caption text-muted-foreground">
                   Entity ID (Audience URI)
                 </span>
@@ -128,7 +128,7 @@ export default function SamlSection() {
               </div>
             </section>
 
-            <section className="flex flex-col gap-3">
+            <section className="flex flex-col gap-4">
               <h3 className="typography-body font-semibold text-foreground">
                 Identity Provider details
               </h3>

@@ -60,69 +60,71 @@ export function OrganizationAdminView() {
     <>
       <Panel title="Details">
         <form onSubmit={onSubmit} noValidate>
-          <FieldRow>
-            <Field label="Organization name" error={errors.name?.message}>
-              <Input
-                aria-invalid={errors.name ? true : undefined}
-                {...register("name")}
-              />
-            </Field>
-            <Field label="Members">
-              <Input defaultValue={String(currentOrg.members)} disabled />
-            </Field>
-          </FieldRow>
+          <div className="flex flex-col gap-4">
+            <FieldRow>
+              <Field label="Organization name" error={errors.name?.message}>
+                <Input
+                  aria-invalid={errors.name ? true : undefined}
+                  {...register("name")}
+                />
+              </Field>
+              <Field label="Members">
+                <Input defaultValue={String(currentOrg.members)} disabled />
+              </Field>
+            </FieldRow>
 
-          <FieldRow cols={1} className="mt-4">
-            <Field label="Primary business address" error={errors.line1?.message}>
-              <Input
-                aria-invalid={errors.line1 ? true : undefined}
-                {...register("line1")}
-              />
-            </Field>
-          </FieldRow>
+            <FieldRow cols={1}>
+              <Field label="Primary business address" error={errors.line1?.message}>
+                <Input
+                  aria-invalid={errors.line1 ? true : undefined}
+                  {...register("line1")}
+                />
+              </Field>
+            </FieldRow>
 
-          <FieldRow cols={1} className="mt-4">
-            <Field label="Address line 2" error={errors.line2?.message}>
-              <Input
-                aria-invalid={errors.line2 ? true : undefined}
-                {...register("line2")}
-              />
-            </Field>
-          </FieldRow>
+            <FieldRow cols={1}>
+              <Field label="Address line 2" error={errors.line2?.message}>
+                <Input
+                  aria-invalid={errors.line2 ? true : undefined}
+                  {...register("line2")}
+                />
+              </Field>
+            </FieldRow>
 
-          <FieldRow cols={2} className="mt-4">
-            <Field label="Country" error={errors.country?.message}>
-              <Input
-                aria-invalid={errors.country ? true : undefined}
-                {...register("country")}
-              />
-            </Field>
-            <Field label="State / province" error={errors.state?.message}>
-              <Input
-                aria-invalid={errors.state ? true : undefined}
-                {...register("state")}
-              />
-            </Field>
-          </FieldRow>
+            <FieldRow cols={2}>
+              <Field label="Country" error={errors.country?.message}>
+                <Input
+                  aria-invalid={errors.country ? true : undefined}
+                  {...register("country")}
+                />
+              </Field>
+              <Field label="State / province" error={errors.state?.message}>
+                <Input
+                  aria-invalid={errors.state ? true : undefined}
+                  {...register("state")}
+                />
+              </Field>
+            </FieldRow>
 
-          <FieldRow cols={2} className="mt-4">
-            <Field label="City" error={errors.city?.message}>
-              <Input
-                aria-invalid={errors.city ? true : undefined}
-                {...register("city")}
-              />
-            </Field>
-            <Field label="Postal code" error={errors.postalCode?.message}>
-              <Input
-                aria-invalid={errors.postalCode ? true : undefined}
-                {...register("postalCode")}
-              />
-            </Field>
-          </FieldRow>
+            <FieldRow cols={2}>
+              <Field label="City" error={errors.city?.message}>
+                <Input
+                  aria-invalid={errors.city ? true : undefined}
+                  {...register("city")}
+                />
+              </Field>
+              <Field label="Postal code" error={errors.postalCode?.message}>
+                <Input
+                  aria-invalid={errors.postalCode ? true : undefined}
+                  {...register("postalCode")}
+                />
+              </Field>
+            </FieldRow>
 
-          <div className="mt-4 flex items-center gap-2 font-mono typography-caption text-meta-foreground">
-            <span>Organization ID: {currentOrg.id}</span>
-            <CopyButton value={currentOrg.id} ariaLabel="Copy organization ID" />
+            <div className="flex items-center gap-2 font-mono typography-caption text-meta-foreground">
+              <span>Organization ID: {currentOrg.id}</span>
+              <CopyButton value={currentOrg.id} ariaLabel="Copy organization ID" />
+            </div>
           </div>
 
           <DirtyActionBar

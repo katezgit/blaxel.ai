@@ -42,24 +42,26 @@ export function ProfileForm() {
   return (
     <Panel title="Account">
       <form onSubmit={onSubmit} noValidate>
-        <FieldRow cols={1}>
-          <Field label="Name" error={errors.name?.message}>
-            <Input
-              aria-invalid={errors.name ? true : undefined}
-              {...register("name")}
-            />
-          </Field>
-        </FieldRow>
+        <div className="flex flex-col gap-4">
+          <FieldRow cols={1}>
+            <Field label="Name" error={errors.name?.message}>
+              <Input
+                aria-invalid={errors.name ? true : undefined}
+                {...register("name")}
+              />
+            </Field>
+          </FieldRow>
 
-        <FieldRow cols={1} className="mt-4">
-          <Field label="Email" error={errors.email?.message}>
-            <Input
-              type="email"
-              aria-invalid={errors.email ? true : undefined}
-              {...register("email")}
-            />
-          </Field>
-        </FieldRow>
+          <FieldRow cols={1}>
+            <Field label="Email" error={errors.email?.message}>
+              <Input
+                type="email"
+                aria-invalid={errors.email ? true : undefined}
+                {...register("email")}
+              />
+            </Field>
+          </FieldRow>
+        </div>
 
         <DirtyActionBar
           isDirty={isDirty}

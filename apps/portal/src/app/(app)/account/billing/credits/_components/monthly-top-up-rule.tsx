@@ -200,7 +200,7 @@ function MonthlyTopUpEditor({
 
   return (
     <RuleShell>
-      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <div className="flex items-start gap-3">
           <RuleIcon />
           <h4 className="typography-body font-medium text-foreground mt-1">
@@ -208,42 +208,44 @@ function MonthlyTopUpEditor({
           </h4>
         </div>
 
-        <div className="pl-11 flex flex-col gap-3">
-          <FieldRow cols={2}>
-            <Field
-              label="Monthly top-up amount"
-              error={errors.amountUsd?.message}
-              hint="USD"
-            >
-              <Input
-                type="number"
-                step="1"
-                min="1"
-                aria-invalid={errors.amountUsd ? true : undefined}
-                {...register("amountUsd", { valueAsNumber: true })}
-              />
-            </Field>
-            <Field label="Charge date">
-              <div className="flex h-9 items-center rounded-md border border-border bg-card px-3 typography-body text-muted-foreground">
-                First day of each month
-              </div>
-            </Field>
-          </FieldRow>
+        <div className="pl-11 flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            <FieldRow cols={2}>
+              <Field
+                label="Monthly top-up amount"
+                error={errors.amountUsd?.message}
+                hint="USD"
+              >
+                <Input
+                  type="number"
+                  step="1"
+                  min="1"
+                  aria-invalid={errors.amountUsd ? true : undefined}
+                  {...register("amountUsd", { valueAsNumber: true })}
+                />
+              </Field>
+              <Field label="Charge date">
+                <div className="flex h-9 items-center rounded-md border border-border bg-card px-3 typography-body text-muted-foreground">
+                  First day of each month
+                </div>
+              </Field>
+            </FieldRow>
 
-          <div className="flex flex-col gap-0.5">
-            <p className="typography-caption text-muted-foreground">
-              {previewAmount} will be added on the first day of each month.
-            </p>
-            {paymentMethodLabel ? (
-              <p className="typography-caption text-meta-foreground">
-                Charged to {paymentMethodLabel}.
+            <div className="flex flex-col gap-0.5">
+              <p className="typography-caption text-muted-foreground">
+                {previewAmount} will be added on the first day of each month.
               </p>
+              {paymentMethodLabel ? (
+                <p className="typography-caption text-meta-foreground">
+                  Charged to {paymentMethodLabel}.
+                </p>
+              ) : null}
+            </div>
+
+            {!hasPaymentMethod ? (
+              <InlineGate tier={1} verb="enable monthly top-up" />
             ) : null}
           </div>
-
-          {!hasPaymentMethod ? (
-            <InlineGate tier={1} verb="enable monthly top-up" />
-          ) : null}
 
           <div className="flex items-center justify-end gap-2">
             <Button

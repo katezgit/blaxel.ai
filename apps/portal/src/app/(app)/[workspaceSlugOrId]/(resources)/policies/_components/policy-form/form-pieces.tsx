@@ -351,7 +351,7 @@ export function TokenUsageBody({ value, onChange }: TokenUsageBodyProps) {
         <span className="typography-label text-muted-foreground">
           Per period
         </span>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[120px_1fr]">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-[120px_1fr]">
           <Input
             type="number"
             min={1}
