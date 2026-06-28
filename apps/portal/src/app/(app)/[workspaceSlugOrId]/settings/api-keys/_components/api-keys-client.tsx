@@ -218,19 +218,18 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
         actionLabel="Revoke key"
         targetLabel={pendingRevoke?.name ?? ""}
         workspaceName={workspace.name}
-        description={
-          <>
-            This will permanently revoke the key. Any CLI, SDK, or integration
-            using it will start receiving 401 responses.
-          </>
-        }
         onConfirm={() => {
           if (!pendingRevoke) return;
           setKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));
           toast.success(`Revoked ${pendingRevoke.name}.`);
           setPendingRevoke(null);
         }}
-      />
+      >
+        <p className="typography-body text-foreground">
+          This will permanently revoke the key. Any CLI, SDK, or integration
+          using it will start receiving 401 responses.
+        </p>
+      </ConfirmByNameDialog>
     </section>
   );
 }

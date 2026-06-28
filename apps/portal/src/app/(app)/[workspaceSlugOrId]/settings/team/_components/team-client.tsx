@@ -369,14 +369,18 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         actionLabel="Remove member"
         targetLabel={pendingRemoval?.name ?? ""}
         workspaceName={workspace.name}
-        description={`${pendingRemoval?.name ?? "This member"} will lose access to every resource in this workspace.`}
         onConfirm={() => {
           if (!pendingRemoval) return;
           setMembers((prev) => prev.filter((m) => m.id !== pendingRemoval.id));
           toast.success(`Removed ${pendingRemoval.name} from ${workspace.name}.`);
           setPendingRemoval(null);
         }}
-      />
+      >
+        <p className="typography-body text-foreground">
+          {pendingRemoval?.name ?? "This member"} will lose access to every
+          resource in this workspace.
+        </p>
+      </ConfirmByNameDialog>
     </section>
   );
 }

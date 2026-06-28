@@ -248,22 +248,19 @@ export default function ServiceAccountDetailView({
         actionLabel="Remove service account"
         targetLabel={sa.name}
         workspaceName={sa.name}
-        description={
-          <>
-            This will permanently remove{" "}
-            <span className="font-mono text-foreground">{sa.name}</span>
-            {" "}and revoke all of its API keys. Any consumer using this
-            service account&rsquo;s credentials will lose access immediately.
-          </>
-        }
-        details={
-          <p className="typography-caption text-muted-foreground">
-            OAuth client credentials cannot be restored. If you need access
-            again, create a new service account.
-          </p>
-        }
         onConfirm={handleRemoveConfirm}
-      />
+      >
+        <p className="typography-body text-foreground">
+          This will permanently remove{" "}
+          <span className="font-mono">{sa.name}</span>
+          {" "}and revoke all of its API keys. Any consumer using this
+          service account&rsquo;s credentials will lose access immediately.
+        </p>
+        <p className="typography-body text-foreground">
+          OAuth client credentials cannot be restored. If you need access
+          again, create a new service account.
+        </p>
+      </ConfirmByNameDialog>
     </>
   );
 }

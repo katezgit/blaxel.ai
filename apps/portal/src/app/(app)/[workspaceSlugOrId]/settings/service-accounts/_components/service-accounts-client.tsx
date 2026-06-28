@@ -228,29 +228,24 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         actionLabel="Remove service account"
         targetLabel={pendingDelete?.name ?? ""}
         workspaceName={pendingDelete?.name ?? ""}
-        description={
-          <>
-            This will permanently remove{" "}
-            <span className="font-mono text-foreground">
-              {pendingDelete?.name}
-            </span>
-            {" "}and revoke all of its API keys. Any consumer using this
-            service account&apos;s credentials will lose access immediately.
-          </>
-        }
-        details={
-          <p className="typography-caption text-muted-foreground">
-            OAuth client credentials cannot be restored. If you need access
-            again, create a new service account.
-          </p>
-        }
         onConfirm={() => {
           if (!pendingDelete) return;
           setAccounts((prev) => prev.filter((a) => a.id !== pendingDelete.id));
           toast.success(`Removed service account ${pendingDelete.name}.`);
           setPendingDelete(null);
         }}
-      />
+      >
+        <p className="typography-body text-foreground">
+          This will permanently remove{" "}
+          <span className="font-mono">{pendingDelete?.name}</span>
+          {" "}and revoke all of its API keys. Any consumer using this
+          service account&apos;s credentials will lose access immediately.
+        </p>
+        <p className="typography-body text-foreground">
+          OAuth client credentials cannot be restored. If you need access
+          again, create a new service account.
+        </p>
+      </ConfirmByNameDialog>
     </section>
   );
 }

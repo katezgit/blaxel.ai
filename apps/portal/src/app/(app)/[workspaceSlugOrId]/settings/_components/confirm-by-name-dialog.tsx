@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,9 +19,11 @@ interface ConfirmByNameDialogProps {
   actionLabel: string;
   targetLabel: string;
   workspaceName: string;
-  description: ReactNode;
+  // Consequence prose rendered inside DialogBody above the typing prompt.
+  // Lives here (not DialogDescription) so it inherits body typography —
+  // consequence statements are not subtitles.
+  children: ReactNode;
   onConfirm: () => void;
-  details?: ReactNode;
 }
 
 // Name-confirm pattern for destructive workspace actions — typing the
@@ -34,8 +35,7 @@ export default function ConfirmByNameDialog({
   actionLabel,
   targetLabel,
   workspaceName,
-  description,
-  details,
+  children,
   onConfirm,
 }: ConfirmByNameDialogProps) {
   const [typed, setTyped] = useState("");
@@ -52,6 +52,10 @@ export default function ConfirmByNameDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="md"
+        // DialogDescription intentionally omitted — consequence prose lives in
+        // DialogBody so it gets body typography. aria-describedby={undefined}
+        // silences Radix's missing-description warning.
+        aria-describedby={undefined}
         // Deterministic focus on the typing input — Radix's default would land
         // on Cancel since it's the first focusable, but the typing input is
         // the primary affordance.
@@ -64,10 +68,9 @@ export default function ConfirmByNameDialog({
           <DialogTitle>
             {actionLabel} &quot;{targetLabel}&quot;
           </DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogBody className="flex flex-col gap-4">
-          {details}
+          {children}
           <FormField
             id="confirm-by-name-input"
             label={
