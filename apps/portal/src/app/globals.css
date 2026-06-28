@@ -172,7 +172,7 @@
    * read "raw" without a tonal lift behind them. */
   --color-sidebar-border: light-dark(
     rgb(var(--border-seed-light) / .10),
-    var(--surface-elevated-dark)
+    var(--surface-card-dark)
   );
 
   /* Sidebar hover — two variants for two shell surfaces.
@@ -181,8 +181,8 @@
    *   mix in light, neutral white mix in dark to avoid clashing on dark-navy bg). */
   --color-sidebar-hover: var(--color-secondary-surface);
   --color-sidebar-hover-manage: light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
+    color-mix(in srgb, var(--surface-card-light) 92%, var(--orange-800) 8%),
+    color-mix(in srgb, var(--surface-card-dark) 88%, white 12%)
   );
 
   /* PINNED dark teal, never flips with theme. App-scoped because the only
