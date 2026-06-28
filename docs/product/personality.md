@@ -12,15 +12,16 @@ Alex is 30 minutes into an incident when she opens blaxel.ai. Production p99 spi
 
 ## Personality adjectives
 
-**Perpetual · Composed · Transparent · Exact · Disciplined**
+**Perpetual · Composed · Transparent · Exact · Disciplined · Swift**
 
-Five dimensions, each defending a different axis. Overlap = dead weight.
+Six dimensions, each defending a different axis. Overlap = dead weight.
 
 - **Perpetual** — *temporal axis.* The product wedge is no cold start; the surface honors it. The dashboard never makes the user warm up either — first paint is live state, streams attach without spinners, the runtime's "always on" is the surface's "always current."
 - **Composed** — *structural axis.* The model the user sees is primitives, not features. Every screen reads as named primitives from `platform.md` (Sandbox, Volume, Agent Drive, Image, Agent, Job, MCP Server, Model API, API Key, Policy) — visibly adjacent, not nested inside feature menus or workflow modes. The three IA groups (Sandboxes / Hosting / Security) stay flat and legible at every depth.
 - **Transparent** — *epistemic axis.* Every layer of the runtime is reachable from the surface that summarizes it. Aggregates link to the primitives they counted; denials cite the rule that denied them. No black-box scoring, no synthetic "platform health" averages, no "trust us." If the value exists in the runtime, the user can drill to it.
 - **Exact** — *lexical axis.* The right noun, the right digit, every time. Canonical primitive names verbatim (`Sandbox` not `instance`, `Policy` not `permission`, `Agent Drive` not `working dir`). Values at the user's decision granularity (`p99 = 412ms`, `5 Sandboxes warm · 3 cold`, `python-3.12@sha:9c1e…`). Transparent shows the layer; Exact picks the word and the digit on it.
 - **Disciplined** — *tonal axis.* Serious enough that Sam's auditor reads it unedited; honest enough that Alex pastes it into an incident channel without trimming marketing. No playful empty states, no celebration banners, no hedges, no marketing phrasing. Error copy is a cause and a next move; audit lines read like log lines.
+- **Swift** — *action-velocity axis.* The path from signal to next verb is short. Every primary action is reachable without scroll; every recovery action surfaces inline in the failure band (one-click retry, one-click open in CLI), not behind a second click. Distinct from Perpetual: Perpetual says the runtime is always present (backend commitment); Swift says the surface is one beat from the next action (UX commitment). Transparent makes every layer *reachable as information*; Swift makes the *next move reachable as an action*.
 
 ---
 
@@ -57,9 +58,11 @@ Each one names what we lose in concrete designer terms — a screen, a flow, an 
 
 6. **Per-primitive depth over cross-primitive rollups.** Detail surfaces drill into one Sandbox, one Agent, one Policy at a time. *Lose:* the "Platform Health" executive overview, the all-green status hero, the unified cost-and-uptime tile a CEO would screenshot. *Keep:* the path that matches how the runtime is composed — primitive-by-primitive — and a model the Alex-grade user trusts because it does not pretend the system has one mood.
 
-7. **Failure surfaces are larger than success surfaces.** A failed Job, a denied API call, an expired Key, a Policy-blocked exec gets more pixel area, more inline context (cause + primitive IDs + retry path), and higher contrast than a successful one. *Lose:* the calm "all-green" aesthetic where success and failure look symmetric. *Keep:* incident-mode legibility — Alex sees the leak before she sees the noise around it.
+7. **Failure surfaces are larger than success surfaces — and the way out is in the band.** A failed Job, a denied API call, an expired Key, a Policy-blocked exec gets more pixel area, more inline context (cause + primitive IDs + retry path), and higher contrast than a successful one. The recovery action (one-click retry, one-click open in CLI) lives inside that same expanded band — not behind a second click. *Lose:* the calm "all-green" aesthetic where success and failure look symmetric; the "click to see options" pattern on failed rows. *Keep:* incident-mode legibility — Alex sees the leak and the way out before she sees anything else. (Swift governs the recovery path; the expanded area is what Failure outranks success already owned.)
 
 8. **Free-tier surfaces visible, paid surfaces inline-gated.** Free affordances stay fully visible and functional on the free tier; cloud / scale features surface their tier requirement at the point of use, not behind a hidden paywall. *Lose:* the cleanest free-tier view (no tier markers visible at all). *Keep:* an honest read of what the workspace can and can't do, with the upgrade path adjacent to the action, never in a surprise modal.
+
+9. **Primary action above the fold, forensic detail one click below.** On every primary list and detail surface, the dominant action for that context (Restart, Redeploy, Revoke, Retry) is visible without scroll. Diagnostic detail (full boot trace, event timeline, audit log) is one click below — present, not hidden, but not competing for the primary viewport. *Lose:* the symmetric layout where the action row and log stream share equal weight on first paint. *Keep:* Alex can restart the Sandbox or redeploy the Agent in the same motion she reads the status — no scroll hunt for the button.
 
 ---
 
@@ -82,6 +85,7 @@ Each one names what we lose in concrete designer terms — a screen, a flow, an 
 | Cost label | "Low cost" | "$0.0021 / Sandbox-hour" |
 | Sidebar item | "Roles & Permissions" | "Policies" (and "API Keys" — the two primitives in `Security`, not aggregated to "Access") |
 | Setup CTA | "Get started with sandboxes" | (no CTA — show the `bl sandbox create` command) |
+| Error toast (recovery) | "Sandbox boot failed — check your Image." | "Sandbox boot failed — Image `python-3.12@sha:9c1e…` not found. [Retry] [Open in CLI]" (recovery actions as inline affordances, not prose) |
 
 **Error voice.** Cause + next move, no apology, no hedge. Cause names the primitive that failed and the primitive it failed against; next move is one verb the user can act on.
 
@@ -103,13 +107,14 @@ Each principle is a hold-up test: a reviewer can put a wireframe against it and 
 2. **One click, primitive to trace.** *Test:* From any primitive row (Sandbox, Agent, Job, API Key, Policy), is its forensic surface (boot trace, log stream, event timeline, call history, resolution path) reachable in exactly one click — no modal stack, no new-tab requirement, no intermediate "details" view? Two clicks = FAIL.
 3. **Status streams, never polls.** *Test:* Hover a glance counter (warm pool, Agent health, Job state, Policy enforcement) for 30 seconds with no user interaction. Does the value update on its own when the runtime state changes? Stale value requiring refresh = FAIL.
 4. **Color carries state, nothing else.** *Test:* Pick any colored element on the surface. Does the hue encode a domain state (Sandbox warm/cold/booting/errored, Agent healthy/degraded, Job succeeded/failed, Policy enforced/audit/draft, API Key active/expiring/revoked)? Color used for branding, category, or aesthetic emphasis only = FAIL. (Hue assignments → design-token phase; the encoding rule is set here.)
-5. **Failure outranks success.** *Test:* On any list or summary surface with mixed outcomes, does the failed / denied / errored row have higher visual weight (larger area, higher contrast, inline cause + primitive IDs) than a succeeded one? Symmetric treatment of success and failure = FAIL.
+5. **Failure outranks success — and the recovery action is in the band.** *Test:* On any list or summary surface with mixed outcomes, does the failed / denied / errored row have (a) higher visual weight (larger area, higher contrast, inline cause + primitive IDs) than a succeeded one, AND (b) the recovery action (retry, open in CLI, revoke, redeploy) visible inside that expanded band without a second click? Symmetric treatment = FAIL. Recovery action behind a modal or submenu = FAIL.
 6. **Security context inline, never tabbed away.** *Test:* On a Sandbox, Agent, or Job detail page, are the Policy scope it ran under and the API Key prefix that initiated it visible on the same scroll as the operational state — or hidden behind a `Security` tab, a separate audit page, or an expandable that defaults collapsed? Tabbed-off security band = FAIL.
 7. **Every aggregate links to its primitives.** *Test:* Click any number on any glance tile (`5 Sandboxes warm`, `12 Policies enforced`, `3 Jobs failed`). Does it navigate to the filtered list of those primitives? Number-as-decoration with no drill path = FAIL.
 8. **Every primitive and every event is URL-addressable.** *Test:* Right-click any Sandbox row, any Policy denial in the audit log, any event in a Job timeline. Is there a stable "Copy link" that another teammate can paste into Slack and land on the same surface? Modal-only or state-held views = FAIL.
 9. **CLI parity is visible, not hidden.** *Test:* On every primitive detail page and every empty state, is the `bl …` command that created (or could re-create) the primitive visible on the surface — not behind a "Show CLI" toggle, not in a docs link? Hidden CLI = FAIL.
 10. **Command palette is the primary navigation.** *Test:* Time a power-user path (open Policy `pol-7a3` → jump to its denied events → filter by API Key `bl_pk_3f8c…`). Is every step reachable via `Cmd-K` with no mouse? Mouse-required step = FAIL. (Pointer paths exist; they're the secondary.)
 11. **Free surfaces visible, paid surfaces inline-gated.** *Test:* As a free-tier user, navigate to a paid feature. Is the feature visible in the IA with its tier requirement noted at the point of use — or hidden entirely, surfaced only after a modal interception? Surprise paywall = FAIL.
+12. **Primary next-action reachable without scroll.** *Test:* On any primary list view or detail surface, is the dominant action for that context (Restart, Redeploy, Revoke, Retry) visible in the initial viewport without scrolling? Button below the fold = FAIL. (Forensic depth — trace, log, timeline — may live below; the *action* may not.)
 
 ---
 
@@ -122,6 +127,7 @@ Each drift names the *tempting* failure mode — the move a competent designer m
 - **Transparent → firehose.** Tempting move: stream every event into a left-rail "Activity" feed on every page, paint every counter changing every tick, surface every internal probe result so "nothing is hidden." Result: signal drowns in noise; the boot trace Alex came for is below a 200-event scroll. Transparent means *every layer is reachable*, not *every layer is ambient*. Raw lives behind drill paths; the glance view stays curated.
 - **Exact → precision theater.** Tempting move: render `p99 = 412.387219ms`, show Image SHAs at full 64 chars, display API Key prefixes with 12 chars instead of 8 to "prove we're not hiding." Result: every column wider, every screenshot less scannable, no decision actually improved. Exact means *the right noun, the digit at the user's decision granularity* — `p99 = 412ms`, `python-3.12@sha:9c1e…`, `bl_pk_3f8c…` truncated visibly with the full value pasteable from the row.
 - **Disciplined → cold.** Tempting move: strip every empty state to a code block, remove every confirmation message, surface every Policy denial in monospace red with no surrounding context. Result: surfaces feel punitive instead of professional; Sam's auditor wonders if the platform is broken. Disciplined means *the audit line is honest*, not that the dashboard is hostile. Clarity, not severity.
+- **Swift → trigger-happy.** Tempting move: remove confirmations on destructive ops to reduce friction, hide diagnostic detail to fit the primary action above the fold, surface only the happy-path button and bury the forensic affordances. Result: Alex mid-incident hits "Restart Sandbox" by accident and loses the running state she came to inspect; Sam can't find the audit detail because the detail panel was collapsed to make room for the action row. Swift means *short path to the next verb*, never *missing path to the context or the confirm*. Forensic surface stays one click away; destructive confirms stay one beat away; the failure band keeps its area.
 
 ---
 
@@ -129,7 +135,7 @@ Each drift names the *tempting* failure mode — the move a competent designer m
 
 | System | Steal | Don't steal |
 |---|---|---|
-| Linear | Command palette as primary navigation; zero encouragement copy; ambient status color; density without apology | Issue-tracker-as-primary-surface; project-team-cycle vocabulary |
+| Linear | Command palette as primary navigation (Swift exemplar: every action reachable in ≤2 keystrokes); zero encouragement copy; ambient status color; density without apology | Issue-tracker-as-primary-surface; project-team-cycle vocabulary |
 | Vercel | Logs as a readable artifact; streaming output without spinners; precise actionable errors; CLI-first empty states | Deploy-as-the-hero framing (Blaxel runtime is steady-state — Jobs run, but the dashboard is not deploy-centric) |
 | Fly.io | Raw infra honesty; primitives in URLs; machine-readable surfaces; CLI parity visible in-product | Sparse-by-default IA (Blaxel needs the three-group structure legible at first paint) |
 | Modal | Primitive-first composition; clean technical UI; no marketing copy in-product | Notebook / function-as-unit framing (Blaxel's unit is the Sandbox, not the function) |
