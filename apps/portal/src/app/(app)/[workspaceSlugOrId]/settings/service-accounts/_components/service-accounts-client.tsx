@@ -26,7 +26,7 @@ import type { Org, ServiceAccount } from "@/lib/mock/types";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import ConfirmByNameDialog from "../../_components/confirm-by-name-dialog";
+import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
 import CreateServiceAccountDialog from "./create-service-account-dialog";
 import CliLine from "./cli-line";
 import { formatRelativePast, oldestKeyAgeFor } from "./format";

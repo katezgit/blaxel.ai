@@ -10,9 +10,6 @@ interface CliLineProps {
   className?: string;
 }
 
-// The command itself sits in a horizontally-scrolling row so long flags can
-// be revealed without forcing the parent layout to break to a second line;
-// the copy affordance stays pinned beside it for one-gesture access.
 export default function CliLine({ command, label, className }: CliLineProps) {
   return (
     <div className={cn("flex flex-col gap-1", className)}>

@@ -21,7 +21,7 @@ import type {
   ServiceAccount,
   ServiceAccountApiKey,
 } from "@/lib/mock/types";
-import { SecretReveal } from "../../../_components/secret-reveal";
+import { SecretReveal } from "@/app/(app)/[workspaceSlugOrId]/settings/_components/secret-reveal";
 import ExpiryNeverConfirm from "../../_components/expiry-never-confirm";
 import {
   EXPIRY_OPTIONS,

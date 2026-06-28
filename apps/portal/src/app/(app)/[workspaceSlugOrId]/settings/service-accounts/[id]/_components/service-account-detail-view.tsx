@@ -26,7 +26,7 @@ import type {
   ServiceAccount,
   ServiceAccountApiKey,
 } from "@/lib/mock/types";
-import ConfirmByNameDialog from "../../../_components/confirm-by-name-dialog";
+import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
 import ApiKeysSection from "./api-keys-section";
 import CreateServiceAccountApiKeyDialog from "./create-service-account-api-key-dialog";
 import DetailsSection from "./details-section";

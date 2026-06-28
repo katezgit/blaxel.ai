@@ -18,12 +18,8 @@ import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
 import type { ServiceAccount } from "@/lib/mock/types";
 
-// Drawer state mirrors the EditPolicyDrawer + delete-dialog shape:
-// null = closed, ServiceAccount = open with that record prefilled.
 export type EditServiceAccountDrawerState = ServiceAccount | null;
 
-// Mirrors create-service-account-dialog.tsx so the validation feels identical
-// on both create and edit surfaces.
 const FORM_SCHEMA = z.object({
   name: z
     .string()
