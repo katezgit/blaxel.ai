@@ -1,26 +1,19 @@
-import {
-  ArrowUpRight,
-  FileCheck,
-  GitMerge,
-  Globe,
-  Gauge,
-  Rocket,
-} from "lucide-react";
+import { ArrowUpRight, Asterisk, Globe, MapPin, Rocket } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import { cn } from "@repo/ui/lib/cn";
 import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
-import PoliciesPageHeader from "./policies-page-header";
+import CustomDomainsHeader from "./custom-domains-header";
 
 const LOCKED_DESCRIPTION = (
   <p className="text-muted-foreground">
-    Policies are available on Tier 1 and above.{" "}
+    Custom domains are available on Tier 3 and above.{" "}
     <a
-      href="https://docs.blaxel.ai/Model-Governance/Policies"
+      href="https://docs.blaxel.ai/Infrastructure/Custom-domains"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Policies documentation, opens in new tab"
+      aria-label="Custom domains documentation, opens in new tab"
       className="inline-flex items-baseline gap-0.5 rounded-sm text-muted-foreground hover:text-foreground hover:underline"
     >
       Docs
@@ -28,10 +21,10 @@ const LOCKED_DESCRIPTION = (
     </a>
     {" · "}
     <a
-      href="https://docs.blaxel.ai/api-reference/policies/list-governance-policies"
+      href="https://docs.blaxel.ai/api-reference/customdomains/create-application-custom-domain"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Policies API reference, opens in new tab"
+      aria-label="Custom domains API reference, opens in new tab"
       className="inline-flex items-baseline gap-0.5 rounded-sm text-muted-foreground hover:text-foreground hover:underline"
     >
       API reference
@@ -48,33 +41,38 @@ interface Capability {
 
 const CAPABILITIES: ReadonlyArray<Capability> = [
   {
+    icon: Asterisk,
+    title: "Wildcard support",
+    description:
+      "One domain covers every subdomain — no per-subdomain registration.",
+  },
+  {
     icon: Globe,
-    title: "Location policies",
-    description: "Control where your workloads run by country or continent.",
+    title: "Branded sandbox previews",
+    description: "Your users see your domain, not *.preview.bl.run.",
   },
   {
-    icon: Gauge,
-    title: "Token usage policies",
-    description: "Set rate limits for model API token consumption.",
-  },
-  {
-    icon: GitMerge,
-    title: "Multi-policy combinations",
-    description: "Combine policies with union and intersection logic.",
+    icon: MapPin,
+    title: "Region-locked assignment",
+    description: "Each domain pins to one region for latency control.",
   },
 ];
 
-export default function PoliciesTierLockedView() {
+export default function CustomDomainsTierLockedView() {
   return (
     <div className={cn("page-shell", "min-h-full")}>
-      <PoliciesPageHeader tierLocked description={LOCKED_DESCRIPTION} />
+      <CustomDomainsHeader
+        action={null}
+        tierLocked
+        description={LOCKED_DESCRIPTION}
+      />
 
       <section
-        aria-labelledby="policies-locked-heading"
+        aria-labelledby="custom-domains-locked-heading"
         className="flex flex-1 flex-col"
       >
-        <h2 id="policies-locked-heading" className="sr-only">
-          Policies — Tier 1 upgrade
+        <h2 id="custom-domains-locked-heading" className="sr-only">
+          Custom domains — Tier 3 upgrade
         </h2>
 
         <div aria-hidden="true" className="min-h-12 grow basis-0" />
@@ -84,31 +82,30 @@ export default function PoliciesTierLockedView() {
             aria-hidden="true"
             className="flex size-12 items-center justify-center rounded-md bg-muted-surface text-muted-foreground"
           >
-            <FileCheck className="size-6" />
+            <Globe className="size-6" />
           </span>
           <div className="flex flex-col items-center gap-3">
             <h3 className="typography-display text-foreground">
-              Take control of your deployments
+              Bring your own identity to Blaxel
             </h3>
             <p className="max-w-xl text-muted-foreground">
-              Define where and how your AI workloads run. Set location
-              restrictions, hardware requirements, and usage limits with
-              policies as code.
+              Connect your own domain names to your Blaxel workspace to use
+              when exposing resources. Enable wildcard subdomains and ensure
+              your AI workloads carry your product identity.
             </p>
           </div>
         </div>
 
-        <Card className="mt-4 w-full max-w-3xl shrink-0 self-center overflow-hidden border-0 p-0 sm:border">
+        <Card className="mt-4 w-full max-w-3xl shrink-0 self-center overflow-hidden p-0">
           <div className="grid lg:grid-cols-[2fr_1fr]">
             <div className="flex flex-col gap-6 p-6 lg:p-8">
               <div className="flex flex-col gap-2">
                 <h3 className="typography-subtitle text-foreground">
-                  What you can do with Policies
+                  What you can do with Custom domains
                 </h3>
                 <p className="text-muted-foreground">
-                  Take control of how and where your AI workloads are deployed
-                  within the Blaxel platform. Define policies as code to
-                  customize your Global Agents Network.
+                  Bring your own DNS to Blaxel. Take ownership of how Sandbox
+                  previews appear and where they route.
                 </p>
               </div>
               <ul className="flex flex-col gap-4">
@@ -131,6 +128,10 @@ export default function PoliciesTierLockedView() {
                   </li>
                 ))}
               </ul>
+              <p className="typography-caption text-muted-foreground">
+                Currently routes Sandbox previews. Agents and MCP servers coming
+                soon.
+              </p>
             </div>
 
             <div className="relative flex flex-col items-center justify-center gap-4 overflow-hidden border-t border-border bg-primary-glow p-6 text-center lg:border-t-0 lg:border-l lg:p-8">
@@ -144,10 +145,11 @@ export default function PoliciesTierLockedView() {
                 Ready to ship?
               </h3>
               <p className="text-muted-foreground">
-                Add a payment method to start creating policies and unlock
-                higher platform limits.
+                Upgrade to Tier 3 to register your first domain and map it to a
+                Sandbox preview URL.
               </p>
               <UpgradeTierDialog
+                recommendedTier={3}
                 trigger={
                   <Button variant="primary">
                     Upgrade tier
