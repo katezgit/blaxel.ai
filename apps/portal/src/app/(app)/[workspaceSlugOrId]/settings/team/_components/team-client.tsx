@@ -23,6 +23,10 @@ import {
 } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
+import {
+  Combobox,
+  type ComboboxOption,
+} from "@repo/ui/components/combobox";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
 import {
@@ -45,14 +49,11 @@ import type {
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
-import FilterPopover from "./filter-popover";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
-import TeamTable from "./team-table";
+import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import {
   ROLE_META,
-  ROLE_VALUES,
   SOURCE_META,
-  SOURCE_VALUES,
   STATUS_META,
   STATUS_VALUES,
 } from "./team-mock-helpers";
@@ -83,13 +84,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
 
   const [members, setMembers] = useState<ReadonlyArray<TeamMember>>(serverMembers);
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<ReadonlySet<Role>>(new Set());
-  const [sourceFilter, setSourceFilter] = useState<ReadonlySet<MemberSource>>(
-    new Set(),
-  );
-  const [statusFilter, setStatusFilter] = useState<ReadonlySet<MemberStatus>>(
-    new Set(),
-  );
+  const [statusFilter, setStatusFilter] = useState<MemberStatus | null>(null);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [sorting, setSorting] = useState<SortingState>([
     { id: "member", desc: false },
@@ -104,16 +99,21 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       if (q && !m.name.toLowerCase().includes(q) && !m.email.toLowerCase().includes(q)) {
         return false;
       }
-      if (roleFilter.size > 0 && !roleFilter.has(m.role)) return false;
-      if (sourceFilter.size > 0 && !sourceFilter.has(m.source)) return false;
-      if (statusFilter.size > 0 && !statusFilter.has(m.status)) return false;
+      if (statusFilter !== null && m.status !== statusFilter) return false;
       return true;
     });
-  }, [members, search, roleFilter, sourceFilter, statusFilter]);
+  }, [members, search, statusFilter]);
 
-  const roleCounts = useCounts(members, "role", ROLE_VALUES);
-  const sourceCounts = useCounts(members, "source", SOURCE_VALUES);
-  const statusCounts = useCounts(members, "status", STATUS_VALUES);
+  // Status filter options carry per-bucket counts so admins see "Pending (3)"
+  // without clicking through — the count IS the actionable signal at small team sizes.
+  const statusOptions = useMemo<ComboboxOption[]>(() => {
+    const counts: Record<MemberStatus, number> = { accepted: 0, pending: 0, expired: 0 };
+    for (const m of members) counts[m.status] += 1;
+    return STATUS_VALUES.map((v) => ({
+      value: v,
+      label: `${STATUS_META[v].label} (${counts[v]})`,
+    }));
+  }, [members]);
 
   const columns = useMemo(
     () => [
@@ -155,7 +155,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
                 {row.original.name}
               </span>
               {row.original.isYou && (
-                <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
+                <span className="rounded-sm bg-muted-surface px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
                   you
                 </span>
               )}
@@ -218,17 +218,11 @@ export default function TeamClient({ workspace }: TeamClientProps) {
   });
 
   const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id]);
-  const hasFilters =
-    search.trim().length > 0 ||
-    roleFilter.size > 0 ||
-    sourceFilter.size > 0 ||
-    statusFilter.size > 0;
+  const hasFilters = search.trim().length > 0 || statusFilter !== null;
 
   const clearFilters = () => {
     setSearch("");
-    setRoleFilter(new Set());
-    setSourceFilter(new Set());
-    setStatusFilter(new Set());
+    setStatusFilter(null);
   };
 
   const handleInvite = ({ emails, role }: InviteResult) => {
@@ -278,7 +272,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           onClick={() => setInviteOpen(true)}
         >
           <Plus aria-hidden="true" />
-          <span>Invite users</span>
+          <span>Invite members</span>
         </Button>
       </div>
 
@@ -291,36 +285,18 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           className="max-w-xs"
           aria-label="Search workspace members"
         />
-        <div className="ml-auto flex items-center gap-2">
-          <FilterPopover
-            label="Role"
-            options={ROLE_VALUES}
-            optionLabel={(v) => ROLE_META[v].label}
-            selected={roleFilter}
-            onChange={setRoleFilter}
-            counts={roleCounts}
-          />
-          <FilterPopover
-            label="Source"
-            options={SOURCE_VALUES}
-            optionLabel={(v) => SOURCE_META[v].label}
-            selected={sourceFilter}
-            onChange={setSourceFilter}
-            counts={sourceCounts}
-          />
-          <FilterPopover
-            label="Status"
-            options={STATUS_VALUES}
-            optionLabel={(v) => STATUS_META[v].label}
-            selected={statusFilter}
-            onChange={setStatusFilter}
-            counts={statusCounts}
-          />
-        </div>
+        <Combobox
+          options={statusOptions}
+          value={statusFilter}
+          onValueChange={(v) => setStatusFilter(v as MemberStatus | null)}
+          label="Status"
+          placeholder="All"
+          className="ml-auto w-44"
+        />
       </div>
 
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between rounded-md border border-border bg-secondary-surface px-3 py-2">
+        <div className="flex items-center justify-between rounded-md border border-border bg-muted-surface px-3 py-2">
           <div className="flex items-center gap-4">
             <span className="typography-label text-foreground">
               {selectedIds.length} selected
@@ -368,7 +344,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           }
         />
       ) : (
-        <TeamTable
+        <ResourceTable
           table={table}
           getRowClassName={(row) =>
             row.original.status === "expired"
@@ -403,21 +379,6 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       />
     </section>
   );
-}
-
-function useCounts<T extends string>(
-  members: ReadonlyArray<TeamMember>,
-  key: "role" | "source" | "status",
-  values: ReadonlyArray<T>,
-): Record<T, number> {
-  return useMemo(() => {
-    const out = Object.fromEntries(values.map((v) => [v, 0])) as Record<T, number>;
-    for (const m of members) {
-      const v = m[key] as T;
-      out[v] = (out[v] ?? 0) + 1;
-    }
-    return out;
-  }, [members, key, values]);
 }
 
 interface SortHeaderProps {

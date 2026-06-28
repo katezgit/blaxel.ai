@@ -7,6 +7,10 @@ import {
 } from "@repo/ui/components/table";
 import { cn } from "@repo/ui/lib/cn";
 
+// Diverges from `(app)/_components/resource-table.tsx` because there's no
+// TanStack table — only a single error-message row spanning the column set.
+// Matches the live table chrome (border / bg-card / overflow) by hand so the
+// error state and the populated table share the same outer band.
 export default function CustomDomainsErrorRow() {
   return (
     <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">

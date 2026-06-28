@@ -82,6 +82,13 @@ function filterDomains(
   });
 }
 
+// Diverges from the canonical `(app)/_components/resource-table.tsx` chrome
+// because each failed domain renders a 2nd `<tr>` immediately below for the
+// verification-error continuation row (shared bg + left accent extending
+// across both). `ResourceTable` maps 1:1 row→tr — a multi-tr-per-row table
+// can't fit that contract without configuring the primitive into a different
+// shape. The outer `<div>` chrome (border / bg-card / overflow) matches
+// ResourceTable exactly, so visual parity is preserved by hand.
 export default function CustomDomainsTable({ domains }: CustomDomainsTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -217,7 +224,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
               href={href}
               className="flex flex-col gap-0.5 rounded-sm font-mono"
             >
-              <span className="text-foreground underline-offset-4 group-hover:underline">
+              <span className="text-foreground underline-offset-4 decoration-meta-foreground group-hover:underline">
                 {metadata.name}
               </span>
               {metadata.displayName && (

@@ -37,11 +37,14 @@ import { useActiveWorkspace } from "@/components/shell/workspace-context";
 import WorkspaceSwitcher from "@/components/shell/workspace-switcher";
 import type { Org } from "@/lib/mock/types";
 
-// One shell across every authenticated route. The rail <aside> AND the sub-pane
-// <aside> are both rendered unconditionally so their DOM identity persists
-// across /{slug} ↔ /profile, /{slug} ↔ /account, /{slug} ↔ /{slug}/settings/*.
-// CSS — keyed off data-sub-shell-open on the wrapper — drives the slide. There
-// is no JS animation, no View Transition API, no remount.
+// One shell across every authenticated route. ONE <Sidebar> mounts at a time;
+// a `key` change on its wrapper forces React to unmount the old sidebar and
+// mount the new one when `subShellOpen` flips. The new one slides in via the
+// `shell-pane-slide-in-from-*` keyframe; the old one just disappears (no exit
+// animation). Mirrors the Oak pattern at
+// apps/web/app/_components/app-shell/sidebar.tsx — eliminates the two-pane
+// translate-swap artifacts (content jump mid-slide, slow exit "old man
+// walking") that came from keeping both <aside> elements mounted.
 //
 // Sub-pane content is route-derived inside the shell (settings / profile /
 // account). The active workspace on workspace routes flows in via context from
@@ -112,6 +115,26 @@ export function UnifiedShell({
     }
     prevSubShellOpenRef.current = subShellOpen;
   }, [subShellOpen]);
+
+  // Slide-in direction tracking. Computed during render (Oak pattern at
+  // apps/web/app/_components/app-shell/sidebar.tsx:154-167): when subShellOpen
+  // flips, set the class for the *incoming* sidebar — entering a sub-shell
+  // slides in from the right (going deeper), leaving slides the workspace nav
+  // back in from the left (returning to parent). The ref persists the class
+  // across renders so it stays applied to the keyed wrapper while mounted; on
+  // first paint the ref is empty so no animation fires (which is what we want
+  // — initial render is not a navigation event).
+  const paneAnimClassRef = useRef("");
+  const prevSubShellOpenForAnimRef = useRef<boolean | undefined>(undefined);
+  if (prevSubShellOpenForAnimRef.current !== subShellOpen) {
+    if (prevSubShellOpenForAnimRef.current !== undefined) {
+      paneAnimClassRef.current = subShellOpen
+        ? "shell-pane-slide-in-from-right"
+        : "shell-pane-slide-in-from-left";
+    }
+    prevSubShellOpenForAnimRef.current = subShellOpen;
+  }
+  const paneAnimClass = paneAnimClassRef.current;
 
   // Whichever pane is on screen owns the chevron + ⌘B. Read its collapsed
   // value, call its toggler. ⌘B inside a sub-shell must NOT touch the rail's
@@ -221,57 +244,53 @@ export function UnifiedShell({
               />
             )}
             <div className="relative flex min-h-0 flex-1">
-              {/* Pane stack reserves the sidebar column. Both panes are
-                  absolutely positioned inside it and overlap — the CSS in
-                  globals.css (translate-swap on data-sub-shell-open) drives
-                  the slide. DOM identity persists across navigation; React
-                  never unmounts either pane. */}
-              <div className="shell-pane-stack hidden md:block">
-                {/* Workspace rail. No onToggle — the shared chevron lives
-                    outside the stack so the wrapper's overflow:hidden (which
-                    clips the off-screen pane) doesn't clip the chevron. */}
-                <div className="shell-rail">
-                  <Sidebar
-                    ariaLabel="Workspace resources"
-                    groups={railGroups}
-                    collapsed={railCollapsed}
-                  />
-                </div>
-                {/* Sub-shell pane. Has its own ephemeral collapse state — ⌘B
-                    on sub-shell routes flips this in memory only, never the
-                    rail's persisted preference. Resets to expanded on every
-                    fresh entry into a sub-shell. */}
+              {/* Sidebar column reserves layout width (via --shell-left-w) and
+                  clips the slide-in. Inside, exactly ONE <Sidebar> is mounted
+                  — the keyed wrapper unmounts the previous one and mounts the
+                  next when `subShellOpen` flips, triggering the slide-in
+                  keyframe. The chevron lives outside this column so the
+                  overflow:hidden clip doesn't catch it. */}
+              <div className="shell-pane-column hidden md:block">
                 <div
-                  className="shell-sub-pane"
-                  aria-hidden={!subShellOpen}
+                  key={subShellOpen ? "sub" : "rail"}
+                  className={cn("h-full", paneAnimClass)}
                 >
-                  <Sidebar
-                    ariaLabel={subPane.ariaLabel}
-                    groups={subPane.groups}
-                    collapsed={subPaneCollapsed}
-                    header={
-                      <SubShellSidebarReturnHeader workspace={headerWorkspace} />
-                    }
-                  />
+                  {subShellOpen ? (
+                    <Sidebar
+                      ariaLabel={subPane.ariaLabel}
+                      groups={subPane.groups}
+                      collapsed={subPaneCollapsed}
+                      header={
+                        <SubShellSidebarReturnHeader workspace={headerWorkspace} />
+                      }
+                    />
+                  ) : (
+                    <Sidebar
+                      ariaLabel="Workspace resources"
+                      groups={railGroups}
+                      collapsed={railCollapsed}
+                    />
+                  )}
                 </div>
               </div>
-              {/* Shared collapse chevron — sibling of the stack so it never
-                  gets clipped by the stack's overflow:hidden. Centered on the
-                  stack's right edge via left:--shell-left-w + translate-x.
-                  Visible only at lg+ (matches Sidebar's lg:w-(--sidebar-w)
-                  responsive breakpoint where the collapse affordance applies). */}
+              {/* Shared collapse chevron — sibling of the sidebar column so it
+                  never gets clipped by the column's overflow:hidden. Centered
+                  on the column's right edge via left:--shell-left-w +
+                  translate-x. Visible only at lg+ (matches Sidebar's
+                  lg:w-(--sidebar-w) responsive breakpoint where the collapse
+                  affordance applies). */}
               <button
                 type="button"
                 onClick={toggleVisiblePane}
                 aria-label={visibleCollapsed ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
                 aria-pressed={visibleCollapsed}
-                className="absolute top-5 left-(--shell-left-w) z-overlay hidden size-6 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-secondary-surface focus-visible:shadow-focus-ring lg:inline-flex"
+                className="absolute top-5 left-(--shell-left-w) z-overlay hidden size-6 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-sidebar text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring lg:inline-flex"
               >
                 {visibleCollapsed ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
               </button>
               <main
                 id="main-content"
-                className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop"
+                className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-background"
               >
                 {children}
               </main>

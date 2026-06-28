@@ -43,7 +43,7 @@ function SelectTrigger({
         "data-[placeholder]:text-meta-foreground",
         // typography-body (14px) — no text-foreground pairing here to avoid twMerge conflict with consumer overrides.
         // typography-body is already emitted by formFieldBoxVariants size=md; kept here as a noop fallback guard.
-        // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
+        // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-card (formerly --color-panel).
         "focus-visible:bg-form-field-surface data-[state=open]:bg-form-field-surface",
         "data-[state=open]:shadow-focus-ring",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0",

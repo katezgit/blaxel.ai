@@ -181,7 +181,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
       <div className="flex flex-col overflow-hidden rounded-md border border-border">
         <div
           className={cn(
-            "hidden sm:grid gap-4 border-b border-border bg-field-rest px-4 py-2",
+            "hidden sm:grid gap-4 border-b border-border bg-muted-surface px-4 py-2",
             GRID_COLS,
           )}
         >
@@ -254,7 +254,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       )}
     >
       {isCurrent ? (
-        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-background px-1.5 font-mono typography-meta uppercase text-primary">
+        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-muted-surface px-1.5 font-mono typography-meta uppercase text-primary">
           Current tier
         </span>
       ) : null}

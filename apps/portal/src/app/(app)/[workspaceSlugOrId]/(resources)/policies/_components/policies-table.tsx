@@ -111,7 +111,7 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
           return (
             <div className="flex items-center gap-1.5">
               <div className="flex flex-col leading-tight">
-                <span className="typography-body text-foreground underline-offset-4 group-hover/policy-row:underline">
+                <span className="typography-body text-foreground underline-offset-4 decoration-meta-foreground group-hover/policy-row:underline">
                   {policy.metadata.displayName}
                 </span>
                 <span className="typography-code text-muted-foreground">
@@ -280,7 +280,14 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
         * default — with 4 rows the card border stops right under row 4,
         * no empty stretched whitespace. When content exceeds the parent
         * cap (root `max-h-full`), `min-h-0 + overflow-auto` activates and
-        * the body scrolls while sticky `<th>`s stay pinned. */}
+        * the body scrolls while sticky `<th>`s stay pinned.
+        *
+        * Diverges from `(app)/_components/resource-table.tsx` because the
+        * `hasOverflow` detection (via ResizeObserver) drives a count-label
+        * footer that moves in/out of the toolbar row based on scrollHeight.
+        * That coordination sits across two siblings of the table — a hook
+        * the ResourceTable primitive doesn't expose. Row click is also
+        * whole-row navigation, which the primitive doesn't model. */}
       <div
         ref={scrollRef}
         className="relative w-full min-h-0 overflow-auto rounded-md border border-border bg-card"
@@ -290,13 +297,13 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  // bg-field-rest is duplicated from the shared tableHeaderClass
+                  // bg-muted-surface is duplicated from the shared tableHeaderClass
                   // on <thead> because position:sticky lifts the <th> out of
                   // the thead's painted box — without an opaque bg on the cell
                   // itself, scrolled rows show through the pinned header.
                   <th
                     key={header.id}
-                    className={cn(tableHeadVariants({ density: "compact" }), "bg-field-rest")}
+                    className={cn(tableHeadVariants({ density: "compact" }), "bg-muted-surface")}
                   >
                     {!header.isPlaceholder &&
                       flexRender(header.column.columnDef.header, header.getContext())}

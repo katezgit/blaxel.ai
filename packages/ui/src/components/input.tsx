@@ -25,7 +25,7 @@ export interface InputProps
   /**
    * Trailing slot — rendered right of the value text.
    * Pass a styled `<kbd>` with class
-   * `font-mono typography-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground`
+   * `font-mono typography-meta bg-card border border-border rounded-sm px-1.5 py-px text-muted-foreground`
    * for the v1 cmd-bar look.
    * When provided, the component renders a flex shell that owns the border/bg/radius/focus ring.
    */
@@ -48,7 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // shadow-focus-ring matches the global *:focus-visible halo+ring (base.css) so slotted inputs
             // read identically to plain inputs in both modes.
             "focus-within:outline-none focus-within:shadow-focus-ring",
-            // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
+            // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-card (formerly --color-panel).
             "focus-within:bg-form-field-surface",
             "has-[[aria-invalid=true]]:border-state-errored",
             "has-[[aria-invalid=true]]:focus-within:shadow-focus-ring-errored",
@@ -94,7 +94,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         data-slot="input"
         className={cn(
           formFieldBoxVariants({ size: "md" }),
-          // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-panel.
+          // Lift to form-field surface on focus — light: #FFFFFF, dark: #11161F. Tracks --color-card (formerly --color-panel).
           "focus:bg-form-field-surface",
           ...inputBaseClasses,
           className

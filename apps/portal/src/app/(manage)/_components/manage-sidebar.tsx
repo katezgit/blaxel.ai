@@ -145,7 +145,7 @@ function NavGroup({ label, items, isAdmin, className }: NavGroupProps) {
 
 function LockedNote() {
   return (
-    <div className="mx-3 mt-3 flex gap-2 rounded-md bg-muted-surface px-3 py-2 typography-caption text-meta-foreground leading-snug">
+    <div className="mx-3 mt-3 flex gap-2 rounded-md bg-hover-surface px-3 py-2 typography-caption text-meta-foreground leading-snug">
       <Lock aria-hidden="true" className="mt-1 size-3 shrink-0" />
       <span>Billing, limits, and secrets are managed by an owner.</span>
     </div>

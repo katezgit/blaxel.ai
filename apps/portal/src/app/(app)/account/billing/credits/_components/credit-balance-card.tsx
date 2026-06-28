@@ -38,7 +38,7 @@ export default function CreditBalanceCard() {
   return (
     <Card
       variant="elevated"
-      className="flex flex-col gap-4 bg-elevated-surface px-6 py-6 sm:flex-row sm:items-center sm:justify-between"
+      className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between"
     >
       <div className="flex flex-col gap-2">
         <span className="typography-meta font-mono uppercase tracking-[0.16em] text-meta-foreground">

@@ -173,7 +173,7 @@ export default function AdminsClient() {
                             {admin.name}
                           </span>
                           {admin.email === ownerEmail && (
-                            <span className="rounded-sm bg-secondary-surface px-1.5 py-px typography-meta font-mono text-meta-foreground">
+                            <span className="rounded-sm bg-muted-surface px-1.5 py-px typography-meta font-mono text-meta-foreground">
                               you
                             </span>
                           )}

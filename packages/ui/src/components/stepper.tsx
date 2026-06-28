@@ -107,7 +107,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
                       "inline-flex size-6 shrink-0 items-center justify-center rounded-full typography-body font-semibold",
                       isActive && "bg-primary text-primary-foreground",
                       isCompleted &&
-                        "border-2 border-primary bg-panel text-primary",
+                        "border-2 border-primary bg-card text-primary",
                       !isActive &&
                         !isCompleted &&
                         "border-[1.5px] border-border-strong bg-transparent font-medium text-text-disabled", // eslint-disable-line no-restricted-syntax -- 1.5px is the spec-mandated pending circle border; no token exists between border(1px) and border-2(2px)

@@ -65,7 +65,7 @@ function AvatarImage({
 }
 
 // ── AvatarFallback ───────────────────────────────────────────────────────────
-// Quiet surface: bg-secondary-surface + text-muted-foreground — same pattern as
+// Quiet surface: bg-hover-surface + text-muted-foreground — same pattern as
 // section icon containers (e.g. addon-row). Defers visual weight to the name
 // alongside it. Font: mono semibold, size keyed to parent size via data-size.
 
@@ -77,7 +77,7 @@ function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
       data-slot="avatar-fallback"
       className={cn(
         "flex size-full items-center justify-center",
-        "bg-secondary-surface text-muted-foreground font-mono font-semibold rounded-full",
+        "bg-hover-surface text-muted-foreground font-mono font-semibold rounded-full",
         // text sizes keyed to parent size via data-size on group
         "text-[10px]", // eslint-disable-line no-restricted-syntax -- no token for 10px; xs size only
         "group-data-[size=sm]/avatar:typography-label",

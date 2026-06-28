@@ -48,7 +48,7 @@ export default function BillingStatusCard() {
   return (
     <Card
       variant="elevated"
-      className="flex flex-col gap-4 bg-elevated-surface p-6 sm:flex-row sm:items-center sm:justify-between"
+      className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between"
     >
       <dl className="grid flex-1 grid-cols-2 gap-x-8 gap-y-4 typography-body lg:grid-cols-3">
         <Field label="Current tier">

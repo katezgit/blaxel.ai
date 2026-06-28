@@ -256,3 +256,71 @@ export const TwoLineOptions: Story = {
   name: "Two-line options (renderOption)",
   render: () => <TwoLineOptionsDemo />,
 }
+
+// ── Label prop + clear button stories ─────────────────────────────────────────
+
+function LabelNoValueDemo() {
+  const [value, setValue] = React.useState<string | null>(null)
+  return (
+    <div style={{ width: 240 }}>
+      <Combobox
+        options={FRAMEWORK_OPTIONS}
+        value={value}
+        onValueChange={setValue}
+        placeholder="All"
+        label="Framework"
+        emptyText="No framework found."
+      />
+    </div>
+  )
+}
+
+function LabelWithValueDemo() {
+  const [value, setValue] = React.useState<string | null>("next.js")
+  return (
+    <div style={{ width: 240 }}>
+      <Combobox
+        options={FRAMEWORK_OPTIONS}
+        value={value}
+        onValueChange={setValue}
+        placeholder="All"
+        label="Framework"
+        emptyText="No framework found."
+      />
+    </div>
+  )
+}
+
+function LabelClearDemo() {
+  const [value, setValue] = React.useState<string | null>("astro")
+  return (
+    <div style={{ width: 240 }}>
+      <p style={{ marginBottom: 8, fontSize: 12, color: "var(--color-text-secondary)" }}>
+        Hover the trigger to reveal the clear (×) button.
+      </p>
+      <Combobox
+        options={FRAMEWORK_OPTIONS}
+        value={value}
+        onValueChange={setValue}
+        placeholder="All frameworks"
+        label="Framework"
+        emptyText="No framework found."
+      />
+    </div>
+  )
+}
+
+export const LabelNoValue: Story = {
+  name: "Label — no value (dimension prefix only)",
+  render: () => <LabelNoValueDemo />,
+}
+
+export const LabelWithValue: Story = {
+  name: "Label — with value (Role: Value format)",
+  render: () => <LabelWithValueDemo />,
+}
+
+export const LabelClear: Story = {
+  name: "Label + clear button (hover to reveal ×)",
+  render: () => <LabelClearDemo />,
+}

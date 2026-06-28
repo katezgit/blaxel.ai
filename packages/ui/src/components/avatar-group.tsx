@@ -120,8 +120,8 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
             shape="circle"
             style={{ zIndex: n - index }}
             className={cn(
-              // ring separator — bg-panel so ring blends with panel background
-              "ring-1 ring-border bg-panel",
+              // ring separator — bg-card so ring blends with card background
+              "ring-1 ring-border bg-card",
               // overlap on every item after the first
               index > 0 && overlap
             )}
@@ -136,7 +136,7 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
         ))}
 
         {overflowCount > 0 && (
-          // Overflow slot: same diameter circle, --secondary bg, --muted-foreground text
+          // Overflow slot: same diameter circle, muted bg, --muted-foreground text
           // ring-1 ring-border matches the separator token used on stack avatars
           <div
             aria-label={`${overflowCount} more`}
@@ -144,7 +144,7 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
               // size matches the Avatar size variant
               overflowSizeClass[resolvedSize],
               "rounded-full",
-              "bg-secondary-surface text-muted-foreground",
+              "bg-hover-surface text-muted-foreground",
               "ring-1 ring-border",
               "flex items-center justify-center",
               // typography: mono medium per spec

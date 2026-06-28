@@ -55,7 +55,7 @@ export default function ActiveSessionsCard({ sessions }: ActiveSessionsCardProps
               <div className="flex items-start gap-3">
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted-surface text-muted-foreground"
+                  className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg bg-hover-surface text-muted-foreground"
                 >
                   <Icon className="size-5" />
                 </span>

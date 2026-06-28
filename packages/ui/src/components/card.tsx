@@ -21,22 +21,23 @@ const cardVariants = cva(
          * Default: flat card, canonical panel surface, border only.
          * No shadow — border provides separation.
          */
-        default: ["bg-panel", "border border-border"],
+        default: ["bg-card", "border border-border"],
 
         /**
-         * Elevated: panel surface with shadow-card providing both the 1px ring
+         * Elevated: card surface with shadow-card providing both the 1px ring
          * boundary AND the soft drop. No explicit border — the ring layer of
          * --shadow-1 (0 0 0 1px rgba) is the single edge, which avoids the
          * double-outline artifact when border + ring sit adjacent.
+         * Visually distinct from default: shadow replaces border as the edge.
          */
-        elevated: ["bg-panel", "shadow-card"],
+        elevated: ["bg-card", "shadow-card"],
 
         /**
          * Interactive: clickable/hoverable tile.
          * Full-surface bg-hover-surface fill on hover — no shadow escalation.
          */
         interactive: [
-          "bg-panel",
+          "bg-card",
           "border border-border",
           "cursor-pointer",
           "transition-colors duration-fast",
@@ -47,7 +48,7 @@ const cardVariants = cva(
         /**
          * Selected: stable selection state (multi-select taskset scenarios).
          * Darker warm-grey fill + elevated border step signals "chosen".
-         * bg-panel is NOT in base — ensures bg-selected-surface wins without merge fights.
+         * bg-card is NOT in base — ensures bg-selected-surface wins without merge fights.
          */
         selected: [
           "bg-selected-surface",

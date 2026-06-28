@@ -15,10 +15,9 @@ interface SidebarProps {
   onToggle?: () => void;
 }
 
-// Width transition is owned by the wrapper CSS in globals.css (.shell-rail).
-// Asymmetric timing (open/close uses different duration tokens) is keyed off
-// data-sub-shell-open on the shell frame, which the Sidebar primitive does
-// not know about — keep the primitive transition-agnostic.
+// Width transition is owned by the wrapper CSS in globals.css
+// (.shell-pane-column). Slide-in animation lives on the keyed wrapper around
+// this primitive in <UnifiedShell> — keep the primitive transition-agnostic.
 export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle }: SidebarProps) {
   const isRail = useIsSidebarRail();
 
@@ -26,7 +25,7 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
     <aside
       aria-label={ariaLabel}
       className={cn(
-        "relative h-full shrink-0 border-r border-sidebar-border bg-background",
+        "relative h-full shrink-0 border-r border-sidebar-border bg-sidebar",
         collapsed ? "lg:w-(--sidebar-rail-w)" : "lg:w-(--sidebar-w)",
         "md:w-(--sidebar-rail-w)",
       )}
@@ -69,7 +68,7 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
           // land at ~y=20 inside the sidebar (sub-shell: pt-1 wrapper + h-8
           // row → center at 4+16=20; main shell: pt-3 + small label, center
           // ~20), so a single top-5 value rides both.
-          className="absolute top-5 -right-3 z-10 hidden size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-secondary-surface focus-visible:shadow-focus-ring lg:inline-flex"
+          className="absolute top-5 -right-3 z-10 hidden size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-sidebar text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring lg:inline-flex"
         >
           {isRail ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
         </button>

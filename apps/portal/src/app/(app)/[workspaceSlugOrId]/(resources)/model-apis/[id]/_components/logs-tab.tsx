@@ -217,6 +217,9 @@ function LogsView({ logs }: { logs: ReadonlyArray<Log> }) {
 
 const columnHelper = createColumnHelper<Log>();
 
+// Diverges from `(app)/_components/resource-table.tsx` because each expanded
+// log renders a 2nd `<tr>` (the LogExpandPanel) inside the same tbody. The
+// primitive maps 1:1 row→tr, so an expand-panel-row pattern doesn't fit.
 function LogsTable({
   rows,
   now,

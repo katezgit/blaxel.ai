@@ -36,7 +36,7 @@ type Story = StoryObj<typeof meta>
 
 export const Playground: Story = {
   render: (args) => (
-    <div style={{ width: 480 }} className="border border-border rounded-surface bg-panel">
+    <div style={{ width: 480 }} className="border border-border rounded-surface bg-card">
       <EmptyState {...args} icon={args.variant === "zero-state" ? Inbox : undefined} />
     </div>
   ),
@@ -49,7 +49,7 @@ export const Playground: Story = {
 export const Variants: Story = {
   render: () => (
     <div className="flex flex-col gap-6" style={{ width: 480 }}>
-      <div className="border border-border rounded-surface bg-panel">
+      <div className="border border-border rounded-surface bg-card">
         <EmptyState
           variant="zero-state"
           icon={Activity}
@@ -62,7 +62,7 @@ export const Variants: Story = {
           }
         />
       </div>
-      <div className="border border-border rounded-surface bg-panel">
+      <div className="border border-border rounded-surface bg-card">
         <EmptyState
           variant="no-results"
           title="No matches"
@@ -82,7 +82,7 @@ export const Sizes: Story = {
     <div className="flex flex-col gap-6" style={{ width: 480 }}>
       <div>
         <p className="typography-caption text-muted-foreground mb-2 ml-1">size=&quot;md&quot; (default)</p>
-        <div className="border border-border rounded-surface bg-panel">
+        <div className="border border-border rounded-surface bg-card">
           <EmptyState
             variant="zero-state"
             size="md"
@@ -94,7 +94,7 @@ export const Sizes: Story = {
       </div>
       <div>
         <p className="typography-caption text-muted-foreground mb-2 ml-1">size=&quot;sm&quot; (compact — icon suppressed)</p>
-        <div className="border border-border rounded-surface bg-panel" style={{ width: 320 }}>
+        <div className="border border-border rounded-surface bg-card" style={{ width: 320 }}>
           <EmptyState
             variant="no-results"
             size="sm"
@@ -110,7 +110,7 @@ export const Sizes: Story = {
 
 export const WithCta: Story = {
   render: () => (
-    <div className="border border-border rounded-surface bg-panel" style={{ width: 480 }}>
+    <div className="border border-border rounded-surface bg-card" style={{ width: 480 }}>
       <EmptyState
         variant="zero-state"
         icon={Layers}

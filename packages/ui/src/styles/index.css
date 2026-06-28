@@ -31,6 +31,7 @@
 /* ── DESIGN TOKENS — theme layer ─────────────────────────────────────────── */
 @import './primitive.css';
 @import './theme.css';
+@import './chart.css';
 
 /* ── BASE STYLES — base layer ────────────────────────────────────────────── */
 @import './base.css' layer(base);

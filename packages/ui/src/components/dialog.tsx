@@ -8,6 +8,16 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@repo/ui/lib/cn"
 import { useScrolled } from "@repo/ui/lib/use-scrolled"
+import {
+  overlayPanelBody,
+  overlayPanelDescription,
+  overlayPanelFooterBase,
+  overlayPanelFooterScrolled,
+  overlayPanelHeaderBase,
+  overlayPanelHeaderScrolled,
+  overlayPanelSurface,
+  overlayPanelTitle,
+} from "@repo/ui/lib/overlay-panel"
 import { Button } from "@repo/ui/components/button"
 
 const DialogScrollTopContext = React.createContext<boolean>(false)
@@ -64,7 +74,7 @@ const dialogContentVariants = cva(
   [
     "fixed inset-0 z-overlay",
     "flex flex-col w-full",
-    "bg-popover",
+    overlayPanelSurface,
     // Safe-area insets: prevent iOS home-indicator from hiding footer on mobile sheet.
     // Reset at sm+ where the panel is a bounded modal, not a viewport-filling sheet.
     "pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)]",
@@ -188,15 +198,10 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-header"
       className={cn(
-        "relative z-sticky",
-        "flex flex-col gap-1 shrink-0",
-        // px-6: symmetric horizontal inset matching body inner — visual right edges of header, body content, and footer all sit at panel_right − 24px.
-        "pt-6 pb-3 px-6",
-        // Always render border-b so box model is stable (no 1px layout shift on state change).
-        "border-b",
-        scrolled ? "border-border" : "border-transparent",
-        scrolled ? "shadow-scroll-cue" : "shadow-none",
-        "transition-[border-color,box-shadow] prop-(--motion-state-change)",
+        // flex-col gap-1: title stacks above description; close button is absolute (outside flex flow)
+        "flex flex-col gap-1",
+        overlayPanelHeaderBase,
+        scrolled && overlayPanelHeaderScrolled,
         className
       )}
       {...props}
@@ -211,10 +216,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn(
-        "text-[length:var(--typography-subtitle)] font-semibold text-foreground leading-none", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
-        className
-      )}
+      className={cn(overlayPanelTitle, className)}
       {...props}
     />
   )
@@ -227,11 +229,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn(
-        "typography-body",
-        "text-muted-foreground",
-        className
-      )}
+      className={cn(overlayPanelDescription, className)}
       {...props}
     />
   )
@@ -245,7 +243,7 @@ function DialogBody({ className, children, ...props }: React.ComponentProps<"div
   return (
     <div
       data-slot="dialog-body"
-      className="flex flex-1 flex-col min-h-0 text-foreground"
+      className={overlayPanelBody}
     >
       {/* scrollbar-gutter: stable both-edges reserves equal space on both sides so content never
           reflows and left/right insets stay symmetric.
@@ -279,15 +277,8 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-row items-center justify-end shrink-0",
-        "gap-2",
-        // px-6: symmetric horizontal inset matching body inner — visual right edges of header, body content, and footer all sit at panel_right − 24px.
-        "pt-3 pb-4 px-6",
-        // Always render border-t so box model is stable (no 1px layout shift on state change).
-        "border-t",
-        scrolledBottom ? "border-border" : "border-transparent",
-        scrolledBottom ? "shadow-scroll-cue-inverted" : "shadow-none",
-        "transition-[border-color,box-shadow] prop-(--motion-state-change)",
+        overlayPanelFooterBase,
+        scrolledBottom && overlayPanelFooterScrolled,
         className
       )}
       {...props}

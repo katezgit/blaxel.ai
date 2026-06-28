@@ -45,7 +45,7 @@ const formatUsd = (value: number): string =>
 // rule is not a warning, so no left-edge stripe or primary tint.
 function RuleShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-md border border-border bg-muted-surface px-4 py-3">
+    <div className="rounded-md border border-border bg-card px-4 py-3">
       {children}
     </div>
   );
@@ -53,7 +53,7 @@ function RuleShell({ children }: { children: React.ReactNode }) {
 
 function RuleIcon() {
   return (
-    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground">
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-hover-surface text-muted-foreground">
       <Zap className="size-4" aria-hidden="true" />
     </div>
   );

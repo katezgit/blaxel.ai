@@ -108,7 +108,7 @@ export default function SamlSection() {
               </h3>
               <div className="flex flex-col gap-2">
                 <span className="typography-caption text-muted-foreground">SSO URL</span>
-                <div className="flex items-center gap-2 rounded-md border border-border bg-secondary-surface px-3 py-2">
+                <div className="flex items-center gap-2 rounded-md border border-border bg-muted-surface px-3 py-2">
                   <span className="flex-1 truncate font-mono typography-caption text-foreground">
                     {SP_SSO_URL}
                   </span>
@@ -119,7 +119,7 @@ export default function SamlSection() {
                 <span className="typography-caption text-muted-foreground">
                   Entity ID (Audience URI)
                 </span>
-                <div className="flex items-center gap-2 rounded-md border border-border bg-secondary-surface px-3 py-2">
+                <div className="flex items-center gap-2 rounded-md border border-border bg-muted-surface px-3 py-2">
                   <span className="flex-1 truncate font-mono typography-caption text-foreground">
                     {SP_ENTITY_ID}
                   </span>

@@ -28,7 +28,7 @@ import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-ac
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
-import ApiKeysTable from "./api-keys-table";
+import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import CreateApiKeyDialog from "./create-api-key-dialog";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", {
@@ -184,7 +184,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
           }
         />
       ) : (
-        <ApiKeysTable
+        <ResourceTable
           table={table}
           getRowClassName={(row) =>
             classifyExpiry(row.original.expiresAt) === "near"

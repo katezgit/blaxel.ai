@@ -105,27 +105,23 @@ export function UnifiedShellSkeleton() {
           <WorkspaceTopbarSkeleton />
         )}
         <div className="relative flex min-h-0 flex-1">
-          <div className="shell-pane-stack hidden md:block">
-            <div className="shell-rail">
-              <Sidebar
-                ariaLabel="Workspace resources"
-                groups={railGroups}
-                collapsed={collapsed}
-              />
-            </div>
-            <div
-              className="shell-sub-pane"
-              aria-hidden={!subShellOpen}
-            >
+          <div className="shell-pane-column hidden md:block">
+            {subShellOpen ? (
               <Sidebar
                 ariaLabel={subPane.ariaLabel}
                 groups={subPane.groups}
                 collapsed={visibleCollapsed}
                 header={<ReturnHeaderSkeleton />}
               />
-            </div>
+            ) : (
+              <Sidebar
+                ariaLabel="Workspace resources"
+                groups={railGroups}
+                collapsed={collapsed}
+              />
+            )}
           </div>
-          <main className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop">
+          <main className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-background">
             <RouteSpinner />
           </main>
         </div>

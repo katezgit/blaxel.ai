@@ -20,7 +20,7 @@ const iconButtonVariants = cva(
 
         secondary: [
           "bg-transparent text-foreground border border-border",
-          "hover:bg-secondary-surface",
+          "hover:bg-hover-surface",
           "active:bg-selected-surface",
           "disabled:bg-transparent",
         ],

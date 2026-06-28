@@ -234,7 +234,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           </>
         }
         details={
-          <div className="rounded-md border border-border bg-secondary-surface p-3">
+          <div className="rounded-md border border-border bg-muted-surface p-3">
             <p className="flex items-center gap-2 typography-caption text-muted-foreground">
               <KeyRound aria-hidden="true" className="size-3.5" />
               <span>Mock: this would also revoke linked workspace API keys.</span>

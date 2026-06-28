@@ -162,7 +162,7 @@ export default function ConnectionsView({
       </header>
 
       {connections.length === 0 ? (
-        <div className="rounded-md border border-border bg-secondary-surface overflow-hidden">
+        <div className="rounded-md border border-border bg-muted-surface overflow-hidden">
           {/* Inline empty-state composition — uses tighter on-canon spacing
               (py-8 / size-10 icon tile / size-6 inner) than the DS EmptyState
               primitive ships with. See blaxel.ai/blaxel.ai#50 for DS refinement. */}

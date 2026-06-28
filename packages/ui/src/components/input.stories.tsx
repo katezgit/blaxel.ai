@@ -135,7 +135,7 @@ export const WithKbdHint: Story = {
           placeholder="Search or jump to…"
           leading={<Search className="size-4 shrink-0 text-muted-foreground" />}
           trailing={
-            <kbd className="font-mono typography-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
+            <kbd className="font-mono typography-meta bg-card border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
               ⌘K
             </kbd>
           }
@@ -146,7 +146,7 @@ export const WithKbdHint: Story = {
         <Input
           placeholder="Jump to run…"
           trailing={
-            <kbd className="font-mono typography-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
+            <kbd className="font-mono typography-meta bg-card border border-border rounded-sm px-1.5 py-px text-muted-foreground shrink-0">
               /
             </kbd>
           }

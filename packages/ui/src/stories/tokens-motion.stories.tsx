@@ -45,7 +45,7 @@ function DurationRow({ token, label, usage, widthPct }: DurationRowProps) {
         style={{
           flex: 1,
           height: 6,
-          background: "var(--color-secondary-surface)",
+          background: "var(--color-muted-surface)",
           borderRadius: 9999,
           overflow: "hidden",
         }}

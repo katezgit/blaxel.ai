@@ -324,7 +324,7 @@ function TraceThumbnail({ trace }: { trace: Trace }) {
       <div className="absolute bottom-2 left-2">
         <span
           className={cn(
-            "rounded-badge bg-panel/90 px-1.5 py-0.5",
+            "rounded-badge bg-muted-surface/90 px-1.5 py-0.5",
             "font-mono typography-meta text-foreground",
             "border border-border",
           )}
@@ -338,6 +338,10 @@ function TraceThumbnail({ trace }: { trace: Trace }) {
 
 const columnHelper = createColumnHelper<Trace>();
 
+// Diverges from `(app)/_components/resource-table.tsx`: the list view sits
+// inside a `<Card p-0>` (not the resource-table `<div>` chrome) so the band
+// reads as a peer to the grid-view cards above it on the toggle. Card-based
+// chrome + density-compact headers are not part of the ResourceTable contract.
 function TraceList({ traces }: { traces: ReadonlyArray<Trace> }) {
   const columns = useMemo(
     () => [

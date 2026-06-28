@@ -54,6 +54,10 @@ export function ResultsTab({ rows }: ResultsTabProps) {
 
 const columnHelper = createColumnHelper<TasksetResult>();
 
+// Diverges from `(app)/_components/resource-table.tsx`: each `<tr>` is a
+// `role="button"` keyboard-navigable surface (Enter / Space activates,
+// onClick navigates to the taskset detail). The primitive doesn't model
+// per-row activation, so the keyboard semantics stay local.
 function ResultsTable({ rows }: { rows: ReadonlyArray<TasksetResult> }) {
   const router = useRouter();
   const columns = [

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-panel bg-grid-overlay p-6">
+    <main className="flex min-h-screen items-center justify-center bg-background bg-grid-overlay p-6">
       {children}
     </main>
   );

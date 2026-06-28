@@ -37,8 +37,8 @@ function DashboardBehindOverlay() {
               fontWeight: 500,
               padding: "1px 6px",
               borderRadius: 9999,
-              background: "var(--color-secondary-surface)",
-              color: "var(--color-secondary-foreground)",
+              background: "var(--color-muted-surface)",
+              color: "var(--color-foreground)",
             }}
           >
             active
@@ -51,7 +51,7 @@ function DashboardBehindOverlay() {
               paddingLeft: 8,
               paddingRight: 8,
               borderRadius: "var(--radius-sm)",
-              background: "var(--color-secondary-surface)",
+              background: "var(--color-muted-surface)",
               border: "1px solid var(--color-border)",
               display: "flex",
               alignItems: "center",

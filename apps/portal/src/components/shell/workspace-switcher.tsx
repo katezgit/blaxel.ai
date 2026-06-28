@@ -61,7 +61,7 @@ export default function WorkspaceSwitcher({
       className={cn(
         "flex h-8 min-w-0 max-w-full items-center rounded-md border border-transparent typography-label font-medium text-foreground",
         "transition-colors duration-fast ease-out-standard",
-        "hover:bg-secondary-surface hover:border-border focus-visible:shadow-focus-ring",
+        "hover:bg-hover-surface hover:border-border focus-visible:shadow-focus-ring",
         isRail
           ? "size-8 shrink-0 max-w-none cursor-pointer p-0 justify-center"
           : "w-full gap-1.5 px-2 max-md:gap-1 max-md:px-1.5",

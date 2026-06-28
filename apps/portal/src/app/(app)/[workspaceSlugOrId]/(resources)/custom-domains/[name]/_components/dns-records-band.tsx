@@ -106,6 +106,11 @@ export default function DnsRecordsBand({ domain }: DnsRecordsBandProps) {
           )}
         </p>
 
+        {/* Inline table inside a `<Band>` on the detail page — diverges from
+            `(app)/_components/resource-table.tsx` because the chrome lives
+            inside a band, not as a standalone surface, and individual rows
+            switch into a "failing" treatment (wash + left accent) the
+            ResourceTable contract doesn't model. */}
         <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
           <table className={tableClass} aria-label="DNS records to publish">
             <thead className={tableHeaderClass}>

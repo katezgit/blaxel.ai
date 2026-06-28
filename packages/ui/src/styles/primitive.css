@@ -52,22 +52,38 @@
   --ink-400: oklch(.690 .029 285.612);   /* v2-gray-64 — text-disabled light ↔ ink-500 dark  */
   --ink-500: oklch(.393 .029 285.012);   /* v2-gray-30 — text-disabled dark  ↔ ink-400 light */
 
-  /* Surfaces — light / dark pairs.
-   * Light: chrome tier (--surface-bg-light) sits a faint warm off-white below the
-   *   pure-white content tier (--surface-panel-light). Cards float on white panel
-   *   via border + shadow.
-   * Dark: neutralized warm-grey tiers (low-chroma luminance ladder). Anchored
-   *   neutral so hover/highlight mixes don't inherit a violet cast. */
-  --surface-bg-light:        #F9F9F8;
-  --surface-bg-dark:         #09090A;
-  --surface-panel-light:     #FFFFFF;
-  --surface-panel-dark:      #131313;
-  --surface-page-light:      #FFFFFF;
-  --surface-page-dark:       #1A1A19;
-  --surface-elevated-light:  #FFFFFF;
-  --surface-elevated-dark:   #1A1A1A;
-  --surface-muted-light:     #FFFFFF;
-  --surface-muted-dark:      #1B1B1B;
+  /* Surfaces — 3-tier DS system (light / dark pairs).
+   *
+   * Tier order (dark mode, darkest → lightest):
+   *   muted #111111 → background #1A1A19 → card #1A1A1A
+   *
+   * Metaphor is symmetric across modes:
+   *   Cards are framed regions of the workspace in BOTH light and dark. The surface
+   *   delta between card and workspace is intentionally near-zero — the lean system
+   *   relies on border + shadow for card identity, not tonal contrast.
+   *
+   *   Light: bg-card (#FFFFFF) == bg-background (#FFFFFF) — identical surface.
+   *          Cards are distinguished by border + shadow only.
+   *   Dark:  bg-card (#1A1A1A) ≈ bg-background (#1A1A19) — 1-unit blue delta,
+   *          perceptually identical. Cards distinguished by border + shadow only.
+   *
+   *   background  = workspace base (brightest reading surface in dark; pure white in light)
+   *   card        = framed workspace region — same surface as background, semantically
+   *                 distinct so consumers can theme if needed. Default: near-zero delta.
+   *   muted       = sunken strip (deepest, used for table headers / code blocks)
+   *   popover     = DARK ONLY exception: floating surfaces (popovers, dropdowns, dialogs,
+   *                 focused form-field highlight, control-raised bg) use a slightly recessed
+   *                 value that reads as a lift when portaled above page content with
+   *                 shadow-popover. Light popovers alias card-light — no separate primitive.
+   *
+   * Chrome (sidebar/topbar) uses app-local tokens; not part of DS. */
+  --surface-bg-light:        #FFFFFF;
+  --surface-bg-dark:         #1A1A19;
+  --surface-card-light:      #FFFFFF;
+  --surface-card-dark:       #1A1A1A;   /* framed workspace region — border+shadow carry identity */
+  --surface-popover-dark:    #131313;   /* floating surfaces only: popovers, dropdowns, form-field lift */
+  --surface-muted-light:     #F0F0EE;
+  --surface-muted-dark:      #111111;
   --surface-secondary-light: #EEEDE9;
   --surface-secondary-dark:  #262626;
 

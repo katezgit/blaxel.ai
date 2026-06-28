@@ -55,7 +55,7 @@
   padding-left: 0;
   padding-right: 1rem;
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-background);
+  background: var(--color-topbar);
 }
 .shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: stretch; min-width: 0; display: flex; align-items: center; gap: 0.5rem; }
 .shell-topbar [data-slot="ws"]       { min-width: 0; flex: 1 1 auto; display: flex; }
@@ -132,6 +132,18 @@
 }
 
 @theme {
+  /* App-local chrome surfaces. Intentionally not in the DS — sidebar and
+   * topbar values encode portal-specific shell decisions; a downstream
+   * consumer with a different shell structure would override or omit these.
+   * DS owns only content-area surfaces (--color-background / --color-card /
+   * --color-muted-surface). Spec: docs/design/foundations/surface-tiers.md.
+   *
+   * Dark: #09090A — recedes behind the workspace (#1A1A19) so the workspace
+   * stays the brightest, dominant reading surface. Light: #F9F9F8 — a warm
+   * neutral chrome that reads distinctly against pure-white workspace. */
+  --color-sidebar: light-dark(#F9F9F8, #09090A);
+  --color-topbar:  light-dark(#F9F9F8, #09090A);
+
   /* 1536px caps content so a 1920px monitor minus the 248px sidebar lands
    * cleanly; 1280 (max-w-7xl) clips dense tables on 1440 laptops. */
   --page-max-width: 1536px;
@@ -160,18 +172,11 @@
    * read "raw" without a tonal lift behind them. */
   --color-sidebar-border: light-dark(
     rgb(var(--border-seed-light) / .10),
-    var(--surface-elevated-dark)
+    var(--surface-card-dark)
   );
 
-  /* Sidebar hover — two variants for two shell surfaces.
-   *   App shell sidebar  → aliases secondary-surface (sits on bg-background).
-   *   Manage shell sidebar → custom mix (sits on bg-card / panel surface; orange
-   *   mix in light, neutral white mix in dark to avoid clashing on dark-navy bg). */
-  --color-sidebar-hover: var(--color-secondary-surface);
-  --color-sidebar-hover-manage: light-dark(
-    color-mix(in srgb, var(--surface-elevated-light) 92%, var(--orange-800) 8%),
-    color-mix(in srgb, var(--surface-elevated-dark) 88%, white 12%)
-  );
+  /* App-shell sidebar hover — aliases hover-surface (neutral, no brand tint). */
+  --color-sidebar-hover: var(--color-hover-surface);
 
   /* PINNED dark teal, never flips with theme. App-scoped because the only
    * consumer is the onboarding brand panel. */
@@ -222,7 +227,7 @@
 /* background-attachment: fixed intentionally OMITTED (perf: trace/table scroll).
  * Spec: docs/design/guidelines/app-shell-layout.md §9. */
 @utility bg-grid-backdrop {
-  background-color: var(--color-page);
+  background-color: var(--color-background);
   background-image:
     linear-gradient(to right,  var(--color-grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
@@ -230,8 +235,8 @@
 }
 
 /* No background-color clamp, so it composes over any surface utility
- * (e.g. bg-elevated-surface on the onboarding form panel). Pair with a
- * base surface class — never use alone. */
+ * (e.g. bg-card on the onboarding form panel). Pair with a base surface
+ * class — never use alone. */
 @utility bg-grid-overlay {
   background-image:
     linear-gradient(to right,  var(--color-grid-line) 1px, transparent 1px),
@@ -252,31 +257,25 @@
 
 /* ─── Sub-shell sidebar slide (workspace ↔ profile / account / settings) ─────
  *
- * Both panels are always mounted as siblings inside `.shell-pane-stack`:
- *   - `.shell-rail`     — the workspace rail (top-level nav)
- *   - `.shell-sub-pane` — the sub-shell nav (settings / profile / account)
+ * Only ONE sidebar is mounted at a time. When `subShellOpen` flips in
+ * `<UnifiedShell>`, a `key` change forces React to unmount the old sidebar
+ * and mount the new one — the new one slides in via an enter-only keyframe.
+ * No exit animation: the old sidebar is simply gone. This matches the Oak
+ * pattern (`apps/web/app/_components/app-shell/sidebar.tsx`) and eliminates
+ * the lockstep two-pane swap that was producing the "old man walking" exit
+ * + content-jump-mid-slide artifacts of the prior implementation.
  *
- * The stack reserves a single column whose width follows the rail's
- * collapsed/expanded state on main routes, and snaps to the full sidebar
- * width on sub-shell routes. Both `<aside>` elements are absolute-positioned
- * to fill the stack and overlap. Only ONE is visible at rest — the other is
- * translated 100% to the side:
+ * Direction maps to hierarchy: entering a sub-shell (workspace → settings /
+ * profile / account) reads as "going deeper" → new child slides in from the
+ * RIGHT. Leaving a sub-shell reads as "returning to parent" → workspace nav
+ * slides in from the LEFT. The wrapper `<div>` carries `overflow: hidden`
+ * so the off-screen start position is clipped — the slide reveals from the
+ * column's edge, not from the page.
  *
- *   Main route (data-sub-shell-open absent):
- *     rail     → translateX(0)       (visible)
- *     sub-pane → translateX(100%)    (off-screen right)
- *
- *   Sub-shell route (data-sub-shell-open present):
- *     rail     → translateX(-100%)   (off-screen left)
- *     sub-pane → translateX(0)       (visible)
- *
- * Symmetric timing — both directions use --motion-enter so the rail's exit
- * and the sub-pane's entry land in lockstep, no perceptual gap. Reduced
- * motion collapses --duration-base to 0ms upstream (theme.css), no extra
- * media query needed here. First paint runs no transition because the
- * initial style application is not a property change. */
+ * Reduced motion collapses --duration-base to 0ms upstream (theme.css), so
+ * the keyframe still runs but completes instantly. */
 
-.shell-pane-stack {
+.shell-pane-column {
   position: relative;
   width: var(--shell-left-w, var(--sidebar-w));
   height: 100%;
@@ -284,29 +283,20 @@
   overflow: hidden;
   transition: width var(--motion-enter);
 }
-.shell-rail,
-.shell-sub-pane {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  transition: transform var(--motion-enter);
-}
-/* Inner <aside> fills its wrapper so the bg-background fully covers the slide
- * surface — no gap shows through when the rail's own width (from the Sidebar
- * primitive's responsive classes) is narrower than the stack column (e.g.
- * sub-shell open while ⌘B-collapsed). The stack governs the column width;
- * the asides simply fill it. */
-.shell-rail > aside,
-.shell-sub-pane > aside {
-  width: 100%;
-}
-.shell-rail { transform: translateX(0); }
-.shell-sub-pane { transform: translateX(100%); }
-[data-sub-shell-open] .shell-rail { transform: translateX(-100%); }
-[data-sub-shell-open] .shell-sub-pane { transform: translateX(0); }
 
-.shell-sub-pane[aria-hidden="true"] {
-  pointer-events: none;
+@keyframes shell-pane-slide-in-from-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes shell-pane-slide-in-from-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.shell-pane-slide-in-from-right {
+  animation: shell-pane-slide-in-from-right var(--duration-base) var(--ease-out-emphasized) both;
+}
+.shell-pane-slide-in-from-left {
+  animation: shell-pane-slide-in-from-left var(--duration-base) var(--ease-out-emphasized) both;
 }
 
 /* Lives here, not @repo/ui, because the DS intentionally has no opacity-*

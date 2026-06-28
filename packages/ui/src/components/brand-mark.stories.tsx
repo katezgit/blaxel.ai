@@ -29,7 +29,7 @@ export const Default: Story = {
       <div className="flex items-center justify-center p-8 bg-background rounded-lg border border-border">
         <BrandMark {...args} />
       </div>
-      <div className="flex items-center justify-center p-8 rounded-lg" style={{ background: "var(--color-panel)" }}>
+      <div className="flex items-center justify-center p-8 rounded-lg" style={{ background: "var(--color-card)" }}>
         <BrandMark {...args} />
       </div>
     </div>

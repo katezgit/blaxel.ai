@@ -4,6 +4,16 @@ export { cva, type VariantProps } from "./lib/variants";
 export { useCopyToClipboard } from "./lib/use-copy-to-clipboard";
 export { useScrolled } from "./lib/use-scrolled";
 export { formFieldBoxVariants, type FormFieldBoxVariants } from "./lib/form-field-box";
+export {
+  overlayPanelSurface,
+  overlayPanelHeaderBase,
+  overlayPanelHeaderScrolled,
+  overlayPanelBody,
+  overlayPanelFooterBase,
+  overlayPanelFooterScrolled,
+  overlayPanelTitle,
+  overlayPanelDescription,
+} from "./lib/overlay-panel";
 
 // ── Components ────────────────────────────────────────────────────────────
 

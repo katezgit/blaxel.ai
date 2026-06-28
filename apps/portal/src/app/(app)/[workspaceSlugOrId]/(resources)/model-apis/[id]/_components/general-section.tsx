@@ -81,7 +81,7 @@ function VisibilityRow({ isPrivate }: { isPrivate: boolean }) {
 function ReadOnlyGeneralSection({ model }: { model: Model }) {
   return (
     <GeneralShell>
-      <div className="rounded-surface border border-border bg-panel px-5 py-4">
+      <div className="rounded-surface border border-border bg-card px-5 py-4">
         <GeneralHeading />
         <div className="mt-4">
           <FormField id="model-display-name" label="Display name">
@@ -138,7 +138,7 @@ function EditableGeneralSection({ model }: { model: Model }) {
       <form
         onSubmit={onSubmit}
         noValidate
-        className="rounded-surface border border-border bg-panel px-5 py-4"
+        className="rounded-surface border border-border bg-card px-5 py-4"
       >
         <GeneralHeading />
         <div className="mt-4">
@@ -230,7 +230,7 @@ function ReadOnlyTagsField({
               key={tag}
               className={cn(
                 "inline-flex items-center",
-                "rounded-badge border border-border bg-background px-2 py-0.5",
+                "rounded-badge border border-border bg-muted-surface px-2 py-0.5",
                 "typography-label font-mono text-foreground",
               )}
             >
@@ -282,7 +282,7 @@ function EditableTagsField({
       <div
         className={cn(
           "flex w-full flex-wrap items-center gap-1.5",
-          "h-auto min-h-8 px-2.5 py-1 rounded-lg border border-border bg-background",
+          "h-auto min-h-8 px-2.5 py-1 rounded-lg border border-border bg-muted-surface",
           "transition-[color,box-shadow,outline]",
           // Keyboard-only focus ring on the shell, matching the canonical Input
           // shell pattern (ring-2 ring-ring ring-offset-2 = white-inner + teal-outer).
