@@ -151,7 +151,7 @@ function TabsList({
           "relative",
           variant === "segmented" && [
             "inline-flex w-fit items-center gap-0.5 p-0.5",
-            "bg-panel border border-secondary rounded-md",
+            "bg-card border border-secondary rounded-md",
           ],
           variant === "underline" && [
             "flex w-fit",

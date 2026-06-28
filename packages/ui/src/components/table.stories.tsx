@@ -179,7 +179,7 @@ export const Selection: Story = {
         <Table totalCount={RUNS.length} pageOffset={0}>
           <TableHeader>
             <tr>
-              <th className="sticky top-0 left-0 z-table-corner w-10 bg-elevated-surface border-b border-border px-3 align-middle">
+              <th className="sticky top-0 left-0 z-table-corner w-10 bg-card border-b border-border px-3 align-middle">
                 <Checkbox
                   size="sm"
                   aria-label="Select all"
@@ -469,7 +469,7 @@ export const PatternB_InsideCard: Story = {
       description: {
         story:
           "Use plain `<Table>` (no `bordered`) when the table is one panel among others. " +
-          "The Card carries its own heading + subtitle and provides all outer chrome via `border` + `bg-panel`. " +
+          "The Card carries its own heading + subtitle and provides all outer chrome via `border` + `bg-card`. " +
           "The table adds no outer border — the Card IS the container. " +
           "Use `overflow-hidden p-0` on the Card so the table flush-fills the card's rounded corners. " +
           "CardHeader uses `px-6` and the table's first cell gets `first:pl-6`, " +
@@ -529,9 +529,9 @@ export const Antipattern_DoubleChrome: Story = {
     docs: {
       description: {
         story:
-          "DO NOT do this. `<Card><Table bordered>` stacks two sets of border + rounded corners and two bg-elevated-surface surfaces. " +
+          "DO NOT do this. `<Card><Table bordered>` stacks two sets of border + rounded corners and two bg-card surfaces. " +
           "The Card border and the `bordered` Table border fight each other, producing doubled edges, " +
-          "mismatched radii, and a double bg-elevated-surface that makes the background visually broken. " +
+          "mismatched radii, and a double bg-card that makes the background visually broken. " +
           "Use Pattern A (bordered, no Card) or Pattern B (Card, no bordered) — never both.",
       },
     },

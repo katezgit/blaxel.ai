@@ -120,8 +120,8 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
             shape="circle"
             style={{ zIndex: n - index }}
             className={cn(
-              // ring separator — bg-panel so ring blends with panel background
-              "ring-1 ring-border bg-panel",
+              // ring separator — bg-card so ring blends with card background
+              "ring-1 ring-border bg-card",
               // overlap on every item after the first
               index > 0 && overlap
             )}

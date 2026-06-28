@@ -25,7 +25,7 @@ export interface InputProps
   /**
    * Trailing slot — rendered right of the value text.
    * Pass a styled `<kbd>` with class
-   * `font-mono typography-meta bg-panel border border-border rounded-sm px-1.5 py-px text-muted-foreground`
+   * `font-mono typography-meta bg-card border border-border rounded-sm px-1.5 py-px text-muted-foreground`
    * for the v1 cmd-bar look.
    * When provided, the component renders a flex shell that owns the border/bg/radius/focus ring.
    */

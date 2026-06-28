@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>
 
 export const Playground: Story = {
   render: (args) => (
-    <div style={{ width: 480 }} className="border border-border rounded-surface bg-panel">
+    <div style={{ width: 480 }} className="border border-border rounded-surface bg-card">
       <ErrorState
         {...args}
         action={
@@ -43,7 +43,7 @@ export const Playground: Story = {
 
 export const Default: Story = {
   render: () => (
-    <div className="border border-border rounded-surface bg-panel" style={{ width: 480 }}>
+    <div className="border border-border rounded-surface bg-card" style={{ width: 480 }}>
       <ErrorState
         title="Couldn't load runs"
         subtitle="Something went wrong loading the run list. Your data is intact."
@@ -62,7 +62,7 @@ export const Default: Story = {
 
 export const NoIcon: Story = {
   render: () => (
-    <div className="border border-border rounded-surface bg-panel" style={{ width: 360 }}>
+    <div className="border border-border rounded-surface bg-card" style={{ width: 360 }}>
       <ErrorState
         icon={null}
         title="Couldn't load traces"
@@ -81,7 +81,7 @@ export const NoIcon: Story = {
 
 export const NoSubtitle: Story = {
   render: () => (
-    <div className="border border-border rounded-surface bg-panel" style={{ width: 480 }}>
+    <div className="border border-border rounded-surface bg-card" style={{ width: 480 }}>
       <ErrorState
         title="Something went wrong"
         action={
@@ -99,7 +99,7 @@ export const NoSubtitle: Story = {
 
 export const MultipleActions: Story = {
   render: () => (
-    <div className="border border-border rounded-surface bg-panel" style={{ width: 480 }}>
+    <div className="border border-border rounded-surface bg-card" style={{ width: 480 }}>
       <ErrorState
         title="Couldn't load this eval"
         subtitle="Something went wrong. Your data is intact."
