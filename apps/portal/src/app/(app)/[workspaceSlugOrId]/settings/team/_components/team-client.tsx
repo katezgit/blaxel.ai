@@ -50,7 +50,7 @@ import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
-import TeamTable from "./team-table";
+import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import {
   ROLE_META,
   ROLE_VALUES,
@@ -281,7 +281,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           onClick={() => setInviteOpen(true)}
         >
           <Plus aria-hidden="true" />
-          <span>Invite users</span>
+          <span>Invite members</span>
         </Button>
       </div>
 
@@ -368,7 +368,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           }
         />
       ) : (
-        <TeamTable
+        <ResourceTable
           table={table}
           getRowClassName={(row) =>
             row.original.status === "expired"

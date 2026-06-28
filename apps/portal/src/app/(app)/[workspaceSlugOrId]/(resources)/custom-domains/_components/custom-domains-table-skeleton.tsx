@@ -15,6 +15,10 @@ const ROWS = 3;
 // populated render (Domain cell stacks name + display name + label chips;
 // Region cell pairs a flag-glyph dot with city + mono slug; Status is a pill;
 // Last verified is a tight relative-time bar) so the swap-in is layout-neutral.
+//
+// Diverges from `(app)/_components/resource-table.tsx` because skeleton rows
+// are not driven by TanStack — they're hand-rendered `<Skeleton>` blocks. The
+// chrome `<div>` class is identical to ResourceTable, so swap-in parity holds.
 export default function CustomDomainsTableSkeleton() {
   return (
     <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">

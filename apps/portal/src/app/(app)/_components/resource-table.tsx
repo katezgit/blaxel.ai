@@ -17,6 +17,13 @@ interface ResourceTableProps<TData> {
   // state (api-keys near-expiry, team expired invite). Sibling to the
   // Open-invoice highlight pattern on billing/invoices-payment.
   getRowClassName?: (row: Row<TData>) => string | undefined;
+  // When set, the outer container becomes the scrolling ancestor (capped at
+  // this height) instead of letting the page scroll. `tableHeadVariants` is
+  // already `sticky top-0` — that pins to this container automatically.
+  // Each <th> also gains `bg-muted-surface` because position:sticky lifts the
+  // cells out of <thead>'s painted box; without an opaque per-cell bg,
+  // scrolled rows bleed through the pinned header strip.
+  maxHeight?: string;
 }
 
 /**
@@ -28,9 +35,17 @@ interface ResourceTableProps<TData> {
 export function ResourceTable<TData>({
   table,
   getRowClassName,
+  maxHeight,
 }: ResourceTableProps<TData>) {
+  const isStickyScroll = maxHeight !== undefined;
   return (
-    <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">
+    <div
+      className={cn(
+        "relative w-full overflow-x-auto rounded-md border border-border bg-card",
+        isStickyScroll ? "overflow-y-auto" : "overflow-hidden",
+      )}
+      style={isStickyScroll ? { maxHeight } : undefined}
+    >
       <table className={tableClass}>
         <thead className={tableHeaderClass}>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -42,7 +57,11 @@ export function ResourceTable<TData>({
                 return (
                   <th
                     key={header.id}
-                    className={cn(tableHeadVariants(), meta?.headerClassName)}
+                    className={cn(
+                      tableHeadVariants(),
+                      isStickyScroll && "bg-muted-surface",
+                      meta?.headerClassName,
+                    )}
                   >
                     {!header.isPlaceholder &&
                       flexRender(header.column.columnDef.header, header.getContext())}

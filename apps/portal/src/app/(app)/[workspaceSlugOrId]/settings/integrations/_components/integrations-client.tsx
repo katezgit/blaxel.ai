@@ -31,7 +31,7 @@ import type { Integration } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import ConnectionDrawer from "../[provider]/_components/connection-drawer";
-import IntegrationsTable from "./integrations-table";
+import { ResourceTable } from "@/app/(app)/_components/resource-table";
 
 // Flat one-click filter: a single category state covers status + type in one
 // row, matching Blaxel's production vocabulary (status label is "Enabled", and
@@ -260,7 +260,11 @@ export default function IntegrationsClient() {
               visibility — keeps each layout's markup honest instead of
               jamming a layout prop through one component. */}
           <div className="hidden min-h-0 flex-1 md:flex md:flex-col">
-            <IntegrationsTable table={table} />
+            {/* maxHeight = workspace topbar (~6rem) + page header (~6rem) +
+                filter bar (~3rem) + breathing room (~3rem) = 18rem budget.
+                Matches the models-catalog precedent — sticky-scroll inside
+                the container instead of pushing the page. */}
+            <ResourceTable table={table} maxHeight="calc(100vh - 18rem)" />
           </div>
           <ul
             className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-px md:hidden"

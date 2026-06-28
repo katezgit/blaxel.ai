@@ -112,17 +112,16 @@ export function InviteUsersDialog({
       <DialogContent size="md">
         <form onSubmit={onSubmitForm}>
           <DialogHeader>
-            <DialogTitle>Invite users</DialogTitle>
+            <DialogTitle>Invite members</DialogTitle>
             <DialogDescription>
-              Invite multiple emails with the same role. They will receive a
-              sign-up link.
+              Each invitee gets an email link to join this workspace.
             </DialogDescription>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-4">
             <FormField
               id="invite-emails"
               label="Emails"
-              helper="Separate multiple emails with commas, spaces, or newlines. Paste a CSV to add many at once."
+              helper="Separate with commas, spaces, or newlines."
               error={errors.emailsText?.message}
               required
             >
@@ -166,7 +165,7 @@ export function InviteUsersDialog({
             </FormField>
             <p className="typography-caption text-muted-foreground">
               Press <kbd className="font-mono">{"⌘"}</kbd> +{" "}
-              <kbd className="font-mono">Enter</kbd> to send invites.
+              <kbd className="font-mono">Enter</kbd> to send.
             </p>
           </DialogBody>
           <DialogFooter>

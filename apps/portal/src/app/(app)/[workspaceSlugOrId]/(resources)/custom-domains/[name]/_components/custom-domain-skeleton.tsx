@@ -107,7 +107,9 @@ export default function CustomDomainSkeleton({ workspaceSlug }: CustomDomainSkel
 
 // Mirrors the live DNS records table chrome (same border/card wrapper,
 // same column widths, same head/cell classes) so the body rows reflow
-// into populated rows at the identical pixel grid.
+// into populated rows at the identical pixel grid. Diverges from
+// `(app)/_components/resource-table.tsx` for the same reason as the live
+// table — inline inside a band, no TanStack, skeleton placeholders.
 function DnsRecordsTableSkeleton({ rows }: { rows: number }) {
   return (
     <div className="relative w-full overflow-hidden overflow-x-auto rounded-md border border-border bg-card">

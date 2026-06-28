@@ -3,21 +3,13 @@
 import { useRouter } from "next/navigation";
 import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   useReactTable,
   type ColumnDef,
 } from "@tanstack/react-table";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
-import {
-  tableBodyClass,
-  tableCellVariants,
-  tableClass,
-  tableHeaderClass,
-  tableHeadVariants,
-  tableRowVariants,
-} from "@repo/ui/components/table";
+import { ResourceTable } from "@/app/(app)/_components/resource-table";
 import type {
   Checkpoint,
   Model,
@@ -50,13 +42,11 @@ export function CheckpointsTab({
 
   return (
     <div className="py-4">
-      <div className="overflow-x-auto rounded-md border border-border bg-card">
-        <CheckpointsTable
-          rows={checkpoints}
-          activeCheckpointId={model.activeCheckpointId}
-          modelId={model.id}
-        />
-      </div>
+      <CheckpointsTable
+        rows={checkpoints}
+        activeCheckpointId={model.activeCheckpointId}
+        modelId={model.id}
+      />
     </div>
   );
 }
@@ -130,34 +120,7 @@ function CheckpointsTable({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  return (
-    <table className={tableClass}>
-      <thead className={tableHeaderClass}>
-        {table.getHeaderGroups().map((group) => (
-          <tr key={group.id}>
-            {group.headers.map((header) => (
-              <th key={header.id} className={tableHeadVariants()}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody className={tableBodyClass}>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id} className={tableRowVariants()}>
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className={tableCellVariants()}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+  return <ResourceTable table={table} />;
 }
 
 function EvalCell({ score }: { score: number | null }) {
