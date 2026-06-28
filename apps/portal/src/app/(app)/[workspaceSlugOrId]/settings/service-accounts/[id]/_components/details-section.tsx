@@ -2,24 +2,27 @@
 
 import { CopyButton } from "@repo/ui/components/copy-button";
 import type { ServiceAccount } from "@/lib/mock/types";
+import { formatShortDate } from "../../_components/format";
 
-interface OauthCredentialsSectionProps {
+interface DetailsSectionProps {
   serviceAccount: ServiceAccount;
 }
 
-export default function OauthCredentialsSection({
+export default function DetailsSection({
   serviceAccount,
-}: OauthCredentialsSectionProps) {
+}: DetailsSectionProps) {
+  const showUpdated = serviceAccount.updatedAt !== serviceAccount.createdAt;
+
   return (
     <section
-      aria-labelledby="sa-oauth-heading"
+      aria-labelledby="sa-details-heading"
       className="flex flex-col gap-4"
     >
       <h2
-        id="sa-oauth-heading"
+        id="sa-details-heading"
         className="typography-subtitle font-semibold text-foreground"
       >
-        OAuth credentials
+        Details
       </h2>
 
       <dl className="flex flex-col gap-2">
@@ -47,6 +50,24 @@ export default function OauthCredentialsSection({
             Not available &mdash; shown once at creation.
           </dd>
         </div>
+        <div className="flex items-center gap-3">
+          <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+            Created
+          </dt>
+          <dd className="typography-body min-w-0 text-foreground">
+            {formatShortDate(serviceAccount.createdAt)}
+          </dd>
+        </div>
+        {showUpdated && (
+          <div className="flex items-center gap-3">
+            <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+              Updated
+            </dt>
+            <dd className="typography-body min-w-0 text-foreground">
+              {formatShortDate(serviceAccount.updatedAt)}
+            </dd>
+          </div>
+        )}
       </dl>
     </section>
   );

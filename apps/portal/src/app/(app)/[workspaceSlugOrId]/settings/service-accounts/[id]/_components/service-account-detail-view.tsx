@@ -27,13 +27,12 @@ import type {
   ServiceAccountApiKey,
 } from "@/lib/mock/types";
 import ConfirmByNameDialog from "../../../_components/confirm-by-name-dialog";
-import { formatRelativePast, formatShortDate } from "../../_components/format";
 import ApiKeysSection from "./api-keys-section";
 import CreateServiceAccountApiKeyDialog from "./create-service-account-api-key-dialog";
+import DetailsSection from "./details-section";
 import EditServiceAccountDrawer, {
   type EditServiceAccountDrawerState,
 } from "./edit-service-account-drawer";
-import OauthCredentialsSection from "./oauth-credentials-section";
 import ServiceAccountDetailSkeleton from "./service-account-detail-skeleton";
 
 interface ServiceAccountDetailViewProps {
@@ -164,17 +163,7 @@ export default function ServiceAccountDetailView({
           />
         }
         heading={sa.name}
-        description={
-          <span className="flex flex-col">
-            <span>{sa.description}</span>
-            <span className="mt-1 typography-caption text-meta-foreground">
-              Created {formatShortDate(sa.createdAt)}
-              {sa.updatedAt !== sa.createdAt
-                ? ` · Updated ${formatRelativePast(sa.updatedAt)}`
-                : null}
-            </span>
-          </span>
-        }
+        description={sa.description}
         action={
           <>
             <Button variant="primary" onClick={() => setCreateKeyOpen(true)}>
@@ -213,7 +202,7 @@ export default function ServiceAccountDetailView({
         onKeyDeleted={handleKeyDeleted}
       />
 
-      <OauthCredentialsSection serviceAccount={sa} />
+      <DetailsSection serviceAccount={sa} />
 
       <CreateServiceAccountApiKeyDialog
         open={createKeyOpen}
