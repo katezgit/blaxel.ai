@@ -202,53 +202,57 @@ export default function RegisterForm() {
         <Separator className="flex-1" />
       </div>
 
-      <form action={magicAction} className="flex flex-col gap-3">
-        <FormField id="name" label="Name" required>
-          <Input
-            name="name"
-            type="text"
-            autoComplete="name"
-            placeholder="Your name"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </FormField>
-        <FormField id="email" label="Email address" required error={magicError}>
-          <Input
-            ref={emailInputRef}
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder="you@company.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </FormField>
-        <Button
-          type="submit"
-          variant="primary"
-          className="w-full"
-          disabled={magicPending}
-          aria-busy={magicPending}
-        >
-          {magicPending ? (
-            <span className="inline-flex items-center gap-2">
-              <LoaderCircle
-                aria-hidden="true"
-                className="h-4 w-4 shrink-0 animate-spin"
-              />
-              <span>Sending link…</span>
-            </span>
-          ) : (
-            "Send magic link"
-          )}
-        </Button>
-        <p className="typography-caption text-muted-foreground text-center">
-          By continuing, you accept HUD&apos;s Terms of Service, Privacy Policy,
-          and Acceptable Use Policy.
-        </p>
+      <form action={magicAction} className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
+          <FormField id="name" label="Name" required>
+            <Input
+              name="name"
+              type="text"
+              autoComplete="name"
+              placeholder="Your name"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </FormField>
+          <FormField id="email" label="Email address" required error={magicError}>
+            <Input
+              ref={emailInputRef}
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@company.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </FormField>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full"
+            disabled={magicPending}
+            aria-busy={magicPending}
+          >
+            {magicPending ? (
+              <span className="inline-flex items-center gap-2">
+                <LoaderCircle
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0 animate-spin"
+                />
+                <span>Sending link…</span>
+              </span>
+            ) : (
+              "Send magic link"
+            )}
+          </Button>
+          <p className="typography-caption text-muted-foreground text-center">
+            By continuing, you accept HUD&apos;s Terms of Service, Privacy Policy,
+            and Acceptable Use Policy.
+          </p>
+        </div>
       </form>
     </div>
   );

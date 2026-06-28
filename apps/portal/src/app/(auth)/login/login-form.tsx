@@ -191,7 +191,7 @@ export default function LoginForm() {
         <Separator className="flex-1" />
       </div>
 
-      <form action={magicAction} className="flex flex-col gap-4">
+      <form action={magicAction} className="flex flex-col gap-6">
         <FormField id="email" label="Email address" required error={magicError}>
           <Input
             ref={emailInputRef}
