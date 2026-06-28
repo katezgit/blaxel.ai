@@ -217,7 +217,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
         }}
         actionLabel="Revoke key"
         targetLabel={pendingRevoke?.name ?? ""}
-        workspaceName={workspace.name}
+        targetName={workspace.name}
         onConfirm={() => {
           if (!pendingRevoke) return;
           setKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));

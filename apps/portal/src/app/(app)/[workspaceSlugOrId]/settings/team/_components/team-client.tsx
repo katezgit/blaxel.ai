@@ -368,7 +368,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         }}
         actionLabel="Remove member"
         targetLabel={pendingRemoval?.name ?? ""}
-        workspaceName={workspace.name}
+        targetName={workspace.name}
         onConfirm={() => {
           if (!pendingRemoval) return;
           setMembers((prev) => prev.filter((m) => m.id !== pendingRemoval.id));

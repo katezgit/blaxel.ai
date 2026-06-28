@@ -170,7 +170,7 @@ export default function GeneralSettingsClient({
         onOpenChange={setConfirmOpen}
         actionLabel="Delete workspace"
         targetLabel={savedName}
-        workspaceName={savedName}
+        targetName={savedName}
         onConfirm={() => {
           toast.success(`Workspace ${savedName} deleted (mock).`);
           router.push("/");

@@ -214,7 +214,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
         }}
         actionLabel="Delete service account"
         targetLabel={pendingDelete?.name ?? ""}
-        workspaceName={pendingDelete?.name ?? ""}
+        targetName={pendingDelete?.name ?? ""}
         onConfirm={() => {
           if (!pendingDelete) return;
           setAccounts((prev) => prev.filter((a) => a.id !== pendingDelete.id));

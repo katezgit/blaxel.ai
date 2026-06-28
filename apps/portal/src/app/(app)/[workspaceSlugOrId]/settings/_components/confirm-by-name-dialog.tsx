@@ -18,7 +18,7 @@ interface ConfirmByNameDialogProps {
   onOpenChange: (open: boolean) => void;
   actionLabel: string;
   targetLabel: string;
-  workspaceName: string;
+  targetName: string;
   // Consequence prose rendered inside DialogBody above the typing prompt.
   // Lives here (not DialogDescription) so it inherits body typography —
   // consequence statements are not subtitles.
@@ -26,15 +26,15 @@ interface ConfirmByNameDialogProps {
   onConfirm: () => void;
 }
 
-// Name-confirm pattern for destructive workspace actions — typing the
-// workspace name fails when the user is on the wrong workspace, which is
-// what makes the "wrong env wipeout" incident structurally impossible.
+// Name-confirm pattern for destructive actions — typing the target's name
+// fails when the user is on the wrong resource, which is what makes the
+// "wrong env wipeout" incident structurally impossible.
 export default function ConfirmByNameDialog({
   open,
   onOpenChange,
   actionLabel,
   targetLabel,
-  workspaceName,
+  targetName,
   children,
   onConfirm,
 }: ConfirmByNameDialogProps) {
@@ -45,7 +45,7 @@ export default function ConfirmByNameDialog({
     if (!open) setTyped("");
   }, [open]);
 
-  const matches = typed === workspaceName;
+  const matches = typed === targetName;
   const statusId = "confirm-by-name-status";
 
   return (
@@ -77,7 +77,7 @@ export default function ConfirmByNameDialog({
               <>
                 Type{" "}
                 <span className="font-mono text-foreground">
-                  {workspaceName}
+                  {targetName}
                 </span>{" "}
                 to confirm
               </>
@@ -87,7 +87,7 @@ export default function ConfirmByNameDialog({
               ref={inputRef}
               value={typed}
               onChange={(event) => setTyped(event.target.value)}
-              placeholder={workspaceName}
+              placeholder={targetName}
               autoComplete="off"
               spellCheck={false}
               aria-describedby={statusId}
@@ -96,7 +96,7 @@ export default function ConfirmByNameDialog({
           <p id={statusId} aria-live="polite" className="sr-only">
             {matches
               ? `${actionLabel} is now enabled.`
-              : `Type the workspace name to enable ${actionLabel}.`}
+              : `Type the name to enable ${actionLabel}.`}
           </p>
         </DialogBody>
         <DialogFooter>

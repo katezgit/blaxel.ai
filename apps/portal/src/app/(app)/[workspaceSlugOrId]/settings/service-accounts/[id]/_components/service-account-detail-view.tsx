@@ -237,7 +237,7 @@ export default function ServiceAccountDetailView({
         }}
         actionLabel="Delete service account"
         targetLabel={sa.name}
-        workspaceName={sa.name}
+        targetName={sa.name}
         onConfirm={handleRemoveConfirm}
       >
         <p className="typography-body text-foreground">
