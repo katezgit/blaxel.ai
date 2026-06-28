@@ -148,11 +148,13 @@ function ScrollBodyExample() {
       <DialogHeader>
         <DialogTitle>Pause evaluation run?</DialogTitle>
         <DialogDescription>
-          The run will suspend at the end of the current step and resume from
-          that checkpoint. In-progress tool calls will complete before pausing.
+          The run will suspend at the end of the current step and resume from that checkpoint.
         </DialogDescription>
       </DialogHeader>
       <DialogBody>
+        <p className="typography-body text-foreground mb-4">
+          In-progress tool calls will complete before the run pauses.
+        </p>
         <form className="flex flex-col gap-4 mb-6">
           <FormField id="dialog-pause-reason" label="Reason (optional)">
             <Textarea
@@ -258,14 +260,17 @@ export const Variants: Story = {
             <DialogHeader>
               <DialogTitle>Export trajectory data</DialogTitle>
               <DialogDescription>
-                {size === "sm"
-                  ? "Selected trajectories will be exported as JSONL to your connected storage bucket."
-                  : size === "md"
-                    ? "Selected trajectories will be exported as JSONL to your connected storage bucket. Large exports may take a few minutes to complete."
-                    : "Selected trajectories will be exported as JSONL to your connected storage bucket. You can monitor export progress from the Jobs panel and download the archive once it is ready."}
+                Selected trajectories will be exported as JSONL to your connected storage bucket.
               </DialogDescription>
             </DialogHeader>
             <DialogBody>
+              {size !== "sm" && (
+                <p className="typography-body text-foreground mb-3">
+                  {size === "md"
+                    ? "Large exports may take a few minutes to complete."
+                    : "Monitor export progress from the Jobs panel and download the archive once it is ready."}
+                </p>
+              )}
               <p className="text-muted-foreground">{size} panel · export-job-{size}-001</p>
             </DialogBody>
             <DialogFooter>
@@ -283,9 +288,12 @@ export const Variants: Story = {
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Apply environment snapshot?</DialogTitle>
-            <DialogDescription>The current sandbox state will be replaced with the selected snapshot. In-progress steps will be discarded.</DialogDescription>
+            <DialogDescription>Replaces the current sandbox state with the selected snapshot.</DialogDescription>
           </DialogHeader>
           <DialogBody>
+            <p className="typography-body text-foreground mb-3">
+              In-progress steps will be discarded and cannot be recovered.
+            </p>
             <p className="text-muted-foreground">snapshot-2026-05-27-baseline · env-sandbox-003</p>
           </DialogBody>
           <DialogFooter>
@@ -353,9 +361,7 @@ function NarrowViewportExample() {
             <DialogHeader>
               <DialogTitle>size=&quot;{size}&quot; viewport test</DialogTitle>
               <DialogDescription>
-                At {WIDTH_FOR_SIZE[size]}px target width. On narrow
-                viewports this panel must stay within the screen gutter — no horizontal overflow,
-                close button fully visible.
+                Target width {WIDTH_FOR_SIZE[size]}px — stays within the screen gutter on narrow viewports.
               </DialogDescription>
             </DialogHeader>
             <DialogBody>
@@ -408,8 +414,7 @@ function MobileFullscreenExample() {
           <DialogHeader>
             <DialogTitle>Choose your target tier</DialogTitle>
             <DialogDescription>
-              Select a target quota tier to determine your monthly top-up.
-              All topped-up funds go directly toward your Blaxel usage.
+              Select a quota tier to set your monthly top-up amount.
             </DialogDescription>
           </DialogHeader>
           <DialogBody>
