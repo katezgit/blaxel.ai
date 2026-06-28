@@ -26,6 +26,10 @@ import { Checkbox } from "@repo/ui/components/checkbox";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
 import {
+  MultiSelect,
+  type MultiSelectOption,
+} from "@repo/ui/components/multi-select";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -45,7 +49,6 @@ import type {
 import { workspaceTeamQueries } from "@/lib/query/workspace-team";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import ConfirmByNameDialog from "@/app/(app)/[workspaceSlugOrId]/settings/_components/confirm-by-name-dialog";
-import FilterPopover from "./filter-popover";
 import { InviteUsersDialog, type InviteResult } from "./invite-users-dialog";
 import TeamTable from "./team-table";
 import {
@@ -114,6 +117,10 @@ export default function TeamClient({ workspace }: TeamClientProps) {
   const roleCounts = useCounts(members, "role", ROLE_VALUES);
   const sourceCounts = useCounts(members, "source", SOURCE_VALUES);
   const statusCounts = useCounts(members, "status", STATUS_VALUES);
+
+  const roleOptions = useFilterOptions(ROLE_VALUES, ROLE_META, roleCounts);
+  const sourceOptions = useFilterOptions(SOURCE_VALUES, SOURCE_META, sourceCounts);
+  const statusOptions = useFilterOptions(STATUS_VALUES, STATUS_META, statusCounts);
 
   const columns = useMemo(
     () => [
@@ -292,29 +299,33 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           aria-label="Search workspace members"
         />
         <div className="ml-auto flex items-center gap-2">
-          <FilterPopover
-            label="Role"
-            options={ROLE_VALUES}
-            optionLabel={(v) => ROLE_META[v].label}
-            selected={roleFilter}
-            onChange={setRoleFilter}
-            counts={roleCounts}
+          <MultiSelect
+            options={roleOptions}
+            value={Array.from(roleFilter)}
+            onValueChange={(v) => setRoleFilter(new Set(v as Role[]))}
+            placeholder="Filter by role"
+            searchPlaceholder="Search roles…"
+            className="w-44"
           />
-          <FilterPopover
-            label="Source"
-            options={SOURCE_VALUES}
-            optionLabel={(v) => SOURCE_META[v].label}
-            selected={sourceFilter}
-            onChange={setSourceFilter}
-            counts={sourceCounts}
+          <MultiSelect
+            options={sourceOptions}
+            value={Array.from(sourceFilter)}
+            onValueChange={(v) =>
+              setSourceFilter(new Set(v as MemberSource[]))
+            }
+            placeholder="Filter by source"
+            searchPlaceholder="Search sources…"
+            className="w-44"
           />
-          <FilterPopover
-            label="Status"
-            options={STATUS_VALUES}
-            optionLabel={(v) => STATUS_META[v].label}
-            selected={statusFilter}
-            onChange={setStatusFilter}
-            counts={statusCounts}
+          <MultiSelect
+            options={statusOptions}
+            value={Array.from(statusFilter)}
+            onValueChange={(v) =>
+              setStatusFilter(new Set(v as MemberStatus[]))
+            }
+            placeholder="Filter by status"
+            searchPlaceholder="Search statuses…"
+            className="w-44"
           />
         </div>
       </div>
@@ -418,6 +429,21 @@ function useCounts<T extends string>(
     }
     return out;
   }, [members, key, values]);
+}
+
+function useFilterOptions<T extends string>(
+  values: ReadonlyArray<T>,
+  meta: Record<T, { label: string }>,
+  counts: Record<T, number>,
+): MultiSelectOption[] {
+  return useMemo(
+    () =>
+      values.map((value) => ({
+        value,
+        label: `${meta[value].label} (${counts[value] ?? 0})`,
+      })),
+    [values, meta, counts],
+  );
 }
 
 interface SortHeaderProps {
