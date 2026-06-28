@@ -92,7 +92,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("masked", {
         header: "Key prefix",
         cell: (info) => (
-          <code className="inline-flex items-center rounded-sm border border-border bg-muted-surface px-2 py-1 typography-code text-muted-foreground">
+          <code className="typography-code text-muted-foreground">
             {info.getValue()}
           </code>
         ),
