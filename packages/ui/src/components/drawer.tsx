@@ -9,6 +9,16 @@ import * as FocusScopePrimitive from "@radix-ui/react-focus-scope"
 
 import { cn } from "@repo/ui/lib/cn"
 import { useScrolled } from "@repo/ui/lib/use-scrolled"
+import {
+  overlayPanelBody,
+  overlayPanelDescription,
+  overlayPanelFooterBase,
+  overlayPanelFooterScrolled,
+  overlayPanelHeaderBase,
+  overlayPanelHeaderScrolled,
+  overlayPanelSurface,
+  overlayPanelTitle,
+} from "@repo/ui/lib/overlay-panel"
 
 const DrawerScrollTopContext = React.createContext<boolean>(false)
 const DrawerScrollBottomContext = React.createContext<boolean>(false)
@@ -73,7 +83,7 @@ const drawerContentVariants = cva(
     // Structural base
     "fixed z-overlay flex flex-col",
     // Panel surface
-    "bg-popover",
+    overlayPanelSurface,
     "shadow-drawer",
     // vaul controls panel transform via inline transition; our duration/easing overrides land via inline style on DrawerPrimitive.Content (longhands beat vaul's shorthand)
     "data-[state=open]:animate-in data-[state=open]:fade-in-0",
@@ -305,15 +315,10 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-header"
       className={cn(
-        "relative z-sticky",
-        "flex items-start justify-between pt-6 pb-3 px-6",
-        // Always render border-b for stable box model (no 1px layout shift on state change).
-        "border-b",
-        scrolled ? "border-border" : "border-transparent",
-        scrolled ? "shadow-scroll-cue" : "shadow-none",
-        // Crossfade border-color and box-shadow at --motion-state-change (120ms ease-out).
-        "transition-[border-color,box-shadow] prop-(--motion-state-change)",
-        "shrink-0",
+        // flex row: in-flow DrawerCloseButton sits to the right of the title/description column
+        "flex items-start justify-between",
+        overlayPanelHeaderBase,
+        scrolled && overlayPanelHeaderScrolled,
         className
       )}
       {...props}
@@ -328,10 +333,7 @@ function DrawerTitle({
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={cn(
-        "text-[length:var(--typography-subtitle)] font-semibold text-foreground leading-none", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
-        className
-      )}
+      className={cn(overlayPanelTitle, className)}
       {...props}
     />
   )
@@ -344,10 +346,7 @@ function DrawerDescription({
   return (
     <DrawerPrimitive.Description
       data-slot="drawer-description"
-      className={cn(
-        "text-[length:var(--typography-caption)] text-muted-foreground mt-1", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
-        className
-      )}
+      className={cn(overlayPanelDescription, className)}
       {...props}
     />
   )
@@ -362,7 +361,8 @@ const DrawerCloseButton = React.forwardRef<
     data-slot="drawer-close-button"
     className={cn(
       "ml-auto inline-flex shrink-0 items-center justify-center",
-      "size-7 rounded-md",
+      // Mobile: 44px touch target (WCAG 2.5.5). Desktop: size-6 where cursor precision applies.
+      "size-11 sm:size-6 rounded-md",
       "text-muted-foreground",
       "transition-colors prop-(--motion-state-change)",
       "hover:bg-hover-surface",
@@ -384,10 +384,7 @@ function DrawerBody({ className, children, ...props }: React.ComponentProps<"div
   return (
     <div
       data-slot="drawer-body"
-      className={cn(
-        "flex flex-1 flex-col min-h-0",
-        "text-[length:var(--typography-body)] text-foreground", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
-      )}
+      className={overlayPanelBody}
     >
       {/* tabIndex={-1} + focus-visible:outline-none suppress Chromium's
           keyboard-focusable-scroll-container focus ring on a passive region.
@@ -418,14 +415,8 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-footer"
       className={cn(
-        // pt-2 vs dialog's pt-3 — drawer is a work surface, not an interruption overlay.
-        "flex items-center justify-end gap-2 pt-2 pb-4 px-6",
-        "shrink-0",
-        // Always render border-t so box model is stable (no 1px layout shift on state change).
-        "border-t",
-        scrolledBottom ? "border-border" : "border-transparent",
-        scrolledBottom ? "shadow-scroll-cue-inverted" : "shadow-none",
-        "transition-[border-color,box-shadow] prop-(--motion-state-change)",
+        overlayPanelFooterBase,
+        scrolledBottom && overlayPanelFooterScrolled,
         className
       )}
       {...props}

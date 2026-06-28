@@ -117,6 +117,7 @@ section.
 | ------------------------- | -------- |
 | `cn` (class merge helper) | `lib/cn` |
 | `useCopyToClipboard`      | `lib/use-copy-to-clipboard` |
+| `overlayPanelSurface`, `overlayPanelHeaderBase`, `overlayPanelHeaderScrolled`, `overlayPanelBody`, `overlayPanelFooterBase`, `overlayPanelFooterScrolled`, `overlayPanelTitle`, `overlayPanelDescription` — shared class-string constants for overlay panel anatomy (Dialog + Drawer). Compose via `cn()`. | `lib/overlay-panel` |
 
 ## Usage
 
