@@ -46,7 +46,7 @@ export const tableRowVariants = cva(
     "transition-[background-color]",
     "duration-fast ease-out-standard",
     "data-[state=selected]:border-l-2 data-[state=selected]:border-l-primary",
-    "[tbody_&]:hover:bg-muted-surface",
+    "[tbody_&]:hover:bg-secondary-surface",
   ].join(" "),
   { variants: { density: { default: "min-h-10", compact: "min-h-9" } }, defaultVariants: { density: "default" } }
 )
@@ -219,7 +219,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
           "border-b border-border",
           "transition-[background-color] duration-fast ease-out-standard",
           density === "default" ? "min-h-10" : "min-h-9",
-          "[tbody_&]:hover:bg-muted-surface",
+          "[tbody_&]:hover:bg-secondary-surface",
           selected && "border-l-2 border-l-primary bg-selected-surface",
           pinned && "border-l-[3px] border-l-primary",
           outcome && outcomeRowClass[outcome],
