@@ -37,7 +37,7 @@ const buildFixtures = (): ReadonlyArray<ApiKey> => [
     createdAt: isoDate(-87),
     expiresAt: isoDate(3),
     lastUsedAt: isoAgo(2 * HOUR_MS),
-    issuedTo: { kind: "service-account", id: "svc_ci_deploy", name: "ci-deploy" },
+    issuedTo: { kind: "service-account", id: "svc_ci_deploy", name: "github-actions-deploy" },
   },
   {
     id: "wsk_maya",
@@ -55,7 +55,7 @@ const buildFixtures = (): ReadonlyArray<ApiKey> => [
     createdAt: isoDate(-30),
     expiresAt: isoDate(60),
     lastUsedAt: isoAgo(2 * DAY_MS),
-    issuedTo: { kind: "service-account", id: "svc_eval", name: "eval-harness" },
+    issuedTo: { kind: "service-account", id: "svc_eval", name: "staging-eval-harness" },
   },
   {
     id: "wsk_avery",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Check } from "lucide-react";
@@ -17,6 +17,7 @@ import {
 import { Button } from "@repo/ui/components/button";
 import { FormField } from "@repo/ui/components/form-field";
 import { Input } from "@repo/ui/components/input";
+import { Switch } from "@repo/ui/components/switch";
 import {
   Select,
   SelectContent,
@@ -24,28 +25,58 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import type { ServiceAccount } from "@/lib/mock/types";
-
-type InviteRole = "admin" | "member";
+import type {
+  ServiceAccount,
+  ServiceAccountApiKey,
+} from "@/lib/mock/types";
+import { SecretReveal } from "../../_components/secret-reveal";
+import ExpiryNeverConfirm from "./expiry-never-confirm";
 import {
-  SecretReveal,
-  SecretWarning,
-} from "../../_components/secret-reveal";
+  EXPIRY_OPTIONS,
+  type ExpiryOption,
+  expiresInToIsoDate,
+  randomKeyValue,
+  randomSecret,
+} from "./create-shared";
 
-const NAME_SCHEMA = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Name is required.")
-    .max(48, "Name must be 48 characters or fewer."),
-  role: z.enum(["admin", "member"]),
-});
+const NAME_SCHEMA = z
+  .string()
+  .trim()
+  .min(1, "Name is required.")
+  .max(48, "Name must be 48 characters or fewer.");
 
-type FormValues = z.infer<typeof NAME_SCHEMA>;
+const DESCRIPTION_SCHEMA = z
+  .string()
+  .trim()
+  .min(1, "Description is required.")
+  .max(256, "Description must be 256 characters or fewer.");
 
-interface CreatedSecret {
+const FORM_SCHEMA = z
+  .object({
+    name: NAME_SCHEMA,
+    description: DESCRIPTION_SCHEMA,
+    role: z.enum(["admin", "member"]),
+    alsoIssueKey: z.boolean(),
+    keyName: z.string().trim().max(48, "Max 48 characters.").optional(),
+    expiresIn: z.enum(EXPIRY_OPTIONS.map((o) => o.value) as [ExpiryOption, ...ExpiryOption[]]),
+  })
+  .refine(
+    (values) =>
+      !values.alsoIssueKey ||
+      (values.keyName !== undefined && values.keyName.length > 0),
+    {
+      path: ["keyName"],
+      message: "Key name is required.",
+    },
+  );
+
+type FormValues = z.infer<typeof FORM_SCHEMA>;
+
+interface RevealedCredentials {
   account: ServiceAccount;
   clientSecret: string;
+  apiKeyValue: string | null;
+  apiKeyName: string | null;
 }
 
 interface CreateServiceAccountDialogProps {
@@ -54,164 +85,286 @@ interface CreateServiceAccountDialogProps {
   onCreated: (account: ServiceAccount) => void;
 }
 
-const ROLES: ReadonlyArray<InviteRole> = ["admin", "member"];
-
 export default function CreateServiceAccountDialog({
   open,
   onOpenChange,
   onCreated,
 }: CreateServiceAccountDialogProps) {
-  const [created, setCreated] = useState<CreatedSecret | null>(null);
-  const [pendingClose, setPendingClose] = useState(false);
+  const [created, setCreated] = useState<RevealedCredentials | null>(null);
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-  } = useForm<FormValues>({
-    resolver: zodResolver(NAME_SCHEMA),
-    defaultValues: { name: "", role: "member" },
-  });
-
-  const handleClose = (open: boolean) => {
-    if (!open && created) {
-      setPendingClose(true);
-      return;
-    }
-    if (!open) {
-      reset();
-      setCreated(null);
-    }
-    onOpenChange(open);
-  };
-
-  const onSubmit = async (values: FormValues) => {
-    await new Promise((r) => setTimeout(r, 150));
-    const account: ServiceAccount = {
-      id: `svc_${Date.now()}`,
-      name: values.name,
-      clientId: `bxl_svc_${randomHex(12)}`,
-      role: values.role,
-      createdAt: new Date().toISOString().slice(0, 10),
-    };
-    const secret = `s4_${randomHex(32)}`;
-    setCreated({ account, clientSecret: secret });
-    onCreated(account);
-  };
-
-  const acknowledge = () => {
-    setCreated(null);
-    setPendingClose(false);
-    reset();
-    onOpenChange(false);
+  // Dialog close from any source (Done, X, Esc, overlay click) clears the
+  // reveal — otherwise the next open would replay the previous credentials.
+  const handleOpenChange = (next: boolean) => {
+    if (!next) setCreated(null);
+    onOpenChange(next);
   };
 
   if (created) {
     return (
-      <Dialog open={open} onOpenChange={handleClose}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent size="md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Check aria-hidden="true" className="size-4 text-state-scored" />
-              Service account created
-            </DialogTitle>
-            <DialogDescription>
-              Save the client secret now — Blaxel only shows it this once.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogBody className="flex flex-col gap-3">
-            <SecretReveal
-              label="Client ID"
-              value={created.account.clientId}
-              sensitive={false}
-            />
-            <SecretReveal
-              label="Client Secret"
-              value={created.clientSecret}
-              sensitive
-            />
-            {pendingClose && (
-              <p className="typography-caption text-state-warning-text">
-                Close without copying the secret? You will not see it again.
-              </p>
-            )}
-            <SecretWarning
-              title="One-time reveal"
-              description="Once this dialog closes the secret is gone for good."
-              onAcknowledge={acknowledge}
-            />
-          </DialogBody>
+          <PostCreateReveal
+            credentials={created}
+            onDone={() => handleOpenChange(false)}
+          />
         </DialogContent>
       </Dialog>
     );
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent size="md">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Create service account</DialogTitle>
-            <DialogDescription>
-              Service accounts hold API keys that act on workspace resources.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogBody className="flex flex-col gap-4">
-            <FormField
-              id="svc-name"
-              label="Name"
-              helper="A short identifier — used in logs and the API."
-              error={errors.name?.message}
-              required
-            >
-              <Input {...register("name")} placeholder="ci-deploy" autoComplete="off" />
-            </FormField>
-            <FormField id="svc-role" label="Role">
-              <Controller
-                control={control}
-                name="role"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="svc-role">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ROLES.map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {r === "admin" ? "Admin" : "Member"}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </FormField>
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting}>
-              Create
-            </Button>
-          </DialogFooter>
-        </form>
+        <CreateForm
+          onCancel={() => handleOpenChange(false)}
+          onCreated={(creds) => {
+            setCreated(creds);
+            onCreated(creds.account);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
 }
 
-function randomHex(length: number) {
-  let out = "";
-  const chars = "0123456789abcdef";
-  for (let i = 0; i < length; i += 1) {
-    out += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return out;
+interface CreateFormProps {
+  onCancel: () => void;
+  onCreated: (credentials: RevealedCredentials) => void;
+}
+
+function CreateForm({ onCancel, onCreated }: CreateFormProps) {
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm<FormValues>({
+    resolver: zodResolver(FORM_SCHEMA),
+    defaultValues: {
+      name: "",
+      description: "",
+      role: "member",
+      alsoIssueKey: false,
+      keyName: "",
+      expiresIn: "90d",
+    },
+    mode: "onSubmit",
+  });
+
+  const alsoIssueKey = watch("alsoIssueKey");
+
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
+    await new Promise((r) => setTimeout(r, 200));
+    const accountId = `svc_${Date.now()}`;
+    const nowIso = new Date().toISOString();
+
+    const apiKeyValue = values.alsoIssueKey ? randomKeyValue() : null;
+    const apiKey: ServiceAccountApiKey | null = apiKeyValue
+      ? {
+          id: `sak_${Date.now()}`,
+          serviceAccountId: accountId,
+          name: values.keyName ?? "",
+          keyPrefix: apiKeyValue.slice(0, 12),
+          expiresAt: expiresInToIsoDate(values.expiresIn),
+          createdAt: nowIso,
+        }
+      : null;
+
+    const account: ServiceAccount = {
+      id: accountId,
+      name: values.name,
+      description: values.description,
+      clientId: `bxl_sa_${randomSecret(12)}`,
+      role: values.role,
+      createdAt: nowIso,
+      apiKeys: apiKey ? [apiKey] : [],
+      lastUsedAt: null,
+    };
+    onCreated({
+      account,
+      clientSecret: randomSecret(32),
+      apiKeyValue,
+      apiKeyName: apiKey?.name ?? null,
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <DialogHeader>
+        <DialogTitle>Create service account</DialogTitle>
+        <DialogDescription>
+          Service accounts hold credentials that act on this workspace under a
+          chosen role.
+        </DialogDescription>
+      </DialogHeader>
+      <DialogBody className="flex flex-col gap-4">
+        <FormField
+          id="svc-name"
+          label="Name"
+          helper="1–48 characters. Use a descriptive name — you can't change it."
+          error={errors.name?.message}
+          required
+        >
+          <Input
+            {...register("name")}
+            placeholder="e.g. github-actions-deploy"
+            autoComplete="off"
+          />
+        </FormField>
+        <FormField
+          id="svc-description"
+          label="Description"
+          helper="What this service account is used for."
+          error={errors.description?.message}
+          required
+        >
+          <Input
+            {...register("description")}
+            placeholder="e.g. Deploy pipeline for the main branch"
+            autoComplete="off"
+          />
+        </FormField>
+        <FormField
+          id="svc-role"
+          label="Role"
+          helper="Role determines what this service account can do in the workspace."
+        >
+          <Controller
+            control={control}
+            name="role"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger id="svc-role" className="w-full max-w-56">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="member">Member</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormField>
+
+        <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted-surface px-3 py-2">
+          <label
+            htmlFor="svc-also-issue-key"
+            className="typography-body text-foreground"
+          >
+            Also issue an API key now
+          </label>
+          <Controller
+            control={control}
+            name="alsoIssueKey"
+            render={({ field }) => (
+              <Switch
+                id="svc-also-issue-key"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            )}
+          />
+        </div>
+
+        {alsoIssueKey && (
+          <div className="flex flex-col gap-4">
+            <FormField
+              id="svc-key-name"
+              label="Key name"
+              error={errors.keyName?.message}
+              required
+            >
+              <Input
+                {...register("keyName")}
+                placeholder="e.g. prod-deploy-key"
+                autoComplete="off"
+              />
+            </FormField>
+            <FormField id="svc-expires-in" label="Expires in">
+              <Controller
+                control={control}
+                name="expiresIn"
+                render={({ field }) => (
+                  <ExpiryNeverConfirm
+                    value={field.value}
+                    onChange={field.onChange}
+                    selectId="svc-expires-in"
+                  />
+                )}
+              />
+            </FormField>
+          </div>
+        )}
+      </DialogBody>
+      <DialogFooter>
+        {isDirty && (
+          <Button type="button" variant="secondary" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        <Button type="submit" variant="primary" disabled={isSubmitting}>
+          Create
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+}
+
+interface PostCreateRevealProps {
+  credentials: RevealedCredentials;
+  onDone: () => void;
+}
+
+function PostCreateReveal({ credentials, onDone }: PostCreateRevealProps) {
+  const { account, clientSecret, apiKeyValue, apiKeyName } = credentials;
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <Check aria-hidden="true" className="size-4 text-state-scored" />
+          Service account created
+        </DialogTitle>
+        <DialogDescription>
+          {apiKeyValue !== null ? (
+            <>
+              Service account &ldquo;{account.name}&rdquo; created with API key
+              &ldquo;{apiKeyName}&rdquo;. Save these credentials now &mdash;
+              they will not be shown again.
+            </>
+          ) : (
+            <>
+              Service account &ldquo;{account.name}&rdquo; created. Save these
+              credentials now &mdash; the client secret will not be shown again.
+            </>
+          )}
+        </DialogDescription>
+      </DialogHeader>
+      <DialogBody className="flex flex-col gap-3">
+        <SecretReveal
+          label="Client ID"
+          value={account.clientId}
+          sensitive={false}
+        />
+        <SecretReveal
+          label="Client secret"
+          value={clientSecret}
+          sensitive
+        />
+        {apiKeyValue !== null && (
+          <SecretReveal label="API key" value={apiKeyValue} sensitive />
+        )}
+        <p className="typography-caption text-state-warning-text">
+          {apiKeyValue !== null
+            ? "The client secret and API key will not be shown again."
+            : "The client secret will not be shown again."}
+        </p>
+      </DialogBody>
+      <DialogFooter>
+        <Button variant="primary" onClick={onDone}>
+          Done
+        </Button>
+      </DialogFooter>
+    </>
+  );
 }

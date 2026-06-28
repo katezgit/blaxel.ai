@@ -81,10 +81,38 @@ export interface TeamMember {
 export interface ServiceAccount {
   id: string;
   name: string;
+  /** Required human-readable purpose surfaced in the list subline and detail header. */
+  description: string;
   /** Public identifier the workspace shows to integrations. */
   clientId: string;
   role: Role;
-  /** ISO date string. */
+  /** ISO timestamp (full createdAt — `MMM D, YYYY · HH:mm UTC` on detail page). */
+  createdAt: string;
+  /** API keys issued from this service account. */
+  apiKeys: ReadonlyArray<ServiceAccountApiKey>;
+  /**
+   * ISO timestamp of the most recent request authenticated with any of this
+   * SA's credentials, or null when never used. Forward backend ask #1 —
+   * surfaces as "Last used" column on the list page.
+   */
+  lastUsedAt: string | null;
+}
+
+/**
+ * API key issued from a service account. Distinct from workspace `ApiKey`
+ * (which can be issued to a member OR a service account from the API keys
+ * surface). SA-scoped keys carry no holder — they belong to their parent SA.
+ */
+export interface ServiceAccountApiKey {
+  id: string;
+  /** Parent service account id. */
+  serviceAccountId: string;
+  name: string;
+  /** First N chars of the full key; full key is shown once at creation only. */
+  keyPrefix: string;
+  /** ISO date — null = no expiration. */
+  expiresAt: string | null;
+  /** ISO timestamp at creation. */
   createdAt: string;
 }
 
