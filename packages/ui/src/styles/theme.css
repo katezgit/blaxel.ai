@@ -181,7 +181,7 @@
 
   --color-state-running:        light-dark(var(--running-600), var(--running-400));
   --color-state-running-subtle: light-dark(
-    color-mix(in srgb, var(--running-600) 12%, transparent),
+    color-mix(in srgb, var(--running-600) 7%,  transparent),
     color-mix(in srgb, var(--running-400) 12%, transparent)
   );
   --color-state-running-text:   light-dark(var(--running-600), var(--running-400));
@@ -224,18 +224,7 @@
     color-mix(in srgb, var(--running-400) 20%, var(--surface-bg-dark))
   );
 
-  /* ═══════════════════════════════════════════════════════════════════════════
-   * DATA VIZ — categorical chart palette. chart-1 and chart-7 anchor to brand
-   * primitives for default brand-aligned series.
-   * ═══════════════════════════════════════════════════════════════════════════ */
-  --color-chart-1: light-dark(var(--orange-700),    var(--orange-500));
-  --color-chart-2: light-dark(#C26A00,            #FFB454);
-  --color-chart-3: light-dark(#CE2F6B,            #F46EB0);
-  --color-chart-4: light-dark(#5B43C9,            #9D8CFF);
-  --color-chart-5: light-dark(#3C8C3F,            #8DDB4A);
-  --color-chart-6: light-dark(#D33B2C,            #FF7066);
-  --color-chart-7: light-dark(var(--running-600), var(--running-400));
-  --color-chart-8: light-dark(#5C6B7C,            #C0CAD6);
+  /* DATA VIZ — chart palette extracted to ./chart.css (reserved for future use). */
 }
 
 /* ─── Surface roles ──────────────────────────────────────────────────────────
