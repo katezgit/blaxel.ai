@@ -166,29 +166,35 @@ export default function GeneralSettingsClient({
       </section>
 
       <ConfirmByNameDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        actionLabel="Delete workspace"
-        targetLabel={savedName}
-        workspaceName={savedName}
-        description="Deleting the workspace is permanent. Every workspace-scoped resource and credential below will be removed."
-        details={
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
-            <p className="typography-label font-medium text-foreground">
-              The following will be permanently removed:
-            </p>
-            <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 typography-caption text-muted-foreground sm:grid-cols-3">
-              {DELETION_TARGETS.map((target) => (
-                <li key={target}>{target}</li>
-              ))}
-            </ul>
-          </div>
-        }
-        onConfirm={() => {
-          toast.success(`Workspace ${savedName} deleted (mock).`);
-          router.push("/");
+        dialog={{
+          open: confirmOpen,
+          onOpenChange: setConfirmOpen,
         }}
-      />
+        prompt={{
+          actionLabel: "Delete workspace",
+          targetLabel: savedName,
+          confirmName: savedName,
+          onConfirm: () => {
+            toast.success(`Workspace ${savedName} deleted (mock).`);
+            router.push("/");
+          },
+        }}
+      >
+        <p className="text-foreground">
+          Deleting the workspace is permanent. Every workspace-scoped resource
+          and credential below will be removed.
+        </p>
+        <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
+          <p className="typography-label text-foreground">
+            The following will be permanently removed:
+          </p>
+          <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 typography-caption text-muted-foreground sm:grid-cols-3">
+            {DELETION_TARGETS.map((target) => (
+              <li key={target}>{target}</li>
+            ))}
+          </ul>
+        </div>
+      </ConfirmByNameDialog>
     </div>
   );
 }

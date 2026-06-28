@@ -24,6 +24,13 @@ interface ResourceTableProps<TData> {
   // cells out of <thead>'s painted box; without an opaque per-cell bg,
   // scrolled rows bleed through the pinned header strip.
   maxHeight?: string;
+  // Whole-row click target — Archetype B (Resource row) surfaces. Suppressed
+  // when the click originates inside an interactive child (`<a>`, `<button>`,
+  // `[role="menuitem"]`) so per-cell affordances (kebab, copy) still work.
+  onRowClick?: (row: Row<TData>) => void;
+  // Paired with onRowClick — used to prefetch the destination route on
+  // pointer entry (Next.js router.prefetch).
+  onRowMouseEnter?: (row: Row<TData>) => void;
 }
 
 /**
@@ -43,6 +50,8 @@ export function ResourceTable<TData>({
   table,
   getRowClassName,
   maxHeight,
+  onRowClick,
+  onRowMouseEnter,
 }: ResourceTableProps<TData>) {
   const isStickyScroll = maxHeight !== undefined;
   return (
@@ -85,7 +94,32 @@ export function ResourceTable<TData>({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={cn(tableRowVariants(), getRowClassName?.(row))}
+              className={cn(
+                tableRowVariants(),
+                onRowClick && "cursor-pointer",
+                getRowClassName?.(row),
+              )}
+              onClick={
+                onRowClick
+                  ? (event) => {
+                      // Suppress whole-row navigation when the click originated
+                      // on an interactive child (kebab, link, copy button) so
+                      // those affordances stay clickable inside a navigable row.
+                      const target = event.target as HTMLElement;
+                      if (
+                        target.closest(
+                          "a, button, [role='menuitem'], [role='menu']",
+                        )
+                      ) {
+                        return;
+                      }
+                      onRowClick(row);
+                    }
+                  : undefined
+              }
+              onMouseEnter={
+                onRowMouseEnter ? () => onRowMouseEnter(row) : undefined
+              }
             >
               {row.getVisibleCells().map((cell) => {
                 const meta = cell.column.columnDef.meta as

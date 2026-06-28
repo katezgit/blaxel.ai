@@ -79,7 +79,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => (
-          <span className="font-medium text-foreground">
+          <span className="text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -211,26 +211,29 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       />
 
       <ConfirmByNameDialog
-        open={pendingRevoke !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingRevoke(null);
+        dialog={{
+          open: pendingRevoke !== null,
+          onOpenChange: (open) => {
+            if (!open) setPendingRevoke(null);
+          },
         }}
-        actionLabel="Revoke key"
-        targetLabel={pendingRevoke?.name ?? ""}
-        workspaceName={workspace.name}
-        description={
-          <>
-            This will permanently revoke the key. Any CLI, SDK, or integration
-            using it will start receiving 401 responses.
-          </>
-        }
-        onConfirm={() => {
-          if (!pendingRevoke) return;
-          setKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));
-          toast.success(`Revoked ${pendingRevoke.name}.`);
-          setPendingRevoke(null);
+        prompt={{
+          actionLabel: "Revoke key",
+          targetLabel: pendingRevoke?.name ?? "",
+          confirmName: workspace.name,
+          onConfirm: () => {
+            if (!pendingRevoke) return;
+            setKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));
+            toast.success(`Revoked ${pendingRevoke.name}.`);
+            setPendingRevoke(null);
+          },
         }}
-      />
+      >
+        <p className="text-foreground">
+          This will permanently revoke the key. Any CLI, SDK, or integration
+          using it will start receiving 401 responses.
+        </p>
+      </ConfirmByNameDialog>
     </section>
   );
 }

@@ -102,12 +102,12 @@ const makeConnection = (
 const CONNECTIONS: ReadonlyArray<IntegrationConnection> = [
   makeConnection("anthropic", "anthropic-prod", 87, "runtime-orchestrator"),
   makeConnection("anthropic", "anthropic-staging", 62, "Maya Reyes"),
-  makeConnection("anthropic", "anthropic-eval-01", 30, "eval-harness"),
-  makeConnection("anthropic", "anthropic-eval-02", 28, "eval-harness"),
+  makeConnection("anthropic", "anthropic-eval-01", 30, "staging-eval-harness"),
+  makeConnection("anthropic", "anthropic-eval-02", 28, "staging-eval-harness"),
   makeConnection("anthropic", "anthropic-experimental", 5, "Avery Lin"),
   makeConnection("openai", "openai-prod", 124, "runtime-orchestrator"),
   makeConnection("openai", "openai-staging", 91, "Maya Reyes"),
-  makeConnection("openai", "openai-eval", 21, "eval-harness"),
+  makeConnection("openai", "openai-eval", 21, "staging-eval-harness"),
   makeConnection("agentmail", "agentmail-support", 41, "Maya Reyes"),
   makeConnection("agentmail", "agentmail-marketing", 14, "Avery Lin"),
 ];
