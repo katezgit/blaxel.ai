@@ -10,10 +10,11 @@ import { getCurrentTenancy } from "@/lib/query/tenancy";
 import { TenancyProvider } from "@/lib/query/tenancy-context";
 
 // Single authenticated shell host. Mounted at the (app) route-group root so
-// the rail <aside> AND sub-shell pane persist as the SAME DOM elements across
-// /{slug} ↔ /profile, /{slug} ↔ /account, /{slug} ↔ /{slug}/settings/*. CSS
-// transitions on those elements (driven by data-sub-shell-open) own the
-// workspace → sub-shell slide; React does not unmount and remount the shell.
+// the shell frame (topbar, chevron, mobile drawer) persists across /{slug} ↔
+// /profile, /{slug} ↔ /account, /{slug} ↔ /{slug}/settings/*. Only the inner
+// sidebar swaps on sub-shell navigation — a keyed `<Sidebar>` wrapper in
+// <UnifiedShell> drives the slide-in keyframe. React does not unmount and
+// remount the shell host.
 //
 // Workspace-specific data (currentOrg) resolves in the deeper
 // [workspaceSlugOrId]/layout.tsx and rides into the already-mounted shell via

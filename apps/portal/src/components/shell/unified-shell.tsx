@@ -273,11 +273,12 @@ export function UnifiedShell({
                   )}
                 </div>
               </div>
-              {/* Shared collapse chevron — sibling of the stack so it never
-                  gets clipped by the stack's overflow:hidden. Centered on the
-                  stack's right edge via left:--shell-left-w + translate-x.
-                  Visible only at lg+ (matches Sidebar's lg:w-(--sidebar-w)
-                  responsive breakpoint where the collapse affordance applies). */}
+              {/* Shared collapse chevron — sibling of the sidebar column so it
+                  never gets clipped by the column's overflow:hidden. Centered
+                  on the column's right edge via left:--shell-left-w +
+                  translate-x. Visible only at lg+ (matches Sidebar's
+                  lg:w-(--sidebar-w) responsive breakpoint where the collapse
+                  affordance applies). */}
               <button
                 type="button"
                 onClick={toggleVisiblePane}
