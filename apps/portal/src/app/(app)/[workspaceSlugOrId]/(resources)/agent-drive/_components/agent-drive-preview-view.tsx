@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  Check,
+  Clock,
   FolderTree,
   HardDrive,
   Infinity as InfinityIcon,
@@ -194,7 +194,7 @@ function AgentDriveJoinedPanel({ joinedAt }: AgentDriveJoinedPanelProps) {
         aria-hidden="true"
         className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-primary"
       >
-        <Check className="size-5" />
+        <Clock className="size-5" />
       </span>
       <h3 className="typography-subtitle font-semibold text-foreground">
         You&rsquo;re on the waitlist
