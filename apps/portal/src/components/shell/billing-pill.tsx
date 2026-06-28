@@ -21,7 +21,11 @@ export default function BillingPill() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button asChild variant="secondary">
+        <Button
+          asChild
+          variant="ghost"
+          className="text-muted-foreground hover:text-foreground"
+        >
           <Link
             href="/account/billing/credits"
             aria-label={`Tier ${state.tier} · Open Billing`}
