@@ -14,10 +14,10 @@ const DensityContext = React.createContext<TableDensity>("default")
 // ── CSS-only exports (legacy — backward-compat, consumed by TanStack Table) ──
 
 export const tableClass = "w-full caption-bottom border-collapse typography-body"
-export const tableHeaderClass = "bg-field-rest"
-export const tableHeaderStickyClass = "bg-field-rest"
+export const tableHeaderClass = "bg-muted-surface"
+export const tableHeaderStickyClass = "bg-muted-surface"
 export const tableBodyClass = "[&_tr:last-child]:border-b-0"
-export const tableFooterClass = "border-t border-border bg-field-rest font-medium [&>tr]:last:border-b-0"
+export const tableFooterClass = "border-t border-border bg-muted-surface font-medium [&>tr]:last:border-b-0"
 export const tableCaptionClass = "mt-4 typography-caption text-muted-foreground"
 export const tableEmptyCellClass = "py-8 text-center typography-body text-muted-foreground"
 
@@ -118,7 +118,7 @@ const TableHeader = React.forwardRef<HTMLTableSectionElement, TableHeaderProps>(
     <thead
       ref={ref}
       data-slot="table-header"
-      className={cn("bg-field-rest", className)}
+      className={cn("bg-muted-surface", className)}
       {...props}
     />
   )
@@ -145,7 +145,7 @@ const TableHeaderCell = React.forwardRef<HTMLTableCellElement, TableHeaderCellPr
         className={cn(
           tableHeadVariants({ density, numeric: !!numeric }),
           // Top-only sticky: paint own bg so body rows don't bleed through the lifted <th>.
-          // tableHeaderStickyClass (bg-field-rest) wired here; left/right corners keep bg-card.
+          // tableHeaderStickyClass (bg-muted-surface) wired here; left/right corners keep bg-card.
           !isLeft && !isRight && tableHeaderStickyClass,
           (isLeft || isRight) && "bg-card",
           isLeft && "left-0 z-table-corner",
@@ -387,7 +387,7 @@ function TableSkeletonRow({ colCount, density: densityProp, className }: TableSk
     >
       {Array.from({ length: colCount }, (_, i) => (
         <td key={i} className="px-3 py-2">
-          <div className="h-3 rounded-sm bg-muted-surface animate-[shimmer_1800ms_linear_infinite] bg-[size:200%_100%] bg-gradient-to-r from-muted-surface via-elevated-surface to-muted-surface" /> {/* eslint-disable-line no-restricted-syntax -- bg-[size:...] is background-size shorthand; no token equivalent */}
+          <div className="h-3 rounded-sm bg-muted-surface animate-[shimmer_1800ms_linear_infinite] bg-[size:200%_100%] bg-gradient-to-r from-muted-surface via-card to-muted-surface" /> {/* eslint-disable-line no-restricted-syntax -- bg-[size:...] is background-size shorthand; no token equivalent */}
         </td>
       ))}
     </tr>
