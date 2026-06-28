@@ -7,6 +7,11 @@ No new tokens are introduced here._
 _Owner map: rows marked `[DSA]` → `design-system-architect` (`packages/ui/**`);
 rows marked `[SFE]` → `staff-frontend-engineer` (`apps/portal/**`)._
 
+_Swift recalibration (2026-06-28): `--motion-exit` value changed from `var(--duration-fast)
+var(--ease-in-accelerated)` (120ms) to `var(--duration-instant) var(--ease-in-accelerated)` (80ms).
+All entries that reference `--motion-exit` are affected. Entries not referencing `--motion-exit`
+are unaffected; each is explicitly marked Swift-compliant or Swift-flagged below._
+
 ---
 
 ## How to read this table
@@ -36,6 +41,8 @@ transition: background-color var(--motion-state-change),
 
 **What this covers:** primary, secondary, ghost, destructive, and destructive-ghost variants. All use color-only hover changes; no spatial motion is needed.
 
+**Swift compliance:** UNCHANGED — color transition completes in 120ms, within the Swift ceiling. No exit motion involved.
+
 **Reduced-motion:** Handled automatically — `--duration-fast` collapses to 0ms. No extra work.
 
 ---
@@ -56,7 +63,9 @@ animation: var(--animate-fade-out);
 
 **No translate on tooltips.** Tooltips anchor to the trigger element and appear in place — they must not slide. Fade only.
 
-**Reduced-motion:** Token collapse handles it (`--duration-base` and `--duration-fast` → 0ms).
+**Swift compliance:** CHANGED (token cascade) — `--animate-fade-out` references `--motion-exit`, which now resolves to 80ms. Tooltip dismissal becomes faster without any code change in `tooltip.tsx`. This is correct: a tooltip disappearing faster clears visual noise without any perceptibility concern (tooltips are informational, not interactive, so the user is never mid-reading when hover ends). No code action required beyond the `--motion-exit` value change in `primitive.css` / `theme.css`.
+
+**Reduced-motion:** Token collapse handles it.
 
 ---
 
@@ -69,6 +78,8 @@ animation: var(--animate-fade-out);
 ```
 transition: background-color var(--motion-state-change);
 ```
+
+**Swift compliance:** UNCHANGED — popover item hover is a pure color shift at 120ms, within the Swift ceiling.
 
 **Reduced-motion:** Token collapse handles it.
 
@@ -87,6 +98,8 @@ transition: background-color var(--motion-state-change),
 
 **Scope note:** This covers semantic state badges only (Sandbox warm/cold/errored, Job outcome, etc.). It does NOT animate the state value itself — the color change acknowledges that the state changed. The state snap is intentional; only the color acknowledgment transitions.
 
+**Swift compliance:** UNCHANGED — badge color acknowledgment at 120ms is within the Swift ceiling. Note: the badge does NOT use `--motion-exit` (there is no badge dismiss); the Swift recalibration does not affect this entry.
+
 **Reduced-motion:** Token collapse handles it — badge snaps to new color at 0ms, which is identical to the current behavior.
 
 ---
@@ -102,6 +115,8 @@ transition: opacity var(--motion-state-change);
 ```
 
 Applied to the check indicator element. Check-mark should appear in 120ms, not instantly and not slower.
+
+**Swift compliance:** UNCHANGED — check-mark appear at 120ms is within the Swift ceiling. No exit motion on checkboxes.
 
 **Reduced-motion:** Token collapse handles it.
 
@@ -120,6 +135,8 @@ transition: box-shadow var(--motion-state-change),
 
 **Do not add duration to the focus ring appearance itself** — keyboard users rely on instant visual confirmation that focus landed. Apply `--motion-state-change` (120ms) only, never `--motion-enter`. If 120ms feels laggy in testing, drop to `--duration-instant` (80ms).
 
+**Swift compliance:** UNCHANGED — focus ring at 120ms is within the Swift ceiling. Focus ring is a keyboard-navigation aid, not an action affordance onset; the ring appears as the user lands on the control.
+
 **Reduced-motion:** Token collapse handles it.
 
 ---
@@ -134,6 +151,8 @@ transition: box-shadow var(--motion-state-change),
 ```
 transition: background-color var(--motion-state-change);
 ```
+
+**Swift compliance:** UNCHANGED — dialog close button hover is a color-only state change at `--motion-state-change` (120ms). No exit motion.
 
 **Reduced-motion:** Token collapse handles it.
 
@@ -152,6 +171,8 @@ transition: border-color var(--motion-state-change),
 
 On the `scrolled` state toggle (same `useScrolled` hook pattern as dialog). Border reveals from `border-transparent` to `border-border` with shadow `shadow-scroll-cue`.
 
+**Swift compliance:** UNCHANGED — scroll border reveal is triggered by scroll position, not by a user signal seeking an action affordance. The border transition at 120ms acknowledges the scroll state; it does not gate any action. No exit motion involved.
+
 **Reduced-motion:** Token collapse handles it — the border/shadow snap appears at frame 0, which is fine (the scroll position is still communicated by the border presence).
 
 ---
@@ -164,6 +185,8 @@ On the `scrolled` state toggle (same `useScrolled` hook pattern as dialog). Bord
 1. In `packages/ui/src/components/code-block.tsx`: remove the `copy-confirm-pulse` animation reference. Replace with a CSS class applied on `copied` state that sets `color: var(--color-state-scored-text)` with no animation. The icon swap (CopyIcon → CheckIcon) already happens via React state — no additional motion needed.
 
 2. In `packages/ui/src/styles/primitive.css`: delete the `@keyframes copy-confirm-pulse` block (lines 276–280) and the TODO comment above it (lines 273–275). Also remove `--animate-copy-confirm-pulse` from `@theme inline` in `theme.css` if it exists (check before deleting).
+
+**Swift compliance:** UNCHANGED — the replacement (icon swap + color) is instant, zero duration. Well within Swift ceiling.
 
 **Reduced-motion:** N/A — the replacement has no animation.
 
@@ -184,6 +207,8 @@ transition: transform var(--motion-state-change),
 transition: color var(--motion-state-change);
 ```
 
+**Swift compliance:** UNCHANGED — indicator slide and text color change at `--motion-state-change` (120ms), within Swift ceiling. No exit motion.
+
 **Reduced-motion:** Token collapse handles it.
 
 ---
@@ -203,6 +228,8 @@ animation: var(--animate-shimmer);
 ```
 _(Indeterminate progress reuses shimmer keyframe — same "ongoing process" semantic.)_
 
+**Swift compliance:** UNCHANGED — progress bar fill transition at `--motion-state-change` (120ms) is within the Swift ceiling. The progress bar itself communicates ongoing process (indeterminate) or completion (determinate); it is not the action affordance. No exit motion involved.
+
 **Reduced-motion:** Token collapse handles determinate. Indeterminate loop: `--motion-continuous` → `none` suppresses shimmer; render a static filled bar at an intermediate width (e.g., 40%) or a static color block to communicate "loading" without motion.
 
 ---
@@ -216,10 +243,13 @@ _(Indeterminate progress reuses shimmer keyframe — same "ongoing process" sema
 
 **Declaration (on the sidebar container element or the CSS var itself via transition):**
 ```
-transition: width var(--motion-enter);
+transition: width var(--motion-enter);   /* expand */
+transition: width var(--motion-exit);    /* collapse */
 ```
 
-On expand (open): use `--motion-enter` (`var(--duration-base) var(--ease-out-emphasized)` = 220ms emphasized). On collapse (close): use `--motion-exit` (`var(--duration-fast) var(--ease-in-accelerated)` = 120ms accelerated). The two-phase timing (slower open, faster close) matches the accordion disclosure pattern established elsewhere in the system.
+On expand (open): use `--motion-enter` (`var(--duration-base) var(--ease-out-emphasized)` = 220ms emphasized). On collapse (close): use `--motion-exit` (`var(--duration-instant) var(--ease-in-accelerated)` = 80ms accelerated — Swift recalibration; was 120ms). The sidebar collapsing quickly surfaces the content pane without ceremony — the user collapsed it to reach the canvas, not to watch the animation.
+
+**Swift compliance:** CHANGED — exit recalibrated 120ms → 80ms.
 
 If `[--shell-left-w]` is driven by a CSS custom property rather than a `width` property directly, the transition must be applied to `width` on the element that visually resizes. Verify the architecture before implementation — CSS custom property transitions require `@property` registration or a computed `width` to be transitionable.
 
@@ -232,7 +262,9 @@ If `[--shell-left-w]` is driven by a CSS custom property rather than a `width` p
 **Catalog ref:** `apps/portal/src/components/shell/unified-shell.tsx:107-127` · verdict: motion-needed  
 **Action:** Same pattern as B1 — same CSS var mechanism, same transition declaration. Verify both the workspace rail (B1) and settings sub-pane rail share the same CSS transition rule so they feel identical on toggle.
 
-**Declaration:** Identical to B1.
+**Declaration:** Identical to B1 (enter: `--motion-enter`, collapse: `--motion-exit` at 80ms).
+
+**Swift compliance:** CHANGED — exit recalibrated 120ms → 80ms (same as B1).
 
 **Reduced-motion:** Token collapse handles it.
 
@@ -257,6 +289,8 @@ transition: color            var(--duration-instant) var(--ease-out-standard),
             background-color var(--duration-instant) var(--ease-out-standard);
 ```
 
+**Swift compliance:** UNCHANGED — sidebar nav hover color at `--duration-instant` (80ms) or `--duration-fast` (120ms), both within Swift ceiling. No exit motion on the hover highlight itself.
+
 **Reduced-motion:** Token collapse handles either duration.
 
 ---
@@ -275,6 +309,8 @@ animation: var(--animate-fade-in);
 animation: var(--animate-fade-out);
 ```
 
+**Swift compliance:** CHANGED (token cascade) — `--animate-fade-out` references `--motion-exit`, which now resolves to 80ms. Theme switcher menu dismissal becomes faster without code changes to the menu component itself. The user dismissed the menu to take a different action; 80ms exit is appropriate. Fade-in remains 220ms (`--motion-enter`), preserving asymmetry.
+
 **Reduced-motion:** Token collapse handles it.
 
 ---
@@ -286,6 +322,8 @@ animation: var(--animate-fade-out);
 
 **Declaration:** Identical to B4.
 
+**Swift compliance:** CHANGED (token cascade) — same as B4. Avatar menu dismissal via `--animate-fade-out` now resolves to 80ms.
+
 **Reduced-motion:** Token collapse handles it.
 
 ---
@@ -296,6 +334,8 @@ animation: var(--animate-fade-out);
 **Action:** No motion to add. The shell persists across workspace route changes; the only visible transition is the skeleton shimmer on new data loading, which is already present. If the `#main-content` div receives a hard-cut content swap, do NOT add a fade — the shimmer is the continuity signal.
 
 **This is a KEEP-INSTANT decision, not an omission.** Document it so future engineers don't add a route-change fade here under deadline pressure.
+
+**Swift compliance:** UNCHANGED — no motion here is the Swift-correct answer. Route changes must feel instant; the skeleton shimmer on data load is the only continuity signal. Adding a fade-in would delay the user's first scan of the new content.
 
 ---
 
@@ -309,6 +349,8 @@ animation: var(--animate-fade-out);
 **Implementation rule:**
 - Dense operational tables: no animation on row insert.
 - Job event timeline (if/when built): `--animate-row-reveal` is appropriate here.
+
+**Swift compliance:** UNCHANGED — instant row insertion is the Swift-correct answer. Row animation in dense operational tables creates visual noise that delays Alex's next scan. No-animation is not an absence of Swift; it is Swift in context (the action affordance is the row's content, not its arrival).
 
 **Reduced-motion:** N/A (no animation to suppress in the dense-table case).
 
@@ -324,6 +366,8 @@ These entries are correctly implemented but have notes for calibration verificat
 **Issue:** Overlay enter uses raw `duration-[200ms]` instead of a named token. 200ms is close to `--duration-base` (220ms) but not identical.  
 **Recommendation:** Replace `duration-[200ms]` with `duration-base` (220ms) to keep the overlay in sync with the panel enter animation. If 200ms was intentional (slightly faster overlay so the panel "catches up" visually), document the decision inline. Currently undocumented.
 
+**Swift compliance:** UNCHANGED in spirit — but verify the overlay exit also uses `--motion-exit` after the Swift recalibration. If the overlay exit was previously raw `duration-[200ms]` or `duration-fast`, it must now use `--motion-exit` (80ms) to match the Swift recalibration for all structural exits.
+
 **Owner:** `[DSA]`
 
 ---
@@ -331,7 +375,10 @@ These entries are correctly implemented but have notes for calibration verificat
 ### T2 — Verify `--motion-state-change` propagation through `prop-(--motion-state-change)`
 
 **Catalog ref:** Multiple entries in `packages/ui/src/components/dialog.tsx` and `packages/ui/src/components/table.tsx`  
-**Issue:** The Tailwind v4 `prop-()` syntax (`transition-colors prop-(--motion-state-change)`) is used in several components. Verify this generates `transition-property: ...; transition-duration: var(--duration-fast); transition-timing-function: var(--ease-out-standard)` correctly. If the prop() utility does not expand the composite shorthand as expected, normalize affected declarations to explicit properties.  
+**Issue:** The Tailwind v4 `prop-()` syntax (`transition-colors prop-(--motion-state-change)`) is used in several components. Verify this generates `transition-property: ...; transition-duration: var(--duration-fast); transition-timing-function: var(--ease-out-standard)` correctly. If the prop() utility does not expand the composite shorthand as expected, normalize affected declarations to explicit properties.
+
+**Swift compliance:** UNCHANGED — `--motion-state-change` references `--duration-fast` (120ms), which is within the Swift ceiling. The Swift recalibration does not touch `--motion-state-change`.
+
 **Owner:** `[DSA]`
 
 ---
@@ -340,7 +387,10 @@ These entries are correctly implemented but have notes for calibration verificat
 
 **Catalog ref:** `packages/ui/src/components/switch.tsx`  
 **Issue:** Radix Switch uses its own internal animation for the thumb slide. The catalog notes "typically 200–250ms with ease-out" which is not a Blaxel token. If the thumb uses a raw value, override to `--duration-base var(--ease-out-standard)` (220ms standard) — thumb slides are spatial micro-motions, not structural shifts, so `--motion-micro` (180ms) would also be acceptable if 220ms feels heavy.  
-**Recommendation:** Try `--motion-micro` first (180ms standard). The thumb travel distance is short; the longer base duration may feel sluggish.  
+**Recommendation:** Try `--motion-micro` first (180ms standard). The thumb travel distance is short; the longer base duration may feel sluggish.
+
+**Swift compliance:** UNCHANGED — switch thumb slide is not an action affordance onset; it acknowledges a toggle that already fired. 180ms is within the Swift ceiling. The Swift recalibration does not affect this entry.
+
 **Owner:** `[DSA]`
 
 ---
@@ -355,6 +405,34 @@ These entries are correctly implemented but have notes for calibration verificat
 **Motion-already-present entries requiring no action: 30** (per catalog — correctly implemented).  
 **Motion-forbidden entries: 9** (8 catalog + table row insertion in dense lists — see `motion.md` for rationale).  
 **Deprecated: 1** (`copy-confirm-pulse` — see A9 and `motion.md` deprecation list).
+
+### Swift recalibration impact summary (2026-06-28)
+
+| Entry | Status | Mechanism |
+|---|---|---|
+| A1 Button hover | UNCHANGED | No exit motion |
+| A2 Tooltip appear/disappear | CHANGED (token cascade) | `--animate-fade-out` → `--motion-exit` → 80ms |
+| A3 Popover item hover | UNCHANGED | No exit motion |
+| A4 Badge state color | UNCHANGED | No exit motion |
+| A5 Checkbox check-mark | UNCHANGED | No exit motion |
+| A6 Form field focus lift | UNCHANGED | No exit motion |
+| A7 Dialog close button hover | UNCHANGED | No exit motion |
+| A8 Drawer scroll border reveal | UNCHANGED | No exit motion |
+| A9 Remove copy-confirm-pulse | UNCHANGED | No animation |
+| A10 Segmented control | UNCHANGED | No exit motion |
+| A11 Progress bar fill | UNCHANGED | No exit motion |
+| B1 Sidebar rail collapse | CHANGED | Direct `--motion-exit` reference → 80ms |
+| B2 Sub-pane rail collapse | CHANGED | Direct `--motion-exit` reference → 80ms |
+| B3 Sidebar nav link hover | UNCHANGED | No exit motion |
+| B4 Theme switcher menu fade | CHANGED (token cascade) | `--animate-fade-out` → `--motion-exit` → 80ms |
+| B5 Avatar menu fade | CHANGED (token cascade) | `--animate-fade-out` → `--motion-exit` → 80ms |
+| B6 Route change content area | UNCHANGED | No motion (keep-instant) |
+| B7 Table row insertion | UNCHANGED | No animation |
+| T1 Drawer overlay duration | PARTIALLY CHANGED | Exit overlay: verify uses `--motion-exit` (80ms) |
+| T2 `--motion-state-change` propagation | UNCHANGED | `--motion-state-change` unaffected |
+| T3 Switch toggle duration | UNCHANGED | No exit motion |
+
+**Code action required for Swift recalibration:** One value change in `primitive.css` where `--motion-exit` is defined (or in `theme.css` `@theme` if the composite is declared there). All token-cascade entries update automatically. Direct references in B1/B2 update once the token resolves correctly. T1 exit overlay needs verification and possible explicit fix.
 
 ---
 

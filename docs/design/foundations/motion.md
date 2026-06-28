@@ -12,18 +12,30 @@ that it did. The runtime is perpetual; the surface reflects that by never going 
 Every animation either confirms what just happened (hover, press, focus) or orients the user through
 a structural shift (pane entry, modal break, drawer slide) — nothing more.
 
+Swift is the counterweight to Perpetual on the motion axis. Perpetual says the runtime is always
+present (backend commitment); Swift says the surface is one beat from the next action (UX
+commitment). Where Perpetual shapes enters — acknowledge arrival, establish presence — Swift shapes
+exits: clear the stage without ceremony so the user's next verb is already available. This makes
+in/out asymmetry load-bearing, not decorative. An overlay arriving at 220ms feels deliberate;
+the same overlay leaving at 80ms feels gone. That gap is the Swift contract expressed in time.
+
+**Swift ceiling rule:** No more than one beat (≤120ms) between user signal and action affordance
+being visible. Any motion proposal that delays the first visible frame of an action affordance past
+120ms fails this test regardless of other rationale. Hold new motion proposals against this rule
+before accepting them into the spec.
+
 ---
 
 ## Duration tokens
 
 | Token | Value | Traces to | Use when |
 |---|---|---|---|
-| `--duration-instant` | 80ms | **Perpetual** — surface is always live, never lags | Hover background, press overlay — highest-frequency interactions; any perceptible delay here reads as lag |
-| `--duration-fast` | 120ms | **Composed** — state change lands cleanly, no drift | Focus ring, badge/icon state swap, hover color shifts, menu item highlight — the default for all interactive feedback |
+| `--duration-instant` | 80ms | **Perpetual + Swift** — surface is always live, never lags; exits clear immediately | Hover background, press overlay — highest-frequency interactions; also structural exits (modal/drawer/popover/menu close) — any perceptible delay reads as lag or ceremony |
+| `--duration-fast` | 120ms | **Composed** — state change lands cleanly, no drift | Focus ring, badge/icon state swap, hover color shifts, menu item highlight — the default for all interactive feedback; also the Swift ceiling (≤120ms to first visible frame of any action affordance) |
 | `--duration-subtle` | 180ms | **Exact** — gives the eye enough time to track spatial change | Disclosure chevron rotation, row selection highlight, segmented control indicator — spatial micro-motions |
-| `--duration-base` | 220ms | **Perpetual** — structural shifts need a moment to resolve | Modal/drawer enter, accordion content expand, pane slide — ceiling for all deliberate transitions; never exceed this for state changes |
+| `--duration-base` | 220ms | **Perpetual** — structural shifts need a moment to resolve | Modal/drawer/popover/menu enter, accordion content expand, pane slide — ceiling for all deliberate entry transitions; never exceed this for state changes |
 
-**Calibration verdict: KEEP all four.** The 80→120→180→220ms ladder is correctly spaced. Each step is perceptibly distinct; none is slow enough to feel ceremonious. Adding a fifth tier (e.g. a 300ms "expressive" duration) would introduce celebration-level motion and is explicitly forbidden.
+**Calibration verdict: KEEP all four; extend `--duration-instant` scope.** The 80→120→180→220ms ladder remains correctly spaced. The Swift recalibration affects `--motion-exit` only: exits now bind to `--duration-instant` (80ms) instead of `--duration-fast` (120ms), pushing the in/out asymmetry from 1.83x to 2.75x. The `--duration-instant` token acquires a second semantic role — it covers both highest-frequency state changes and structural exits. These are compatible: both classes require zero ceremony. Adding a fifth tier (e.g. a 300ms "expressive" duration) would introduce celebration-level motion and is explicitly forbidden.
 
 ---
 
@@ -50,10 +62,10 @@ Composites bind a duration + easing into a named shorthand for `transition` decl
 | `--motion-state-change` | `var(--duration-fast) var(--ease-out-standard)` | Hover/focus color shifts, badge state swap, icon swap — the default for interactive feedback |
 | `--motion-micro` | `var(--duration-subtle) var(--ease-out-standard)` | Spatial micro-motions: disclosure chevron rotate, row selection, segmented control slide |
 | `--motion-enter` | `var(--duration-base) var(--ease-out-emphasized)` | Structural entry: modal open, accordion expand, pane slide-in |
-| `--motion-exit` | `var(--duration-fast) var(--ease-in-accelerated)` | Structural exit: modal close, accordion collapse, pane slide-out |
+| `--motion-exit` | `var(--duration-instant) var(--ease-in-accelerated)` | Structural exit: modal close, accordion collapse, pane slide-out, popover/menu dismiss — Swift recalibration: 80ms (was 120ms); exits must not compete with the user's next action |
 | `--motion-continuous` | `1800ms var(--ease-linear) infinite` | Continuous loops only: skeleton shimmer, indeterminate progress; overridden to `none` under `prefers-reduced-motion` |
 
-**Calibration verdict: KEEP all five.** `--motion-micro` name is correct — it covers spatial micro-motions that need the extra 60ms to be trackable (chevron rotate, indicator slide). `--motion-state-change` covers pure color transitions where spatial tracking is not needed.
+**Calibration verdict: KEEP all five; `--motion-exit` value updated.** `--motion-micro` name is correct — it covers spatial micro-motions that need the extra 60ms to be trackable (chevron rotate, indicator slide). `--motion-state-change` covers pure color transitions where spatial tracking is not needed. `--motion-exit` now references `--duration-instant` (80ms) — see duration token rationale above.
 
 ---
 
@@ -64,14 +76,14 @@ All keyframes live in `packages/ui/src/styles/primitive.css`. Consuming via `var
 | Keyframe | Composite | Kept / Deprecated |
 |---|---|---|
 | `fade-in` | `--animate-fade-in` | Kept |
-| `fade-out` | `--animate-fade-out` | Kept |
-| `slide-up-in` | `--animate-slide-up-in` | Kept — 8px translate, dialog/popover desktop enter |
-| `slide-down-out` | `--animate-slide-down-out` | Kept |
+| `fade-out` | `--animate-fade-out` | Kept — exit composite: `--motion-exit` (80ms instant, accelerated) |
+| `slide-up-in` | `--animate-slide-up-in` | Kept — 8px translate, dialog/popover desktop enter; uses `--motion-enter` (220ms emphasized) |
+| `slide-down-out` | `--animate-slide-down-out` | Kept — exit composite: `--motion-exit` (80ms instant, accelerated); Swift recalibration applies |
 | `row-reveal` | `--animate-row-reveal` | Kept — 4px slide-up, fill-mode both; reserved for specific streaming contexts only (see Application spec for scope) |
 | `shimmer` | `--animate-shimmer` | Kept — 1800ms linear infinite |
 | `running-pulse` | `--animate-running-pulse` | Kept — 1600ms linear infinite; opacity 1→0.45→1; used for "Agent running / Job in-progress" status indicators where pulsing conveys live process, not celebration |
 | `slide-right-in` | `--animate-slide-right-in` | Kept — ±12px translate; trace/detail panel enter from right |
-| `slide-left-out` | `--animate-slide-left-out` | Kept |
+| `slide-left-out` | `--animate-slide-left-out` | Kept — exit composite: `--motion-exit` (80ms instant, accelerated); Swift recalibration applies |
 | `slide-up-from-bottom` | `--animate-slide-up-from-bottom` | Kept — 100% viewport translate; mobile sheet |
 | `slide-down-to-bottom` | `--animate-slide-down-to-bottom` | Kept |
 | `table-head-scroll-cue` | _(scroll-timeline, no composite)_ | Kept — CSS scroll-driven; not consumed via JS |
@@ -131,6 +143,30 @@ These surfaces must never receive motion. The rationale is restated here so it s
 | **Form field validation error reveal** (`input.tsx:53-54`, `form-field.tsx`) | Same rationale as error band. Validation errors must be present, not arriving. Instant appearance with high contrast is the correct treatment. |
 | **Status color changes** (badge, state pill, any `--color-state-*` swap) | Color is pure state encoding per personality principle #4. Transitioning between state colors turns a signal into a ceremony and makes intermediate color mixes semantically meaningless (what does the orange→green blend mean?). State changes must snap. |
 | **Table row insertion in dense lists** (Sandboxes, API Keys, Policies, Jobs lists) | Dense tables are Alex's incident surface. New rows appearing with animation in a fast-updating list hide the change — the animation completes while the user is reading the previous row. Rows must appear instantly so Alex can scan without visual noise. |
+
+---
+
+## Principle #12 compound check — motion-forbidden surfaces vs below-the-fold
+
+Interaction principle #12: "Primary next-action reachable without scroll." A compound failure would
+be a surface that is both motion-forbidden AND serves as the primary action affordance below the
+fold.
+
+All 9 motion-forbidden surfaces were audited against this compound condition:
+
+| Surface | Action affordance? | Below-fold risk? | Compound flag? |
+|---|---|---|---|
+| Sidebar nav active state glow | No — navigation chrome, not an action | N/A | **None** |
+| Copy-to-clipboard feedback | No — micro-confirmation of a completed action | N/A | **None** |
+| Page header/title on navigation | No — orientation signal, not an action | N/A | **None** |
+| Table row removal | No — the delete affordance triggers removal; the forbidden motion is on the removed row | N/A | **None** |
+| Empty state display | The CLI command in an empty state IS the action affordance — but empty states are always above the fold (they replace the list viewport) | No | **None** |
+| Error band display | The retry/CLI affordance in the error band IS an action — see principle #5 — but the band appears inline within the viewport, not below it | No | **None** |
+| Form field validation error reveal | No — feedback signal adjacent to a field, not a primary action | N/A | **None** |
+| Status color changes | No — pure state signal, not an action affordance | N/A | **None** |
+| Table row insertion in dense lists | No — rows insert into the existing table viewport; no below-fold placement | N/A | **None** |
+
+**Verdict: no compound failures.** Principle #12 and the motion-forbidden list are orthogonal concerns. None of the 9 forbidden surfaces acts as a primary action affordance that could land below the fold. No IA escalation required.
 
 ---
 
