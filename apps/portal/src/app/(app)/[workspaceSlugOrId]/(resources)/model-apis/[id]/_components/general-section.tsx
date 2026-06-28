@@ -83,7 +83,7 @@ function ReadOnlyGeneralSection({ model }: { model: Model }) {
     <GeneralShell>
       <div className="rounded-surface border border-border bg-card px-5 py-4">
         <GeneralHeading />
-        <div className="mt-4">
+        <div className="mt-4 flex flex-col gap-4">
           <FormField id="model-display-name" label="Display name">
             <Input
               type="text"
@@ -94,13 +94,7 @@ function ReadOnlyGeneralSection({ model }: { model: Model }) {
               className="bg-muted-surface"
             />
           </FormField>
-        </div>
-
-        <div className="mt-4">
           <ReadOnlyTagsField id="model-tags" value={model.tags} />
-        </div>
-
-        <div className="mt-4">
           <VisibilityRow isPrivate={model.isPrivate} />
         </div>
       </div>
@@ -141,7 +135,7 @@ function EditableGeneralSection({ model }: { model: Model }) {
         className="rounded-surface border border-border bg-card px-5 py-4"
       >
         <GeneralHeading />
-        <div className="mt-4">
+        <div className="mt-4 flex flex-col gap-4">
           <FormField
             id="model-display-name"
             label="Display name"
@@ -154,9 +148,6 @@ function EditableGeneralSection({ model }: { model: Model }) {
               {...register("displayName")}
             />
           </FormField>
-        </div>
-
-        <div className="mt-4">
           <Controller
             control={control}
             name="tags"
@@ -169,9 +160,6 @@ function EditableGeneralSection({ model }: { model: Model }) {
               />
             )}
           />
-        </div>
-
-        <div className="mt-4">
           <VisibilityRow isPrivate={model.isPrivate} />
         </div>
 
