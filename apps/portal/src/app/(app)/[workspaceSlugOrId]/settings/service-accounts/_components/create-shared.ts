@@ -3,7 +3,7 @@ export type ExpiryOption = "7d" | "30d" | "90d" | "1y" | "never";
 export const EXPIRY_OPTIONS = [
   { value: "7d", label: "7 days" },
   { value: "30d", label: "30 days" },
-  { value: "90d", label: "90 days (recommended)" },
+  { value: "90d", label: "90 days" },
   { value: "1y", label: "1 year" },
   { value: "never", label: "No expiration" },
 ] as const satisfies ReadonlyArray<{ value: ExpiryOption; label: string }>;
