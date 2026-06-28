@@ -53,7 +53,7 @@ function RuleShell({ children }: { children: React.ReactNode }) {
 
 function RuleIcon() {
   return (
-    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary-surface text-muted-foreground">
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
       <Zap className="size-4" aria-hidden="true" />
     </div>
   );

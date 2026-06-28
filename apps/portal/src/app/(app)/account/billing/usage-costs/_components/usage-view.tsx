@@ -472,7 +472,7 @@ export default function UsageView() {
                   aria-label="Granularity"
                   className={cn(
                     "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-border bg-card px-3 typography-body text-foreground",
-                    "hover:bg-secondary-surface focus-visible:bg-form-field-surface focus-visible:shadow-focus-ring focus-visible:outline-none",
+                    "hover:bg-hover-surface focus-visible:bg-form-field-surface focus-visible:shadow-focus-ring focus-visible:outline-none",
                     "data-[state=open]:bg-form-field-surface data-[state=open]:shadow-focus-ring",
                   )}
                 >

@@ -179,7 +179,7 @@
    *   App shell sidebar  → aliases secondary-surface (sits on bg-background).
    *   Manage shell sidebar → custom mix (sits on bg-card / panel surface; orange
    *   mix in light, neutral white mix in dark to avoid clashing on dark-navy bg). */
-  --color-sidebar-hover: var(--color-secondary-surface);
+  --color-sidebar-hover: var(--color-hover-surface);
   --color-sidebar-hover-manage: light-dark(
     color-mix(in srgb, var(--surface-card-light) 92%, var(--orange-800) 8%),
     color-mix(in srgb, var(--surface-card-dark) 88%, white 12%)

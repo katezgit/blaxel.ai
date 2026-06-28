@@ -328,7 +328,7 @@ function NameCell({ integration, connectionCount }: NameCellProps) {
             </Badge>
           )}
           {integration.comingSoon && (
-            <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
+            <span className="rounded-sm bg-muted px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
               Coming soon
             </span>
           )}

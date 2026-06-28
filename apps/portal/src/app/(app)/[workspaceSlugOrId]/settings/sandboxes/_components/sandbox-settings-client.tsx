@@ -14,7 +14,7 @@ export default function SandboxSettingsClient({
   const [logsDisabled, setLogsDisabled] = useState(initial);
 
   return (
-    <div className="flex w-full max-w-3xl items-start justify-between gap-4 rounded-md border border-border bg-secondary-surface px-4 py-3">
+    <div className="flex w-full max-w-3xl items-start justify-between gap-4 rounded-md border border-border bg-muted px-4 py-3">
       <div className="flex flex-col gap-0.5">
         <label
           htmlFor="disable-process-logging"

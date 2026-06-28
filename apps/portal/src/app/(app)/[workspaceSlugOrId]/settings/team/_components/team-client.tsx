@@ -155,7 +155,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
                 {row.original.name}
               </span>
               {row.original.isYou && (
-                <span className="rounded-sm bg-secondary-surface px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
+                <span className="rounded-sm bg-muted px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
                   you
                 </span>
               )}
@@ -296,7 +296,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       </div>
 
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between rounded-md border border-border bg-secondary-surface px-3 py-2">
+        <div className="flex items-center justify-between rounded-md border border-border bg-muted px-3 py-2">
           <div className="flex items-center gap-4">
             <span className="typography-label text-foreground">
               {selectedIds.length} selected
