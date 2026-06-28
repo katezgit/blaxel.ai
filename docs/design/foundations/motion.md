@@ -24,6 +24,15 @@ being visible. Any motion proposal that delays the first visible frame of an act
 120ms fails this test regardless of other rationale. Hold new motion proposals against this rule
 before accepting them into the spec.
 
+**Structural-continuity rule:** Swift's exit ceiling applies to surface-dismissal motion — surfaces
+that vanish from the viewport (dialog close, popover dismiss, menu dismiss, tooltip hide, drawer
+close). Structural-reshape motion (sidebar collapse, accordion collapse, layout split resize) uses
+`--motion-enter` symmetric on both directions — it is continuity, not dismissal. The surface is
+not departing; it is present in a new form. Applying `--motion-exit` to a structural-reshape
+surface is a misclassification that creates asymmetry the user reads as abruptness. Hold-up test:
+**is this surface vanishing or reshaping?** Vanishing → `--motion-exit`. Reshaping → `--motion-enter`
+symmetric.
+
 ---
 
 ## Duration tokens
@@ -62,7 +71,7 @@ Composites bind a duration + easing into a named shorthand for `transition` decl
 | `--motion-state-change` | `var(--duration-fast) var(--ease-out-standard)` | Hover/focus color shifts, badge state swap, icon swap — the default for interactive feedback |
 | `--motion-micro` | `var(--duration-subtle) var(--ease-out-standard)` | Spatial micro-motions: disclosure chevron rotate, row selection, segmented control slide |
 | `--motion-enter` | `var(--duration-base) var(--ease-out-emphasized)` | Structural entry: modal open, accordion expand, pane slide-in |
-| `--motion-exit` | `var(--duration-instant) var(--ease-in-accelerated)` | Structural exit: modal close, accordion collapse, pane slide-out, popover/menu dismiss — Swift recalibration: 80ms (was 120ms); exits must not compete with the user's next action |
+| `--motion-exit` | `var(--duration-instant) var(--ease-in-accelerated)` | Dismissal exit: modal close, pane slide-out, popover/menu dismiss — Swift recalibration: 80ms (was 120ms); exits must not compete with the user's next action. **Scope: dismissal surfaces only** (surfaces that vanish entirely). Structural-reshape surfaces (sidebar collapse, accordion collapse) use `--motion-enter` symmetric — see "Surface-class taxonomy" in `motion-application.md`. |
 | `--motion-continuous` | `1800ms var(--ease-linear) infinite` | Continuous loops only: skeleton shimmer, indeterminate progress; overridden to `none` under `prefers-reduced-motion` |
 
 **Calibration verdict: KEEP all five; `--motion-exit` value updated.** `--motion-micro` name is correct — it covers spatial micro-motions that need the extra 60ms to be trackable (chevron rotate, indicator slide). `--motion-state-change` covers pure color transitions where spatial tracking is not needed. `--motion-exit` now references `--duration-instant` (80ms) — see duration token rationale above.

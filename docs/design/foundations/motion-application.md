@@ -243,17 +243,17 @@ _(Indeterminate progress reuses shimmer keyframe — same "ongoing process" sema
 
 **Declaration (on the sidebar container element or the CSS var itself via transition):**
 ```
-transition: width var(--motion-enter);   /* expand */
-transition: width var(--motion-exit);    /* collapse */
+transition: width var(--motion-enter);   /* collapse AND expand — symmetric */
 ```
 
-On expand (open): use `--motion-enter` (`var(--duration-base) var(--ease-out-emphasized)` = 220ms emphasized). On collapse (close): use `--motion-exit` (`var(--duration-instant) var(--ease-in-accelerated)` = 80ms accelerated — Swift recalibration; was 120ms). The sidebar collapsing quickly surfaces the content pane without ceremony — the user collapsed it to reach the canvas, not to watch the animation.
+Use `--motion-enter` (`var(--duration-base) var(--ease-out-emphasized)` = 220ms emphasized) in **both directions**. The sidebar is a structural-continuity surface — see "Surface-class taxonomy" section below. It reshapes layout rather than vanishing. The Swift exit cascade (80ms `--motion-exit`) does NOT apply here; it applies to dismissal surfaces (dialog, popover, menu, tooltip, drawer) that vanish from the viewport entirely. A sidebar that collapses asymmetrically at 80ms while expanding at 220ms felt abrupt in testing (operator report, 2026-06-28) — the asymmetry was a misclassification, not a design intent.
 
-**Swift compliance:** CHANGED — exit recalibrated 120ms → 80ms.
+**Surface class:** STRUCTURAL-CONTINUITY (Perpetual axis) — symmetric `--motion-enter` both directions.  
+**Swift compliance:** EXCEPTION — Swift exit cascade does not apply. See "Surface-class taxonomy" below.
 
 If `[--shell-left-w]` is driven by a CSS custom property rather than a `width` property directly, the transition must be applied to `width` on the element that visually resizes. Verify the architecture before implementation — CSS custom property transitions require `@property` registration or a computed `width` to be transitionable.
 
-**Reduced-motion:** Token collapse handles it (both durations → 0ms). Sidebar snaps to new width, which is the correct fallback.
+**Reduced-motion:** Token collapse handles it (duration → 0ms). Sidebar snaps to new width, which is the correct fallback.
 
 ---
 
@@ -262,9 +262,10 @@ If `[--shell-left-w]` is driven by a CSS custom property rather than a `width` p
 **Catalog ref:** `apps/portal/src/components/shell/unified-shell.tsx:107-127` · verdict: motion-needed  
 **Action:** Same pattern as B1 — same CSS var mechanism, same transition declaration. Verify both the workspace rail (B1) and settings sub-pane rail share the same CSS transition rule so they feel identical on toggle.
 
-**Declaration:** Identical to B1 (enter: `--motion-enter`, collapse: `--motion-exit` at 80ms).
+**Declaration:** Identical to B1 — `transition: width var(--motion-enter)` in both collapse and expand directions. Symmetric.
 
-**Swift compliance:** CHANGED — exit recalibrated 120ms → 80ms (same as B1).
+**Surface class:** STRUCTURAL-CONTINUITY (Perpetual axis) — same classification as B1.  
+**Swift compliance:** EXCEPTION — Swift exit cascade does not apply (same rationale as B1).
 
 **Reduced-motion:** Token collapse handles it.
 
@@ -356,6 +357,43 @@ animation: var(--animate-fade-out);
 
 ---
 
+## Surface-class taxonomy — dismissal vs structural-continuity
+
+_This section is the hold-up test for engineers applying or reviewing motion. Apply it before assigning `--motion-exit` to any collapsing or closing surface._
+
+### The test
+
+Ask: **is this surface vanishing, or reshaping?**
+
+- **Vanishing (dismissal class):** The surface leaves the viewport entirely. The user's attention moves to what was behind it. Examples: dialog close, popover dismiss, menu dismiss, tooltip hide, drawer close. Swift owns this class — `--motion-exit` (80ms accelerated) clears the stage so the user's next action is immediately available.
+
+- **Reshaping (structural-continuity class):** The surface changes its spatial footprint but stays present in the layout. The user's attention follows the layout change; there is no "stage to clear." Examples: sidebar collapse, accordion expand/collapse, layout split resize. Perpetual owns this class — `--motion-enter` (220ms emphasized) symmetric on both directions. The surface is not departing; it is continuing in a new form.
+
+### Assignment table
+
+| Surface | Class | Token assignment |
+|---|---|---|
+| Dialog close | Dismissal | `--motion-exit` (80ms) |
+| Popover dismiss | Dismissal | `--motion-exit` (80ms) |
+| Menu dismiss | Dismissal | `--motion-exit` (80ms) |
+| Tooltip hide | Dismissal | `--motion-exit` (80ms) |
+| Drawer close | Dismissal | `--motion-exit` (80ms) |
+| **Sidebar collapse (B1)** | **Structural-continuity** | **`--motion-enter` symmetric (220ms)** |
+| **Sub-pane rail collapse (B2)** | **Structural-continuity** | **`--motion-enter` symmetric (220ms)** |
+| Accordion collapse | Structural-continuity | `--motion-enter` symmetric (220ms) — see audit note below |
+
+### Swift exit cascade scope
+
+The Swift exit cascade (commit `8695b82`, `--motion-exit` 120ms → 80ms) propagates automatically to all entries that reference `--motion-exit` via token or keyframe. **It is scoped to the dismissal class only.** Structural-continuity surfaces that inherited `--motion-exit` via the cascade were misclassified — correct by assigning `--motion-enter` symmetric.
+
+### Accordion audit note
+
+Accordion expand/collapse is referenced in `motion.md` composite token table under `--motion-exit` for collapse. This is a **misclassification by the same logic as B1/B2**: accordion disclosure reshapes layout (content height changes), it does not dismiss a surface. Accordion collapse should use `--motion-enter` symmetric — consistent with sidebar. The `--motion-exit` use-case example in the composite token table has been corrected in `motion.md` to remove accordion from the dismissal examples. **This is a doc fix, not a behavior change** — accordion is not currently implemented with motion in this codebase; when it is, the correct token is `--motion-enter` symmetric.
+
+No other surfaces in the current spec were found to be misclassified. B4 (theme switcher menu) and B5 (avatar menu) are correctly in the dismissal class — menus vanish, they do not reshape.
+
+---
+
 ## Tuning recommendations for motion-already-present entries
 
 These entries are correctly implemented but have notes for calibration verification.
@@ -421,8 +459,8 @@ These entries are correctly implemented but have notes for calibration verificat
 | A9 Remove copy-confirm-pulse | UNCHANGED | No animation |
 | A10 Segmented control | UNCHANGED | No exit motion |
 | A11 Progress bar fill | UNCHANGED | No exit motion |
-| B1 Sidebar rail collapse | CHANGED | Direct `--motion-exit` reference → 80ms |
-| B2 Sub-pane rail collapse | CHANGED | Direct `--motion-exit` reference → 80ms |
+| B1 Sidebar rail collapse | EXCEPTION — structural-continuity | `--motion-exit` removed; symmetric `--motion-enter` (220ms) both directions |
+| B2 Sub-pane rail collapse | EXCEPTION — structural-continuity | Same as B1 |
 | B3 Sidebar nav link hover | UNCHANGED | No exit motion |
 | B4 Theme switcher menu fade | CHANGED (token cascade) | `--animate-fade-out` → `--motion-exit` → 80ms |
 | B5 Avatar menu fade | CHANGED (token cascade) | `--animate-fade-out` → `--motion-exit` → 80ms |
