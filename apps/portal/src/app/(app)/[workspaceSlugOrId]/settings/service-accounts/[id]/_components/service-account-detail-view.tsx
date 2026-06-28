@@ -12,6 +12,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
@@ -29,7 +30,9 @@ import ConfirmByNameDialog from "../../../_components/confirm-by-name-dialog";
 import { formatRelativePast, formatShortDate } from "../../_components/format";
 import ApiKeysSection from "./api-keys-section";
 import CreateServiceAccountApiKeyDialog from "./create-service-account-api-key-dialog";
-import InlineEditable from "./inline-editable";
+import EditServiceAccountDrawer, {
+  type EditServiceAccountDrawerState,
+} from "./edit-service-account-drawer";
 import OauthCredentialsSection from "./oauth-credentials-section";
 import RecentActivitySection from "./recent-activity-section";
 import ServiceAccountDetailSkeleton from "./service-account-detail-skeleton";
@@ -58,6 +61,8 @@ export default function ServiceAccountDetailView({
 
   const [pendingRemove, setPendingRemove] = useState(false);
   const [createKeyOpen, setCreateKeyOpen] = useState(false);
+  const [editState, setEditState] =
+    useState<EditServiceAccountDrawerState>(null);
   const sa = data ?? null;
 
   if (isPending) {
@@ -120,14 +125,14 @@ export default function ServiceAccountDetailView({
     );
   };
 
-  const handleNameSave = (name: string) => {
-    updateSa({ ...sa, name, updatedAt: new Date().toISOString() });
-    toast.success("Service account name updated.");
-  };
-
-  const handleDescriptionSave = (description: string) => {
-    updateSa({ ...sa, description, updatedAt: new Date().toISOString() });
-    toast.success("Description updated.");
+  const handleEditSave = (next: { name: string; description: string }) => {
+    updateSa({
+      ...sa,
+      name: next.name,
+      description: next.description,
+      updatedAt: new Date().toISOString(),
+    });
+    toast.success(`Service account '${next.name}' saved.`);
   };
 
   const handleKeyCreated = (key: ServiceAccountApiKey) => {
@@ -161,38 +166,10 @@ export default function ServiceAccountDetailView({
             current={sa.name}
           />
         }
-        heading={
-          <InlineEditable
-            value={sa.name}
-            onSave={handleNameSave}
-            ariaLabel="Edit service account name"
-            renderDisplay={(value, startEdit) => (
-              <button
-                type="button"
-                onClick={startEdit}
-                className="cursor-text rounded-sm text-left hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                {value}
-              </button>
-            )}
-          />
-        }
+        heading={sa.name}
         description={
           <span className="flex flex-col">
-            <InlineEditable
-              value={sa.description}
-              onSave={handleDescriptionSave}
-              ariaLabel="Edit description"
-              renderDisplay={(value, startEdit) => (
-                <button
-                  type="button"
-                  onClick={startEdit}
-                  className="cursor-text rounded-sm text-left hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                >
-                  {value}
-                </button>
-              )}
-            />
+            <span>{sa.description}</span>
             <span className="mt-1 typography-caption text-meta-foreground">
               Created {formatShortDate(sa.createdAt)}
               {sa.updatedAt !== sa.createdAt
@@ -214,9 +191,16 @@ export default function ServiceAccountDetailView({
                 </IconButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem onSelect={() => setEditState(sa)}>
+                  Edit service account
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => setPendingRemove(true)}
-                  className="text-destructive focus:text-destructive"
+                  variant="destructive"
+                  onSelect={(event) => {
+                    event.preventDefault();
+                    setPendingRemove(true);
+                  }}
                 >
                   Remove service account
                 </DropdownMenuItem>
@@ -241,6 +225,12 @@ export default function ServiceAccountDetailView({
         onOpenChange={setCreateKeyOpen}
         serviceAccount={sa}
         onCreated={handleKeyCreated}
+      />
+
+      <EditServiceAccountDrawer
+        state={editState}
+        onSave={handleEditSave}
+        onClose={() => setEditState(null)}
       />
 
       <ConfirmByNameDialog
