@@ -14,6 +14,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
+import { Breadcrumb } from "@/components/shell/breadcrumb";
+import DetailPageHeader from "@/components/shell/detail-page-header";
 import ResourceNotFound from "@/components/shell/resource-not-found";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
@@ -158,88 +160,85 @@ export default function ServiceAccountDetailView({
 
   return (
     <>
-      <nav>
-        <Link
-          href={listHref}
-          className="inline-flex items-center gap-1 typography-body font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft aria-hidden="true" className="size-3.5" />
-          Service accounts
-        </Link>
-      </nav>
-
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-        <header className="page-header min-w-0">
+      <DetailPageHeader
+        breadcrumb={
+          <Breadcrumb
+            parent={{ href: listHref, label: "Service accounts" }}
+            current={sa.name}
+          />
+        }
+        heading={
           <InlineEditable
             value={sa.name}
             onSave={handleNameSave}
             ariaLabel="Edit service account name"
             renderDisplay={(value, startEdit) => (
-              <h1 className="typography-display font-semibold text-foreground">
-                <button
-                  type="button"
-                  onClick={startEdit}
-                  className="cursor-text rounded-sm text-left hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                >
-                  {value}
-                </button>
-              </h1>
+              <button
+                type="button"
+                onClick={startEdit}
+                className="cursor-text rounded-sm text-left hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                {value}
+              </button>
             )}
           />
+        }
+        description={
           <InlineEditable
             value={sa.description}
             onSave={handleDescriptionSave}
             ariaLabel="Edit description"
             renderDisplay={(value, startEdit) => (
-              <p className="text-muted-foreground">
-                <button
-                  type="button"
-                  onClick={startEdit}
-                  className="cursor-text rounded-sm text-left hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                >
-                  {value}
-                </button>
-              </p>
+              <button
+                type="button"
+                onClick={startEdit}
+                className="cursor-text rounded-sm text-left hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                {value}
+              </button>
             )}
           />
-          <p className="typography-caption text-meta-foreground">
-            <span>
-              Role: <span className="text-foreground">{roleLabel}</span>
-            </span>
-            <span aria-hidden="true"> · </span>
-            <span>Created {formatShortDate(sa.createdAt)}</span>
-            <span aria-hidden="true"> · </span>
-            <Link
-              href={teamHref}
-              className="inline-flex items-center gap-0.5 text-foreground underline-offset-2 hover:underline"
-            >
-              Manage role in Team
-              <ArrowRight aria-hidden="true" className="size-3" />
-            </Link>
-          </p>
-        </header>
-        <div className="flex shrink-0 items-center gap-2">
-          <Button variant="primary" onClick={() => setCreateKeyOpen(true)}>
-            <Plus aria-hidden="true" />
-            <span>Create API key</span>
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <IconButton variant="ghost" aria-label="More actions">
-                <MoreHorizontal />
-              </IconButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuItem
-                onSelect={() => setPendingRemove(true)}
-                className="text-destructive focus:text-destructive"
-              >
-                Remove service account
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+        }
+        action={
+          <>
+            <Button variant="primary" onClick={() => setCreateKeyOpen(true)}>
+              <Plus aria-hidden="true" />
+              <span>Create API key</span>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <IconButton variant="ghost" aria-label="More actions">
+                  <MoreHorizontal />
+                </IconButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem
+                  onSelect={() => setPendingRemove(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  Remove service account
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        }
+      />
+
+      <p className="typography-caption text-meta-foreground">
+        <span>
+          Role: <span className="text-foreground">{roleLabel}</span>
+        </span>
+        <span aria-hidden="true"> · </span>
+        <span>Created {formatShortDate(sa.createdAt)}</span>
+        <span aria-hidden="true"> · </span>
+        <Link
+          href={teamHref}
+          className="inline-flex items-center gap-0.5 text-foreground underline-offset-2 hover:underline"
+        >
+          Manage role in Team
+          <ArrowRight aria-hidden="true" className="size-3" />
+        </Link>
+      </p>
 
       <ApiKeysSection
         serviceAccount={sa}

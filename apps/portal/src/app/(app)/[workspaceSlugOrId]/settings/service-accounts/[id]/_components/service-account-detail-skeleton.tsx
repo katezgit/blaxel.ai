@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Skeleton } from "@repo/ui/components/skeleton";
 
 interface ServiceAccountDetailSkeletonProps {
@@ -11,25 +11,28 @@ export default function ServiceAccountDetailSkeleton({
 }: ServiceAccountDetailSkeletonProps) {
   return (
     <>
-      <nav>
-        <Link
-          href={listHref}
-          className="inline-flex items-center gap-1 typography-body font-medium text-muted-foreground transition-colors hover:text-foreground"
+      <header className="flex flex-col gap-3">
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-1 typography-body text-muted-foreground"
         >
-          <ArrowLeft aria-hidden="true" className="size-3.5" />
-          Service accounts
-        </Link>
-      </nav>
-      <header className="page-header">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-96" />
+          <Link
+            href={listHref}
+            className="cursor-pointer rounded-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Service accounts
+          </Link>
+          <ChevronRight aria-hidden="true" className="size-3 text-meta-foreground" />
+          <Skeleton className="h-4 w-40" />
+        </nav>
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="page-header min-w-0">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-5 w-96" />
+          </div>
+        </div>
       </header>
-      <div className="flex flex-col gap-6">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-6 w-72" />
-        <Skeleton className="h-6 w-60" />
-        <Skeleton className="h-6 w-40" />
-      </div>
+      <Skeleton className="h-4 w-80" />
       <Skeleton className="h-32 w-full" />
       <Skeleton className="h-48 w-full" />
     </>
