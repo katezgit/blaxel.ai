@@ -70,12 +70,10 @@
   border-bottom: 1px solid var(--color-border);
   background: var(--color-topbar);
   /* Track the registered --shell-left-w so the left grid column resizes
-   * in lockstep with the sidebar pane. Duration matches .shell-pane-column;
-   * direction (slower open / faster close) is selected on the shell frame. */
+   * in lockstep with the sidebar pane. Symmetric --motion-enter in both
+   * directions — see .shell-pane-column for the structural-continuity
+   * framing this surface inherits. */
   transition: grid-template-columns var(--motion-enter);
-}
-[data-shell-frame][data-sidebar-collapsed] .shell-topbar {
-  transition: grid-template-columns var(--motion-exit);
 }
 .shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: stretch; min-width: 0; display: flex; align-items: center; gap: 0.5rem; }
 .shell-topbar [data-slot="ws"]       { min-width: 0; flex: 1 1 auto; display: flex; }
@@ -306,26 +304,21 @@
   height: 100%;
   flex-shrink: 0;
   overflow: hidden;
-  /* B1/B2: two-phase sidebar collapse — open uses --motion-enter (220ms
-   * emphasized) so the expansion lands with intention; close uses
-   * --motion-exit (120ms accelerated) so the rail clears the stage without
-   * lingering. Same pattern as accordion disclosure elsewhere in the system.
+  /* Perpetual structural-continuity, not Swift dismissal — sidebar reshapes
+   * layout, doesn't vanish. Symmetric --motion-enter (220ms emphasized) in
+   * both directions so collapse feels proportional to expand. Do NOT swap
+   * to --motion-exit on collapse: the Swift dismissal cascade does not apply
+   * to surfaces that persist in the layout.
    * Reduced-motion: tokens collapse to 0ms upstream (theme.css). */
   transition: width var(--motion-enter);
 }
-[data-shell-frame][data-sidebar-collapsed] .shell-pane-column {
-  transition: width var(--motion-exit);
-}
 
-/* Shared collapse chevron rides --shell-left-w via `left:` — same two-phase
+/* Shared collapse chevron rides --shell-left-w via `left:` — same symmetric
  * motion keeps it glued to the sidebar's right edge during the transition.
  * Without this, the chevron snaps to the final anchor at frame 0 while the
  * column animates. */
 [data-shell-frame] [data-shell-collapse-chevron] {
   transition: left var(--motion-enter);
-}
-[data-shell-frame][data-sidebar-collapsed] [data-shell-collapse-chevron] {
-  transition: left var(--motion-exit);
 }
 
 @keyframes shell-pane-slide-in-from-right {
