@@ -94,7 +94,13 @@ export default function CreateServiceAccountDialog({
   if (created) {
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent size="md">
+        <DialogContent
+          size="md"
+          // DialogDescription intentionally omitted — consequence prose lives in
+          // DialogBody so it gets body typography. aria-describedby={undefined}
+          // silences Radix's missing-description warning.
+          aria-describedby={undefined}
+        >
           <PostCreateReveal
             credentials={created}
             onDone={() => handleOpenChange(false)}
@@ -294,7 +300,9 @@ function PostCreateReveal({ credentials, onDone }: PostCreateRevealProps) {
           <Check aria-hidden="true" className="size-4 text-state-scored" />
           Service account created
         </DialogTitle>
-        <DialogDescription>
+      </DialogHeader>
+      <DialogBody className="flex flex-col gap-3">
+        <p className="typography-body text-foreground">
           {apiKeyValue !== null ? (
             <>
               Service account &ldquo;{account.name}&rdquo; created with API key
@@ -307,9 +315,7 @@ function PostCreateReveal({ credentials, onDone }: PostCreateRevealProps) {
               credentials now &mdash; the client secret will not be shown again.
             </>
           )}
-        </DialogDescription>
-      </DialogHeader>
-      <DialogBody className="flex flex-col gap-3">
+        </p>
         <SecretReveal
           label="Client ID"
           value={account.clientId}
@@ -323,11 +329,6 @@ function PostCreateReveal({ credentials, onDone }: PostCreateRevealProps) {
         {apiKeyValue !== null && (
           <SecretReveal label="API key" value={apiKeyValue} sensitive />
         )}
-        <p className="typography-caption text-state-warning-text">
-          {apiKeyValue !== null
-            ? "The client secret and API key will not be shown again."
-            : "The client secret will not be shown again."}
-        </p>
       </DialogBody>
       <DialogFooter>
         <Button variant="primary" onClick={onDone}>
