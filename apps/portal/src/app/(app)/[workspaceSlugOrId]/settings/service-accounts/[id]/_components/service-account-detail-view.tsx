@@ -4,23 +4,31 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight, MoreHorizontal, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
+import { IconButton } from "@repo/ui/components/icon-button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@repo/ui/components/dropdown-menu";
 import ResourceNotFound from "@/components/shell/resource-not-found";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { workspaceServiceAccountQueries } from "@/lib/query/workspace-service-accounts";
 import { queryKeys } from "@/lib/query/keys";
 import type {
   Org,
-  Role,
   ServiceAccount,
   ServiceAccountApiKey,
 } from "@/lib/mock/types";
 import ConfirmByNameDialog from "../../../_components/confirm-by-name-dialog";
-import IdentitySection from "./identity-section";
-import OauthCredentialsSection from "./oauth-credentials-section";
+import { formatShortDate } from "../../_components/format";
 import ApiKeysSection from "./api-keys-section";
+import CreateServiceAccountApiKeyDialog from "./create-service-account-api-key-dialog";
+import InlineEditable from "./inline-editable";
+import OauthCredentialsSection from "./oauth-credentials-section";
 import RecentActivitySection from "./recent-activity-section";
 import ServiceAccountDetailSkeleton from "./service-account-detail-skeleton";
 
@@ -37,6 +45,7 @@ export default function ServiceAccountDetailView({
   const router = useRouter();
   const queryClient = useQueryClient();
   const listHref = `/${workspace.slug}/settings/service-accounts`;
+  const teamHref = `/${workspace.slug}/settings/team`;
 
   const { data, isPending, isError, refetch } = useQuery(
     workspaceServiceAccountQueries.detail(
@@ -47,6 +56,7 @@ export default function ServiceAccountDetailView({
   );
 
   const [pendingRemove, setPendingRemove] = useState(false);
+  const [createKeyOpen, setCreateKeyOpen] = useState(false);
   const sa = data ?? null;
 
   if (isPending) {
@@ -119,11 +129,6 @@ export default function ServiceAccountDetailView({
     toast.success("Description updated.");
   };
 
-  const handleRoleChange = (role: Role) => {
-    updateSa({ ...sa, role });
-    toast.success(`Role updated to ${role === "admin" ? "Admin" : "Member"}.`);
-  };
-
   const handleKeyCreated = (key: ServiceAccountApiKey) => {
     updateSa({ ...sa, apiKeys: [key, ...sa.apiKeys] });
     toast.success(`API key ${key.name} created.`);
@@ -146,6 +151,11 @@ export default function ServiceAccountDetailView({
     router.push(listHref);
   };
 
+  // Workspace-scope roles are admin | member. Any leaked `owner` from the
+  // shared mock type collapses to admin for display — workspace tenants
+  // don't carry an owner tier (verified docs.blaxel.ai 2026-06-28).
+  const roleLabel = sa.role === "member" ? "Member" : "Admin";
+
   return (
     <>
       <nav>
@@ -159,36 +169,94 @@ export default function ServiceAccountDetailView({
       </nav>
 
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-        <header className="page-header">
-          <h1 className="typography-display font-semibold text-foreground">
-            {sa.name}
-          </h1>
-          <p className="text-muted-foreground">{sa.description}</p>
+        <header className="page-header min-w-0">
+          <InlineEditable
+            value={sa.name}
+            onSave={handleNameSave}
+            ariaLabel="Edit service account name"
+            renderDisplay={(value, startEdit) => (
+              <h1 className="typography-display font-semibold text-foreground">
+                <button
+                  type="button"
+                  onClick={startEdit}
+                  className="cursor-text rounded-sm text-left hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  {value}
+                </button>
+              </h1>
+            )}
+          />
+          <InlineEditable
+            value={sa.description}
+            onSave={handleDescriptionSave}
+            ariaLabel="Edit description"
+            renderDisplay={(value, startEdit) => (
+              <p className="text-muted-foreground">
+                <button
+                  type="button"
+                  onClick={startEdit}
+                  className="cursor-text rounded-sm text-left hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  {value}
+                </button>
+              </p>
+            )}
+          />
+          <p className="typography-caption text-meta-foreground">
+            <span>
+              Role: <span className="text-foreground">{roleLabel}</span>
+            </span>
+            <span aria-hidden="true"> · </span>
+            <span>Created {formatShortDate(sa.createdAt)}</span>
+            <span aria-hidden="true"> · </span>
+            <Link
+              href={teamHref}
+              className="inline-flex items-center gap-0.5 text-foreground underline-offset-2 hover:underline"
+            >
+              Manage role in Team
+              <ArrowRight aria-hidden="true" className="size-3" />
+            </Link>
+          </p>
         </header>
-        <Button
-          variant="destructive-ghost"
-          onClick={() => setPendingRemove(true)}
-        >
-          Remove service account
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button variant="primary" onClick={() => setCreateKeyOpen(true)}>
+            <Plus aria-hidden="true" />
+            <span>Create API key</span>
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <IconButton variant="ghost" aria-label="More actions">
+                <MoreHorizontal />
+              </IconButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem
+                onSelect={() => setPendingRemove(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                Remove service account
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      <IdentitySection
+      <ApiKeysSection
         serviceAccount={sa}
-        onNameSave={handleNameSave}
-        onDescriptionSave={handleDescriptionSave}
-        onRoleChange={handleRoleChange}
+        onCreateKey={() => setCreateKeyOpen(true)}
+        onKeyDeleted={handleKeyDeleted}
       />
 
       <OauthCredentialsSection serviceAccount={sa} />
 
-      <ApiKeysSection
-        serviceAccount={sa}
-        onKeyCreated={handleKeyCreated}
-        onKeyDeleted={handleKeyDeleted}
-      />
-
       <RecentActivitySection />
+
+      <CreateServiceAccountApiKeyDialog
+        open={createKeyOpen}
+        onOpenChange={setCreateKeyOpen}
+        serviceAccount={sa}
+        onCreated={handleKeyCreated}
+      />
 
       <ConfirmByNameDialog
         open={pendingRemove}

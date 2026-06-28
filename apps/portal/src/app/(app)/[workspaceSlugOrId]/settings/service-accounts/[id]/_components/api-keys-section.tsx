@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal, Plus, Search } from "lucide-react";
+import { MoreHorizontal, Search } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
@@ -29,24 +29,22 @@ import {
   formatShortDate,
 } from "../../_components/format";
 import CliLine from "../../_components/cli-line";
-import CreateServiceAccountApiKeyDialog from "./create-service-account-api-key-dialog";
 import DeleteServiceAccountApiKeyDialog from "./delete-service-account-api-key-dialog";
 
 const columnHelper = createColumnHelper<ServiceAccountApiKey>();
 
 interface ApiKeysSectionProps {
   serviceAccount: ServiceAccount;
-  onKeyCreated: (key: ServiceAccountApiKey) => void;
+  onCreateKey: () => void;
   onKeyDeleted: (keyId: string) => void;
 }
 
 export default function ApiKeysSection({
   serviceAccount,
-  onKeyCreated,
+  onCreateKey,
   onKeyDeleted,
 }: ApiKeysSectionProps) {
   const [search, setSearch] = useState("");
-  const [createOpen, setCreateOpen] = useState(false);
   const [pendingDelete, setPendingDelete] =
     useState<ServiceAccountApiKey | null>(null);
 
@@ -131,24 +129,18 @@ export default function ApiKeysSection({
 
   return (
     <section aria-labelledby="sa-keys-heading" className="flex flex-col gap-4">
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-        <div className="flex flex-col gap-1">
-          <h2
-            id="sa-keys-heading"
-            className="typography-subtitle font-semibold text-foreground"
-          >
-            API keys
-          </h2>
-          <p className="text-muted-foreground">
-            API keys are optional secondary credentials for consumers that
-            don&rsquo;t support OAuth client credentials &mdash; CI runners,
-            curl, and CLI direct access.
-          </p>
-        </div>
-        <Button variant="primary" onClick={() => setCreateOpen(true)}>
-          <Plus aria-hidden="true" />
-          <span>Create API key</span>
-        </Button>
+      <div className="flex flex-col gap-1">
+        <h2
+          id="sa-keys-heading"
+          className="typography-subtitle font-semibold text-foreground"
+        >
+          API keys
+        </h2>
+        <p className="text-muted-foreground">
+          API keys are optional secondary credentials for consumers that
+          don&rsquo;t support OAuth client credentials &mdash; CI runners,
+          curl, and CLI direct access.
+        </p>
       </div>
 
       {hasKeys && (
@@ -165,7 +157,7 @@ export default function ApiKeysSection({
       {!hasKeys ? (
         <KeysZeroState
           serviceAccount={serviceAccount}
-          onCreate={() => setCreateOpen(true)}
+          onCreate={onCreateKey}
         />
       ) : filtered.length === 0 ? (
         <EmptyState
@@ -181,12 +173,6 @@ export default function ApiKeysSection({
         <ResourceTable table={table} />
       )}
 
-      <CreateServiceAccountApiKeyDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        serviceAccount={serviceAccount}
-        onCreated={onKeyCreated}
-      />
       <DeleteServiceAccountApiKeyDialog
         apiKey={pendingDelete}
         onClose={() => setPendingDelete(null)}
@@ -211,7 +197,7 @@ function KeysZeroState({ serviceAccount, onCreate }: KeysZeroStateProps) {
       className="flex flex-col items-center gap-4 rounded-md border border-border bg-card px-6 py-12"
     >
       <p className="typography-body text-foreground">
-        No API keys. This service account uses OAuth client credentials above.
+        No API keys. This service account uses OAuth client credentials below.
       </p>
       <CliLine
         className="w-full max-w-2xl"
