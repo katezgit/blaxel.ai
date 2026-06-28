@@ -126,6 +126,7 @@ export default function ApiKeysSection({
   });
 
   const hasKeys = serviceAccount.apiKeys.length > 0;
+  const showSearch = serviceAccount.apiKeys.length >= 5;
 
   return (
     <section aria-labelledby="sa-keys-heading" className="flex flex-col gap-4">
@@ -142,7 +143,7 @@ export default function ApiKeysSection({
         </p>
       </div>
 
-      {hasKeys && (
+      {showSearch && (
         <Input
           value={search}
           onChange={(event) => setSearch(event.target.value)}

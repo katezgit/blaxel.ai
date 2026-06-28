@@ -75,10 +75,65 @@ const buildFixtures = (): ReadonlyArray<ServiceAccount> => {
     },
   ];
 
+  // Realistic high-fan-out SA: one shared identity across six regional pipelines.
+  // Exists primarily to demo the API-keys search affordance, which only renders
+  // when a single SA holds ≥5 keys.
+  const dataPipelineKeys: ReadonlyArray<ServiceAccountApiKey> = [
+    {
+      id: "sak_dp_us_east",
+      serviceAccountId: "svc_data_pipeline",
+      name: "us-east-1-ingest",
+      keyPrefix: "bxl_k_1a4c2e90",
+      expiresAt: isoDate(120),
+      createdAt: isoAgo(180 * DAY_MS),
+    },
+    {
+      id: "sak_dp_us_west",
+      serviceAccountId: "svc_data_pipeline",
+      name: "us-west-2-ingest",
+      keyPrefix: "bxl_k_2b5d3f01",
+      expiresAt: isoDate(120),
+      createdAt: isoAgo(180 * DAY_MS),
+    },
+    {
+      id: "sak_dp_eu_west",
+      serviceAccountId: "svc_data_pipeline",
+      name: "eu-west-1-ingest",
+      keyPrefix: "bxl_k_3c6e4012",
+      expiresAt: isoDate(45),
+      createdAt: isoAgo(150 * DAY_MS),
+    },
+    {
+      id: "sak_dp_eu_central",
+      serviceAccountId: "svc_data_pipeline",
+      name: "eu-central-1-ingest",
+      keyPrefix: "bxl_k_4d7f5123",
+      expiresAt: isoDate(45),
+      createdAt: isoAgo(150 * DAY_MS),
+    },
+    {
+      id: "sak_dp_ap_south",
+      serviceAccountId: "svc_data_pipeline",
+      name: "ap-south-1-ingest",
+      keyPrefix: "bxl_k_5e806234",
+      expiresAt: isoDate(11),
+      createdAt: isoAgo(120 * DAY_MS),
+    },
+    {
+      id: "sak_dp_ap_northeast",
+      serviceAccountId: "svc_data_pipeline",
+      name: "ap-northeast-1-ingest",
+      keyPrefix: "bxl_k_6f917345",
+      expiresAt: null,
+      createdAt: isoAgo(90 * DAY_MS),
+    },
+  ];
+
   const ghCreated = isoAgo(143 * DAY_MS);
   const runtimeCreated = isoAgo(240 * DAY_MS);
   const metricsCreated = isoAgo(48 * DAY_MS);
   const evalCreated = isoAgo(120 * DAY_MS);
+  const dataPipelineCreated = isoAgo(180 * DAY_MS);
 
   return [
     {
@@ -121,6 +176,16 @@ const buildFixtures = (): ReadonlyArray<ServiceAccount> => {
       updatedAt: evalCreated,
       apiKeys: evalKeys,
       lastUsedAt: isoAgo(2 * DAY_MS),
+    },
+    {
+      id: "svc_data_pipeline",
+      name: "data-pipeline-multiregion",
+      description: "Regional ingest workers — one key per AWS region",
+      clientId: "bxl_sa_6f917345b8c2",
+      createdAt: dataPipelineCreated,
+      updatedAt: dataPipelineCreated,
+      apiKeys: dataPipelineKeys,
+      lastUsedAt: isoAgo(8 * MINUTE_MS),
     },
   ];
 };

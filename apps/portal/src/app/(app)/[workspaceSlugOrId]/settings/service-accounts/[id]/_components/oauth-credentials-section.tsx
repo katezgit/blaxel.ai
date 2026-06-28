@@ -23,7 +23,7 @@ export default function OauthCredentialsSection({
       </h2>
 
       <dl className="flex flex-col gap-2">
-        <div className="flex items-center gap-3">
+        <div className="group flex items-center gap-3">
           <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
             Client ID
           </dt>
@@ -31,10 +31,12 @@ export default function OauthCredentialsSection({
             <code className="font-mono typography-code text-foreground">
               {serviceAccount.clientId}
             </code>
-            <CopyButton
-              value={serviceAccount.clientId}
-              ariaLabel="Copy client ID"
-            />
+            <span className="opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+              <CopyButton
+                value={serviceAccount.clientId}
+                ariaLabel="Copy client ID"
+              />
+            </span>
           </dd>
         </div>
         <div className="flex items-center gap-3">
