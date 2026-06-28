@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@repo/ui/components/button";
+import { buttonVariants } from "@repo/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@repo/ui/components/tooltip";
+import { cn } from "@repo/ui/lib/cn";
 import { useAccountState } from "@/lib/mock/account-context";
 
 /**
@@ -21,22 +22,20 @@ export default function BillingPill() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button
-          asChild
-          variant="ghost"
-          className="text-muted-foreground hover:text-foreground"
+        <Link
+          href="/account/billing/credits"
+          aria-label={`Tier ${state.tier} · Open Billing`}
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "text-muted-foreground hover:text-foreground",
+          )}
         >
-          <Link
-            href="/account/billing/credits"
-            aria-label={`Tier ${state.tier} · Open Billing`}
-          >
-            Tier {state.tier}
-            <span aria-hidden="true" className="text-meta-foreground">
-              &middot;
-            </span>
-            <span className="tabular-nums">{balanceLabel}</span>
-          </Link>
-        </Button>
+          Tier {state.tier}
+          <span aria-hidden="true" className="text-meta-foreground">
+            &middot;
+          </span>
+          <span className="tabular-nums">{balanceLabel}</span>
+        </Link>
       </TooltipTrigger>
       <TooltipContent>Credits &amp; top-ups</TooltipContent>
     </Tooltip>
