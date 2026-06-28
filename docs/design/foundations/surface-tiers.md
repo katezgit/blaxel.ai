@@ -6,7 +6,7 @@ Single source of truth for the platform's neutral surface system. Five layers, t
 
 ## Overview
 
-The platform uses five neutral surface tiers. They are ordered by visual depth — workspace is the brightest surface in both modes; each tier below it recesses further into shadow. The mental model is wells cut into a desk, not cards floating above one. Cards are darker than the workspace they sit on; muted strips are darker still inside the card.
+The platform uses five neutral surface tiers. Workspace is the brightest reading surface in dark mode and pure white in light. Cards are framed regions of the workspace — distinguished by border and shadow, not tonal contrast. Muted strips are the deepest tier, used for sunken sub-sections.
 
 Two scopes govern these tokens:
 
@@ -22,12 +22,13 @@ Two scopes govern these tokens:
 | Sidebar | `bg-sidebar` | app-local | `#09090A` | `#F9F9F8` |
 | Topbar | `bg-topbar` | app-local | `#09090A` | `#F9F9F8` |
 | Workspace base | `bg-background` | DS | `#1A1A19` | `#FFFFFF` |
-| Card / popover | `bg-card` | DS | `#131313` | `#F7F7F5` |
+| Card | `bg-card` | DS | `#1A1A1A` | `#FFFFFF` |
+| Popover / dropdowns | `bg-popover` | DS | `#131313` | `#FFFFFF` |
 | Muted strip | `bg-muted` | DS | `#111111` | `#F0F0EE` |
 
-**Depth order (dark mode, darkest to lightest):** muted `#111111` → card `#131313` → sidebar/topbar `#09090A` → background `#1A1A19`
+**Depth order (dark mode, darkest to lightest):** muted `#111111` → popover/dropdowns `#131313` → sidebar/topbar `#09090A` → background `#1A1A19` ≈ card `#1A1A1A`
 
-Wait — sidebar and topbar (`#09090A`) are darker than card (`#131313`) in dark mode. That is intentional: shell chrome recedes behind the workspace. The workspace (`bg-background`, `#1A1A19`) is the brightest tier because it is the primary reading surface. Card and muted sit below it to create the recessed-well effect.
+Note: `bg-card` (`#1A1A1A`) and `bg-background` (`#1A1A19`) differ by a single blue-channel unit in dark mode — perceptually identical. In light mode, `bg-card` (`#FFFFFF`) equals `bg-background` (`#FFFFFF`) exactly. Cards in both modes have **no effective surface delta** — they are framed regions of the workspace. Border and shadow (`shadow-card`) carry the card boundary entirely. The `bg-card` token exists for semantic clarity so consumers can theme it independently if needed, but its default value matches the workspace base. Surface delta between card and workspace is **intentionally near-zero in both modes**. The sidebar and topbar (`#09090A`) remain darker than the workspace — shell chrome recedes behind content, unchanged.
 
 **Contrast vs `--color-foreground` (primary text, approx `#FAFAFA` dark / `#0A0A09` light):**
 
@@ -36,7 +37,8 @@ Wait — sidebar and topbar (`#09090A`) are darker than card (`#131313`) in dark
 | `bg-sidebar` | ~18.5:1 | ~17.8:1 |
 | `bg-topbar` | ~18.5:1 | ~17.8:1 |
 | `bg-background` | ~14.2:1 | ~21:1 |
-| `bg-card` | ~17.1:1 | ~19.3:1 |
+| `bg-card` | ~14.2:1 (≈ background) | ~21:1 |
+| `bg-popover` | ~17.1:1 | ~21:1 |
 | `bg-muted` | ~17.8:1 | ~16.5:1 |
 
 All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implementation time against the actual `--color-foreground` value in theme.css — the contrast ratios above are derived from the hex values and a standard foreground approximation.
@@ -50,12 +52,16 @@ All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implement
 | Sidebar navigation rail | `bg-sidebar` |
 | Top navigation bar | `bg-topbar` |
 | `<main>`, page content wrapper, error pages, full-page layouts | `bg-background` |
-| Cards, popovers, dialogs, command palette, focused form-field backgrounds | `bg-card` |
+| Cards, panels wrapping tables, section containers | `bg-card` |
+| Popovers, dropdowns, dialogs, command palette | `bg-popover` |
+| Focused form-field backgrounds, switch raised state | `bg-card` (via `--color-control-raised` → `--surface-popover-dark` in dark) |
 | Table `<thead>` band, code blocks, sunken sub-sections, inline metadata strips | `bg-muted` |
 
-**Modals and dialogs** use `bg-card`, not `bg-background`. They sit above the workspace — physically in the DOM, semantically as a layer the user has entered — and `bg-card` makes that layer boundary visible.
+**Cards in both modes** have no effective surface color delta against the workspace. `bg-card` (`#1A1A1A`) is perceptually identical to `bg-background` (`#1A1A19`) in dark mode; `bg-card` equals `bg-background` (`#FFFFFF`) exactly in light mode. Border and shadow (`shadow-card`) carry the card boundary in both modes. This is the intentional default — the `bg-card` token exists for semantic clarity, not tonal differentiation.
 
-**Form fields** that are "focused" or "elevated" from the surrounding page use `bg-card`. Fields that sit inside a card (the common case) do not add another background layer — they inherit or use a border to delineate.
+**Popovers and dialogs** use `bg-popover`, which resolves to `#131313` in dark mode — a slight recess vs the `#1A1A19` workspace that reads as elevation when combined with `shadow-popover`. These are floating surfaces; they must remain visually distinct from the page background.
+
+**Form fields** that are "focused" or "elevated" from the surrounding page use `--color-control-raised`, which points to `--surface-popover-dark` in dark mode for the same reason — the field surface needs a visible sink below the workspace to be legible.
 
 ---
 
@@ -75,6 +81,11 @@ All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implement
 
 **DS is chrome-free by design.** `bg-background`, `bg-card`, and `bg-muted` make no assumption about what surrounds them. A consumer that ships a different shell — different sidebar width, a floating topbar, no chrome at all — can import the DS surfaces and build its own shell tokens independently. Baking sidebar and topbar values into the DS would couple the shell decisions to every downstream consumer.
 
-**Recessed metaphor, not lifted.** Conventional elevation systems treat cards as objects floating above a base: the card is lighter than the background in light mode, higher z, shadow increasing with altitude. This platform inverts the metaphor: cards are wells. The workspace is the desk; cards are pockets cut into it. The card is slightly off-white (light) or slightly darker (dark) relative to the bright workspace beneath. This keeps the workspace dominant — it is the reading surface — and makes card boundaries legible through depth, not shadow accumulation. Shadow and border reinforce the boundary; they do not carry it alone.
+**Symmetric metaphor — framed regions in both modes.** Cards are framed regions of the workspace in light and dark alike. The surface delta between card and workspace is intentionally near-zero in both modes:
+
+- **Light mode:** `bg-card` (`#FFFFFF`) equals `bg-background` (`#FFFFFF`) — identical surface. Border and shadow carry the card boundary entirely.
+- **Dark mode:** `bg-card` (`#1A1A1A`) and `bg-background` (`#1A1A19`) differ by a single blue-channel unit — perceptually identical. Border and shadow carry the card boundary entirely. Alpha-on-near-black tonal mixes produce muddy results; a recessed card pocket on a near-black background reads as a defect rather than a clean boundary.
+
+**Floating surfaces (popovers, dropdowns) remain recessed in dark.** `bg-popover` resolves to `#131313` in dark — the old `bg-card` value, now repurposed as the floating-surface primitive. Popovers must be distinguishable from the background they overlay; the slight recess + `shadow-popover` provides that separation without requiring a lift above the workspace. This is a narrow exception to card-flat, documented in `--surface-popover-dark` in `primitive.css`.
 
 **Five tiers, not more.** Blaxel's personality is lean and restrained — Disciplined on the tonal axis, Composed on the structural axis (see `docs/product/personality.md`). A denser tier ladder (six, seven, eight surfaces with fine-grained altitude steps) would be louder than the personality allows. Every additional neutral surface tier is a decision the engineer has to make ("which of these do I use?") and a visual layer the user has to parse. The five-tier system resolves the real distinctions — chrome vs workspace vs card vs sunken — without manufacturing distinctions that have no semantic weight.
