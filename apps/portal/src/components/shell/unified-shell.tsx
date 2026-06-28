@@ -271,7 +271,7 @@ export function UnifiedShell({
               </button>
               <main
                 id="main-content"
-                className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-panel"
+                className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop"
               >
                 {children}
               </main>

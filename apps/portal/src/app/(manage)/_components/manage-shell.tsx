@@ -110,7 +110,7 @@ export default function ManageShell({ email, name, children }: ManageShellProps)
               onOpenDrawer={() => setDrawerOpen(true)}
             />
 
-            <main id="main-content" className="flex-1 overflow-y-auto bg-grid-backdrop bg-panel">
+            <main id="main-content" className="flex-1 overflow-y-auto bg-grid-backdrop">
               <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
                 {children}
               </div>

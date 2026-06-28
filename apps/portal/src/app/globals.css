@@ -222,7 +222,7 @@
 /* background-attachment: fixed intentionally OMITTED (perf: trace/table scroll).
  * Spec: docs/design/guidelines/app-shell-layout.md §9. */
 @utility bg-grid-backdrop {
-  background-color: var(--color-panel);
+  background-color: var(--color-page);
   background-image:
     linear-gradient(to right,  var(--color-grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
