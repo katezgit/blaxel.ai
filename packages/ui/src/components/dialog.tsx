@@ -64,7 +64,7 @@ const dialogContentVariants = cva(
   [
     "fixed inset-0 z-overlay",
     "flex flex-col w-full",
-    "bg-popover",
+    "bg-card",
     // Safe-area insets: prevent iOS home-indicator from hiding footer on mobile sheet.
     // Reset at sm+ where the panel is a bounded modal, not a viewport-filling sheet.
     "pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)]",

@@ -53,13 +53,17 @@ All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implement
 | Top navigation bar | `bg-topbar` |
 | `<main>`, page content wrapper, error pages, full-page layouts | `bg-background` |
 | Cards, panels wrapping tables, section containers | `bg-card` |
-| Popovers, dropdowns, dialogs, command palette | `bg-popover` |
+| Modal dialogs, command palette | `bg-card` |
+| Popovers, dropdowns | `bg-popover` |
 | Focused form-field backgrounds, switch raised state | `bg-card` (via `--color-control-raised` → `--surface-popover-dark` in dark) |
 | Table `<thead>` band, code blocks, sunken sub-sections, inline metadata strips | `bg-muted` |
 
 **Cards in both modes** have no effective surface color delta against the workspace. `bg-card` (`#1A1A1A`) is perceptually identical to `bg-background` (`#1A1A19`) in dark mode; `bg-card` equals `bg-background` (`#FFFFFF`) exactly in light mode. Border and shadow (`shadow-card`) carry the card boundary in both modes. This is the intentional default — the `bg-card` token exists for semantic clarity, not tonal differentiation.
 
-**Popovers and dialogs** use `bg-popover`, which resolves to `#131313` in dark mode — a slight recess vs the `#1A1A19` workspace that reads as elevation when combined with `shadow-popover`. These are floating surfaces; they must remain visually distinct from the page background.
+**Floating surfaces split into two tiers by attention demand:**
+
+- **Modal dialogs** use `bg-card` (`#1A1A1A` dark / `#FFFFFF` light) — the content elevation tier. A dialog demands focus: it blocks the workspace behind a scrim, commands the user's full attention, and must read as a foreground surface. `bg-card` matches the workspace in both modes; the scrim + `shadow-modal` provide the visual separation, not a tonal recess.
+- **Popovers and dropdowns** use `bg-popover` (`#131313` dark / `#FFFFFF` light) — the sunken floating tier. These surfaces are secondary and transient; the slight recess below the workspace (`shadow-popover`) signals low-priority context without demanding attention. `bg-popover` is correct here; `bg-card` is not.
 
 **Form fields** that are "focused" or "elevated" from the surrounding page use `--color-control-raised`, which points to `--surface-popover-dark` in dark mode for the same reason — the field surface needs a visible sink below the workspace to be legible.
 
@@ -86,6 +90,6 @@ All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implement
 - **Light mode:** `bg-card` (`#FFFFFF`) equals `bg-background` (`#FFFFFF`) — identical surface. Border and shadow carry the card boundary entirely.
 - **Dark mode:** `bg-card` (`#1A1A1A`) and `bg-background` (`#1A1A19`) differ by a single blue-channel unit — perceptually identical. Border and shadow carry the card boundary entirely. Alpha-on-near-black tonal mixes produce muddy results; a recessed card pocket on a near-black background reads as a defect rather than a clean boundary.
 
-**Floating surfaces (popovers, dropdowns) remain recessed in dark.** `bg-popover` resolves to `#131313` in dark — the old `bg-card` value, now repurposed as the floating-surface primitive. Popovers must be distinguishable from the background they overlay; the slight recess + `shadow-popover` provides that separation without requiring a lift above the workspace. This is a narrow exception to card-flat, documented in `--surface-popover-dark` in `primitive.css`.
+**Floating surfaces split by attention demand, not by "floating" alone.** Modal dialogs use `bg-card` — they demand focus, block the workspace behind a scrim, and belong at the content elevation tier alongside cards. Popovers and dropdowns use `bg-popover` (`#131313` dark) — secondary, transient; the slight recess + `shadow-popover` provides separation without commanding attention. Do not conflate these two tiers: dialogs are not popovers.
 
 **Five tiers, not more.** Blaxel's personality is lean and restrained — Disciplined on the tonal axis, Composed on the structural axis (see `docs/product/personality.md`). A denser tier ladder (six, seven, eight surfaces with fine-grained altitude steps) would be louder than the personality allows. Every additional neutral surface tier is a decision the engineer has to make ("which of these do I use?") and a visual layer the user has to parse. The five-tier system resolves the real distinctions — chrome vs workspace vs card vs sunken — without manufacturing distinctions that have no semantic weight.
