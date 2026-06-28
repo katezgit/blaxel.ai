@@ -278,7 +278,7 @@ export default function ModelsCatalog() {
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Link
                       href={`/models/${m.modelId}`}
-                      className="typography-body font-medium text-foreground hover:underline truncate"
+                      className="typography-body font-medium text-foreground underline-offset-4 decoration-meta-foreground hover:underline truncate"
                     >
                       {m.name}
                     </Link>
@@ -320,7 +320,7 @@ export default function ModelsCatalog() {
                 <div className="flex items-center gap-1.5">
                   <Link
                     href={`/models/${m.modelId}`}
-                    className="typography-body font-medium text-foreground hover:underline truncate"
+                    className="typography-body font-medium text-foreground underline-offset-4 decoration-meta-foreground hover:underline truncate"
                   >
                     {m.name}
                   </Link>
@@ -504,7 +504,7 @@ export default function ModelsCatalog() {
                 <div className="flex items-center gap-1.5">
                   <Link
                     href={`/models/${m.modelId}`}
-                    className="typography-body font-medium text-foreground hover:underline truncate"
+                    className="typography-body font-medium text-foreground underline-offset-4 decoration-meta-foreground hover:underline truncate"
                   >
                     {m.name}
                   </Link>

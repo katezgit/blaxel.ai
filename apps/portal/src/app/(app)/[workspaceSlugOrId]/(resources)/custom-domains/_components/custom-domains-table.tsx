@@ -224,7 +224,7 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
               href={href}
               className="flex flex-col gap-0.5 rounded-sm font-mono"
             >
-              <span className="text-foreground underline-offset-4 group-hover:underline">
+              <span className="text-foreground underline-offset-4 decoration-meta-foreground group-hover:underline">
                 {metadata.name}
               </span>
               {metadata.displayName && (
