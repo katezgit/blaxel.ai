@@ -79,7 +79,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => (
-          <span className="font-medium text-foreground">
+          <span className="text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -229,7 +229,7 @@ export default function ApiKeysClient({ workspace }: ApiKeysClientProps) {
           },
         }}
       >
-        <p className="typography-body text-foreground">
+        <p className="text-foreground">
           This will permanently revoke the key. Any CLI, SDK, or integration
           using it will start receiving 401 responses.
         </p>

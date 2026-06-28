@@ -27,7 +27,7 @@ export default function DetailsSection({
 
       <dl className="flex flex-col gap-2">
         <div className="group flex items-center gap-3">
-          <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+          <dt className="w-32 shrink-0 text-meta-foreground">
             Client ID
           </dt>
           <dd className="flex min-w-0 items-center gap-1.5">
@@ -43,27 +43,27 @@ export default function DetailsSection({
           </dd>
         </div>
         <div className="flex items-center gap-3">
-          <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+          <dt className="w-32 shrink-0 text-meta-foreground">
             Client secret
           </dt>
-          <dd className="typography-body min-w-0 text-meta-foreground">
+          <dd className="min-w-0 text-meta-foreground">
             Not available &mdash; shown once at creation.
           </dd>
         </div>
         <div className="flex items-center gap-3">
-          <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+          <dt className="w-32 shrink-0 text-meta-foreground">
             Created
           </dt>
-          <dd className="typography-body min-w-0 text-foreground">
+          <dd className="min-w-0 text-foreground">
             {formatShortDate(serviceAccount.createdAt)}
           </dd>
         </div>
         {showUpdated && (
           <div className="flex items-center gap-3">
-            <dt className="typography-body w-32 shrink-0 font-medium text-meta-foreground">
+            <dt className="w-32 shrink-0 text-meta-foreground">
               Updated
             </dt>
-            <dd className="typography-body min-w-0 text-foreground">
+            <dd className="min-w-0 text-foreground">
               {formatShortDate(serviceAccount.updatedAt)}
             </dd>
           </div>

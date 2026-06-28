@@ -63,7 +63,7 @@ export default function ApiKeysSection({
       columnHelper.accessor("name", {
         header: "Name",
         cell: (info) => (
-          <span className="font-medium text-foreground">
+          <span className="text-foreground">
             {info.getValue()}
           </span>
         ),
@@ -199,7 +199,7 @@ function KeysZeroState({ serviceAccount, onCreate }: KeysZeroStateProps) {
       role="status"
       className="flex flex-col items-center gap-4 rounded-md border border-border bg-card px-6 py-12"
     >
-      <p className="typography-body text-foreground">
+      <p className="text-foreground">
         No API keys. This service account authenticates with the client ID and
         secret in Details below.
       </p>

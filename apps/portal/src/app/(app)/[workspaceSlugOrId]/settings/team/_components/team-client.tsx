@@ -151,7 +151,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         cell: ({ row }) => (
           <div className="flex min-w-0 flex-col gap-0.5">
             <span className="flex items-center gap-2">
-              <span className="truncate typography-label font-medium text-foreground">
+              <span className="truncate typography-label text-foreground">
                 {row.original.name}
               </span>
               {row.original.isYou && (
@@ -380,7 +380,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           },
         }}
       >
-        <p className="typography-body text-foreground">
+        <p className="text-foreground">
           {pendingRemoval?.name ?? "This member"} will lose access to every
           resource in this workspace.
         </p>
@@ -413,7 +413,7 @@ function SortHeader({ column, label }: SortHeaderProps) {
       type="button"
       onClick={() => column.toggleSorting(sorted === "asc")}
       className={cn(
-        "group inline-flex items-center gap-1.5 text-left typography-label font-medium",
+        "group inline-flex items-center gap-1.5 text-left typography-label",
         "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
         sorted ? "text-foreground" : "text-meta-foreground hover:text-foreground",
       )}

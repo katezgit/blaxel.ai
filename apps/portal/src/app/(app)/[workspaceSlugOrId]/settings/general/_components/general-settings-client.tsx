@@ -180,12 +180,12 @@ export default function GeneralSettingsClient({
           },
         }}
       >
-        <p className="typography-body text-foreground">
+        <p className="text-foreground">
           Deleting the workspace is permanent. Every workspace-scoped resource
           and credential below will be removed.
         </p>
         <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
-          <p className="typography-label font-medium text-foreground">
+          <p className="typography-label text-foreground">
             The following will be permanently removed:
           </p>
           <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 typography-caption text-muted-foreground sm:grid-cols-3">

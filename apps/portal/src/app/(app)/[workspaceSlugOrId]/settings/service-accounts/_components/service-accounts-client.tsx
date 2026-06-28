@@ -73,7 +73,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           const sa = info.row.original;
           return (
             <div className="flex flex-col">
-              <span className="font-medium text-foreground group-hover/row:underline">
+              <span className="text-foreground group-hover/row:underline">
                 {sa.name}
               </span>
               <span className="typography-caption text-meta-foreground">
@@ -226,7 +226,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           },
         }}
       >
-        <p className="typography-body text-foreground">
+        <p className="text-foreground">
           This will delete{" "}
           <span className="font-mono">{pendingDelete?.name}</span>
           {" "}and revoke all of its API keys. Any external system using
@@ -248,7 +248,7 @@ function ListEmptyState({ onCreate }: ListEmptyStateProps) {
       role="status"
       className="flex flex-col items-center gap-4 rounded-md border border-border bg-card px-6 py-12"
     >
-      <p className="typography-body text-foreground">
+      <p className="text-foreground">
         No service accounts in this workspace.
       </p>
       <CliLine

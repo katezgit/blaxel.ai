@@ -42,7 +42,7 @@ export default function DeleteServiceAccountApiKeyDialog({
           </DialogTitle>
         </DialogHeader>
         <DialogBody>
-          <p className="typography-body text-foreground">
+          <p className="text-foreground">
             Any external system using this key will lose access immediately.
             This cannot be undone.
           </p>

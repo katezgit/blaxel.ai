@@ -302,7 +302,7 @@ function PostCreateReveal({ credentials, onDone }: PostCreateRevealProps) {
         </DialogTitle>
       </DialogHeader>
       <DialogBody className="flex flex-col gap-3">
-        <p className="typography-body text-foreground">
+        <p className="text-foreground">
           {apiKeyValue !== null ? (
             <>
               Service account &ldquo;{account.name}&rdquo; created with API key

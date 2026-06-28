@@ -77,7 +77,7 @@ export default function ServiceAccountDetailView({
         <h2 className="typography-subtitle text-foreground">
           Couldn&rsquo;t load service account
         </h2>
-        <p className="mt-1 typography-body text-muted-foreground">
+        <p className="mt-1 text-muted-foreground">
           Something went wrong. Try refreshing the page.
         </p>
         <div className="mt-4 flex gap-2">
@@ -231,7 +231,7 @@ export default function ServiceAccountDetailView({
           onConfirm: handleRemoveConfirm,
         }}
       >
-        <p className="typography-body text-foreground">
+        <p className="text-foreground">
           This will delete <span className="font-mono">{sa.name}</span>
           {" "}and revoke all of its API keys. Any external system using
           this service account&rsquo;s credentials will lose access
