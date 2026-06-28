@@ -3,7 +3,10 @@ import { ChevronRight } from "lucide-react";
 import { Skeleton } from "@repo/ui/components/skeleton";
 
 interface ServiceAccountDetailSkeletonProps {
-  listHref: string;
+  // Omitted by route-level loading.tsx (no `params` access during segment
+  // transition) — crumb renders as plain text in that pass; the post-hydrate
+  // skeleton still passes the link.
+  listHref?: string;
 }
 
 export default function ServiceAccountDetailSkeleton({
@@ -16,12 +19,16 @@ export default function ServiceAccountDetailSkeleton({
           aria-label="Breadcrumb"
           className="flex items-center gap-1 typography-body text-muted-foreground"
         >
-          <Link
-            href={listHref}
-            className="cursor-pointer rounded-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Service accounts
-          </Link>
+          {listHref ? (
+            <Link
+              href={listHref}
+              className="cursor-pointer rounded-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Service accounts
+            </Link>
+          ) : (
+            <span className="text-muted-foreground">Service accounts</span>
+          )}
           <ChevronRight aria-hidden="true" className="size-3 text-meta-foreground" />
           <Skeleton className="h-4 w-40" />
         </nav>

@@ -28,7 +28,6 @@ import {
   formatExpiresIn,
   formatShortDate,
 } from "../../_components/format";
-import CliLine from "../../_components/cli-line";
 import DeleteServiceAccountApiKeyDialog from "./delete-service-account-api-key-dialog";
 
 const columnHelper = createColumnHelper<ServiceAccountApiKey>();
@@ -168,10 +167,7 @@ export default function ApiKeysSection({
       )}
 
       {!hasKeys ? (
-        <KeysZeroState
-          serviceAccount={serviceAccount}
-          onCreate={onCreateKey}
-        />
+        <KeysZeroState onCreate={onCreateKey} />
       ) : filtered.length === 0 ? (
         <EmptyState
           variant="no-results"
@@ -199,11 +195,10 @@ export default function ApiKeysSection({
 }
 
 interface KeysZeroStateProps {
-  serviceAccount: ServiceAccount;
   onCreate: () => void;
 }
 
-function KeysZeroState({ serviceAccount, onCreate }: KeysZeroStateProps) {
+function KeysZeroState({ onCreate }: KeysZeroStateProps) {
   return (
     <div
       role="status"
@@ -213,10 +208,6 @@ function KeysZeroState({ serviceAccount, onCreate }: KeysZeroStateProps) {
         No API keys. This service account authenticates with the client ID and
         secret in Details below.
       </p>
-      <CliLine
-        className="w-full max-w-2xl"
-        command={`bl api-key create --service-account ${serviceAccount.name} --name prod-deploy-key`}
-      />
       <Button variant="ghost" onClick={onCreate}>
         Create API key
       </Button>
