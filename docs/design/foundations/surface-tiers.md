@@ -10,7 +10,7 @@ The platform uses five neutral surface tiers. Workspace is the brightest reading
 
 Two scopes govern these tokens:
 
-- **Design system (DS)** — `packages/ui/src/styles/theme.css`. Portable across any consumer that builds its own shell. Chrome-free by design. The three DS surfaces (`bg-background`, `bg-card`, `bg-muted`) assume nothing about the sidebar or topbar.
+- **Design system (DS)** — `packages/ui/src/styles/theme.css`. Portable across any consumer that builds its own shell. Chrome-free by design. The three DS surfaces (`bg-background`, `bg-card`, `bg-muted-surface`) assume nothing about the sidebar or topbar.
 - **App-local** — `apps/portal/src/app/globals.css @theme`. Shell-specific tokens that are intentionally not part of the DS because they encode portal-specific chrome decisions. Portals built on a different shell structure would override or omit these.
 
 ---
@@ -24,7 +24,7 @@ Two scopes govern these tokens:
 | Workspace base | `bg-background` | DS | `#1A1A19` | `#FFFFFF` |
 | Card | `bg-card` | DS | `#1A1A1A` | `#FFFFFF` |
 | Popover / dropdowns | `bg-popover` | DS | `#131313` | `#FFFFFF` |
-| Muted strip | `bg-muted` | DS | `#111111` | `#F0F0EE` |
+| Muted strip | `bg-muted-surface` | DS | `#111111` | `#F0F0EE` |
 
 **Depth order (dark mode, darkest to lightest):** muted `#111111` → popover/dropdowns `#131313` → sidebar/topbar `#09090A` → background `#1A1A19` ≈ card `#1A1A1A`
 
@@ -39,7 +39,7 @@ Note: `bg-card` (`#1A1A1A`) and `bg-background` (`#1A1A19`) differ by a single b
 | `bg-background` | ~14.2:1 | ~21:1 |
 | `bg-card` | ~14.2:1 (≈ background) | ~21:1 |
 | `bg-popover` | ~17.1:1 | ~21:1 |
-| `bg-muted` | ~17.8:1 | ~16.5:1 |
+| `bg-muted-surface` | ~17.8:1 | ~16.5:1 |
 
 All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implementation time against the actual `--color-foreground` value in theme.css — the contrast ratios above are derived from the hex values and a standard foreground approximation.
 
@@ -56,7 +56,7 @@ All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implement
 | Modal dialogs, command palette | `bg-card` |
 | Popovers, dropdowns | `bg-popover` |
 | Focused form-field backgrounds, switch raised state | `bg-card` (via `--color-control-raised` → `--surface-popover-dark` in dark) |
-| Table `<thead>` band, code blocks, sunken sub-sections, inline metadata strips | `bg-muted` |
+| Table `<thead>` band, code blocks, sunken sub-sections, inline metadata strips | `bg-muted-surface` |
 
 **Cards in both modes** have no effective surface color delta against the workspace. `bg-card` (`#1A1A1A`) is perceptually identical to `bg-background` (`#1A1A19`) in dark mode; `bg-card` equals `bg-background` (`#FFFFFF`) exactly in light mode. Border and shadow (`shadow-card`) carry the card boundary in both modes. This is the intentional default — the `bg-card` token exists for semantic clarity, not tonal differentiation.
 
@@ -77,13 +77,13 @@ All tiers clear WCAG AA (4.5:1) and AAA (7:1) for body text. Verify at implement
 
 **Do not introduce `bg-panel`, `bg-elevated-surface`, or `bg-page`.** These tokens were collapsed in this refactor because they were redundant with `bg-background` and `bg-card`. Recreating them re-introduces the ambiguity the system is solving. If you believe a new tier is needed, surface the specific rendering problem first — do not add a token speculatively.
 
-**Do not use `bg-muted` as a generic section divider.** Muted strips carry a specific semantic: a recessed band inside or adjacent to a card. Using them between two sections of a page (as a horizontal rule substitute) misreads the depth metaphor and flattens the hierarchy.
+**Do not use `bg-muted-surface` as a generic section divider.** Muted strips carry a specific semantic: a recessed band inside or adjacent to a card. Using them between two sections of a page (as a horizontal rule substitute) misreads the depth metaphor and flattens the hierarchy.
 
 ---
 
 ## Why this shape
 
-**DS is chrome-free by design.** `bg-background`, `bg-card`, and `bg-muted` make no assumption about what surrounds them. A consumer that ships a different shell — different sidebar width, a floating topbar, no chrome at all — can import the DS surfaces and build its own shell tokens independently. Baking sidebar and topbar values into the DS would couple the shell decisions to every downstream consumer.
+**DS is chrome-free by design.** `bg-background`, `bg-card`, and `bg-muted-surface` make no assumption about what surrounds them. A consumer that ships a different shell — different sidebar width, a floating topbar, no chrome at all — can import the DS surfaces and build its own shell tokens independently. Baking sidebar and topbar values into the DS would couple the shell decisions to every downstream consumer.
 
 **Symmetric metaphor — framed regions in both modes.** Cards are framed regions of the workspace in light and dark alike. The surface delta between card and workspace is intentionally near-zero in both modes:
 
