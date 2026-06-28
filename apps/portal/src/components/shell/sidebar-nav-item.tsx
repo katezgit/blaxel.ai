@@ -49,7 +49,7 @@ export default function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps
       </span>
       {item.badge ? (
         <span data-nav-label className="ml-auto">
-          <Badge variant="brand-soft" size="sm" className="font-sans">
+          <Badge variant="neutral" size="sm" className="font-sans">
             {item.badge}
           </Badge>
         </span>
