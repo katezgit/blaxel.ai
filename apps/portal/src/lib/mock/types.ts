@@ -131,6 +131,9 @@ export interface ApiKey {
   masked: string;
   createdAt: string;
   expiresAt: string | null;
+  /** ISO timestamp of the most recent request authenticated with this key.
+   *  Null = never used since issuance — primary hygiene signal for revocation. */
+  lastUsedAt: string | null;
   /** Who the key was issued to — member or service account. */
   issuedTo?: ApiKeyHolder;
 }
