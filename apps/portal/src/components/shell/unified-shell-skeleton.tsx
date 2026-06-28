@@ -100,7 +100,11 @@ export function UnifiedShellSkeleton() {
         value={{ inCollapsible: true, userCollapsed: visibleCollapsed }}
       >
         {subShellOpen ? (
-          <SubShellTopbarSkeleton />
+          subShellKind === "settings" ? (
+            <SettingsSubShellTopbarSkeleton />
+          ) : (
+            <PersonalSubShellTopbarSkeleton />
+          )
         ) : (
           <WorkspaceTopbarSkeleton />
         )}
@@ -161,7 +165,35 @@ function WorkspaceTopbarSkeleton() {
   );
 }
 
-function SubShellTopbarSkeleton() {
+function SettingsSubShellTopbarSkeleton() {
+  const isRail = useIsSidebarRail();
+  return (
+    <header className="shell-topbar shell-topbar-sub">
+      <div data-zone="left">
+        <button
+          type="button"
+          data-slot="nav-trigger"
+          aria-label="Open navigation"
+          disabled
+          className="inline-flex size-8 items-center justify-center rounded-md text-foreground"
+        >
+          <Menu className="size-4" aria-hidden="true" />
+        </button>
+        <span data-slot="brand">
+          <BrandMark />
+        </span>
+        <span data-slot="ws">
+          <WorkspaceSwitcherSkeleton isRail={isRail} />
+        </span>
+      </div>
+      <div data-zone="right">
+        <IdentityClusterSkeleton />
+      </div>
+    </header>
+  );
+}
+
+function PersonalSubShellTopbarSkeleton() {
   return (
     <header className="shell-topbar shell-topbar-sub">
       <div data-zone="left">

@@ -237,8 +237,17 @@ export function UnifiedShell({
                 mobileNavOpen={drawerOpen}
                 onOpenMobileNav={() => setDrawerOpen(true)}
               />
+            ) : subShellKind === "settings" ? (
+              <SettingsSubShellTopbar
+                workspace={headerWorkspace}
+                workspaces={workspaces}
+                user={user}
+                mobileNavId={mobileDrawerId}
+                mobileNavOpen={drawerOpen}
+                onOpenMobileNav={() => setDrawerOpen(true)}
+              />
             ) : (
-              <SubShellTopbar
+              <PersonalSubShellTopbar
                 user={user}
                 mobileNavId={mobileDrawerId}
                 mobileNavOpen={drawerOpen}
@@ -373,19 +382,71 @@ function UnifiedTopbar({
   );
 }
 
-interface SubShellTopbarProps {
+interface SettingsSubShellTopbarProps {
+  workspace: Org;
+  workspaces: ReadonlyArray<Org>;
   user: { name: string; email: string; tier: string };
   mobileNavId: string;
   mobileNavOpen: boolean;
   onOpenMobileNav: () => void;
 }
 
-function SubShellTopbar({
+// Workspace settings sub-shell topbar — keeps the workspace switcher because
+// every screen under /{slug}/settings/* configures *this* workspace. Removing
+// the switcher would force users to leave settings to switch context, then
+// renavigate back in. WorkspaceSwitcher already preserves the path tail on
+// switch (`/skylab/settings/general` ← from `/astra-staging/settings/general`).
+function SettingsSubShellTopbar({
+  workspace,
+  workspaces,
   user,
   mobileNavId,
   mobileNavOpen,
   onOpenMobileNav,
-}: SubShellTopbarProps) {
+}: SettingsSubShellTopbarProps) {
+  return (
+    <header className="shell-topbar shell-topbar-sub">
+      <div data-zone="left">
+        <IconButton
+          variant="ghost"
+          size="md"
+          data-slot="nav-trigger"
+          aria-label="Open navigation"
+          aria-expanded={mobileNavOpen}
+          aria-controls={mobileNavId}
+          onClick={onOpenMobileNav}
+        >
+          <Menu />
+        </IconButton>
+        <span data-slot="brand">
+          <BrandMark />
+        </span>
+        <span data-slot="ws">
+          <WorkspaceSwitcher currentOrg={workspace} workspaces={workspaces} />
+        </span>
+      </div>
+      <div data-zone="right">
+        <IdentityCluster user={user} />
+      </div>
+    </header>
+  );
+}
+
+interface PersonalSubShellTopbarProps {
+  user: { name: string; email: string; tier: string };
+  mobileNavId: string;
+  mobileNavOpen: boolean;
+  onOpenMobileNav: () => void;
+}
+
+// Profile + account sub-shells — not workspace-scoped, so the switcher has no
+// meaning here and the topbar stays brand-only.
+function PersonalSubShellTopbar({
+  user,
+  mobileNavId,
+  mobileNavOpen,
+  onOpenMobileNav,
+}: PersonalSubShellTopbarProps) {
   return (
     <header className="shell-topbar shell-topbar-sub">
       <div data-zone="left">
