@@ -158,7 +158,7 @@ export default function CreateApiKeyDialog({
   if (created) {
     return (
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent size="md">
+        <DialogContent size="sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Check aria-hidden="true" className="size-4 text-state-scored" />
@@ -192,7 +192,7 @@ export default function CreateApiKeyDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent size="md">
+      <DialogContent size="sm">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Create API key</DialogTitle>
@@ -249,8 +249,15 @@ export default function CreateApiKeyDialog({
                 control={control}
                 name="holderId"
                 render={({ field }) => (
+                  // Width tracks the Holder segmented-control above — both selects
+                  // cap at max-w-56 so the form column reads as one aligned group
+                  // rather than mixed-width controls.
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="api-key-holder" aria-invalid={!!errors.holderId}>
+                    <SelectTrigger
+                      id="api-key-holder"
+                      aria-invalid={!!errors.holderId}
+                      className="w-full max-w-56"
+                    >
                       <SelectValue placeholder="Select…" />
                     </SelectTrigger>
                     <SelectContent>
@@ -270,7 +277,7 @@ export default function CreateApiKeyDialog({
                 name="expiresIn"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="api-key-expires">
+                    <SelectTrigger id="api-key-expires" className="w-full max-w-56">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
