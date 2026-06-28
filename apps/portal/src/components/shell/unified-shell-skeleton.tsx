@@ -83,9 +83,6 @@ export function UnifiedShellSkeleton() {
     <div
       data-shell-frame
       data-sub-shell-open={subShellOpen || undefined}
-      // Match unified-shell.tsx so selector parity holds across the
-      // skeleton → hydrated swap (B1/B2 two-phase width motion).
-      data-sidebar-collapsed={visibleCollapsed || undefined}
       className={cn(
         "relative flex h-screen flex-col overflow-hidden text-foreground",
         // ⌘B is the single source of truth on both buckets — width follows

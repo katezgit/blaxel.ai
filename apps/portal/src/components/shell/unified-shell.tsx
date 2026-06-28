@@ -208,11 +208,6 @@ export function UnifiedShell({
         <div
           data-shell-frame
           data-sub-shell-open={subShellOpen || undefined}
-          // data-sidebar-collapsed flips the sidebar/topbar/chevron width
-          // transitions to --motion-exit (faster) on close; expand stays on
-          // --motion-enter (slower, emphasized). Selectors live in globals.css
-          // alongside the corresponding transition declarations.
-          data-sidebar-collapsed={visibleCollapsed || undefined}
           className={cn(
             "relative flex h-screen flex-col overflow-hidden text-foreground",
             // --shell-left-w drives the topbar grid column, the pane-stack
