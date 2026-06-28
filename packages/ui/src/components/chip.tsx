@@ -208,7 +208,7 @@ const chipVariants = cva(
         variant: "filled",
         color: "neutral",
         checked: true,
-        className: "bg-secondary-surface border-border-strong text-foreground",
+        className: "bg-muted-surface border-border-strong text-foreground",
       },
       {
         variant: "filled",
@@ -228,7 +228,7 @@ const chipVariants = cva(
         color: "neutral",
         checked: true,
         interactive: true,
-        className: "hover:bg-secondary-surface border-border-strong",
+        className: "hover:bg-hover-surface border-border-strong",
       },
 
       // ── light × brand ───────────────────────────────────────────────────────

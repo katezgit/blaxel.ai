@@ -33,7 +33,7 @@ const buttonVariants = cva(
 
         secondary: [
           "border border-border bg-transparent text-foreground",
-          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-secondary-surface",
+          "not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-hover-surface",
           "not-disabled:not-aria-disabled:[&:not([data-loading])]:active:bg-selected-surface",
           "disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",
           "aria-disabled:[&:not([data-loading])]:bg-button-disabled-bg-ghost",

@@ -54,7 +54,7 @@ function TypeRow({ token, sample, sizeRem, sizePx, weight, usage, utility }: Typ
                 fontFamily: "var(--font-sans)",
                 fontSize: 10,
                 color: utility.startsWith("(") ? "var(--color-muted-foreground)" : "var(--color-foreground)",
-                background: "var(--color-secondary-surface)",
+                background: "var(--color-muted-surface)",
                 border: "1px solid var(--color-border)",
                 borderRadius: 3,
                 padding: "1px 5px",
@@ -178,7 +178,7 @@ export const TypeScale: StoryObj = {
           color: "var(--color-muted-foreground)",
           marginBottom: 12,
           padding: "6px 10px",
-          background: "var(--color-secondary-surface)",
+          background: "var(--color-muted-surface)",
           border: "1px solid var(--color-border)",
           borderRadius: 4,
         }}
@@ -507,7 +507,7 @@ export const TabularFigures: StoryObj = {
             style={{
               padding: "8px 16px",
               borderBottom: "1px solid var(--color-border)",
-              background: "var(--color-secondary-surface)",
+              background: "var(--color-muted-surface)",
             }}
           >
             <span style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-muted-foreground)" }}>
@@ -540,7 +540,7 @@ export const TabularFigures: StoryObj = {
             style={{
               padding: "8px 16px",
               borderBottom: "1px solid var(--color-border)",
-              background: "var(--color-secondary-surface)",
+              background: "var(--color-muted-surface)",
             }}
           >
             <span style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-muted-foreground)" }}>
@@ -608,7 +608,7 @@ export const FontFamilies: StoryObj = {
             style={{
               fontFamily: "var(--font-sans)",
               fontSize: 10,
-              background: "var(--color-secondary-surface)",
+              background: "var(--color-muted-surface)",
               border: "1px solid var(--color-border)",
               borderRadius: "var(--radius-sm)",
               padding: "1px 6px",

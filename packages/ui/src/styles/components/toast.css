@@ -107,7 +107,7 @@
   cursor: pointer;
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button]:hover {
-  background: var(--color-secondary-surface);
+  background: var(--color-hover-surface);
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button]:focus-visible {
   /* Sonner hardcodes its own focus shadow; restate base.css's global ring

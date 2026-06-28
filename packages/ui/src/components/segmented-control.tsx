@@ -118,8 +118,8 @@ export const segmentedControlItemVariants = cva([
   "rounded-sm px-3",
   "typography-body font-medium select-none",
   "text-foreground/60",
-  // Inactive hover — matches sidebar nav-link row hover (bg-secondary-surface + text-foreground).
-  "data-[state=off]:hover:bg-secondary-surface data-[state=off]:hover:text-foreground",
+  // Inactive hover — bg-hover-surface + text-foreground (canonical hover tier).
+  "data-[state=off]:hover:bg-hover-surface data-[state=off]:hover:text-foreground",
   // Active text color — paired with bg-primary thumb (primary button pair).
   "data-[state=on]:text-primary-foreground",
   // Bind SVG color directly so the icon tracks the active/inactive state even
