@@ -14,7 +14,7 @@ export function Breadcrumb({ parent, current }: BreadcrumbProps) {
     >
       <Link
         href={parent.href}
-        className="cursor-pointer rounded-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        className="cursor-pointer rounded-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         {parent.label}
       </Link>
