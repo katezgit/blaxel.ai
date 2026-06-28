@@ -15,10 +15,9 @@ interface SidebarProps {
   onToggle?: () => void;
 }
 
-// Width transition is owned by the wrapper CSS in globals.css (.shell-rail).
-// Asymmetric timing (open/close uses different duration tokens) is keyed off
-// data-sub-shell-open on the shell frame, which the Sidebar primitive does
-// not know about — keep the primitive transition-agnostic.
+// Width transition is owned by the wrapper CSS in globals.css
+// (.shell-pane-column). Slide-in animation lives on the keyed wrapper around
+// this primitive in <UnifiedShell> — keep the primitive transition-agnostic.
 export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle }: SidebarProps) {
   const isRail = useIsSidebarRail();
 
