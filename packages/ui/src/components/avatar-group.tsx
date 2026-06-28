@@ -144,7 +144,7 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
               // size matches the Avatar size variant
               overflowSizeClass[resolvedSize],
               "rounded-full",
-              "bg-muted-surface text-muted-foreground",
+              "bg-hover-surface text-muted-foreground",
               "ring-1 ring-border",
               "flex items-center justify-center",
               // typography: mono medium per spec
