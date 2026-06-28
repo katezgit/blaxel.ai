@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-06-28 — fix(portal/api-keys): rebalance Create API key dialog proportions ([#139](https://github.com/katezgit/blaxel.ai/pull/139))
+
+### Fixed
+
+- Create API key dialog resized from 560px to 400px (`size="sm"`) to match its actual form footprint (short identifiers and short-option selects)
+- Service-account/Member and Expires-in selects capped at 224px to align with the Holder segmented control's natural width, eliminating ~310px of orphaned empty space on the right
+
+---
+
 ## 2026-06-28 — fix(ui/chip): restore info-checked selection visibility ([#136](https://github.com/katezgit/blaxel.ai/pull/136))
 
 ### Fixed
