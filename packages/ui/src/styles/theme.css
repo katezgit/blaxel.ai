@@ -307,6 +307,20 @@
   --duration-base:    var(--duration-base);
 }
 
+/* ─── Tailwind v4 transition-duration namespace ──────────────────────────────
+ * Tailwind v4 generates duration-* utilities from --transition-duration-* names,
+ * not --duration-*. The aliases below point at the :root originals so the
+ * duration-fast / duration-subtle / etc. utility classes resolve to our spec
+ * values (120ms, 180ms, …) rather than falling back to the 150ms default.
+ * The :root --duration-* originals must stay because motion composites and the
+ * prefers-reduced-motion override in this file reference them by name. */
+@theme inline {
+  --transition-duration-instant: var(--duration-instant);
+  --transition-duration-fast:    var(--duration-fast);
+  --transition-duration-subtle:  var(--duration-subtle);
+  --transition-duration-base:    var(--duration-base);
+}
+
 @theme inline {
   --ease-out-standard:    var(--ease-out-standard);
   --ease-out-emphasized:  var(--ease-out-emphasized);
