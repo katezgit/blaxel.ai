@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
-  Clock,
   FolderTree,
   HardDrive,
   Infinity as InfinityIcon,
@@ -12,7 +10,6 @@ import type { LucideIcon } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
-import JoinWaitlistDialog from "./join-waitlist-dialog";
 
 interface Capability {
   icon: LucideIcon;
@@ -39,47 +36,25 @@ const CAPABILITIES: ReadonlyArray<Capability> = [
   },
 ];
 
-// Persisted across reloads so the mock joined state survives a refresh. Mock
-// only — there's no backend; the real product would read this from the
-// account's waitlist record.
-const STORAGE_KEY = "blaxel.agent-drive.waitlist";
+const FILLOUT_URL = "https://blaxel.fillout.com/t/pbTXmanx3Sus";
 
-interface WaitlistRecord {
-  joined: true;
-  joinedAt: string;
+interface AgentDrivePreviewViewProps {
+  userEmail: string;
+  userName: string;
+  accountId: string;
 }
 
-function readWaitlist(): WaitlistRecord | null {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<WaitlistRecord>;
-    if (parsed.joined === true && typeof parsed.joinedAt === "string") {
-      return { joined: true, joinedAt: parsed.joinedAt };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export default function AgentDrivePreviewView() {
-  // Default to null on first render so server and client agree; the joined
-  // state lights up in the post-hydration effect.
-  const [waitlist, setWaitlist] = useState<WaitlistRecord | null>(null);
-
-  useEffect(() => {
-    setWaitlist(readWaitlist());
-  }, []);
-
-  const handleConfirmed = () => {
-    const record: WaitlistRecord = {
-      joined: true,
-      joinedAt: new Date().toISOString(),
-    };
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
-    setWaitlist(record);
-  };
+export default function AgentDrivePreviewView({
+  userEmail,
+  userName,
+  accountId,
+}: AgentDrivePreviewViewProps) {
+  const params = new URLSearchParams({
+    email: userEmail,
+    name: userName,
+    accountId,
+  });
+  const waitlistHref = `${FILLOUT_URL}?${params.toString()}`;
 
   return (
     <div className="page-shell gap-8">
@@ -92,6 +67,9 @@ export default function AgentDrivePreviewView() {
             Private preview
           </Badge>
         </div>
+        <p className="max-w-2xl typography-body text-muted-foreground">
+          Share data, context and sessions across sandboxes and agents.
+        </p>
       </header>
 
       <section aria-labelledby="agent-drive-preview-heading">
@@ -102,11 +80,7 @@ export default function AgentDrivePreviewView() {
         <Card className="overflow-hidden border-0 p-0 sm:border">
           <div className="grid lg:grid-cols-[2fr_1fr]">
             <AgentDriveCapabilitiesPanel />
-            {waitlist ? (
-              <AgentDriveJoinedPanel joinedAt={waitlist.joinedAt} />
-            ) : (
-              <AgentDriveCtaPanel onConfirmed={handleConfirmed} />
-            )}
+            <AgentDriveCtaPanel waitlistHref={waitlistHref} />
           </div>
         </Card>
       </section>
@@ -151,10 +125,10 @@ function AgentDriveCapabilitiesPanel() {
 }
 
 interface AgentDriveCtaPanelProps {
-  onConfirmed: () => void;
+  waitlistHref: string;
 }
 
-function AgentDriveCtaPanel({ onConfirmed }: AgentDriveCtaPanelProps) {
+function AgentDriveCtaPanel({ waitlistHref }: AgentDriveCtaPanelProps) {
   return (
     <div className="relative flex flex-col items-center justify-center gap-4 overflow-hidden border-t border-border bg-primary-glow p-6 text-center lg:border-t-0 lg:border-l lg:p-8">
       <span
@@ -164,57 +138,16 @@ function AgentDriveCtaPanel({ onConfirmed }: AgentDriveCtaPanelProps) {
         <HardDrive className="size-5" />
       </span>
       <h3 className="typography-subtitle font-semibold text-foreground">
-        Private preview
+        Join the waitlist
       </h3>
       <p className="typography-body text-muted-foreground">
-        Agent Drive is rolling out to early users. Join the waitlist and
-        we&rsquo;ll reach out when your access is ready.
+        Apply below for private preview access to our new flagship filesystem.
       </p>
-      <JoinWaitlistDialog
-        onConfirmed={onConfirmed}
-        trigger={
-          <Button variant="primary" className="min-w-[180px]">
-            Join the waitlist
-          </Button>
-        }
-      />
+      <Button asChild variant="primary" className="min-w-[180px]">
+        <a href={waitlistHref} target="_blank" rel="noopener noreferrer">
+          Get access
+        </a>
+      </Button>
     </div>
   );
-}
-
-interface AgentDriveJoinedPanelProps {
-  joinedAt: string;
-}
-
-function AgentDriveJoinedPanel({ joinedAt }: AgentDriveJoinedPanelProps) {
-  const formatted = formatJoinedDate(joinedAt);
-  return (
-    <div className="relative flex flex-col items-center justify-center gap-4 overflow-hidden border-t border-border bg-primary-glow p-6 text-center lg:border-t-0 lg:border-l lg:p-8">
-      <span
-        aria-hidden="true"
-        className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-primary"
-      >
-        <Clock className="size-5" />
-      </span>
-      <h3 className="typography-subtitle font-semibold text-foreground">
-        You&rsquo;re on the waitlist
-      </h3>
-      <p className="typography-body text-muted-foreground">
-        We&rsquo;ll email you when Agent Drive is ready for your account.
-      </p>
-      <p className="typography-caption text-meta-foreground">
-        Joined {formatted}
-      </p>
-    </div>
-  );
-}
-
-function formatJoinedDate(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
 }
