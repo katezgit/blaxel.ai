@@ -2,6 +2,14 @@
 
 ---
 
+## 2026-06-27 — docs(workflow): add "no action is a valid action" hard rule ([#135](https://github.com/katezgit/blaxel.ai/pull/135))
+
+### Changed
+
+- Added "No action is a valid action" hard rule to `CLAUDE.md` — zero literal matches must produce zero action, not a nearest-match substitute.
+
+---
+
 ## 2026-06-24 — fix(portal): network empty state + usage breakdown scoping ([#114](https://github.com/katezgit/blaxel.ai/pull/114))
 
 ### Fixed
