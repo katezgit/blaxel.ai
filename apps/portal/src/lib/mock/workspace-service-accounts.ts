@@ -75,13 +75,20 @@ const buildFixtures = (): ReadonlyArray<ServiceAccount> => {
     },
   ];
 
+  const ghCreated = isoAgo(143 * DAY_MS);
+  const runtimeCreated = isoAgo(240 * DAY_MS);
+  const metricsCreated = isoAgo(48 * DAY_MS);
+  const evalCreated = isoAgo(120 * DAY_MS);
+
   return [
     {
       id: "svc_ci_deploy",
       name: "github-actions-deploy",
       description: "Deploy pipeline for the main branch",
       clientId: "bxl_sa_a8d2f01c4b7e",
-      createdAt: isoAgo(143 * DAY_MS),
+      createdAt: ghCreated,
+      // Description was tightened ~3 weeks ago — demonstrates the "Updated" caption.
+      updatedAt: isoAgo(21 * DAY_MS),
       apiKeys: ghKeys,
       lastUsedAt: isoAgo(2 * HOUR_MS),
     },
@@ -90,7 +97,8 @@ const buildFixtures = (): ReadonlyArray<ServiceAccount> => {
       name: "runtime-orchestrator",
       description: "Self-hosted agent runner — production cluster",
       clientId: "bxl_sa_77c1f5d039a2",
-      createdAt: isoAgo(240 * DAY_MS),
+      createdAt: runtimeCreated,
+      updatedAt: runtimeCreated,
       apiKeys: runtimeKeys,
       lastUsedAt: isoAgo(3 * MINUTE_MS),
     },
@@ -99,7 +107,8 @@ const buildFixtures = (): ReadonlyArray<ServiceAccount> => {
       name: "metrics-collector-prod",
       description: "Prometheus scraper for workspace telemetry",
       clientId: "bxl_sa_1f3aa72de0b8",
-      createdAt: isoAgo(48 * DAY_MS),
+      createdAt: metricsCreated,
+      updatedAt: metricsCreated,
       apiKeys: [],
       lastUsedAt: isoAgo(12 * MINUTE_MS),
     },
@@ -108,7 +117,8 @@ const buildFixtures = (): ReadonlyArray<ServiceAccount> => {
       name: "staging-eval-harness",
       description: "Nightly eval harness against the staging workspace",
       clientId: "bxl_sa_d4c91200ea76",
-      createdAt: isoAgo(120 * DAY_MS),
+      createdAt: evalCreated,
+      updatedAt: evalCreated,
       apiKeys: evalKeys,
       lastUsedAt: isoAgo(2 * DAY_MS),
     },

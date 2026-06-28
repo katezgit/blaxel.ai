@@ -92,6 +92,13 @@ export interface ServiceAccount {
   clientId: string;
   /** ISO timestamp (full createdAt — `MMM D, YYYY · HH:mm UTC` on detail page). */
   createdAt: string;
+  /**
+   * ISO timestamp of the last name/description edit. Equal to `createdAt` until
+   * the SA is modified after creation. Detail header renders an "Updated" caption
+   * only when this differs from `createdAt` (meaningful signal that the SA was
+   * edited post-creation; Blaxel's API does not surface creator/updater identity).
+   */
+  updatedAt: string;
   /** API keys issued from this service account. */
   apiKeys: ReadonlyArray<ServiceAccountApiKey>;
   /**

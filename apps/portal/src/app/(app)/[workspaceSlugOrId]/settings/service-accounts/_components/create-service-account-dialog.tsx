@@ -168,6 +168,7 @@ function CreateForm({ onCancel, onCreated }: CreateFormProps) {
       description: values.description,
       clientId: `bxl_sa_${randomSecret(12)}`,
       createdAt: nowIso,
+      updatedAt: nowIso,
       apiKeys: apiKey ? [apiKey] : [],
       lastUsedAt: null,
     };

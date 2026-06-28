@@ -26,7 +26,7 @@ import type {
   ServiceAccountApiKey,
 } from "@/lib/mock/types";
 import ConfirmByNameDialog from "../../../_components/confirm-by-name-dialog";
-import { formatShortDate } from "../../_components/format";
+import { formatRelativePast, formatShortDate } from "../../_components/format";
 import ApiKeysSection from "./api-keys-section";
 import CreateServiceAccountApiKeyDialog from "./create-service-account-api-key-dialog";
 import InlineEditable from "./inline-editable";
@@ -121,12 +121,12 @@ export default function ServiceAccountDetailView({
   };
 
   const handleNameSave = (name: string) => {
-    updateSa({ ...sa, name });
+    updateSa({ ...sa, name, updatedAt: new Date().toISOString() });
     toast.success("Service account name updated.");
   };
 
   const handleDescriptionSave = (description: string) => {
-    updateSa({ ...sa, description });
+    updateSa({ ...sa, description, updatedAt: new Date().toISOString() });
     toast.success("Description updated.");
   };
 
@@ -178,7 +178,7 @@ export default function ServiceAccountDetailView({
           />
         }
         description={
-          <span className="flex flex-col gap-0.5">
+          <span className="flex flex-col">
             <InlineEditable
               value={sa.description}
               onSave={handleDescriptionSave}
@@ -193,8 +193,11 @@ export default function ServiceAccountDetailView({
                 </button>
               )}
             />
-            <span className="typography-caption text-meta-foreground">
+            <span className="mt-1 typography-caption text-meta-foreground">
               Created {formatShortDate(sa.createdAt)}
+              {sa.updatedAt !== sa.createdAt
+                ? ` · Updated ${formatRelativePast(sa.updatedAt)}`
+                : null}
             </span>
           </span>
         }
