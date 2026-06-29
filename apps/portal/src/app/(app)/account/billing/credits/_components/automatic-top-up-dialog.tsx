@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Calendar, Zap } from "lucide-react";
+import { Calendar, Loader2, Zap } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import {
   Dialog,
@@ -19,7 +20,6 @@ import {
 } from "@repo/ui/components/dialog";
 import { Input } from "@repo/ui/components/input";
 import { Switch } from "@repo/ui/components/switch";
-import InlineGate from "@/app/(app)/account/_components/inline-gate";
 import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import { useAccountState } from "@/lib/mock/account-context";
 
@@ -42,26 +42,26 @@ const schema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["autoThresholdUsd"],
-          message: "Threshold must be at least $1",
+          message: "Enter a threshold between $1 and $10,000",
         });
       } else if (values.autoThresholdUsd > 10000) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["autoThresholdUsd"],
-          message: "Threshold must be at most $10,000",
+          message: "Enter a threshold between $1 and $10,000",
         });
       }
       if (!Number.isFinite(values.autoAmountUsd) || values.autoAmountUsd < 1) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["autoAmountUsd"],
-          message: "Amount must be at least $1",
+          message: "Enter an amount between $1 and $10,000",
         });
       } else if (values.autoAmountUsd > 10000) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["autoAmountUsd"],
-          message: "Amount must be at most $10,000",
+          message: "Enter an amount between $1 and $10,000",
         });
       }
     }
@@ -73,19 +73,28 @@ const schema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["monthlyAmountUsd"],
-          message: "Amount must be at least $1",
+          message: "Enter an amount between $1 and $10,000",
         });
       } else if (values.monthlyAmountUsd > 10000) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["monthlyAmountUsd"],
-          message: "Amount must be at most $10,000",
+          message: "Enter an amount between $1 and $10,000",
         });
       }
     }
   });
 
 type Values = z.infer<typeof schema>;
+
+const PAYMENT_METHOD_HREF = "/account/billing/invoices-payment#payment-method";
+
+const formatUsdCompact = (value: number): string =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
 
 export default function AutomaticTopUpDialog({
   trigger,
@@ -105,6 +114,9 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
   const { state, setAutoTopUp, setMonthlyTopUp } = useAccountState();
   const { autoTopUp, monthlyTopUp, paymentMethod } = state;
   const hasPaymentMethod = paymentMethod.brand !== null;
+  const paymentLabel = hasPaymentMethod
+    ? `${paymentMethod.brand} ending ${paymentMethod.last4}`
+    : null;
 
   const form = useForm<Values>({
     resolver: zodResolver(schema),
@@ -115,22 +127,32 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
       monthlyEnabled: monthlyTopUp.enabled,
       monthlyAmountUsd: monthlyTopUp.amountUsd,
     },
-    mode: "onChange",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting, isDirty },
   } = form;
 
   const autoEnabled = watch("autoEnabled");
   const monthlyEnabled = watch("monthlyEnabled");
+  const autoThreshold = watch("autoThresholdUsd");
+  const autoAmount = watch("autoAmountUsd");
+  const monthlyAmount = watch("monthlyAmountUsd");
 
-  // Re-validate when toggling enable so disabled fields' stale errors clear.
+  // Toggling an enable flag changes which fields are required by the schema.
+  // Clear any stale errors on fields that just became inactive.
   useEffect(() => {
-    form.trigger();
+    if (!autoEnabled) {
+      form.clearErrors(["autoThresholdUsd", "autoAmountUsd"]);
+    }
+    if (!monthlyEnabled) {
+      form.clearErrors(["monthlyAmountUsd"]);
+    }
   }, [form, autoEnabled, monthlyEnabled]);
 
   const onSubmit = handleSubmit(async (values) => {
@@ -144,35 +166,30 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
       enabled: values.monthlyEnabled,
       amountUsd: values.monthlyAmountUsd,
     });
-    toast.success("Automatic top-up settings saved");
+    toast.success("Top-up rules saved.");
     onClose();
   });
-
-  const blockedByMissingPayment =
-    !hasPaymentMethod && (autoEnabled || monthlyEnabled);
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex min-h-0 flex-1 flex-col">
       <DialogHeader>
         <DialogTitle>Automatic top-up</DialogTitle>
         <DialogDescription>
-          Rules that keep your balance from running out.
+          Configure rules that add credits automatically.
         </DialogDescription>
       </DialogHeader>
       <DialogBody>
-        <div className="flex flex-col gap-4">
-          <RuleSection
+        <div className="flex flex-col">
+          <RuleRow
             icon={<Zap aria-hidden="true" className="size-4" />}
             title="Auto top-up"
-            description="Add credits when the balance drops below a threshold."
+            description="Add credits when balance drops below a threshold."
             enabled={autoEnabled}
             onEnabledChange={(next) =>
-              setValue("autoEnabled", next, {
-                shouldDirty: true,
-                shouldValidate: true,
-              })
+              setValue("autoEnabled", next, { shouldDirty: true })
             }
             switchLabel={autoEnabled ? "Disable auto top-up" : "Enable auto top-up"}
+            disabled={isSubmitting}
           >
             <FieldRow cols={2}>
               <Field
@@ -185,6 +202,8 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
                   inputMode="decimal"
                   step="1"
                   min="1"
+                  placeholder="5"
+                  disabled={isSubmitting}
                   aria-invalid={errors.autoThresholdUsd ? true : undefined}
                   {...register("autoThresholdUsd", { valueAsNumber: true })}
                 />
@@ -199,34 +218,42 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
                   inputMode="decimal"
                   step="1"
                   min="1"
+                  placeholder="25"
+                  disabled={isSubmitting}
                   aria-invalid={errors.autoAmountUsd ? true : undefined}
                   {...register("autoAmountUsd", { valueAsNumber: true })}
                 />
               </Field>
             </FieldRow>
-            {hasPaymentMethod ? null : (
-              <InlineGate tier={1} verb="enable auto top-up" />
+            <RulePreview>
+              When balance drops below{" "}
+              <PreviewAmount value={autoThreshold} />, <PreviewAmount value={autoAmount} />{" "}
+              will be added.
+            </RulePreview>
+            {hasPaymentMethod ? (
+              <PaymentMethodLine label={paymentLabel ?? ""} />
+            ) : (
+              <PaymentMissingNotice />
             )}
-          </RuleSection>
+          </RuleRow>
 
-          <RuleSection
+          <RuleRow
             icon={<Calendar aria-hidden="true" className="size-4" />}
             title="Monthly top-up"
             description="Add a fixed credit amount every month."
             enabled={monthlyEnabled}
             onEnabledChange={(next) =>
-              setValue("monthlyEnabled", next, {
-                shouldDirty: true,
-                shouldValidate: true,
-              })
+              setValue("monthlyEnabled", next, { shouldDirty: true })
             }
             switchLabel={
               monthlyEnabled ? "Disable monthly top-up" : "Enable monthly top-up"
             }
+            disabled={isSubmitting}
+            withTopBorder
           >
             <FieldRow cols={2}>
               <Field
-                label="Monthly top-up amount"
+                label="Amount"
                 error={errors.monthlyAmountUsd?.message}
                 hint="USD"
               >
@@ -235,85 +262,128 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
                   inputMode="decimal"
                   step="1"
                   min="1"
+                  placeholder="25"
+                  disabled={isSubmitting}
                   aria-invalid={errors.monthlyAmountUsd ? true : undefined}
                   {...register("monthlyAmountUsd", { valueAsNumber: true })}
                 />
               </Field>
               <Field label="Charge date">
                 <div className="flex h-9 items-center rounded-md border border-border bg-card px-3 typography-body text-muted-foreground">
-                  First day of each month
+                  First of each month
                 </div>
               </Field>
             </FieldRow>
-            {hasPaymentMethod ? null : (
-              <InlineGate tier={1} verb="enable monthly top-up" />
+            <RulePreview>
+              <PreviewAmount value={monthlyAmount} /> will be added on the 1st of each
+              month.
+            </RulePreview>
+            {hasPaymentMethod ? (
+              <PaymentMethodLine label={paymentLabel ?? ""} />
+            ) : (
+              <PaymentMissingNotice />
             )}
-          </RuleSection>
+          </RuleRow>
         </div>
       </DialogBody>
       <DialogFooter>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onClose}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting || !isValid || blockedByMissingPayment}
-        >
-          {isSubmitting ? "Saving…" : "Save changes"}
+        {isDirty && !isSubmitting ? (
+          <Button type="button" variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+        ) : null}
+        <Button type="submit" variant="primary" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+              Saving…
+            </>
+          ) : (
+            "Save"
+          )}
         </Button>
       </DialogFooter>
     </form>
   );
 }
 
-interface RuleSectionProps {
+interface RuleRowProps {
   icon: ReactNode;
   title: string;
   description: string;
   enabled: boolean;
   onEnabledChange: (next: boolean) => void;
   switchLabel: string;
+  disabled?: boolean;
+  withTopBorder?: boolean;
   children: ReactNode;
 }
 
-function RuleSection({
+function RuleRow({
   icon,
   title,
   description,
   enabled,
   onEnabledChange,
   switchLabel,
+  disabled,
+  withTopBorder,
   children,
-}: RuleSectionProps) {
+}: RuleRowProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-md border border-border bg-card px-4 py-3">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+    <div
+      className={
+        withTopBorder ? "border-t border-border pt-4 mt-4 flex flex-col gap-4" : "flex flex-col gap-4"
+      }
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-hover-surface text-muted-foreground">
             {icon}
           </div>
           <div className="flex flex-col gap-0.5">
-            <h3 className="typography-body font-medium text-foreground">
-              {title}
-            </h3>
-            <p className="typography-caption text-muted-foreground">
-              {description}
-            </p>
+            <h3 className="typography-body font-medium text-foreground">{title}</h3>
+            <p className="typography-caption text-muted-foreground">{description}</p>
           </div>
         </div>
         <Switch
           checked={enabled}
           onCheckedChange={onEnabledChange}
+          disabled={disabled}
           aria-label={switchLabel}
         />
       </div>
       {enabled ? <div className="pl-11 flex flex-col gap-3">{children}</div> : null}
     </div>
+  );
+}
+
+function RulePreview({ children }: { children: ReactNode }) {
+  return <p className="typography-caption text-muted-foreground">{children}</p>;
+}
+
+function PreviewAmount({ value }: { value: number }) {
+  const display =
+    Number.isFinite(value) && value > 0 ? formatUsdCompact(value) : "$—";
+  return <span className="font-mono text-foreground">{display}</span>;
+}
+
+function PaymentMethodLine({ label }: { label: string }) {
+  return (
+    <p className="typography-caption text-muted-foreground">Charged to {label}.</p>
+  );
+}
+
+function PaymentMissingNotice() {
+  return (
+    <p className="typography-caption text-muted-foreground">
+      No payment method on file. This rule will activate once you add one.{" "}
+      <Link
+        href={PAYMENT_METHOD_HREF}
+        className="font-medium text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
+      >
+        Add payment method →
+      </Link>
+    </p>
   );
 }

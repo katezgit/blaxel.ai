@@ -101,6 +101,7 @@ export default function CreditBalanceCard() {
                 <span className="font-mono text-foreground">
                   {formatUsdCompact(state.autoTopUp.amountUsd)}
                 </span>
+                {hasPaymentMethod ? null : " — awaiting payment method"}
               </li>
             ) : null}
             {monthlyOn ? (
@@ -110,6 +111,7 @@ export default function CreditBalanceCard() {
                   {formatUsdCompact(state.monthlyTopUp.amountUsd)}
                 </span>{" "}
                 on the 1st
+                {hasPaymentMethod ? null : " — awaiting payment method"}
               </li>
             ) : null}
           </ul>
