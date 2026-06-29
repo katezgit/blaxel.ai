@@ -45,7 +45,6 @@ export default function CreditBalanceCard() {
 
   return (
     <Card
-      variant="elevated"
       className="flex flex-col gap-5 p-5 sm:flex-row sm:items-stretch sm:justify-between sm:gap-6 sm:p-6"
     >
       <div className="flex flex-1 flex-col gap-2">

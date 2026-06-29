@@ -69,58 +69,65 @@ export default function CreditHistoryCard() {
           </p>
         </div>
       ) : (
-        <Table
-          bordered
-          totalCount={rows.length}
-          pageOffset={0}
-          aria-label="Credit history"
-        >
-          <caption className="sr-only">Credit history</caption>
-          {/*
-            Fixed column widths protect the row's reading shape:
-            - Date (140px): "Mon DD, YYYY" needs full width or it truncates mid-month.
-            - Type (110px): holds the longest Badge label ("Top-up") without wrap.
-            - Description: flexes to take the remaining row width.
-            - Amount (140px): keeps tabular-nums right-aligned with the header.
-          */}
-          <colgroup>
-            <col className="w-[140px]" />
-            <col className="w-[110px]" />
-            <col />
-            <col className="w-[140px]" />
-          </colgroup>
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell label="Date" />
-              <TableHeaderCell label="Type" />
-              <TableHeaderCell label="Description" />
-              <TableHeaderCell label="Amount" numeric />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="text-muted-foreground">
-                  {formatDate(row.date)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={TYPE_VARIANT[row.type]}>{row.type}</Badge>
-                </TableCell>
-                <TableCell className="text-foreground">
-                  {row.description}
-                </TableCell>
-                <TableCell
-                  variant="numeric"
-                  className={cn(
-                    row.amount < 0 ? "text-muted-foreground" : "text-foreground",
-                  )}
-                >
-                  {formatSignedUsd(row.amount)}
-                </TableCell>
+        <div className="max-h-[360px] overflow-auto rounded-md border border-border bg-card">
+          <Table
+            totalCount={rows.length}
+            pageOffset={0}
+            aria-label="Credit history"
+            className="overflow-visible"
+          >
+            <caption className="sr-only">Credit history</caption>
+            {/*
+              Fixed column widths protect the row's reading shape:
+              - Date (140px): "Mon DD, YYYY" needs full width or it truncates mid-month.
+              - Type (110px): holds the longest Badge label ("Top-up") without wrap.
+              - Description: flexes to take the remaining row width.
+              - Amount (140px): keeps tabular-nums right-aligned with the header.
+            */}
+            <colgroup>
+              <col className="w-[140px]" />
+              <col className="w-[110px]" />
+              <col />
+              <col className="w-[140px]" />
+            </colgroup>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell label="Date" />
+                <TableHeaderCell label="Type" />
+                <TableHeaderCell label="Description" />
+                <TableHeaderCell label="Amount" numeric />
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="text-muted-foreground">
+                    {formatDate(row.date)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={TYPE_VARIANT[row.type]}
+                      className="border-transparent"
+                    >
+                      {row.type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-foreground">
+                    {row.description}
+                  </TableCell>
+                  <TableCell
+                    variant="numeric"
+                    className={cn(
+                      row.amount < 0 ? "text-muted-foreground" : "text-foreground",
+                    )}
+                  >
+                    {formatSignedUsd(row.amount)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </section>
   );
