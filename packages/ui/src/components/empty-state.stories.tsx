@@ -44,7 +44,7 @@ export const Playground: Story = {
 
 // ── Variants ──────────────────────────────────────────────────────────────────
 // zero-state: icon container + title + subtitle + optional CTA
-// no-results: text only, no icon
+// no-results: text-only by default; icon optional when caller provides one
 
 export const Variants: Story = {
   render: () => (
@@ -170,7 +170,6 @@ export const NoResultsSmall: Story = {
   ),
 }
 
-// ── NoResultsWithIcon ─────────────────────────────────────────────────────────
 // Opt-in — no-results variants can pass an icon for surfaces that benefit from
 // a visual anchor; default stays text-only.
 
