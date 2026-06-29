@@ -89,7 +89,7 @@ export default function HelpMenu() {
         </DropdownMenuItem>
         <DropdownMenuItem asChild className={externalItemClass}>
           <a
-            href="https://blaxel.ai/changelog"
+            href="https://docs.blaxel.ai/changelog"
             target="_blank"
             rel="noreferrer"
           >
