@@ -148,7 +148,7 @@ function WorkspaceTopbarSkeleton() {
         >
           <Menu className="size-4" aria-hidden="true" />
         </button>
-        <span data-slot="brand">
+        <span data-slot="brand" className="hidden md:inline-flex">
           <BrandMark />
         </span>
         <span data-slot="ws">
@@ -179,7 +179,7 @@ function SettingsSubShellTopbarSkeleton() {
         >
           <Menu className="size-4" aria-hidden="true" />
         </button>
-        <span data-slot="brand">
+        <span data-slot="brand" className="hidden md:inline-flex">
           <BrandMark />
         </span>
         <span data-slot="ws">
@@ -206,7 +206,7 @@ function PersonalSubShellTopbarSkeleton() {
         >
           <Menu className="size-4" aria-hidden="true" />
         </button>
-        <span data-slot="brand">
+        <span data-slot="brand" className="hidden md:inline-flex">
           <BrandMark />
         </span>
       </div>
