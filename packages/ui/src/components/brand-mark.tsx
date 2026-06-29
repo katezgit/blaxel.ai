@@ -1,5 +1,5 @@
 // shadcn-source: from-scratch-approved:operator-2026-05-29 (n/a, 2026-05-29)
-// BrandMark — canonical notched-viewport mark + gold dot lockup.
+// BrandMark — canonical notched-viewport mark + gold dot lockup. Renders the "Blaxel" wordmark.
 // Converged from apps/portal shell identity (commit 7136caa).
 // Spec: docs/design/components/brand-mark/instrument-precision-v1.md
 
@@ -51,7 +51,7 @@ const brandMarkVariants = cva("inline-flex items-center gap-2 select-none", {
 export interface BrandMarkProps
   extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof brandMarkVariants> {
-  /** Render the "HUD" wordmark beside the mark. Default: true */
+  /** Render the "Blaxel" wordmark beside the mark. Default: true */
   wordmark?: boolean
 }
 
@@ -64,7 +64,7 @@ const BrandMark = React.forwardRef<HTMLSpanElement, BrandMarkProps>(
         ref={ref}
         data-slot="brand-mark"
         data-size={size ?? "default"}
-        aria-label="HUD"
+        aria-label="Blaxel"
         role="img"
         className={cn(brandMarkVariants({ size }), className)}
         {...props}
@@ -91,10 +91,10 @@ const BrandMark = React.forwardRef<HTMLSpanElement, BrandMarkProps>(
           />
         </span>
 
-        {/* Wordmark — "HUD" mono */}
+        {/* Wordmark — "Blaxel" mono */}
         {wordmark && (
           <span aria-hidden="true" className={wordmarkVariants({ size })}>
-            HUD
+            Blaxel
           </span>
         )}
       </span>

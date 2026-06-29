@@ -228,7 +228,7 @@ export default function RegisterForm() {
             />
           </FormField>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           <Button
             type="submit"
             variant="primary"
@@ -245,12 +245,12 @@ export default function RegisterForm() {
                 <span>Sending link…</span>
               </span>
             ) : (
-              "Send magic link"
+              "Continue"
             )}
           </Button>
           <p className="typography-caption text-muted-foreground text-center">
-            By continuing, you accept HUD&apos;s Terms of Service, Privacy Policy,
-            and Acceptable Use Policy.
+            By continuing, you accept Blaxel&apos;s Terms of Service, Privacy
+            Policy, and Acceptable Use Policy.
           </p>
         </div>
       </form>
