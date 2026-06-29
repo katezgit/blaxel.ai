@@ -616,16 +616,12 @@ export function IdentityEditableNameOnlyFields({
             </>
           }
         >
-          <div
+          <Input
             id={nameId}
-            role="textbox"
-            aria-readonly="true"
-            className={cn(
-              "flex w-full items-center rounded-md border border-border bg-muted-surface px-3 py-2 font-mono typography-body text-foreground",
-            )}
-          >
-            {fixedName}
-          </div>
+            defaultValue={fixedName}
+            disabled
+            className="font-mono"
+          />
         </FormField>
       </div>
     </>
