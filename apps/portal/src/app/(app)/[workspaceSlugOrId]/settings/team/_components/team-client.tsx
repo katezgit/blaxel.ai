@@ -128,22 +128,24 @@ export default function TeamClient({ workspace }: TeamClientProps) {
     () => [
       columnHelper.display({
         id: "select",
-        header: ({ table }) => (
-          <Checkbox
-            size="sm"
-            checked={
-              table.getIsAllPageRowsSelected()
-                ? true
-                : table.getIsSomePageRowsSelected()
-                  ? "indeterminate"
-                  : false
-            }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(value === true)
-            }
-            aria-label="Select all rows"
-          />
-        ),
+        header: ({ table }) => {
+          let checked: boolean | "indeterminate" = false;
+          if (table.getIsAllPageRowsSelected()) {
+            checked = true;
+          } else if (table.getIsSomePageRowsSelected()) {
+            checked = "indeterminate";
+          }
+          return (
+            <Checkbox
+              size="sm"
+              checked={checked}
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(value === true)
+              }
+              aria-label="Select all rows"
+            />
+          );
+        },
         cell: ({ row }) => (
           <Checkbox
             size="sm"
@@ -266,7 +268,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
   };
 
   return (
-    <section className="flex flex-col gap-6">
+    <>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
           <h1 className="typography-display font-semibold text-foreground">
@@ -285,84 +287,86 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search for a member"
-          leading={<Search aria-hidden="true" className="size-3.5" />}
-          className="max-w-xs"
-          aria-label="Search workspace members"
-        />
-        <Combobox
-          options={statusOptions}
-          value={statusFilter}
-          onValueChange={(v) => setStatusFilter(v as MemberStatus | null)}
-          label="Status"
-          placeholder="All"
-          className="ml-auto w-44"
-        />
-      </div>
-
-      {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between rounded-md border border-border bg-muted-surface px-3 py-2">
-          <div className="flex items-center gap-4">
-            <span className="typography-label text-foreground">
-              {selectedIds.length} selected
-            </span>
-            <span aria-hidden="true" className="h-4 w-px bg-border" />
-            <Button
-              variant="ghost"
-              onClick={() => setRowSelection({})}
-            >
-              Clear selection
-            </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => toast.success("Bulk role change (mock).")}
-            >
-              Change role
-            </Button>
-            <Button
-              variant="destructive-ghost"
-              onClick={() => {
-                setMembers((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
-                setRowSelection({});
-                toast.success(`Removed ${selectedIds.length} members.`);
-              }}
-            >
-              Remove
-            </Button>
-          </div>
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search for a member"
+            leading={<Search aria-hidden="true" className="size-3.5" />}
+            className="max-w-xs"
+            aria-label="Search workspace members"
+          />
+          <Combobox
+            options={statusOptions}
+            value={statusFilter}
+            onValueChange={(v) => setStatusFilter(v as MemberStatus | null)}
+            label="Status"
+            placeholder="All"
+            className="ml-auto w-44"
+          />
         </div>
-      )}
 
-      {filteredMembers.length === 0 ? (
-        <EmptyState
-          variant="no-results"
-          title="No members match these filters"
-          subtitle="Try clearing one filter at a time."
-          cta={
-            hasFilters && (
-              <Button variant="secondary" onClick={clearFilters}>
-                Clear filters
+        {selectedIds.length > 0 && (
+          <div className="flex items-center justify-between rounded-md border border-border bg-muted-surface px-3 py-2">
+            <div className="flex items-center gap-4">
+              <span className="typography-label text-foreground">
+                {selectedIds.length} selected
+              </span>
+              <span aria-hidden="true" className="h-4 w-px bg-border" />
+              <Button
+                variant="ghost"
+                onClick={() => setRowSelection({})}
+              >
+                Clear selection
               </Button>
-            )
-          }
-        />
-      ) : (
-        <ResourceTable
-          table={table}
-          getRowClassName={(row) =>
-            row.original.status === "expired"
-              // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
-              ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
-              : undefined
-          }
-        />
-      )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => toast.success("Bulk role change (mock).")}
+              >
+                Change role
+              </Button>
+              <Button
+                variant="destructive-ghost"
+                onClick={() => {
+                  setMembers((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
+                  setRowSelection({});
+                  toast.success(`Removed ${selectedIds.length} members.`);
+                }}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {filteredMembers.length === 0 ? (
+          <EmptyState
+            variant="no-results"
+            title="No members match these filters"
+            subtitle="Try clearing one filter at a time."
+            cta={
+              hasFilters && (
+                <Button variant="secondary" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+              )
+            }
+          />
+        ) : (
+          <ResourceTable
+            table={table}
+            getRowClassName={(row) =>
+              row.original.status === "expired"
+                // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+                ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
+                : undefined
+            }
+          />
+        )}
+      </section>
 
       <InviteUsersDialog
         open={inviteOpen}
@@ -404,7 +408,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </section>
+    </>
   );
 }
 
@@ -427,6 +431,14 @@ const SORT_ICON = {
 function SortHeader({ column, label }: SortHeaderProps) {
   const sorted = column.getIsSorted();
   const Icon = SORT_ICON[sorted === false ? "none" : sorted];
+  let ariaLabel: string;
+  if (sorted === "asc") {
+    ariaLabel = `Sorted by ${label} ascending. Click to sort descending.`;
+  } else if (sorted === "desc") {
+    ariaLabel = `Sorted by ${label} descending. Click to clear sort.`;
+  } else {
+    ariaLabel = `Sort by ${label}.`;
+  }
   return (
     <button
       type="button"
@@ -436,13 +448,7 @@ function SortHeader({ column, label }: SortHeaderProps) {
         "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
         sorted ? "text-foreground" : "text-meta-foreground hover:text-foreground",
       )}
-      aria-label={
-        sorted === "asc"
-          ? `Sorted by ${label} ascending. Click to sort descending.`
-          : sorted === "desc"
-            ? `Sorted by ${label} descending. Click to clear sort.`
-            : `Sort by ${label}.`
-      }
+      aria-label={ariaLabel}
     >
       <span>{label}</span>
       <Icon
