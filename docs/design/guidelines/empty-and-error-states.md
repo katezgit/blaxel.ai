@@ -96,7 +96,7 @@ surface of both components.
 
 | Axis | Options | Rule |
 |---|---|---|
-| Variant | `zero-state` / `no-results` | Drives whether the icon block is shown at all |
+| Variant | `zero-state` / `no-results` | Selects copy form and informs whether the icon block is required (`zero-state`) or opt-in (`no-results`); the `icon` prop is the actual switch |
 | Icon | present / absent | Required for `zero-state` at full size; **opt-in on `no-results`** — when provided, must be a search/filter glyph (e.g. `SearchX`, `UserSearch`), not the content-type icon used for `zero-state` |
 | Subtitle | present / absent | Omit when context is self-explanatory and one line suffices |
 | CTA | present / absent | One maximum; absent for read-only contexts |
