@@ -144,7 +144,7 @@ export default function ApiKeysClient() {
   });
 
   return (
-    <section className="flex flex-col gap-6">
+    <>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
           <h1 className="typography-display font-semibold text-foreground">API keys</h1>
@@ -160,49 +160,51 @@ export default function ApiKeysClient() {
         </Button>
       </div>
 
-      <Input
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search API keys"
-        leading={<Search aria-hidden="true" className="size-3.5" />}
-        className="max-w-xs"
-        aria-label="Search API keys"
-      />
+      <section className="flex flex-col gap-4">
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search API keys"
+          leading={<Search aria-hidden="true" className="size-3.5" />}
+          className="max-w-xs"
+          aria-label="Search API keys"
+        />
 
-      {keys.length === 0 ? (
-        <EmptyState
-          variant="zero-state"
-          icon={KeyRound}
-          title="No API keys yet"
-          subtitle="Workspace keys authenticate the CLI, SDKs, and integrations against this workspace."
-          cta={
-            <Button variant="primary" onClick={() => setCreateOpen(true)}>
-              <Plus aria-hidden="true" />
-              <span>Create your first key</span>
-            </Button>
-          }
-        />
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          variant="no-results"
-          title="No keys match"
-          cta={
-            <Button variant="secondary" onClick={() => setSearch("")}>
-              Clear search
-            </Button>
-          }
-        />
-      ) : (
-        <ResourceTable
-          table={table}
-          getRowClassName={(row) =>
-            classifyExpiry(row.original.expiresAt) === "near"
-              // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
-              ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
-              : undefined
-          }
-        />
-      )}
+        {keys.length === 0 ? (
+          <EmptyState
+            variant="zero-state"
+            icon={KeyRound}
+            title="No API keys yet"
+            subtitle="Workspace keys authenticate the CLI, SDKs, and integrations against this workspace."
+            cta={
+              <Button variant="primary" onClick={() => setCreateOpen(true)}>
+                <Plus aria-hidden="true" />
+                <span>Create your first key</span>
+              </Button>
+            }
+          />
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            variant="no-results"
+            title="No keys match"
+            cta={
+              <Button variant="secondary" onClick={() => setSearch("")}>
+                Clear search
+              </Button>
+            }
+          />
+        ) : (
+          <ResourceTable
+            table={table}
+            getRowClassName={(row) =>
+              classifyExpiry(row.original.expiresAt) === "near"
+                // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+                ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
+                : undefined
+            }
+          />
+        )}
+      </section>
 
       <CreateApiKeyDialog
         open={createOpen}
@@ -247,7 +249,7 @@ export default function ApiKeysClient() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </section>
+    </>
   );
 }
 

@@ -101,126 +101,128 @@ export default function AdminsClient() {
         </Button>
       </div>
 
-      <Input
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search admins…"
-        leading={<Search aria-hidden="true" className="size-3.5" />}
-        className="max-w-sm"
-        aria-label="Search admins"
-      />
-
-      {hasResults ? (
-        <Table
-          bordered
-          totalCount={visibleAdmins.length}
-          pageOffset={0}
-          aria-label="Admins"
-          className="[&_tbody_tr]:hover:bg-transparent"
-        >
-          <colgroup>
-            <col style={{ width: "48%" }} />
-            <col style={{ width: "14%" }} />
-            <col style={{ width: "22%" }} />
-            <col style={{ width: "16%" }} />
-          </colgroup>
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell label="User" />
-              <TableHeaderCell label="Role" />
-              <TableHeaderCell label="Status" />
-              <TableHeaderCell label="Actions" numeric />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {visibleAdmins.map((admin) => {
-              const isPending = admin.status === "pending";
-              const isOwner = admin.role === "Owner";
-              let actionsCell: React.ReactNode;
-              if (isOwner) {
-                actionsCell = <OwnerNoActions />;
-              } else if (isPending) {
-                actionsCell = (
-                  <PendingRowActions
-                    admin={admin}
-                    onResend={() => resendInvite(admin)}
-                    onRevoke={() => revokeInvite(admin)}
-                  />
-                );
-              } else {
-                actionsCell = (
-                  <ActiveRowActions
-                    admin={admin}
-                    onRemove={() => setPendingRemove(admin)}
-                  />
-                );
-              }
-              return (
-                <TableRow key={admin.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar size="sm" className={cn(isPending && "opacity-50")}>
-                        <AvatarFallback>{getInitials(admin.name)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="flex items-center gap-2">
-                          <span
-                            className={cn(
-                              "font-medium",
-                              isPending && "text-muted-foreground",
-                            )}
-                          >
-                            {admin.name}
-                          </span>
-                          {admin.email === ownerEmail && (
-                            <span className="rounded-sm bg-muted-surface px-1.5 py-px typography-meta font-mono text-meta-foreground">
-                              you
-                            </span>
-                          )}
-                        </span>
-                        <span className="font-mono typography-caption text-muted-foreground">
-                          {admin.email}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium">{admin.role}</TableCell>
-                  <TableCell>
-                    {isPending ? (
-                      <div className="flex flex-col gap-1">
-                        <Badge variant="warning" showDot className="font-sans">
-                          Pending invite
-                        </Badge>
-                        {admin.invitedAt ? (
-                          <span className="typography-caption text-muted-foreground">
-                            {formatSentAgo(admin.invitedAt, nowMs)}
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : (
-                      <Badge variant="success" showDot className="font-sans">
-                        Active
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">{actionsCell}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      ) : (
-        <EmptyState
-          variant="no-results"
-          title="No admins match your search"
-          subtitle="Try a shorter term or clear the search."
-          cta={
-            <Button variant="secondary" onClick={() => setSearch("")}>
-              Clear search
-            </Button>
-          }
+      <div className="flex flex-col gap-4">
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search admins…"
+          leading={<Search aria-hidden="true" className="size-3.5" />}
+          className="max-w-sm"
+          aria-label="Search admins"
         />
-      )}
+
+        {hasResults ? (
+          <Table
+            bordered
+            totalCount={visibleAdmins.length}
+            pageOffset={0}
+            aria-label="Admins"
+            className="[&_tbody_tr]:hover:bg-transparent"
+          >
+            <colgroup>
+              <col style={{ width: "48%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "22%" }} />
+              <col style={{ width: "16%" }} />
+            </colgroup>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell label="User" />
+                <TableHeaderCell label="Role" />
+                <TableHeaderCell label="Status" />
+                <TableHeaderCell label="Actions" numeric />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {visibleAdmins.map((admin) => {
+                const isPending = admin.status === "pending";
+                const isOwner = admin.role === "Owner";
+                let actionsCell: React.ReactNode;
+                if (isOwner) {
+                  actionsCell = <OwnerNoActions />;
+                } else if (isPending) {
+                  actionsCell = (
+                    <PendingRowActions
+                      admin={admin}
+                      onResend={() => resendInvite(admin)}
+                      onRevoke={() => revokeInvite(admin)}
+                    />
+                  );
+                } else {
+                  actionsCell = (
+                    <ActiveRowActions
+                      admin={admin}
+                      onRemove={() => setPendingRemove(admin)}
+                    />
+                  );
+                }
+                return (
+                  <TableRow key={admin.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar size="sm" className={cn(isPending && "opacity-50")}>
+                          <AvatarFallback>{getInitials(admin.name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "font-medium",
+                                isPending && "text-muted-foreground",
+                              )}
+                            >
+                              {admin.name}
+                            </span>
+                            {admin.email === ownerEmail && (
+                              <span className="rounded-sm bg-muted-surface px-1.5 py-px typography-meta font-mono text-meta-foreground">
+                                you
+                              </span>
+                            )}
+                          </span>
+                          <span className="font-mono typography-caption text-muted-foreground">
+                            {admin.email}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">{admin.role}</TableCell>
+                    <TableCell>
+                      {isPending ? (
+                        <div className="flex flex-col gap-1">
+                          <Badge variant="warning" showDot className="font-sans">
+                            Pending invite
+                          </Badge>
+                          {admin.invitedAt ? (
+                            <span className="typography-caption text-muted-foreground">
+                              {formatSentAgo(admin.invitedAt, nowMs)}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <Badge variant="success" showDot className="font-sans">
+                          Active
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">{actionsCell}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        ) : (
+          <EmptyState
+            variant="no-results"
+            title="No admins match your search"
+            subtitle="Try a shorter term or clear the search."
+            cta={
+              <Button variant="secondary" onClick={() => setSearch("")}>
+                Clear search
+              </Button>
+            }
+          />
+        )}
+      </div>
 
       <AddAdminDialog open={addOpen} onOpenChange={setAddOpen} />
       <RemoveAdminDialog

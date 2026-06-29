@@ -153,7 +153,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
   });
 
   return (
-    <section className="flex flex-col gap-6">
+    <>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <header className="page-header">
           <h1 className="typography-display text-foreground">
@@ -175,7 +175,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           onCreate={() => setCreateOpen(true)}
         />
       ) : (
-        <>
+        <section className="flex flex-col gap-4">
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -204,7 +204,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
               }
             />
           )}
-        </>
+        </section>
       )}
 
       <CreateServiceAccountDialog
@@ -254,7 +254,7 @@ export default function ServiceAccountsClient({ workspace }: ServiceAccountsClie
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </section>
+    </>
   );
 }
 

@@ -220,65 +220,67 @@ export default function WorkspacesClient() {
         ) : null}
       </section>
 
-      {showSearch ? (
-        <Input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search workspaces…"
-          leading={<Search aria-hidden="true" className="size-3.5" />}
-          className="max-w-sm"
-          aria-label="Search workspaces"
-        />
-      ) : null}
+      <div className="flex flex-col gap-4">
+        {showSearch ? (
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search workspaces…"
+            leading={<Search aria-hidden="true" className="size-3.5" />}
+            className="max-w-sm"
+            aria-label="Search workspaces"
+          />
+        ) : null}
 
-      {state.workspaces.length === 0 ? (
-        <EmptyState
-          variant="zero-state"
-          title="No workspaces yet."
-          subtitle={
-            createDisabled
-              ? "Add a payment method to create a workspace."
-              : "Create a workspace to start organizing resources."
-          }
-          cta={
-            createDisabled ? (
-              <Button variant="primary" asChild>
-                <Link href={quotaCopy?.href ?? PAYMENT_HREF}>
-                  Add payment method
-                </Link>
+        {state.workspaces.length === 0 ? (
+          <EmptyState
+            variant="zero-state"
+            title="No workspaces yet."
+            subtitle={
+              createDisabled
+                ? "Add a payment method to create a workspace."
+                : "Create a workspace to start organizing resources."
+            }
+            cta={
+              createDisabled ? (
+                <Button variant="primary" asChild>
+                  <Link href={quotaCopy?.href ?? PAYMENT_HREF}>
+                    Add payment method
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  onClick={() => toast.success("Create workspace (mock).")}
+                >
+                  <Plus aria-hidden="true" />
+                  <span>Create workspace</span>
+                </Button>
+              )
+            }
+          />
+        ) : filteredWorkspaces.length === 0 ? (
+          <EmptyState
+            variant="no-results"
+            title="No workspaces match your search"
+            subtitle="Try a shorter term or clear the search."
+            cta={
+              <Button variant="secondary" onClick={() => setSearch("")}>
+                Clear search
               </Button>
-            ) : (
-              <Button
-                variant="primary"
-                onClick={() => toast.success("Create workspace (mock).")}
-              >
-                <Plus aria-hidden="true" />
-                <span>Create workspace</span>
-              </Button>
-            )
-          }
-        />
-      ) : filteredWorkspaces.length === 0 ? (
-        <EmptyState
-          variant="no-results"
-          title="No workspaces match your search"
-          subtitle="Try a shorter term or clear the search."
-          cta={
-            <Button variant="secondary" onClick={() => setSearch("")}>
-              Clear search
-            </Button>
-          }
-        />
-      ) : (
-        <ManageTable
-          table={table}
-          bordered
-          caption="Workspaces"
-          onRowClick={(row) =>
-            router.push(`/${row.original.slug}/settings/general`)
-          }
-        />
-      )}
+            }
+          />
+        ) : (
+          <ManageTable
+            table={table}
+            bordered
+            caption="Workspaces"
+            onRowClick={(row) =>
+              router.push(`/${row.original.slug}/settings/general`)
+            }
+          />
+        )}
+      </div>
     </>
   );
 }
