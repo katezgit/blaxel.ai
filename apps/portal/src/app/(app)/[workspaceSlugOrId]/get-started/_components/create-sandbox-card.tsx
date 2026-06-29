@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@repo/ui/components/card";
 import { CodeBlock } from "@repo/ui/components/code-block";
 import NumberedStep from "./numbered-step";
@@ -76,10 +76,13 @@ export default function CreateSandboxCard() {
             href="https://docs.blaxel.ai/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 typography-body text-muted-foreground transition-colors hover:text-foreground"
+            className="group inline-flex items-center gap-1.5 typography-body text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ChevronRight aria-hidden="true" className="size-4" />
             Next: Create a preview
+            <ArrowRight
+              aria-hidden="true"
+              className="size-3.5 transition-transform group-hover:translate-x-0.5"
+            />
           </Link>
         </div>
       </CardContent>
