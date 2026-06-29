@@ -30,7 +30,7 @@ function TierSwitcherChrome() {
     <div
       role="group"
       aria-label="Demo tier switcher (dev only)"
-      className="fixed right-3 bottom-3 z-sticky flex items-center gap-1 rounded-md border border-border-strong bg-card p-1 shadow-popover"
+      className="fixed top-1/2 right-3 z-sticky flex -translate-y-1/2 items-center gap-1 rounded-md border border-border-strong bg-card p-1 shadow-popover"
     >
       <span className="px-1.5 font-mono typography-caption text-meta-foreground uppercase">
         tier
