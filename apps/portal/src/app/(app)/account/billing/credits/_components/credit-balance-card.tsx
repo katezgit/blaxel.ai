@@ -13,23 +13,21 @@ const formatUsd = (value: number): string =>
     currency: "USD",
   }).format(value);
 
-const formatDate = (iso: string): string => {
-  const [year, month, day] = iso.split("-").map((part) => Number(part));
-  if (!year || !month || !day) return iso;
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return new Intl.DateTimeFormat("en-US", {
+const formatMonthDay = (date: Date): string =>
+  new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
-    year: "numeric",
   }).format(date);
+
+// Monthly top-up charges on the 1st of each month (mirrors the
+// AutomaticTopUpDialog copy, which hardcodes "First of each month").
+const nextFirstOfMonth = (now: Date): Date => {
+  const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  return next;
 };
 
 export default function CreditBalanceCard() {
   const { state } = useAccountState();
-  const lastTopUp = state.creditHistory.find((entry) => entry.type === "Top-up");
-  const lastFundedLine = lastTopUp
-    ? `Last funded ${formatDate(lastTopUp.date)} · ${formatUsd(lastTopUp.amount)}`
-    : "No funding yet";
   const hasPaymentMethod = state.paymentMethod.brand !== null;
 
   const hasAnyRuleEnabled =
@@ -48,26 +46,38 @@ export default function CreditBalanceCard() {
       className="flex flex-col gap-5 p-5 sm:flex-row sm:items-stretch sm:justify-between sm:gap-6 sm:p-6"
     >
       <div className="flex flex-1 flex-col gap-2">
-        <span className="typography-meta font-mono uppercase text-meta-foreground">
-          Available credits
-        </span>
         <output
+          aria-label="Available credits"
           aria-live="polite"
           aria-atomic="true"
           className="block font-mono typography-display font-bold tabular-nums leading-none text-foreground"
         >
           {formatUsd(state.balanceUsd)}
         </output>
-        <p className="typography-caption text-muted-foreground">{lastFundedLine}</p>
-        {hasAnyRuleEnabled ? (
-          <div className="mt-1 flex flex-col gap-1">
-            {state.autoTopUp.enabled ? (
-              <RuleStatus label="Auto top-up" />
-            ) : null}
-            {state.monthlyTopUp.enabled ? (
-              <RuleStatus label="Monthly top-up" />
-            ) : null}
+        <p aria-hidden="true" className="typography-body text-muted-foreground">
+          Available credits
+        </p>
+        {state.monthlyTopUp.enabled ? (
+          <p className="mt-1 typography-caption text-muted-foreground">
+            Next charge ·{" "}
+            <span className="text-foreground">
+              {formatUsd(state.monthlyTopUp.amountUsd)} on{" "}
+              {formatMonthDay(nextFirstOfMonth(new Date()))}
+            </span>
+          </p>
+        ) : null}
+        {state.autoTopUp.enabled ? (
+          <div>
+            <RuleStatus
+              label="Auto top-up"
+              detail={`+${formatUsd(state.autoTopUp.amountUsd)} below ${formatUsd(state.autoTopUp.thresholdUsd)}`}
+            />
           </div>
+        ) : null}
+        {!hasAnyRuleEnabled ? (
+          <p className="mt-1 typography-caption text-muted-foreground">
+            No automatic top-up configured
+          </p>
         ) : null}
       </div>
       <div
@@ -102,14 +112,14 @@ export default function CreditBalanceCard() {
   );
 }
 
-function RuleStatus({ label }: { label: string }) {
+function RuleStatus({ label, detail }: { label: string; detail: string }) {
   return (
     <span className="flex items-center gap-1.5 typography-caption text-muted-foreground">
       <span
         aria-hidden="true"
         className="size-1.5 rounded-full bg-state-scored"
       />
-      {label} · On
+      {label} · {detail}
     </span>
   );
 }
