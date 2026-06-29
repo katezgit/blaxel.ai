@@ -93,34 +93,6 @@ export function FieldGroup({ label, hint, children }: FieldGroupProps) {
   );
 }
 
-interface StepHeadingProps {
-  index: number;
-  title: string;
-  description?: string;
-  headingId?: string;
-}
-
-export function StepHeading({
-  index,
-  title,
-  description,
-  headingId,
-}: StepHeadingProps) {
-  return (
-    <header className="flex flex-col gap-1">
-      <h2
-        id={headingId}
-        className="typography-body font-semibold text-foreground"
-      >
-        <span className="font-mono text-meta-foreground">{index}.</span> {title}
-      </h2>
-      {description ? (
-        <p className="typography-caption text-muted-foreground">{description}</p>
-      ) : null}
-    </header>
-  );
-}
-
 interface PolicyTypeSelectFieldProps {
   form: UseFormReturn<PolicyFormValues>;
 }
@@ -549,10 +521,8 @@ interface IdentityEditableFieldsProps {
 export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
   const {
     register,
-    watch,
     formState: { errors },
   } = form;
-  const slug = watch("name");
   const nameHelperId = useId();
 
   return (
@@ -580,12 +550,6 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
           Auto-derived; editable.
         </p>
       </div>
-      {slug ? (
-        <p className="typography-caption text-meta-foreground">
-          Slug preview:{" "}
-          <code className="font-mono text-foreground">{slug}</code>
-        </p>
-      ) : null}
     </>
   );
 }

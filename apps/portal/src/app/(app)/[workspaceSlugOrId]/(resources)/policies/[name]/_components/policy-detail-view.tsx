@@ -161,7 +161,6 @@ export function PolicyDetailView({
         policy={policy}
         usages={usagesQuery.data ?? null}
         workspaceSlug={workspaceSlug}
-        onRequestDelete={() => setPolicyToDelete(policy)}
       />
       <PolicyProvenanceBand
         metadata={policy.metadata}
@@ -190,7 +189,7 @@ export function PolicyDetailView({
 // `className="border-t-0 pt-0"` suppresses the band's default top divider
 // because the Clause band is the first sibling under the page heading — the
 // divider would otherwise read as an underline of the heading. Subsequent
-// bands (Usage, CLI, Provenance) keep their dividers to separate each other.
+// bands (Usage, Provenance) keep their dividers to separate each other.
 function ClauseBand({
   policy,
   onRequestEdit,
