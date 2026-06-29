@@ -307,7 +307,7 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-10 text-center text-muted-foreground"
+                  className="px-4 py-8 text-center text-muted-foreground"
                 >
                   No policies match these filters.
                 </td>

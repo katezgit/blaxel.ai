@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
-import { Button } from "@repo/ui/components/button";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@repo/ui/components/collapsible";
-import { CopyButton } from "@repo/ui/components/copy-button";
 import BandFrame from "./band-frame";
 import type {
   Policy,
@@ -23,7 +21,6 @@ interface PolicyUsageBandProps {
   policy: Policy;
   usages: PolicyUsages | null;
   workspaceSlug: string;
-  onRequestDelete: () => void;
 }
 
 interface KindRow {
@@ -44,37 +41,23 @@ export default function PolicyUsageBand({
   policy,
   usages,
   workspaceSlug,
-  onRequestDelete,
 }: PolicyUsageBandProps) {
   const total = totalUsage(policy.usage);
 
   if (total === 0) {
-    const deleteCommand = `bl delete policy ${policy.metadata.name}`;
     return (
       <BandFrame label="Usage" className="border-t-0 pt-0">
-        <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-card p-6">
-          <h3 className="typography-body font-semibold text-foreground">
-            No workloads reference this policy.
-          </h3>
-          <p className="typography-body text-muted-foreground">
-            Safe to delete — no attached workloads will be affected.
-          </p>
-          <div className="group flex items-center gap-1 rounded-md">
-            <code className="font-mono typography-body text-foreground">
-              {deleteCommand}
-            </code>
-            <span className="opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-              <CopyButton value={deleteCommand} tooltipLabel="Copy command" />
-            </span>
+        <div className="flex flex-col rounded-md border border-border bg-card">
+          <div className="border-b border-border px-4 py-2">
+            <h3 className="typography-body font-semibold text-foreground">
+              No workloads attached yet
+            </h3>
           </div>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={onRequestDelete}
-          >
-            <Trash2 aria-hidden="true" />
-            Delete policy
-          </Button>
+          <p className="typography-body px-4 py-3 text-muted-foreground">
+            Reference this policy in a workload&apos;s{" "}
+            <code className="typography-code">spec.policies[]</code> to start
+            enforcing the rule.
+          </p>
         </div>
       </BandFrame>
     );
