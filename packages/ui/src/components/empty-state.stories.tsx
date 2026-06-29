@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { Inbox, Activity, GitBranch, Layers } from "lucide-react"
+import { Inbox, Activity, GitBranch, Layers, UserSearch } from "lucide-react"
 
 import { Button } from "./button"
 import { Card, CardContent, CardHeader, CardTitle } from "./card"
@@ -44,7 +44,7 @@ export const Playground: Story = {
 
 // ── Variants ──────────────────────────────────────────────────────────────────
 // zero-state: icon container + title + subtitle + optional CTA
-// no-results: text only, no icon
+// no-results: text-only by default; icon optional when caller provides one
 
 export const Variants: Story = {
   render: () => (
@@ -165,6 +165,23 @@ export const NoResultsSmall: Story = {
         variant="no-results"
         size="sm"
         title="No results"
+      />
+    </div>
+  ),
+}
+
+// Opt-in — no-results variants can pass an icon for surfaces that benefit from
+// a visual anchor; default stays text-only.
+
+export const NoResultsWithIcon: Story = {
+  render: () => (
+    <div className="border border-border rounded-surface bg-card" style={{ width: 480 }}>
+      <EmptyState
+        variant="no-results"
+        size="md"
+        icon={UserSearch}
+        title="No members found"
+        subtitle="No members match your search. Try a different name or email."
       />
     </div>
   ),

@@ -41,8 +41,11 @@ ErrorState. If data loaded fine and the collection happens to be empty — use E
 
 **Key test for zero-state vs no-results:** Is there active filter or search state? If yes,
 `no-results`. If the collection is genuinely empty independent of any filter — `zero-state`.
-Never show a zero-state icon block while a filter is active; the user will think they are at
-the wrong place, not that their query is too narrow.
+Never show a content-type icon on `no-results`; a content-type icon while a filter is active
+misreads as "you are in the wrong place" rather than "your query is too narrow." A
+search/filter glyph (e.g. `SearchX`, `UserSearch`) is allowed on `no-results` as an opt-in
+anchor — it visually signals filter-state rather than absent data, and is shown only when the
+call site explicitly provides it. Default behavior remains icon-absent.
 
 ---
 
@@ -54,7 +57,7 @@ stack order. The differences are in which slots are present and what they commun
 ### EmptyState
 
 ```
-[icon block]        ← present for zero-state; absent for no-results
+[icon block]        ← present for zero-state; opt-in on no-results (search/filter glyph only)
 [title]             ← required
 [subtitle]          ← optional
 [CTA]               ← optional; one maximum
@@ -93,8 +96,8 @@ surface of both components.
 
 | Axis | Options | Rule |
 |---|---|---|
-| Variant | `zero-state` / `no-results` | Drives whether the icon block is shown at all |
-| Icon | present / absent | Required for `zero-state` at full size; absent for `no-results` |
+| Variant | `zero-state` / `no-results` | Selects copy form and informs whether the icon block is required (`zero-state`) or opt-in (`no-results`); the `icon` prop is the actual switch |
+| Icon | present / absent | Required for `zero-state` at full size; **opt-in on `no-results`** — when provided, must be a search/filter glyph (e.g. `SearchX`, `UserSearch`), not the content-type icon used for `zero-state` |
 | Subtitle | present / absent | Omit when context is self-explanatory and one line suffices |
 | CTA | present / absent | One maximum; absent for read-only contexts |
 | Size | regular / compact | Regular for full-panel and table bodies; compact for dropdown interiors |
@@ -195,7 +198,9 @@ is the caller's responsibility.
 - Padding: default (`py-12 px-6` or equivalent for the project's scale token).
 - For `zero-state` in a table: include the icon and CTA — high value for first-time users.
 - For `no-results` in a table: subtitle is sufficient; CTA only if clearing the filter is an
-  explicit action.
+  explicit action. Icon is optional — opt in (pass `icon={SearchX}` or similar) when the
+  surface benefits from a search-glyph anchor, e.g. a dense table where the empty state is
+  the only visible content (PatternFly-style). Default: no icon.
 
 ### Inline in a dropdown or command palette
 

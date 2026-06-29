@@ -15,8 +15,9 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "t
   variant: EmptyStateVariant
   /**
    * Lucide icon component.
-   * Required for zero-state + size="md". Suppressed for no-results or size="sm".
-   * Dev-mode warning logged if variant="zero-state" + size="md" + no icon.
+   * Required for zero-state + size="md" — dev warning if missing.
+   * Optional for no-results + size="md" — rendered when provided (opt-in visual anchor).
+   * Always suppressed for size="sm".
    */
   icon?: ComponentType<{ className?: string }>
   title: string
@@ -44,8 +45,7 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
       )
     }
 
-    // Icon container shows only for zero-state + md + icon provided
-    const showIconContainer = variant === "zero-state" && size === "md" && Icon != null
+    const showIconContainer = size === "md" && Icon != null
 
     return (
       <div
@@ -58,7 +58,7 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
         )}
         {...props}
       >
-        {/* Icon container — zero-state + md only */}
+        {/* Icon container — md + icon provided (required on zero-state, opt-in on no-results) */}
         {showIconContainer && (
           <div
             className={cn(
