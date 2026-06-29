@@ -8,9 +8,9 @@ import type { Tier } from "@/lib/mock/account";
 const TIERS: ReadonlyArray<Tier> = [0, 1, 2, 3];
 
 /**
- * Dev-only tier switcher pinned next to the role switcher. Flips the mocked
+ * Demo tier switcher pinned next to the role switcher. Flips the mocked
  * account tier so the demo audience can see gated rows render with and
- * without the gate. Production builds drop this entirely.
+ * without the gate.
  */
 export default function DevTierSwitcher() {
   const [mounted, setMounted] = useState(false);
@@ -18,8 +18,7 @@ export default function DevTierSwitcher() {
     setMounted(true);
   }, []);
 
-  // eslint-disable-next-line turbo/no-undeclared-env-vars -- NODE_ENV is Next.js-provided
-  if (!mounted || process.env.NODE_ENV === "production") return null;
+  if (!mounted) return null;
 
   return <TierSwitcherChrome />;
 }
