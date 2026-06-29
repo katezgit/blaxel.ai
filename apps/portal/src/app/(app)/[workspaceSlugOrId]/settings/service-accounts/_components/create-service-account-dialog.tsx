@@ -212,7 +212,6 @@ function CreateForm({ onCancel, onCreated }: CreateFormProps) {
         <FormField
           id="svc-description"
           label="Description"
-          helper="What this service account is used for."
           error={errors.description?.message}
           required
         >
@@ -222,55 +221,56 @@ function CreateForm({ onCancel, onCreated }: CreateFormProps) {
             autoComplete="off"
           />
         </FormField>
-        <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted-surface px-3 py-2">
-          <label
-            htmlFor="svc-also-issue-key"
-            className="typography-body text-foreground"
-          >
-            Also issue an API key now
-          </label>
-          <Controller
-            control={control}
-            name="alsoIssueKey"
-            render={({ field }) => (
-              <Switch
-                id="svc-also-issue-key"
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-            )}
-          />
-        </div>
-
-        {alsoIssueKey && (
-          <div className="flex flex-col gap-4">
-            <FormField
-              id="svc-key-name"
-              label="Key name"
-              error={errors.keyName?.message}
-              required
+        <div className="flex flex-col gap-4 border-t border-border pt-4">
+          <div className="flex items-center justify-between gap-3">
+            <label
+              htmlFor="svc-also-issue-key"
+              className="typography-body text-foreground"
             >
-              <Input
-                {...register("keyName")}
-                placeholder="e.g. prod-deploy-key"
-                autoComplete="off"
-              />
-            </FormField>
-            <FormField id="svc-expires-in" label="Expires in">
-              <Controller
-                control={control}
-                name="expiresIn"
-                render={({ field }) => (
-                  <ExpiryNeverConfirm
-                    value={field.value}
-                    onChange={field.onChange}
-                    selectId="svc-expires-in"
-                  />
-                )}
-              />
-            </FormField>
+              Also issue an API key now
+            </label>
+            <Controller
+              control={control}
+              name="alsoIssueKey"
+              render={({ field }) => (
+                <Switch
+                  id="svc-also-issue-key"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
           </div>
-        )}
+          {alsoIssueKey && (
+            <>
+              <FormField
+                id="svc-key-name"
+                label="Key name"
+                error={errors.keyName?.message}
+                required
+              >
+                <Input
+                  {...register("keyName")}
+                  placeholder="e.g. prod-deploy-key"
+                  autoComplete="off"
+                />
+              </FormField>
+              <FormField id="svc-expires-in" label="Expires in">
+                <Controller
+                  control={control}
+                  name="expiresIn"
+                  render={({ field }) => (
+                    <ExpiryNeverConfirm
+                      value={field.value}
+                      onChange={field.onChange}
+                      selectId="svc-expires-in"
+                    />
+                  )}
+                />
+              </FormField>
+            </>
+          )}
+        </div>
       </DialogBody>
       <DialogFooter>
         {isDirty && (
