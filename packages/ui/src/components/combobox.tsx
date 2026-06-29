@@ -153,7 +153,7 @@ const TriggerInput = React.forwardRef<HTMLInputElement, TriggerInputProps>(
           "data-[state=open]:bg-form-field-surface data-[state=open]:shadow-focus-ring",
           // Validation border — div can't use aria-invalid: directly, use has-[] selector.
           "has-[input[aria-invalid='true']]:border-state-errored",
-          disabled && "cursor-not-allowed bg-muted-surface",
+          disabled && "cursor-not-allowed bg-form-field-disabled",
           className,
         )}
       >
