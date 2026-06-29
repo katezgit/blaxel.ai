@@ -359,3 +359,54 @@
     opacity: 1;
   }
 }
+
+/* ─── Onboarding / auth chrome — three subtle "future-feel" treatments ──────
+ *
+ * Scoped to the (onboarding) and (auth) route groups via opt-in class names —
+ * the underlying bg-grid-overlay utility is shared, but only these wrappers
+ * drift it. Other surfaces using bg-grid-overlay stay static.
+ *
+ * 1. .bg-grid-drift — slow diagonal translate of the grid pattern itself.
+ *    60s for one full 56px cell — perceptible only on focused attention.
+ * 2. .pulse-dot — opacity-only pulse (no scale; scale on small dots reads twitchy).
+ * 3. .pulse-edge — same loop, used by the schematic-illustration "active" edges.
+ *
+ * All three suspend under prefers-reduced-motion (animation: none). The visible
+ * static state stays intentional: dot holds full opacity, edges hold mid opacity,
+ * grid holds at its default position. No motion-sickness vector, no missing
+ * visual element. */
+@keyframes onboarding-grid-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 56px 56px; }
+}
+.bg-grid-drift {
+  animation: onboarding-grid-drift 60s linear infinite;
+}
+
+@keyframes onboarding-pulse-dot {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+.pulse-dot {
+  animation: onboarding-pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes onboarding-pulse-edge {
+  0%, 100% { opacity: 0.18; }
+  50%      { opacity: 0.45; }
+}
+.pulse-edge {
+  animation: onboarding-pulse-edge 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-grid-drift,
+  .pulse-dot,
+  .pulse-edge {
+    animation: none;
+  }
+  /* Hold edges at mid-opacity so the schematic still reads, not blank */
+  .pulse-edge {
+    opacity: 0.3;
+  }
+}
