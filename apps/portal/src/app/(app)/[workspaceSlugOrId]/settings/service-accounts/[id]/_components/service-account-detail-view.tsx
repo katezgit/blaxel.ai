@@ -108,7 +108,7 @@ export default function ServiceAccountDetailView({
     return (
       <ResourceNotFound
         resourceLabel="Service account"
-        resourceTypeSlug="service-account"
+        resourceTypeSlug="service-accounts"
         id={serviceAccountId}
         supportingLine="This service account isn't available in this workspace."
         listHref={listHref}

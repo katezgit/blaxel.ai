@@ -134,7 +134,7 @@ export function PolicyDetailView({
         />
         <ResourceNotFound
           resourceLabel="Policy"
-          resourceTypeSlug="policy"
+          resourceTypeSlug="policies"
           id={policyName}
           supportingLine="This policy isn't available in this workspace."
           listHref={listHref}

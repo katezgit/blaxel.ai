@@ -29,7 +29,7 @@ src/
 │   ├── layout.tsx                    # Root: <html>, ThemeProvider, Toaster, metadata template
 │   ├── globals.css
 │   ├── global-error.tsx              # Outside root layout — own <html>/<body>
-│   ├── global-not-found.tsx          # Outside root layout — own <html>/<body>
+│   ├── not-found.tsx                 # Root 404 — chromeless fallback for pre-auth / unresolved-workspace
 │   │
 │   ├── (auth)/
 │   │   ├── layout.tsx                # Centered container
@@ -116,35 +116,15 @@ Most-specific wins. See [loading-and-errors](app-conventions.loading-and-errors.
 | File                                            | Fires when                                                          | In root layout?               |
 | ----------------------------------------------- | ------------------------------------------------------------------- | ----------------------------- |
 | `app/global-error.tsx`                          | Root layout itself crashed                                          | **No** — own `<html>/<body>`  |
-| `app/global-not-found.tsx`                      | URL matches no segment and no nearer catch-all intercepts           | **No** — own `<html>/<body>`  |
+| `app/not-found.tsx`                             | URL escapes every group boundary (pre-auth or unresolved workspace) | Yes — root layout only, no AppShell |
 | `app/(app)/error.tsx`                           | Page/layout under `(app)` threw                                     | Yes — toaster/theme intact    |
-| `app/(app)/not-found.tsx`                       | `notFound()` under `(app)` with no closer handler                   | Yes                           |
+| `app/(app)/not-found.tsx`                       | `notFound()` under `(app)` with no closer handler                   | Yes — in-chrome with AppShell |
 | `app/(group)/{sub-shell}/[...catchAll]/page.tsx` | URL inside a sub-shell matches no segment (§ Sub-shell catch-all)   | Yes — funnels into sub-shell's `not-found.tsx` |
 | Inline `<ResourceNotFound />`                   | Resource detail query resolves to "doesn't exist" (§ Resource-detail 404) | Yes — rendered as a state branch of the detail page |
 | ~~`app/(app)/{resource}/[id]/not-found.tsx`~~   | **FORBIDDEN** — render inline in the detail page instead (§ Resource-detail 404) | — |
 
 Notes:
-- `global-error.tsx` and `global-not-found.tsx` render **outside** the root layout, so they must define their own `<html>` and `<body>`. There is no `ThemeProvider` in scope, so pin a theme via `data-theme` and inline a `<style>` block to opt dark-mode users into `color-scheme: dark`:
-
-  ```tsx
-  // app/global-not-found.tsx (and app/global-error.tsx)
-  import "./globals.css";
-
-  export default function GlobalNotFound() {
-    return (
-      <html lang="en" data-theme="light">
-        <head>
-          <style>{`@media (prefers-color-scheme: dark) { html { color-scheme: dark; } }`}</style>
-        </head>
-        <body className="min-h-screen bg-background">
-          {/* … 404 UI … */}
-        </body>
-      </html>
-    );
-  }
-  ```
-
-  Works because every semantic color token is defined with `light-dark()` keyed on `color-scheme` — flipping `color-scheme` alone is enough; no per-token swap needed.
+- `global-error.tsx` renders **outside** the root layout, so it must define its own `<html>` and `<body>`. There is no `ThemeProvider` in scope; inline a small script in `<head>` that reads the same `localStorage.theme` key `next-themes` uses and sets `data-theme` + `color-scheme` on `<html>` before first paint. This mirrors next-themes' own FOUC-prevention behavior and honors the user's in-app theme choice (not just OS prefs).
 - Any `error.tsx` is a **client component** (`"use client"`) — it receives `reset()` as a prop.
 - Per-segment `error.tsx` / `not-found.tsx` are optional. Add only when the copy or recovery action differs from the parent.
 - Expected errors (API 404, validation, permission) are **not** for boundaries — handle inline.
@@ -170,7 +150,7 @@ Server-side `notFound()` from `page.tsx` is reserved for resources fetched synch
 
 ### Sub-shell catch-all
 
-Without an explicit catch-all, Next.js 16's `global-not-found.tsx` shadows the group-level boundary on URLs that match no segment — the user loses the sub-shell sidebar on a typo'd URL. Fix: add `[...catchAll]/page.tsx` that calls `notFound()`, which walks UP to the closest `not-found.tsx` (preserving every layout above it).
+Without an explicit catch-all, deep URL misses (e.g. `/{ws}/settings/foo/bar`) walk UP the segment chain past the sub-shell layout to whichever `not-found.tsx` is nearest above — losing the sub-shell sidebar. Fix: add `[...catchAll]/page.tsx` that calls `notFound()`, which pins propagation at this segment and lands in the sub-shell's own `not-found.tsx` (still wrapped by its layout).
 
 ```tsx
 // app/(group)/{sub-shell}/[...catchAll]/page.tsx
@@ -204,7 +184,7 @@ Exception: app/ root always gets not-found.tsx (global fallback).
 
 **Hard rule:** every segment with its own `layout.tsx` gets BOTH files. No exceptions. If you skip the catch-all, typos under that segment lose the sub-shell chrome — silently, and the engineer who added the segment is the one who notices last.
 
-Full mechanics in [loading-and-errors § Next.js 16: `global-not-found.tsx` shadows group-level `not-found.tsx`](app-conventions.loading-and-errors.md#nextjs-16-global-not-foundtsx-shadows-group-level-not-foundtsx).
+Full mechanics in [loading-and-errors § Pinning typo'd URLs to a sub-shell's `not-found.tsx`](app-conventions.loading-and-errors.md#pinning-typod-urls-to-a-sub-shells-not-foundtsx).
 
 ## Per-segment mechanics
 
@@ -264,4 +244,4 @@ Starting a new dashboard from this structure:
 - [ ] Add `[...catchAll]/page.tsx` to every sub-shell that has its own `layout.tsx` — see § Sub-shell catch-all
 - [ ] Decide which groups apply: drop `(onboarding)` or `(manage)` if not needed
 - [ ] Edit middleware matcher if auth route names change
-- [ ] Edit `global-not-found.tsx` support email and home-link target
+- [ ] Edit root `not-found.tsx` and `(app)/not-found.tsx` copy + home-link target

@@ -28,13 +28,18 @@ export default function GlobalError({
   const hasDiagnosticBlock = diagnostic !== null || Boolean(digest);
 
   return (
-    // `data-theme="light"` pins the light palette without ThemeProvider.
-    // The `<style>` below opts users with prefers-color-scheme: dark into the dark palette
-    // (every semantic color uses light-dark() keyed on color-scheme, so flipping color-scheme
-    // is sufficient — no per-token swap needed).
-    <html lang="en" data-theme="light">
+    // global-error renders outside the ThemeProvider, so next-themes never
+    // writes `data-theme`. The inline script below resolves the same localStorage
+    // key (`theme`) next-themes uses and sets data-theme + color-scheme before
+    // first paint — mirroring next-themes' FOUC-prevention script. defaultTheme
+    // (`dark`) matches providers.tsx.
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <style>{`@media (prefers-color-scheme: dark) { html { color-scheme: dark; } }`}</style>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var r;if(t==='light'||t==='dark')r=t;else if(t==='system')r=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';else r='dark';var h=document.documentElement;h.setAttribute('data-theme',r);h.style.colorScheme=r;}catch(e){}})();`,
+          }}
+        />
       </head>
       <body className="min-h-screen bg-background">
         <div className="flex min-h-screen w-full items-center justify-center">
