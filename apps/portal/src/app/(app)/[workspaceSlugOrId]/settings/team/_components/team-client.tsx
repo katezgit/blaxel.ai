@@ -368,7 +368,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
 
         {filteredMembers.length === 0 ? (
           <EmptyState
-            variant="zero-state"
+            variant="no-results"
             icon={UserSearch}
             title="No members match these filters"
             subtitle="Try clearing one filter at a time."
