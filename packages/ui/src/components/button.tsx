@@ -1,4 +1,10 @@
+"use client"
+
 // shadcn-source: https://ui.shadcn.com/docs/components/button (cli, 2026-05-26)
+// Client boundary: Button forwards a synthesized `onClick` to its rendered
+// element, so server components that render <Button> would otherwise crash
+// RSC serialization with "Event handlers cannot be passed to Client Component
+// props".
 import * as React from "react"
 import { Slot } from "radix-ui"
 import { cva, type VariantProps } from "class-variance-authority"
