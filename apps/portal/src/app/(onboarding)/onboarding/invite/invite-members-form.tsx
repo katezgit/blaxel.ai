@@ -15,6 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
+import { DEFAULT_WORKSPACE_SLUG } from "@/lib/mock/org";
+
+const GET_STARTED_HREF = `/${DEFAULT_WORKSPACE_SLUG}/get-started`;
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -50,7 +53,7 @@ export default function InviteMembersForm() {
 
   const onSubmit = handleSubmit(async () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
-    router.push("/get-started");
+    router.push(GET_STARTED_HREF);
   });
 
   const submitDisabled = isSubmitting || !emailsValue?.trim();
@@ -104,7 +107,7 @@ export default function InviteMembersForm() {
           Send invitations
         </Button>
         <Link
-          href="/get-started"
+          href={GET_STARTED_HREF}
           className="typography-caption text-muted-foreground transition-colors hover:text-foreground"
         >
           Skip
