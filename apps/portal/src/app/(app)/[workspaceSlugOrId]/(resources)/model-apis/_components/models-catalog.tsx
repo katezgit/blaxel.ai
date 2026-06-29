@@ -793,7 +793,7 @@ export default function ModelsCatalog() {
               Chip order on All tab (spec §3): Trainable → Reasoning →
               Provider → Favorites. Private tab swaps Trainable out (private
               models are training output — chip is degenerate) and Provider
-              for Base model (all private are provider=HUD; lineage is the
+              for Base model (all private are provider=Blaxel; lineage is the
               meaningful axis). */}
           <div className="hidden flex-1 flex-wrap items-center gap-2 xl:flex">
             {!isPrivateTab && (

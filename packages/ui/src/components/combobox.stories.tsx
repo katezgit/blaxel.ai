@@ -223,8 +223,8 @@ type TasksetOption = ComboboxOption & { taskCount: number; visibility: string; o
 const TASKSET_OPTIONS: TasksetOption[] = [
   { value: "ts-webqa-001", label: "WebQA Benchmark", taskCount: 240, visibility: "public", owner: "riley" },
   { value: "ts-webqa-002", label: "WebQA Benchmark", taskCount: 18, visibility: "private", owner: "alex" },
-  { value: "ts-browsergym", label: "BrowserGym Suite", taskCount: 512, visibility: "public", owner: "hud-team" },
-  { value: "ts-osworld", label: "OSWorld", taskCount: 369, visibility: "public", owner: "hud-team" },
+  { value: "ts-browsergym", label: "BrowserGym Suite", taskCount: 512, visibility: "public", owner: "blaxel-team" },
+  { value: "ts-osworld", label: "OSWorld", taskCount: 369, visibility: "public", owner: "blaxel-team" },
   { value: "ts-custom-rl", label: "Custom RL Env", taskCount: 64, visibility: "private", owner: "alex" },
 ]
 

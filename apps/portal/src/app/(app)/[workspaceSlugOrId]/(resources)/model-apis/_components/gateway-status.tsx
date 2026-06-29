@@ -8,7 +8,7 @@ import {
 } from "@repo/ui/components/tooltip";
 import { cn } from "@repo/ui/lib/cn";
 
-const GATEWAY_URL = "https://inference.hud.ai/";
+const GATEWAY_URL = "https://inference.blaxel.ai/";
 
 interface GatewayInfo {
   service: string;

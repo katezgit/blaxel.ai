@@ -21,11 +21,11 @@ import { SaveApiKeyDialog } from "./save-api-key-dialog";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", { dateStyle: "short" });
 
-const KEY_PREFIX = "sk-hud-";
+const KEY_PREFIX = "sk-bl-";
 const KEY_BODY_LENGTH = 40;
 const BASE62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-/** Generate a `sk-hud-` + 40-char base62 random string. Scaffold-grade, not crypto-secure for prod. */
+/** Generate a `sk-bl-` + 40-char base62 random string. Scaffold-grade, not crypto-secure for prod. */
 function generateApiKey(): string {
   const bytes = new Uint8Array(KEY_BODY_LENGTH);
   crypto.getRandomValues(bytes);
@@ -36,7 +36,7 @@ function generateApiKey(): string {
   return `${KEY_PREFIX}${body}`;
 }
 
-/** "sk-hud-<…>XY" — last two chars of the body; matches existing fixture masking. */
+/** "sk-bl-<…>XY" — last two chars of the body; matches existing fixture masking. */
 function maskApiKey(fullKey: string): string {
   const tail = fullKey.slice(-2);
   return `${KEY_PREFIX}…-${tail}`;

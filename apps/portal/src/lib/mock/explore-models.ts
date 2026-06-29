@@ -61,7 +61,7 @@ export interface CatalogModel {
   priceIn: number;
   /** USD per 1M output tokens. */
   priceOut: number;
-  /** Available for fine-tuning / RL via HUD. */
+  /** Available for fine-tuning / RL via Blaxel. */
   trainable: boolean;
   /** Private to the current org (vs public catalog). */
   isPrivate: boolean;
@@ -198,7 +198,7 @@ export const catalogModels: ReadonlyArray<CatalogModel> = [
     lastEvaluatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     ownerName: "Avery",
     evaluatedTasksetIds: [
-      "hud-browser",
+      "blaxel-browser",
       "osworld-verified",
       "wikigames-2",
       "menu-agent-regression",
@@ -342,7 +342,7 @@ export const catalogModels: ReadonlyArray<CatalogModel> = [
     lastEvaluatedAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
     ownerName: "Jason",
     evaluatedTasksetIds: [
-      "hud-browser",
+      "blaxel-browser",
       "osworld-verified",
       "swe-bench-verified",
       "rl-coding-eval",
@@ -517,11 +517,11 @@ export const catalogModels: ReadonlyArray<CatalogModel> = [
     avgScore: 68.9,
     tasksetCount: 7,
     lastEvaluatedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    ownerName: "Team HUD",
+    ownerName: "Team Blaxel",
     evaluatedTasksetIds: [
       "swe-bench-verified",
       "rl-coding-eval",
-      "hud-browser",
+      "blaxel-browser",
       "osworld-verified",
       "wikigames-2",
       "menu-agent-regression",
@@ -583,7 +583,7 @@ export const catalogModels: ReadonlyArray<CatalogModel> = [
     lastEvaluatedAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
     ownerName: "Priya",
     evaluatedTasksetIds: [
-      "hud-browser",
+      "blaxel-browser",
       "osworld-verified",
       "menu-agent-regression",
       "wikigames-2",
@@ -592,7 +592,7 @@ export const catalogModels: ReadonlyArray<CatalogModel> = [
 
   // ── Qwen (Alibaba, hosted via Tinker) ─────────────────────────────────────
   // Provider field uses "Tinker" because qwen OSS checkpoints are served on
-  // HUD via Tinker; adding "Alibaba" to ModelProvider would require updating
+  // Blaxel via Tinker; adding "Alibaba" to ModelProvider would require updating
   // the exhaustive-switch in provider-icon.tsx (a UI file we may not touch).
   {
     name: "Qwen2.5 14B",

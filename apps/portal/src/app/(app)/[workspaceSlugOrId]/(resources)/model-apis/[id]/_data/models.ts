@@ -58,7 +58,7 @@ function makeUserTrainedModel(): Model {
     displayName: "My Model v2",
     apiName: "my-model-v2",
     internalId: "3f8c9b6e-d2a4-4f1c-9b8a-7e6d5c4b3a21",
-    provider: "HUD",
+    provider: "Blaxel",
     status: "ready",
     ownerType: "user-trained",
     ownerUserId: "viewer-aman",
@@ -193,8 +193,8 @@ const CODE_GEN_SCORES = distribution([
 
 const TASKSET_RESULTS: ReadonlyArray<TasksetResult> = [
   {
-    tasksetId: "hud-browser",
-    tasksetName: "hud-browser",
+    tasksetId: "blaxel-browser",
+    tasksetName: "blaxel-browser",
     description: "Browser navigation & web workflows",
     taskCount: 120,
     runStats: {
@@ -338,9 +338,9 @@ const USER_TRAINED_LOG_SEEDS: ReadonlyArray<LogSeed> = [
     checkpointId: "ckpt_a93f",
     userName: "Aman",
     input:
-      "Summarize the following paragraph in two sentences: The HUD platform provides isolated sandbox environments for evaluating AI agents at scale.",
+      "Summarize the following paragraph in two sentences: The Blaxel platform provides isolated sandbox environments for evaluating AI agents at scale.",
     output:
-      "The HUD platform delivers isolated sandbox environments designed to evaluate AI agents at scale. It targets enterprise frontier research labs and AI startups that need reproducible, low-latency execution traces for post-training and RL workflows.",
+      "The Blaxel platform delivers isolated sandbox environments designed to evaluate AI agents at scale. It targets enterprise frontier research labs and AI startups that need reproducible, low-latency execution traces for post-training and RL workflows.",
     tokens: 890,
     cost: 0.0017,
   },
@@ -573,9 +573,9 @@ const USER_MODEL_TRACE_SEEDS: ReadonlyArray<TraceSeed> = [
   { idSuffix: "ug3b77", tasksetId: "swe-bench-verified", tasksetName: "SWE-bench Verified", checkpointId: "ckpt_b72e", steps: 13, score: 71, minutesAgo: 88 },
   { idSuffix: "uh6c40", tasksetId: "swe-bench-verified", tasksetName: "SWE-bench Verified", checkpointId: "ckpt_a93f", steps: 17, score: 56, minutesAgo: 110 },
   { idSuffix: "ui2d05", tasksetId: "swe-bench-verified", tasksetName: "SWE-bench Verified", checkpointId: "ckpt_a93f", steps: 8, score: 34, minutesAgo: 145 },
-  { idSuffix: "uj7e18", tasksetId: "hud-browser", tasksetName: "hud-browser", checkpointId: "ckpt_c51d", steps: 21, score: 82, minutesAgo: 200 },
-  { idSuffix: "uk4f63", tasksetId: "hud-browser", tasksetName: "hud-browser", checkpointId: "ckpt_b72e", steps: 16, score: 67, minutesAgo: 260 },
-  { idSuffix: "ul9a55", tasksetId: "hud-browser", tasksetName: "hud-browser", checkpointId: "ckpt_a93f", steps: 12, score: 41, minutesAgo: 320 },
+  { idSuffix: "uj7e18", tasksetId: "blaxel-browser", tasksetName: "blaxel-browser", checkpointId: "ckpt_c51d", steps: 21, score: 82, minutesAgo: 200 },
+  { idSuffix: "uk4f63", tasksetId: "blaxel-browser", tasksetName: "blaxel-browser", checkpointId: "ckpt_b72e", steps: 16, score: 67, minutesAgo: 260 },
+  { idSuffix: "ul9a55", tasksetId: "blaxel-browser", tasksetName: "blaxel-browser", checkpointId: "ckpt_a93f", steps: 12, score: 41, minutesAgo: 320 },
 ];
 
 const TRACE_SEEDS_BY_MODEL: Readonly<Record<string, ReadonlyArray<TraceSeed>>> = {

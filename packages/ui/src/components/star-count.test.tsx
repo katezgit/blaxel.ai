@@ -34,23 +34,23 @@ function Harness({
 describe("StarCount", () => {
   it("renders the count as visible text", () => {
     render(
-      <StarCount count={42} pressed={false} onPressedChange={() => {}} label="hud-browser" />
+      <StarCount count={42} pressed={false} onPressedChange={() => {}} label="blaxel-browser" />
     )
     expect(screen.getByText("42")).toBeInTheDocument()
   })
 
   it("uses 'Star {label}' as aria-label when unpressed", () => {
     render(
-      <StarCount count={5} pressed={false} onPressedChange={() => {}} label="hud-browser" />
+      <StarCount count={5} pressed={false} onPressedChange={() => {}} label="blaxel-browser" />
     )
-    expect(screen.getByRole("button", { name: "Star hud-browser" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Star blaxel-browser" })).toBeInTheDocument()
   })
 
   it("uses 'Unstar {label}' as aria-label when pressed", () => {
     render(
-      <StarCount count={5} pressed={true} onPressedChange={() => {}} label="hud-browser" />
+      <StarCount count={5} pressed={true} onPressedChange={() => {}} label="blaxel-browser" />
     )
-    expect(screen.getByRole("button", { name: "Unstar hud-browser" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Unstar blaxel-browser" })).toBeInTheDocument()
   })
 
   it("fires onPressedChange(true) when clicking while unpressed", async () => {

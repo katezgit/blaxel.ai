@@ -11,7 +11,7 @@ export default function ManagePageHeader() {
   const { action } = useManagePageAction();
 
   useEffect(() => {
-    if (route) document.title = `${route.title} · HUD`;
+    if (route) document.title = `${route.title} · Blaxel`;
   }, [route]);
 
   if (!route) return null;

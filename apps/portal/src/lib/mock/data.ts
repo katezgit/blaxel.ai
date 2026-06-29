@@ -116,9 +116,9 @@ export const membersUser: ReadonlyArray<Member> = [
 ];
 
 export const apiKeys: ReadonlyArray<ApiKey> = [
-  { id: "k_browser", name: "browser", masked: "sk-hud-…-w6", createdAt: "2026-05-23", expiresAt: null, lastUsedAt: "2026-06-27T11:42:00Z" },
-  { id: "k_eval_local", name: "eval_local", masked: "sk-hud-…-qZ", createdAt: "2026-05-16", expiresAt: null, lastUsedAt: "2026-06-25T08:15:00Z" },
-  { id: "k_capture", name: "capture-agent-prod", masked: "sk-hud-…-l_", createdAt: "2026-05-15", expiresAt: null, lastUsedAt: null },
+  { id: "k_browser", name: "browser", masked: "sk-bl-…-w6", createdAt: "2026-05-23", expiresAt: null, lastUsedAt: "2026-06-27T11:42:00Z" },
+  { id: "k_eval_local", name: "eval_local", masked: "sk-bl-…-qZ", createdAt: "2026-05-16", expiresAt: null, lastUsedAt: "2026-06-25T08:15:00Z" },
+  { id: "k_capture", name: "capture-agent-prod", masked: "sk-bl-…-l_", createdAt: "2026-05-15", expiresAt: null, lastUsedAt: null },
 ];
 
 export const secrets: ReadonlyArray<Secret> = [

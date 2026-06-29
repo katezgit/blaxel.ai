@@ -29,7 +29,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Displayed when a HUD resource (Job, Trace, Taskset, Environment) cannot be found — either because it no longer exists (`variant=\"unavailable\"`) or because it lives in a different workspace (`variant=\"wrong-workspace\"`). The component self-centers inside its content slot (`flex items-center justify-center w-full h-full p-8`); callers drop it directly into a route content area with no additional centering wrapper needed. The `action` slot is caller-owned: pass a Next.js `<Link>` (or any element) styled with `buttonVariants({ variant: \"primary\" })` for the recovery CTA. The component has no routing knowledge.",
+          "Displayed when a Blaxel resource (Agent, Sandbox, MCP Server, Policy, etc.) cannot be found — either because it no longer exists (`variant=\"unavailable\"`) or because it lives in a different workspace (`variant=\"wrong-workspace\"`). The component self-centers inside its content slot (`flex items-center justify-center w-full h-full p-8`); callers drop it directly into a route content area with no additional centering wrapper needed. The `action` slot is caller-owned: pass a Next.js `<Link>` (or any element) styled with `buttonVariants({ variant: \"primary\" })` for the recovery CTA. The component has no routing knowledge.",
       },
     },
   },
@@ -71,7 +71,7 @@ export const Default: Story = {
 }
 
 // ── Trace ─────────────────────────────────────────────────────────────────────
-// HUD vocabulary composition: Trace resource type.
+// Blaxel vocabulary composition: alt resource type — Trace.
 
 export const Trace: Story = {
   render: () => (
@@ -88,7 +88,7 @@ export const Trace: Story = {
 }
 
 // ── Taskset ───────────────────────────────────────────────────────────────────
-// HUD vocabulary composition: Taskset resource type.
+// Blaxel vocabulary composition: alt resource type — Taskset.
 
 export const Taskset: Story = {
   render: () => (
@@ -105,7 +105,7 @@ export const Taskset: Story = {
 }
 
 // ── Environment ───────────────────────────────────────────────────────────────
-// HUD vocabulary composition: Environment resource type.
+// Blaxel vocabulary composition: alt resource type — Environment.
 
 export const Environment: Story = {
   render: () => (

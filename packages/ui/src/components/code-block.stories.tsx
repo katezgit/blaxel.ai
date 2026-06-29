@@ -14,7 +14,7 @@ const meta: Meta<typeof CodeBlock> = {
   },
   args: {
     variant: "inline",
-    code: "hud set HUD_API_KEY=abc123",
+    code: "bl set BLAXEL_API_KEY=abc123",
   },
 }
 
@@ -33,13 +33,13 @@ export const Variants: Story = {
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col gap-2">
         <p className="typography-label text-muted-foreground">inline</p>
-        <CodeBlock variant="inline" code="hud set HUD_API_KEY=abc123" />
+        <CodeBlock variant="inline" code="bl set BLAXEL_API_KEY=abc123" />
       </div>
       <div className="flex flex-col gap-2">
         <p className="typography-label text-muted-foreground">block (no language)</p>
         <CodeBlock
           variant="block"
-          code={`$ hud env create my-env\nCreating environment... done\nEnvironment ID: env_8xkP3`}
+          code={`$ bl env create my-env\nCreating environment... done\nEnvironment ID: env_8xkP3`}
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -47,7 +47,7 @@ export const Variants: Story = {
         <CodeBlock
           variant="block"
           language="bash"
-          code={`$ hud env create my-env\nCreating environment... done`}
+          code={`$ bl env create my-env\nCreating environment... done`}
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -55,7 +55,7 @@ export const Variants: Story = {
         <CodeBlock
           variant="block"
           language="bash"
-          code="$ hud eval run --env my-env --agent ./agent.py --episodes 1000 --reward sparse --checkpoint ./checkpoints/step-500 --log-level debug --output-dir ./results/run-20260526"
+          code="$ bl eval run --env my-env --agent ./agent.py --episodes 1000 --reward sparse --checkpoint ./checkpoints/step-500 --log-level debug --output-dir ./results/run-20260526"
         />
       </div>
     </div>
@@ -76,9 +76,9 @@ export const BlockScrollRegression: Story = {
         variant="block"
         language="python"
         code={[
-          "import hud",
+          "import blaxel",
           "",
-          "client = hud.Client(api_key='YOUR_API_KEY')",
+          "client = blaxel.Client(api_key='YOUR_API_KEY')",
           "",
           "env = client.envs.create(",
           "    name='my-eval-env',",
@@ -86,7 +86,7 @@ export const BlockScrollRegression: Story = {
           "    timeout=300,",
           ")",
           "",
-          "agent = hud.Agent(",
+          "agent = blaxel.Agent(",
           "    model='claude-opus-4-7',",
           "    system_prompt='You are a helpful assistant.',",
           ")",
