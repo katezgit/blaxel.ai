@@ -79,12 +79,7 @@ export default function BalanceAlertsCard() {
             onEdit={() => setIsEditing(true)}
           />
         ) : (
-          <OffRow
-            onEnable={() => {
-              setLowBalanceAlert({ enabled: true, thresholdUsd });
-              toast.success("Balance alerts enabled");
-            }}
-          />
+          <OffRow onEnable={() => setIsEditing(true)} />
         )}
       </RuleShell>
     </section>

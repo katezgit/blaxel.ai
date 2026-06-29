@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
@@ -30,11 +30,7 @@ export default function CreditBalanceCard() {
   const lastFundedLine = lastTopUp
     ? `Last funded ${formatDate(lastTopUp.date)} · ${formatUsd(lastTopUp.amount)}`
     : "No funding yet";
-  const { brand, last4 } = state.paymentMethod;
-  const hasPaymentMethod = brand !== null;
-  const paymentSummary = hasPaymentMethod
-    ? `Charged to ${brand} ending ${last4}`
-    : "No payment method on file";
+  const hasPaymentMethod = state.paymentMethod.brand !== null;
 
   const hasAnyRuleEnabled =
     state.autoTopUp.enabled || state.monthlyTopUp.enabled;
@@ -64,10 +60,16 @@ export default function CreditBalanceCard() {
           {formatUsd(state.balanceUsd)}
         </output>
         <p className="typography-caption text-muted-foreground">{lastFundedLine}</p>
-        <p className="flex items-center gap-1.5 typography-caption text-muted-foreground">
-          <CreditCard aria-hidden="true" className="size-3.5" />
-          {paymentSummary}
-        </p>
+        {hasAnyRuleEnabled ? (
+          <div className="mt-1 flex flex-col gap-1">
+            {state.autoTopUp.enabled ? (
+              <RuleStatus label="Auto top-up" />
+            ) : null}
+            {state.monthlyTopUp.enabled ? (
+              <RuleStatus label="Monthly top-up" />
+            ) : null}
+          </div>
+        ) : null}
       </div>
       <div
         aria-hidden="true"
@@ -98,5 +100,17 @@ export default function CreditBalanceCard() {
         ) : null}
       </div>
     </Card>
+  );
+}
+
+function RuleStatus({ label }: { label: string }) {
+  return (
+    <span className="flex items-center gap-1.5 typography-caption text-muted-foreground">
+      <span
+        aria-hidden="true"
+        className="size-1.5 rounded-full bg-state-scored"
+      />
+      {label} · On
+    </span>
   );
 }
