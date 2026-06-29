@@ -159,6 +159,62 @@ export default function WorkspacesClient() {
     </Button>
   );
 
+  let body: React.ReactNode;
+  if (state.workspaces.length === 0) {
+    body = (
+      <EmptyState
+        variant="zero-state"
+        title="No workspaces yet."
+        subtitle={
+          createDisabled
+            ? "Add a payment method to create a workspace."
+            : "Create a workspace to start organizing resources."
+        }
+        cta={
+          createDisabled ? (
+            <Button variant="primary" asChild>
+              <Link href={quotaCopy?.href ?? PAYMENT_HREF}>
+                Add payment method
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={() => toast.success("Create workspace (mock).")}
+            >
+              <Plus aria-hidden="true" />
+              <span>Create workspace</span>
+            </Button>
+          )
+        }
+      />
+    );
+  } else if (filteredWorkspaces.length === 0) {
+    body = (
+      <EmptyState
+        variant="no-results"
+        title="No workspaces match your search"
+        subtitle="Try a shorter term or clear the search."
+        cta={
+          <Button variant="secondary" onClick={() => setSearch("")}>
+            Clear search
+          </Button>
+        }
+      />
+    );
+  } else {
+    body = (
+      <ManageTable
+        table={table}
+        bordered
+        caption="Workspaces"
+        onRowClick={(row) =>
+          router.push(`/${row.original.slug}/settings/general`)
+        }
+      />
+    );
+  }
+
   return (
     <>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -232,54 +288,7 @@ export default function WorkspacesClient() {
           />
         ) : null}
 
-        {state.workspaces.length === 0 ? (
-          <EmptyState
-            variant="zero-state"
-            title="No workspaces yet."
-            subtitle={
-              createDisabled
-                ? "Add a payment method to create a workspace."
-                : "Create a workspace to start organizing resources."
-            }
-            cta={
-              createDisabled ? (
-                <Button variant="primary" asChild>
-                  <Link href={quotaCopy?.href ?? PAYMENT_HREF}>
-                    Add payment method
-                  </Link>
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  onClick={() => toast.success("Create workspace (mock).")}
-                >
-                  <Plus aria-hidden="true" />
-                  <span>Create workspace</span>
-                </Button>
-              )
-            }
-          />
-        ) : filteredWorkspaces.length === 0 ? (
-          <EmptyState
-            variant="no-results"
-            title="No workspaces match your search"
-            subtitle="Try a shorter term or clear the search."
-            cta={
-              <Button variant="secondary" onClick={() => setSearch("")}>
-                Clear search
-              </Button>
-            }
-          />
-        ) : (
-          <ManageTable
-            table={table}
-            bordered
-            caption="Workspaces"
-            onRowClick={(row) =>
-              router.push(`/${row.original.slug}/settings/general`)
-            }
-          />
-        )}
+        {body}
       </div>
     </>
   );

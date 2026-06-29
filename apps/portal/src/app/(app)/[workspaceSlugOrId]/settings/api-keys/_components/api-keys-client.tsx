@@ -143,6 +143,48 @@ export default function ApiKeysClient() {
     getSortedRowModel: getSortedRowModel(),
   });
 
+  let body: React.ReactNode;
+  if (keys.length === 0) {
+    body = (
+      <EmptyState
+        variant="zero-state"
+        icon={KeyRound}
+        title="No API keys yet"
+        subtitle="Workspace keys authenticate the CLI, SDKs, and integrations against this workspace."
+        cta={
+          <Button variant="primary" onClick={() => setCreateOpen(true)}>
+            <Plus aria-hidden="true" />
+            <span>Create your first key</span>
+          </Button>
+        }
+      />
+    );
+  } else if (filtered.length === 0) {
+    body = (
+      <EmptyState
+        variant="no-results"
+        title="No keys match"
+        cta={
+          <Button variant="secondary" onClick={() => setSearch("")}>
+            Clear search
+          </Button>
+        }
+      />
+    );
+  } else {
+    body = (
+      <ResourceTable
+        table={table}
+        getRowClassName={(row) =>
+          classifyExpiry(row.original.expiresAt) === "near"
+            // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+            ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
+            : undefined
+        }
+      />
+    );
+  }
+
   return (
     <>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -170,40 +212,7 @@ export default function ApiKeysClient() {
           aria-label="Search API keys"
         />
 
-        {keys.length === 0 ? (
-          <EmptyState
-            variant="zero-state"
-            icon={KeyRound}
-            title="No API keys yet"
-            subtitle="Workspace keys authenticate the CLI, SDKs, and integrations against this workspace."
-            cta={
-              <Button variant="primary" onClick={() => setCreateOpen(true)}>
-                <Plus aria-hidden="true" />
-                <span>Create your first key</span>
-              </Button>
-            }
-          />
-        ) : filtered.length === 0 ? (
-          <EmptyState
-            variant="no-results"
-            title="No keys match"
-            cta={
-              <Button variant="secondary" onClick={() => setSearch("")}>
-                Clear search
-              </Button>
-            }
-          />
-        ) : (
-          <ResourceTable
-            table={table}
-            getRowClassName={(row) =>
-              classifyExpiry(row.original.expiresAt) === "near"
-                // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
-                ? "bg-state-warning-subtle shadow-[inset_2px_0_0_var(--color-state-warning)] hover:bg-state-warning-subtle"
-                : undefined
-            }
-          />
-        )}
+        {body}
       </section>
 
       <CreateApiKeyDialog
