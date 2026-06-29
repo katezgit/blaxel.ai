@@ -384,7 +384,7 @@ function UnifiedTopbar({
         >
           <Menu />
         </IconButton>
-        <span data-slot="brand">
+        <span data-slot="brand" className="hidden md:inline-flex">
           <BrandMark />
         </span>
         <span data-slot="ws">
@@ -434,7 +434,7 @@ function PersonalSubShellTopbar({
         >
           <Menu />
         </IconButton>
-        <span data-slot="brand">
+        <span data-slot="brand" className="hidden md:inline-flex">
           <BrandMark />
         </span>
       </div>
