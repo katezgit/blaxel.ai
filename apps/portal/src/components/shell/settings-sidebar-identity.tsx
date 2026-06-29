@@ -17,9 +17,9 @@ interface SettingsSidebarIdentityProps {
 // Static label — names which workspace's settings are being edited. Sits
 // between the Back link and the nav items. Intentionally not a dropdown: the
 // global topbar switcher already conflated "switch app context" with "edit a
-// different workspace's settings"; a label here keeps it unambiguous (see
-// spec: move-identity-to-sidebar). To target another workspace's settings,
-// the user exits via Back and re-enters from that workspace.
+// different workspace's settings"; a label here keeps it unambiguous. To
+// target another workspace's settings, the user exits via Back and re-enters
+// from that workspace.
 export function SettingsSidebarIdentity({
   workspace,
 }: SettingsSidebarIdentityProps) {
