@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Card, CardContent, CardHeader } from "@repo/ui/components/card";
+import CreateOrganizationForm from "./create-organization-form";
 
 export const metadata: Metadata = {
   title: "Onboarding",
@@ -6,9 +8,18 @@ export const metadata: Metadata = {
 
 export default function OnboardingPage() {
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-3 text-center">
-      <h1 className="typography-display font-semibold text-foreground">Onboarding</h1>
-      <p className="text-muted-foreground">Placeholder.</p>
-    </div>
+    <Card variant="elevated" className="w-full max-w-[420px]">
+      <CardHeader className="gap-1">
+        <h1 className="typography-subtitle font-semibold text-foreground">
+          Create your organization
+        </h1>
+        <p className="typography-caption text-muted-foreground">
+          You can change this later in Settings.
+        </p>
+      </CardHeader>
+      <CardContent>
+        <CreateOrganizationForm />
+      </CardContent>
+    </Card>
   );
 }
