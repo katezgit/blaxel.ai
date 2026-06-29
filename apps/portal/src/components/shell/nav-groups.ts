@@ -17,7 +17,6 @@ import {
   Gem,
   Globe,
   KeyRound,
-  LayoutDashboard,
   LayoutGrid,
   Lock,
   Mail,
@@ -147,13 +146,13 @@ export const PERSONAL_NAV_GROUPS: ReadonlyArray<NavGroup> = [
 /**
  * Account sub-shell — the account is a multi-admin business entity, not a
  * personal surface. Account holds identity + admins + workspaces + login
- * policy; Billing holds plan/credits/add-ons.
+ * policy; Billing holds plan/credits/add-ons. Identity (owner email + account
+ * ID) lives on the sidebar identity chip, not in an Overview page.
  */
 export const ACCOUNT_NAV_GROUPS: ReadonlyArray<NavGroup> = [
   {
     label: "Account",
     items: [
-      { href: "/account", label: "Overview", icon: Building2, exact: true },
       { href: "/account/admins", label: "Admins", icon: Users },
       { href: "/account/workspaces", label: "Workspaces", icon: LayoutGrid },
       { href: "/account/login-policy", label: "Login policy", icon: Lock },
@@ -162,7 +161,6 @@ export const ACCOUNT_NAV_GROUPS: ReadonlyArray<NavGroup> = [
   {
     label: "Plan & billing",
     items: [
-      { href: "/account/billing", label: "Overview", icon: LayoutDashboard, exact: true },
       { href: "/account/billing/invoices-payment", label: "Invoices & payment", icon: Receipt },
       { href: "/account/billing/usage-costs", label: "Usage & costs", icon: Activity },
       { href: "/account/billing/credits", label: "Credits", icon: CreditCard },
