@@ -281,7 +281,12 @@
   --shadow-modal:       var(--shadow-3);
   --shadow-command:     var(--shadow-3);
   --shadow-drawer:      var(--shadow-3);
-  --shadow-drawer-edge: var(--shadow-3), inset 1px 0 0 var(--color-border);
+  /* Right-anchored drawer: the only visible panel edge is the left one. Composing
+   * shadow-3's outer 1px ring (~6% black) with the inset 1px border (~16% black)
+   * stacked two parallel lines at that edge — the same doubled-edge pattern PR #144
+   * removed from --shadow-3 itself. Other drawer edges clip against the viewport,
+   * so the outer ring contributes nothing there. Keep just the inset border. */
+  --shadow-drawer-edge: inset 1px 0 0 var(--color-border);
 }
 
 /* ─── Primitive passthrough — @theme inline ──────────────────────────────────
