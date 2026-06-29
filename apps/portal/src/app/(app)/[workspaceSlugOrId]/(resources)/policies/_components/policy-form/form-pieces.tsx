@@ -98,44 +98,48 @@ export function FieldGroup({ label, hint, children }: FieldGroupProps) {
 
 interface PolicyTypeSelectFieldProps {
   form: UseFormReturn<PolicyFormValues>;
+  labelledBy?: string;
 }
 
-export function PolicyTypeSelectField({ form }: PolicyTypeSelectFieldProps) {
-  const id = useId();
+export function PolicyTypeSelectField({
+  form,
+  labelledBy,
+}: PolicyTypeSelectFieldProps) {
   return (
     <div className="max-w-sm">
-      <FormField id={id} label="Policy type">
-        <Controller
-          control={form.control}
-          name="policyType"
-          render={({ field }) => {
-            const current = POLICY_TYPE_BY_VALUE[field.value];
-            const CurrentIcon = current.icon;
-            return (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id={id} className="w-full">
-                  <SelectValue>
-                    <span className="inline-flex items-center gap-2">
-                      <CurrentIcon
-                        aria-hidden="true"
-                        className="size-4 text-muted-foreground"
-                      />
-                      <span className="typography-body text-foreground">
-                        {current.label}
-                      </span>
+      <Controller
+        control={form.control}
+        name="policyType"
+        render={({ field }) => {
+          const current = POLICY_TYPE_BY_VALUE[field.value];
+          const CurrentIcon = current.icon;
+          return (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger
+                aria-labelledby={labelledBy}
+                className="w-full"
+              >
+                <SelectValue>
+                  <span className="inline-flex items-center gap-2">
+                    <CurrentIcon
+                      aria-hidden="true"
+                      className="size-4 text-muted-foreground"
+                    />
+                    <span className="typography-body text-foreground">
+                      {current.label}
                     </span>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {POLICY_TYPE_OPTIONS.map((option) => (
-                    <PolicyTypeOptionRow key={option.value} option={option} />
-                  ))}
-                </SelectContent>
-              </Select>
-            );
-          }}
-        />
-      </FormField>
+                  </span>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {POLICY_TYPE_OPTIONS.map((option) => (
+                  <PolicyTypeOptionRow key={option.value} option={option} />
+                ))}
+              </SelectContent>
+            </Select>
+          );
+        }}
+      />
     </div>
   );
 }

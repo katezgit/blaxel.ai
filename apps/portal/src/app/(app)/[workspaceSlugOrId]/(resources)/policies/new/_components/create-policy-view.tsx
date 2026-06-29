@@ -264,8 +264,14 @@ function CreatePolicyForm({
           <ScrollArea className="min-h-0">
             <div className="flex flex-col gap-10 pb-2 pl-1 pr-4">
               <section className="flex flex-col gap-4">
-                <SectionHeading title="Choose a policy type" />
-                <PolicyTypeSelectField form={form} />
+                <SectionHeading
+                  title="Choose a policy type"
+                  headingId="policy-type-heading"
+                />
+                <PolicyTypeSelectField
+                  form={form}
+                  labelledBy="policy-type-heading"
+                />
               </section>
 
               <section className="flex flex-col gap-4">
