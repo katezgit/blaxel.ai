@@ -80,7 +80,7 @@ export default function CustomDomainsTierLockedView() {
         <div className="flex shrink-0 flex-col items-center gap-4 text-center">
           <span
             aria-hidden="true"
-            className="flex size-12 items-center justify-center rounded-md bg-muted-surface text-muted-foreground"
+            className="flex size-12 items-center justify-center rounded-md bg-icon-tile text-muted-foreground"
           >
             <Globe className="size-6" />
           </span>

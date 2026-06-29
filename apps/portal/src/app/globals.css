@@ -196,6 +196,13 @@
   /* App-shell sidebar hover — aliases hover-surface (neutral, no brand tint). */
   --color-sidebar-hover: var(--color-hover-surface);
 
+  /* Static neutral fill for icon-bearing tiles (tier-locked / preview hero
+   * icon, identity-avatar fallback, resource-detail icon avatar). Aliases
+   * hover-surface today because the visual weight matches, but stays
+   * semantically separate — hover-surface is "rows and interactive
+   * backdrops" (packages/ui theme.css), and these tiles are static. */
+  --color-icon-tile: var(--color-hover-surface);
+
   /* PINNED dark teal, never flips with theme. App-scoped because the only
    * consumer is the onboarding brand panel. */
   --color-brand-surface: #055E55; /* PINNED */
