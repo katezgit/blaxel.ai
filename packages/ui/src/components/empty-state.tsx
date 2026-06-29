@@ -45,8 +45,6 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
       )
     }
 
-    // Icon container renders at size="md" when icon is provided.
-    // Required on zero-state (dev warning above enforces); opt-in on no-results.
     const showIconContainer = size === "md" && Icon != null
 
     return (
