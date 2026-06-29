@@ -244,6 +244,9 @@
   /* Form field surface — uses control-raised (popover-dark in dark) so elevated fields
    * read above the flat card background. */
   --color-form-field-surface: var(--color-control-raised);
+  /* Disabled fill for input/select/combobox/textarea triggers. Aliases hover-surface
+   * (same neutral inset value) but stays semantically distinct from hover. */
+  --color-form-field-disabled: var(--color-hover-surface);
 }
 
 /* ─── Overlay roles ──────────────────────────────────────────────────────────
