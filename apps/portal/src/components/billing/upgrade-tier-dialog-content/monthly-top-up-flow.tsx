@@ -35,6 +35,11 @@ export default function MonthlyTopUpFlow({
   onCheckout,
 }: MonthlyTopUpFlowProps) {
   const [step, setStep] = useState<StepIndex>(1);
+  // Defer the About-Tier summary until the user actually picks a tile —
+  // including when `recommendedTier` preselects one for them. Showing the
+  // quota detail panel before any interaction loads the 10-second
+  // decision (pick a tier) with content that belongs to the *next* beat.
+  const [hasPickedTier, setHasPickedTier] = useState(false);
   const form = useForm<TopUpFormValues>({
     resolver: zodResolver(topUpSchema),
     defaultValues: {
@@ -85,18 +90,21 @@ export default function MonthlyTopUpFlow({
             <div className="flex flex-col gap-4">
               <TierPicker
                 value={values.selectedTier}
-                onChange={(next) =>
+                onChange={(next) => {
                   setValue("selectedTier", next, {
                     shouldValidate: true,
                     shouldDirty: true,
-                  })
-                }
+                  });
+                  setHasPickedTier(true);
+                }}
                 recommendedTier={recommendedTier}
               />
-              <SelectedTierSummary
-                targetTier={targetTier}
-                currentTier={currentTier}
-              />
+              {hasPickedTier ? (
+                <SelectedTierSummary
+                  targetTier={targetTier}
+                  currentTier={currentTier}
+                />
+              ) : null}
             </div>
           </div>
         ) : (

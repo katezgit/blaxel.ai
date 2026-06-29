@@ -28,8 +28,6 @@ const formatUsd = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
-// Mirrors the AutoTopUp / Monthly rule shell on the same page so all three
-// settings read as a uniform stack of bordered cards.
 function RuleShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-md border border-border bg-card px-4 py-3">
@@ -92,7 +90,7 @@ export default function BalanceAlertsCard() {
               <RuleIcon />
               <label
                 htmlFor="balance-alert-toggle"
-                className="typography-body font-medium text-foreground"
+                className="typography-body font-semibold text-foreground"
               >
                 Email me when balance falls below
               </label>

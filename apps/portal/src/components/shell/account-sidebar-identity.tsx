@@ -16,8 +16,7 @@ import { useAccountState } from "@/lib/mock/account-context";
 // distinct lucide glyph (Building2) signals "the company entity" — workspace
 // chip uses Boxes for "workspace container". Maya scans this surface; the chip
 // stays clean (owner email + sublabel only). The account ID is reachable via
-// CopyButton when expanded and via tooltip when railed so it survives the
-// removal of the Overview page where it used to live.
+// CopyButton when expanded and via tooltip when railed.
 export function AccountSidebarIdentity() {
   const { state } = useAccountState();
   const { ownerEmail, accountId } = state.identity;
@@ -64,7 +63,7 @@ export function AccountSidebarIdentity() {
         <Tooltip>
           <TooltipTrigger asChild>{card}</TooltipTrigger>
           <TooltipContent side="right">
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-1">
               <span>{ownerEmail}</span>
               <span className="font-mono typography-meta text-meta-foreground">
                 {accountId}

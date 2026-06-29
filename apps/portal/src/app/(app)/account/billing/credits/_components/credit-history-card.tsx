@@ -44,7 +44,7 @@ const formatSignedUsd = (value: number): string => {
 function sortNewestFirst(
   rows: ReadonlyArray<CreditHistoryEntry>,
 ): ReadonlyArray<CreditHistoryEntry> {
-  return [...rows].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  return [...rows].sort((a, b) => b.date.localeCompare(a.date));
 }
 
 export default function CreditHistoryCard() {

@@ -15,11 +15,9 @@ import DevTierSwitcher from "@/components/shell/dev-tier-switcher";
 import { IdentityCluster } from "@/components/shell/identity-cluster";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { SearchTrigger } from "@/components/shell/search-trigger";
-import { AccountSidebarIdentity } from "@/components/shell/account-sidebar-identity";
 import { Sidebar } from "@/components/shell/sidebar";
-import { SettingsSidebarIdentity } from "@/components/shell/settings-sidebar-identity";
 import { SkipToContent } from "@/components/shell/skip-to-content";
-import { SubShellSidebarReturnHeader } from "@/components/shell/sub-shell-sidebar-return-header";
+import { SubShellSidebarHeader } from "@/components/shell/sub-shell-sidebar-header";
 import { CollapsibleSidebarMarker } from "@/components/shell/use-is-sidebar-rail";
 import { useLastWorkspaceTracker } from "@/components/shell/use-last-workspace-tracker";
 import { readLastWorkspaceSlug } from "@/components/shell/use-last-workspace-tracker";
@@ -408,52 +406,6 @@ interface PersonalSubShellTopbarProps {
   mobileNavId: string;
   mobileNavOpen: boolean;
   onOpenMobileNav: () => void;
-}
-
-interface SubShellSidebarHeaderProps {
-  kind: ReturnType<typeof subShellKindForPath>;
-  workspace: Org;
-  onNavigate?: () => void;
-}
-
-// Header zone of every sub-shell sidebar: a Back link plus, for sub-shells
-// that carry a persistent entity identity, an identity chip. Profile has no
-// chip — the topbar avatar already names the logged-in user. Settings and
-// account each render their own chip component (workspace vs account
-// identity); the wrapper just groups Back + chip with a consistent gap.
-function SubShellSidebarHeader({
-  kind,
-  workspace,
-  onNavigate,
-}: SubShellSidebarHeaderProps) {
-  if (kind === "settings") {
-    return (
-      <div className="flex flex-col gap-2">
-        <SubShellSidebarReturnHeader
-          workspace={workspace}
-          onNavigate={onNavigate}
-        />
-        <SettingsSidebarIdentity workspace={workspace} />
-      </div>
-    );
-  }
-  if (kind === "account") {
-    return (
-      <div className="flex flex-col gap-2">
-        <SubShellSidebarReturnHeader
-          workspace={workspace}
-          onNavigate={onNavigate}
-        />
-        <AccountSidebarIdentity />
-      </div>
-    );
-  }
-  return (
-    <SubShellSidebarReturnHeader
-      workspace={workspace}
-      onNavigate={onNavigate}
-    />
-  );
 }
 
 // Sub-shell topbar — brand-only. Covers profile, account, AND settings.

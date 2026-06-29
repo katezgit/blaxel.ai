@@ -34,8 +34,6 @@ export function resolveAmountUsd(
   return TIER_SUGGESTED_MONTHLY_USD[selectedTier(values)];
 }
 
-// --- One-time top-up form ----------------------------------------------------
-//
 // Separate from the Monthly schema above on purpose: one-time has no tier
 // concept (it's a raw credit purchase), so it carries its own amount-chip
 // selection + optional custom amount.

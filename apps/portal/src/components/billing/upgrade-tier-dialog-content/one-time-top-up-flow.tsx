@@ -56,32 +56,26 @@ export default function OneTimeTopUpFlow({
               aria-hidden="true"
               className="size-4 text-muted-foreground"
             />
-            <span className="font-mono typography-body font-medium text-foreground">
+            <span className="font-mono typography-body text-foreground">
               Amount to top up
             </span>
           </div>
           <AmountPicker
-            presetValue={values.presetAmountUsd}
-            customValue={values.customAmountUsd}
-            customError={errors.customAmountUsd?.message}
-            onPresetChange={(next) => {
-              setValue("presetAmountUsd", next, {
+            value={{
+              preset: values.presetAmountUsd,
+              custom: values.customAmountUsd,
+            }}
+            error={errors.customAmountUsd?.message}
+            onChange={(next) => {
+              setValue("presetAmountUsd", next.preset, {
                 shouldValidate: true,
                 shouldDirty: true,
               });
-              if (next !== null) {
-                setValue("customAmountUsd", undefined, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                });
-              }
-            }}
-            onCustomChange={(next) =>
-              setValue("customAmountUsd", next, {
+              setValue("customAmountUsd", next.custom, {
                 shouldValidate: true,
                 shouldDirty: true,
-              })
-            }
+              });
+            }}
           />
         </div>
       </DialogBody>

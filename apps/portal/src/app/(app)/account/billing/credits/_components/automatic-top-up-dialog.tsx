@@ -341,8 +341,8 @@ function RuleRow({
           <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-hover-surface text-muted-foreground">
             {icon}
           </div>
-          <div className="flex flex-col gap-0.5">
-            <h3 className="typography-body font-medium text-foreground">{title}</h3>
+          <div className="flex flex-col gap-1">
+            <h3 className="typography-body font-semibold text-foreground">{title}</h3>
             <p className="typography-caption text-muted-foreground">{description}</p>
           </div>
         </div>
@@ -380,7 +380,7 @@ function PaymentMissingNotice() {
       No payment method on file. This rule will activate once you add one.{" "}
       <Link
         href={PAYMENT_METHOD_HREF}
-        className="font-medium text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
+        className="text-primary hover:underline focus-visible:shadow-focus-ring rounded-sm"
       >
         Add payment method →
       </Link>

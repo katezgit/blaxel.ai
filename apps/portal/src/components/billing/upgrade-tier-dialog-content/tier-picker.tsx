@@ -48,11 +48,16 @@ export default function TierPicker({
             onClick={() => onChange(tierKey)}
             className={cn(
               "group flex cursor-pointer items-center justify-between gap-4 rounded-md border px-4 py-2.5 text-left",
-              "transition-colors prop-(--motion-state-change)",
+              "transition-colors duration-fast ease-out-standard",
               "focus-visible:outline-none focus-visible:shadow-focus-ring",
-              selected
-                ? "border-primary-border bg-primary-glow"
-                : "border-border bg-card hover:bg-hover-surface",
+              // Recommended tile gets the same primary ring as the Current
+              // Tier row at /account/billing/tier-quotas so the "lead
+              // choice" signal reinforces the Recommended badge. Selected
+              // state wins (filled glow) — the unselected-recommended ring
+              // only matters before the user picks.
+              selected && "border-primary-border bg-primary-glow",
+              !selected && isRecommended && "border-primary bg-card hover:bg-hover-surface",
+              !selected && !isRecommended && "border-border bg-card hover:bg-hover-surface",
             )}
           >
             <span className="flex min-w-0 flex-col gap-0.5">
