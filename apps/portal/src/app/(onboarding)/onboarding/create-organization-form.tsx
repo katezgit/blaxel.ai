@@ -67,7 +67,7 @@ export default function CreateOrganizationForm() {
 
   const onSubmit = handleSubmit(async () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
-    router.push("/");
+    router.push("/onboarding/invite");
   });
 
   const submitDisabled =
@@ -78,6 +78,23 @@ export default function CreateOrganizationForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5">
+      <FormField id="org-logo" label="Logo (optional)">
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => {
+              // Demo only — upload not wired. Operator review the visual; data flow is out of scope.
+            }}
+          >
+            Upload logo
+          </Button>
+          <span className="font-mono typography-meta text-muted-foreground">
+            Optional — add later in Settings
+          </span>
+        </div>
+      </FormField>
+
       <FormField
         id="org-name"
         label="Organization name"
