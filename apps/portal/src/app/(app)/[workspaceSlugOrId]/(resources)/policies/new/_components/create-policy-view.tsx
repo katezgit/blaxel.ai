@@ -55,6 +55,7 @@ import {
   type PolicyFormValues,
   type TokenLimits,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
+import CreatePolicySkeleton from "./create-policy-skeleton";
 
 interface CreatePolicyViewProps {
   workspaceSlug: string;
@@ -74,14 +75,7 @@ export default function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProp
   const listHref = `/${workspaceSlug}/policies`;
 
   if (duplicateName != null && duplicateQuery.isPending) {
-    return (
-      <PageShell>
-        <Header listHref={listHref} />
-        <p className="typography-body text-muted-foreground">
-          Loading source policy…
-        </p>
-      </PageShell>
-    );
+    return <CreatePolicySkeleton listHref={listHref} />;
   }
 
   return (
@@ -101,25 +95,6 @@ function PageShell({ children }: { children: React.ReactNode }) {
     <div className="mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 overflow-hidden px-6 pb-6 pt-6 md:px-8 lg:px-12 xl:px-20">
       {children}
     </div>
-  );
-}
-
-function Header({ listHref }: { listHref: string }) {
-  return (
-    <header className="flex flex-col gap-3">
-      <Breadcrumb
-        parent={{ href: listHref, label: "Policies" }}
-        current="Create policy"
-      />
-      <div className="page-header">
-        <h1 className="typography-display font-semibold text-foreground">
-          Create policy
-        </h1>
-        <p className="typography-body text-muted-foreground">
-          Define a rule and the workloads it attaches to.
-        </p>
-      </div>
-    </header>
   );
 }
 

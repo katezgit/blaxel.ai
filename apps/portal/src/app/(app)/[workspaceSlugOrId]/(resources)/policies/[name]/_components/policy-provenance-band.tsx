@@ -19,15 +19,17 @@ const TIMESTAMP_FMT = new Intl.DateTimeFormat("en-US", {
 interface PolicyProvenanceBandProps {
   metadata: PolicyMetadata;
   policyType: PolicyType;
+  className?: string;
 }
 
 export default function PolicyProvenanceBand({
   metadata,
   policyType,
+  className,
 }: PolicyProvenanceBandProps) {
   const labelEntries = Object.entries(metadata.labels);
   return (
-    <BandFrame label="Provenance">
+    <BandFrame label="Provenance" className={className}>
       <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[140px_1fr]">
         <ProvenanceRow label="Type">
           <span className="typography-body text-foreground">
