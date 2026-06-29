@@ -165,6 +165,7 @@ export function PolicyDetailView({
       <PolicyProvenanceBand
         metadata={policy.metadata}
         policyType={policy.spec.type}
+        className="border-t-0"
       />
       <DeletePolicyDialog
         policy={policyToDelete}
