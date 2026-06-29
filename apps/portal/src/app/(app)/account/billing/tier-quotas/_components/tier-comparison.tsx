@@ -155,6 +155,16 @@ const TIERS: ReadonlyArray<TierData> = [
   },
 ];
 
+/*
+  Fixed minmax bounds protect each cell's reading shape across the tier list:
+  - Tier (64–80px): holds "Tier 9" with the "Current tier" pip above it
+    without forcing the label to wrap.
+  - Key quotas (1fr): flexes to take half the remaining width.
+  - Key limits & features (1fr): flexes symmetrically with Key quotas.
+  - Requirement (220–260px): keeps progress label + requirement copy + the
+    hover-revealed primary CTA (Top up / Contact Us) on a single column
+    without pushing the action below the fold.
+*/
 const GRID_COLS =
   "grid-cols-[minmax(64px,_80px)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(220px,_260px)]";
 

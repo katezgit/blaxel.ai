@@ -1,7 +1,7 @@
 "use client";
 
 import { DollarSign } from "lucide-react";
-import { RadioGroup } from "radix-ui";
+import * as RadioGroup from "@radix-ui/react-radio-group";
 import { cn } from "@repo/ui/lib/cn";
 import { Input } from "@repo/ui/components/input";
 import { ONE_TIME_AMOUNT_PRESETS } from "./wizard-state";

@@ -57,7 +57,7 @@ export default function CreditBalanceCard() {
       className="flex flex-col gap-6 px-6 py-6 sm:flex-row sm:items-stretch sm:justify-between"
     >
       <div className="flex flex-1 flex-col gap-2">
-        <span className="typography-meta font-mono uppercase tracking-[0.16em] text-meta-foreground">
+        <span className="typography-meta font-mono uppercase text-meta-foreground">
           Available credits
         </span>
         <output
@@ -91,6 +91,11 @@ export default function CreditBalanceCard() {
         aria-hidden="true"
         className="hidden sm:block w-px self-stretch bg-border"
       />
+      {/*
+        Action column min-width (180px) prevents the primary CTA from
+        collapsing below the ghost-button label ("Set up auto top-up")
+        once the card splits side-by-side at the sm breakpoint.
+      */}
       <div className="flex flex-col justify-center gap-2 sm:min-w-[180px]">
         <UpgradeTierDialog
           trigger={
