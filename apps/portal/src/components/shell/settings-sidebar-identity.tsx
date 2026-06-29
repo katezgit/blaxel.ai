@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+import { Boxes } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -33,9 +33,13 @@ export function SettingsSidebarIdentity({
         isRail ? "h-8 justify-center px-0" : "gap-2 px-2",
       )}
     >
-      <Avatar size="xs" shape="square">
-        <AvatarFallback>{workspace.avatarInitial}</AvatarFallback>
-      </Avatar>
+      <Boxes
+        aria-hidden="true"
+        className={cn(
+          "size-4 shrink-0 text-meta-foreground",
+          isRail && "size-5",
+        )}
+      />
       {!isRail && (
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate typography-body text-foreground">
