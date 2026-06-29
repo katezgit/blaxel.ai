@@ -86,7 +86,7 @@ export default function PoliciesTierLockedView() {
           >
             <FileCheck className="size-6" />
           </span>
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-1">
             <h3 className="typography-display text-foreground">
               Take control of your deployments
             </h3>
@@ -98,7 +98,7 @@ export default function PoliciesTierLockedView() {
           </div>
         </div>
 
-        <Card className="mt-4 w-full max-w-3xl shrink-0 self-center overflow-hidden border-0 p-0 sm:border">
+        <Card className="mt-6 w-full max-w-3xl shrink-0 self-center overflow-hidden border-0 p-0 sm:border">
           <div className="grid lg:grid-cols-[2fr_1fr]">
             <div className="flex flex-col gap-6 p-6 lg:p-8">
               <div className="flex flex-col gap-2">

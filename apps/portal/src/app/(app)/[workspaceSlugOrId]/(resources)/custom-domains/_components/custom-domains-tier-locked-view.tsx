@@ -84,7 +84,7 @@ export default function CustomDomainsTierLockedView() {
           >
             <Globe className="size-6" />
           </span>
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-1">
             <h3 className="typography-display text-foreground">
               Bring your own identity to Blaxel
             </h3>
@@ -96,7 +96,7 @@ export default function CustomDomainsTierLockedView() {
           </div>
         </div>
 
-        <Card className="mt-4 w-full max-w-3xl shrink-0 self-center overflow-hidden p-0">
+        <Card className="mt-6 w-full max-w-3xl shrink-0 self-center overflow-hidden p-0">
           <div className="grid lg:grid-cols-[2fr_1fr]">
             <div className="flex flex-col gap-6 p-6 lg:p-8">
               <div className="flex flex-col gap-2">
