@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpRight, MoreHorizontal, Search } from "lucide-react";
+import { ArrowUpRight, KeyRound, MoreHorizontal, Search } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
@@ -167,7 +167,17 @@ export default function ApiKeysSection({
       )}
 
       {!hasKeys ? (
-        <KeysZeroState onCreate={onCreateKey} />
+        <EmptyState
+          variant="zero-state"
+          icon={KeyRound}
+          title="No API keys yet"
+          subtitle="This service account authenticates with the client ID and secret in Details below."
+          cta={
+            <Button variant="ghost" onClick={onCreateKey}>
+              Create API key
+            </Button>
+          }
+        />
       ) : filtered.length === 0 ? (
         <EmptyState
           variant="no-results"
@@ -191,27 +201,6 @@ export default function ApiKeysSection({
         }}
       />
     </section>
-  );
-}
-
-interface KeysZeroStateProps {
-  onCreate: () => void;
-}
-
-function KeysZeroState({ onCreate }: KeysZeroStateProps) {
-  return (
-    <div
-      role="status"
-      className="flex flex-col items-center gap-4 rounded-md border border-border bg-card px-6 py-12"
-    >
-      <p className="text-foreground">
-        No API keys. This service account authenticates with the client ID and
-        secret in Details below.
-      </p>
-      <Button variant="ghost" onClick={onCreate}>
-        Create API key
-      </Button>
-    </div>
   );
 }
 
