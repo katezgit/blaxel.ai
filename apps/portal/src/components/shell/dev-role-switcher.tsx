@@ -6,9 +6,9 @@ import { useRole } from "@/lib/mock/role-context";
 import type { Role } from "@/lib/mock/types";
 
 /**
- * Dev-only role switcher pinned to the bottom-right corner. Lets the demo
+ * Demo role switcher pinned to the bottom-right corner. Lets the demo
  * audience flip between owner / admin / member to see the role-tier diff
- * across settings pages. Production builds drop this entirely.
+ * across settings pages.
  */
 // owner and admin share the same permission tier; the members table still
 // renders both labels for badge differentiation, but the switcher only needs
@@ -21,8 +21,7 @@ export default function DevRoleSwitcher() {
     setMounted(true);
   }, []);
 
-  // eslint-disable-next-line turbo/no-undeclared-env-vars -- NODE_ENV is Next.js-provided
-  if (!mounted || process.env.NODE_ENV === "production") return null;
+  if (!mounted) return null;
 
   return <RoleSwitcherChrome />;
 }
