@@ -51,29 +51,28 @@ export default function CreatePolicySkeleton({
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,36rem)_minmax(0,28rem)]">
-          {/* Form column — five sections matching the live form: type,
-           * name, rule, target workloads, labels. */}
           <div className="flex flex-col gap-10 pl-1 pr-4">
             <FormSectionSilhouette
               titleWidth="w-44"
               body={
-                <div className="flex flex-col gap-2">
-                  <Skeleton className="h-16 w-full rounded-md" />
-                  <Skeleton className="h-16 w-full rounded-md" />
+                <div className="flex max-w-sm flex-col gap-1.5">
+                  <Skeleton className="h-4 w-20 rounded-sm" />
+                  <Skeleton className="h-9 w-full rounded-md" />
                 </div>
               }
             />
             <FormSectionSilhouette
               titleWidth="w-36"
               body={
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div className="flex flex-col gap-2">
-                    <Skeleton className="h-4 w-28 rounded-sm" />
+                <div className="flex max-w-sm flex-col gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <Skeleton className="h-4 w-24 rounded-sm" />
                     <Skeleton className="h-9 w-full rounded-md" />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <Skeleton className="h-4 w-16 rounded-sm" />
+                  <div className="flex flex-col gap-1.5">
+                    <Skeleton className="h-4 w-12 rounded-sm" />
                     <Skeleton className="h-9 w-full rounded-md" />
+                    <Skeleton className="h-8 w-64 rounded-sm" />
                   </div>
                 </div>
               }
@@ -82,12 +81,13 @@ export default function CreatePolicySkeleton({
               titleWidth="w-40"
               descriptionWidth="w-72"
               body={
-                <div className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
-                  <Skeleton className="h-4 w-32 rounded-sm" />
+                <div className="flex flex-col gap-3">
                   <div className="flex flex-wrap gap-2">
+                    <Skeleton className="h-7 w-24 rounded-md" />
                     <Skeleton className="h-7 w-32 rounded-md" />
                     <Skeleton className="h-7 w-44 rounded-md" />
                   </div>
+                  <Skeleton className="h-8 w-72 rounded-sm" />
                 </div>
               }
             />
@@ -96,17 +96,23 @@ export default function CreatePolicySkeleton({
               descriptionWidth="w-64"
               body={
                 <div className="flex flex-wrap gap-2">
-                  <Skeleton className="h-9 w-24 rounded-md" />
-                  <Skeleton className="h-9 w-20 rounded-md" />
-                  <Skeleton className="h-9 w-28 rounded-md" />
-                  <Skeleton className="h-9 w-24 rounded-md" />
+                  <Skeleton className="h-7 w-20 rounded-md" />
+                  <Skeleton className="h-7 w-24 rounded-md" />
+                  <Skeleton className="h-7 w-28 rounded-md" />
+                  <Skeleton className="h-7 w-24 rounded-md" />
+                  <Skeleton className="h-7 w-28 rounded-md" />
                 </div>
               }
             />
             <FormSectionSilhouette
               titleWidth="w-20"
               descriptionWidth="w-80"
-              body={<Skeleton className="h-9 w-32 rounded-md" />}
+              body={
+                <div className="flex flex-col gap-2">
+                  <Skeleton className="h-4 w-24 rounded-sm" />
+                  <Skeleton className="h-9 w-28 rounded-md" />
+                </div>
+              }
             />
           </div>
 

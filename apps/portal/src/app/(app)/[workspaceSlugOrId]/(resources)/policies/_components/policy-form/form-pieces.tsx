@@ -9,6 +9,7 @@ import {
 import { AlertTriangle, Globe, MapPin, Plus, Server, X } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Chip, ChipGroup } from "@repo/ui/components/chip";
+import { FormField } from "@repo/ui/components/form-field";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { Input } from "@repo/ui/components/input";
 import {
@@ -19,7 +20,6 @@ import {
   SelectValue,
 } from "@repo/ui/components/select";
 import { cn } from "@repo/ui/lib/cn";
-import { Field, FieldRow } from "@/app/(manage)/_components/page-primitives";
 import type {
   MaxTokenGranularity,
   PolicyResourceType,
@@ -80,7 +80,10 @@ export function FieldGroup({ label, hint, children }: FieldGroupProps) {
   const labelId = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <span id={labelId} className="typography-label text-muted-foreground">
+      <span
+        id={labelId}
+        className="typography-label font-medium text-foreground"
+      >
         {label}
       </span>
       {hint ? (
@@ -98,9 +101,10 @@ interface PolicyTypeSelectFieldProps {
 }
 
 export function PolicyTypeSelectField({ form }: PolicyTypeSelectFieldProps) {
+  const id = useId();
   return (
-    <div className="flex max-w-sm flex-col gap-1.5">
-      <Field label="Policy type">
+    <div className="max-w-sm">
+      <FormField id={id} label="Policy type">
         <Controller
           control={form.control}
           name="policyType"
@@ -109,7 +113,7 @@ export function PolicyTypeSelectField({ form }: PolicyTypeSelectFieldProps) {
             const CurrentIcon = current.icon;
             return (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger aria-label="Policy type" className="w-full">
+                <SelectTrigger id={id} className="w-full">
                   <SelectValue>
                     <span className="inline-flex items-center gap-2">
                       <CurrentIcon
@@ -131,7 +135,7 @@ export function PolicyTypeSelectField({ form }: PolicyTypeSelectFieldProps) {
             );
           }}
         />
-      </Field>
+      </FormField>
     </div>
   );
 }
@@ -191,7 +195,7 @@ export function PolicyTypeReadOnlyField({
   const Icon = option.icon;
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="typography-label text-muted-foreground">
+      <span className="typography-label font-medium text-foreground">
         Policy type
       </span>
       <Chip interactive={false} className="w-fit">
@@ -291,7 +295,7 @@ export function TokenUsageBody({ value, onChange }: TokenUsageBodyProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <FieldRow cols={3}>
+      <div className="grid gap-4 md:grid-cols-3">
         <TokenCapField
           label="Input"
           value={value.input}
@@ -307,9 +311,9 @@ export function TokenUsageBody({ value, onChange }: TokenUsageBodyProps) {
           value={value.total}
           onChange={(v) => update("total", v)}
         />
-      </FieldRow>
+      </div>
       <div className="flex flex-col gap-1.5">
-        <span className="typography-label text-muted-foreground">
+        <span className="typography-label font-medium text-foreground">
           Per period
         </span>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-[120px_1fr]">
@@ -358,11 +362,13 @@ function TokenCapField({
   value: number;
   onChange: (next: number) => void;
 }) {
+  const id = useId();
   // 0 in the model means "unlimited"; surface as empty so the placeholder shows.
   const display = value === 0 ? "" : String(value);
   return (
-    <Field label={label}>
+    <FormField id={id} label={label}>
       <Input
+        id={id}
         type="number"
         min={0}
         inputMode="numeric"
@@ -374,7 +380,7 @@ function TokenCapField({
         }}
         className="font-mono tabular-nums"
       />
-    </Field>
+    </FormField>
   );
 }
 
@@ -523,32 +529,44 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
     register,
     formState: { errors },
   } = form;
-  const nameHelperId = useId();
+  const displayId = useId();
+  const nameId = useId();
 
   return (
     <>
-      <div className="flex max-w-sm flex-col gap-1.5">
-        <Field label="Display name" error={errors.displayName?.message}>
+      <div className="max-w-sm">
+        <FormField
+          id={displayId}
+          label="Display name"
+          error={errors.displayName?.message}
+        >
           <Input
+            id={displayId}
             placeholder="EU-only production"
             {...register("displayName")}
           />
-        </Field>
+        </FormField>
       </div>
-      <div className="flex max-w-sm flex-col gap-1.5">
-        <Field label="Name" error={errors.name?.message}>
+      <div className="max-w-sm">
+        <FormField
+          id={nameId}
+          label="Name"
+          error={errors.name?.message}
+          helper={
+            <>
+              Used in <code className="typography-code">bl</code> commands and{" "}
+              <code className="typography-code">spec.policies[]</code>.
+              Auto-derived; editable.
+            </>
+          }
+        >
           <Input
+            id={nameId}
             placeholder="eu-only-prod"
             className="font-mono"
-            aria-describedby={nameHelperId}
             {...register("name")}
           />
-        </Field>
-        <p id={nameHelperId} className="typography-caption text-muted-foreground">
-          Used in <code className="typography-code">bl</code> commands and{" "}
-          <code className="typography-code">spec.policies[]</code>.
-          Auto-derived; editable.
-        </p>
+        </FormField>
       </div>
     </>
   );
@@ -567,25 +585,39 @@ export function IdentityEditableNameOnlyFields({
     register,
     formState: { errors },
   } = form;
-  const displayHelperId = useId();
+  const displayId = useId();
+  const nameId = useId();
 
   return (
     <>
-      <div className="flex max-w-sm flex-col gap-1.5">
-        <Field label="Display name" error={errors.displayName?.message}>
+      <div className="max-w-sm">
+        <FormField
+          id={displayId}
+          label="Display name"
+          error={errors.displayName?.message}
+          helper="Shown in the dashboard."
+        >
           <Input
+            id={displayId}
             placeholder="EU-only production"
-            aria-describedby={displayHelperId}
             {...register("displayName")}
           />
-        </Field>
-        <p id={displayHelperId} className="typography-caption text-muted-foreground">
-          Shown in the dashboard.
-        </p>
+        </FormField>
       </div>
-      <div className="flex max-w-sm flex-col gap-1.5">
-        <Field label="Name">
+      <div className="max-w-sm">
+        <FormField
+          id={nameId}
+          label="Name"
+          helper={
+            <>
+              Resource identifier — fixed at creation, referenced in{" "}
+              <code className="typography-code">bl</code> commands and{" "}
+              <code className="typography-code">spec.policies[]</code>.
+            </>
+          }
+        >
           <div
+            id={nameId}
             role="textbox"
             aria-readonly="true"
             className={cn(
@@ -594,12 +626,7 @@ export function IdentityEditableNameOnlyFields({
           >
             {fixedName}
           </div>
-        </Field>
-        <p className="typography-caption text-meta-foreground">
-          Resource identifier — fixed at creation, referenced in{" "}
-          <code className="typography-code">bl</code> commands and{" "}
-          <code className="typography-code">spec.policies[]</code>.
-        </p>
+        </FormField>
       </div>
     </>
   );
