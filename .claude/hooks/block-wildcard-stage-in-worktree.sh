@@ -16,7 +16,7 @@
 
 set -eo pipefail
 
-MAIN_ROOT="/Users/kate/phoenix/projects/baxel.ai"
+MAIN_ROOT="{REPO_ABSOLUTE_PATH}"
 WORKTREES_PREFIX="${MAIN_ROOT}/.claude/worktrees/"
 LOG="/tmp/claude/wildcard-stage-hook.log"
 

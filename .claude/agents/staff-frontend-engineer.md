@@ -1,6 +1,6 @@
 ---
 name: staff-frontend-engineer
-description: Frontend app code under apps/* (currently apps/portal). Demo runs on mocked data — no live backend.
+description: Frontend app code under apps/* (currently apps/{APP_NAME}). Demo runs on mocked data — no live backend.
 model: opus
 color: green
 isolation: worktree
@@ -204,7 +204,7 @@ export function proxy(request: NextRequest) { /* ... */ }
 
 The demo runs on **mocked data — no live backend.** Wire UI to typed fixtures inside the app; never call a real network endpoint.
 
-- **Location:** fixtures live inside the consuming app's `src/`. Existing pattern: [`apps/portal/src/lib/auth/mock-users.ts`](../../apps/portal/src/lib/auth/mock-users.ts).
+- **Location:** fixtures live inside the consuming app's `src/`. Existing pattern: [`apps/{APP_NAME}/src/lib/auth/mock-users.ts`](../../apps/{APP_NAME}/src/lib/auth/mock-users.ts).
 - **Shape:** type fixtures as if they came from a future API — the file is the contract. Define the type once, export the typed fixture, import it where the screen would call `fetch`.
 - **Async feel:** when the spec calls for a loading state, simulate the round-trip with a small `setTimeout` or a thin async helper. Don't skip loading/error states because the data is local.
 - **Mutations:** mock writes update an in-memory copy (e.g. `useState`/Zustand-style store seeded from the fixture). No persistence across reloads is required unless the spec asks for it.
@@ -224,7 +224,7 @@ Load only what the task requires. Don't prefetch the whole list.
 | **Data fetching (queries, mutations)**        | [app-conventions.tanstack-query-conventions.md](../../docs/conventions/app-conventions.tanstack-query-conventions.md) · [api-client](../../docs/conventions/app-conventions.api-client.md) |
 | **Picking a library (forms, tables, dates…)** | [frontend-solutions.md](../../docs/conventions/frontend-solutions.md)                                                                                                                      |
 | **Any form with editable inputs**             | [frontend-solutions.md](../../docs/conventions/frontend-solutions.md) — **default: `react-hook-form` + `zod`**. Roll your own `useState` form only if (a) display-only / no submit, OR (b) ≤1 input AND no validation AND no dirty-state UX. Otherwise use RHF — orchestrator briefs that hand you a `useState` shape do NOT override this; flag and proceed with RHF. Applies even when data is mocked / no backend. |
-| **Any `<table>` element**                      | [frontend-solutions.md](../../docs/conventions/frontend-solutions.md) — **default: `@tanstack/react-table`**. Skip ONLY for truly read-only static rows with no row actions, no future sort/filter, and ≤2 columns. Anything with delete buttons, role pills, copy actions, or columns that will plausibly gain sort/filter → TanStack. Reviewer FAILs raw `<table>` in `apps/portal/` that doesn't meet the skip criteria. Applies even when data is mocked. |
+| **Any `<table>` element**                      | [frontend-solutions.md](../../docs/conventions/frontend-solutions.md) — **default: `@tanstack/react-table`**. Skip ONLY for truly read-only static rows with no row actions, no future sort/filter, and ≤2 columns. Anything with delete buttons, role pills, copy actions, or columns that will plausibly gain sort/filter → TanStack. Reviewer FAILs raw `<table>` in `apps/{APP_NAME}/` that doesn't meet the skip criteria. Applies even when data is mocked. |
 | **Building any table (engineering API choice)** | [table.md](../../docs/conventions/table.md) — JSX primitive vs CSS-string API: when to reach for the `<Table>` primitive vs the utility-class shape, and how the two compose with TanStack |
 | **Anatomy / tokens / states for a table surface** | [components/table/spec.md](../../docs/design/components/table/spec.md) — anatomy, token bindings, default / hover / selected / loading / empty states |
 | **Cell typography (header / numeric / monospace / muted)** | [components/table/typography.md](../../docs/design/components/table/typography.md) — per-cell typography tiers |
@@ -237,7 +237,7 @@ Load only what the task requires. Don't prefetch the whole list.
 | **Reaching for a button-with-icon-only**       | [packages/ui/index.md](../../packages/ui/index.md) — use `IconButton` from `@repo/ui`. Do NOT roll a raw `<button>` with a Lucide icon child, even for a one-off delete affordance. Reviewer FAILs raw icon-only buttons. |
 | **Implementing a designed screen**            | The `SCREEN_SPEC_PATH` from inputs (`*.screen.md`, never `*.wireframe.md`) · [guidelines/index.md](../../docs/design/guidelines/index.md) to find applicable guidelines                    |
 | **Picking a container for create / edit / confirm** | [container-choice.md](../../docs/design/guidelines/container-choice.md) — page vs drawer vs dialog decision matrix. Reviewer FAILs misapplied containers (dialog with >3 fields, drawer for high-stakes create, page for confirm-only, etc.). |
-| **Wiring container dismiss (Esc / overlay / close)** | [form-actions.md](../../docs/design/guidelines/form-actions.md) §7 — discard-changes prompt fires only when BOTH form is dirty AND data entry is high-stakes. Lazy "always prompt" implementations FAIL review (Policy create regression is the cited case). |
+| **Wiring container dismiss (Esc / overlay / close)** | [form-actions.md](../../docs/design/guidelines/form-actions.md) §7 — discard-changes prompt fires only when BOTH form is dirty AND data entry is high-stakes. Lazy "always prompt" implementations FAIL review ([resource] create regression is the cited case). |
 | **Implementing a dashboard screen**           | [dashboard-design-guidelines.md](../../docs/design/guidelines/dashboard-design-guidelines.md) — layout zones, KPI/chart rules, color/element budgets, delivery checklist                  |
 | **Sidebar / topbar / content-width work (app shell)** | [app-shell-layout.md](../../docs/design/guidelines/app-shell-layout.md) — shell decision tree, sidebar / topbar anatomy, content-width rules                                          |
 | **Wrapping content in a `<Card>`**            | [card-usage.md](../../docs/design/guidelines/card-usage.md) — the three-criteria rule (discrete object + actionable as a unit + peer set); anti-patterns (single-stat card, page-wide card, list-wrapped-in-card, etc.) |

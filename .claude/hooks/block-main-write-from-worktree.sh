@@ -5,7 +5,7 @@
 # Context: agents with `isolation: worktree` in their frontmatter are placed
 # in .claude/worktrees/agent-*/ — isolated at the cwd layer. But Edit/Write
 # tools accept absolute paths, and an absolute path like
-# /Users/kate/2026/oak/oak/apps/server/foo.ts bypasses the worktree and writes
+# {REPO_ABSOLUTE_PATH}/apps/server/foo.ts bypasses the worktree and writes
 # to main. This hook blocks that leak at the tool boundary.
 #
 # Policy:
@@ -18,7 +18,7 @@
 
 set -eo pipefail
 
-MAIN_ROOT="/Users/kate/phoenix/projects/baxel.ai"
+MAIN_ROOT="{REPO_ABSOLUTE_PATH}"
 WORKTREES_PREFIX="${MAIN_ROOT}/.claude/worktrees/"
 LOG="/tmp/claude/worktree-hook.log"
 

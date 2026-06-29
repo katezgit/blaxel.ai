@@ -1,6 +1,49 @@
+# Claude Code project toolkit
+
+A reusable orchestration + workflow toolkit for Claude Code, extracted from a real product project. Drop into a new repo's root, fill in a handful of placeholders, and you get a working multi-agent setup: a `CLAUDE.md` template, a curated agent roster (designers, engineers, reviewers, release-manager), workflow state machines (design phases, PR self-review, worktree protocol, screen-spec parity, visual QA), commands, and worktree-safety hooks.
+
+## What's in here
+
+```
+.claude/
+  PLACEHOLDERS.md     # canonical placeholder catalog — read first
+  agents/             # 12 agent definitions
+  workflows/          # 10 workflow / process documents
+  commands/           # 7 slash-command definitions
+  hooks/              # worktree-safety bash hooks
+  skills/             # third-party skills (Vercel React + composition)
+  settings.json       # default hook wiring
+CLAUDE.md             # root template — fill in the Goal section per project
+README.md             # this file
+```
+
+## Adoption
+
+1. Copy `.claude/` and the root `CLAUDE.md` template into your project.
+2. Open `.claude/PLACEHOLDERS.md` for the placeholder catalog.
+3. Find-replace each `{TOKEN}` with your project's value across the toolkit files. The substitutions are mechanical — no token's meaning depends on others.
+4. Fill in the **Goal** section of `CLAUDE.md` (top of file) with your product description, IA, customer profile, and persona references. This is the only block that's a true template; everything else is reusable rules.
+5. Replace any `[resource type A]` / `[domain event A]` / `[primitive A]` style inline brackets in agent docs with concrete examples from your domain.
+6. Decide which external-precedent companies fit your domain (the toolkit defaults to Linear / Vercel / Fly.io / Modal / E2B / shadcn as "borrow from but evaluate against the product anchor" examples — swap as appropriate).
+
+## Assumed stack and layout
+
+The toolkit assumes a specific stack and layout. If yours matches, no further edits are needed beyond the placeholders.
+
+- **Monorepo layout:** `apps/`, `packages/ui/`, `packages/libs/`
+- **Package aliases:** `@repo/ui`, `@repo/libs`
+- **Stack:** Next.js + React 19 + TypeScript + Tailwind v4 + TanStack Query + shadcn / Radix / cva
+- **Tooling:** pnpm + turbo + gh CLI + Storybook
+- **Design doc layout:** `docs/product/`, `docs/design/{flows,screens,components,foundations,guidelines,patterns,reviews}/`, `docs/conventions/`, `docs/testing/`
+- **Workspace discipline:** `.intermediate/` (gitignored scratch) vs. `docs/` (canonical record); `.state/state.md` for current-phase tracking
+
+If your project diverges, those references need editing too — they were intentionally not tokenized because they shape the toolkit's structural assumptions.
+
+---
+
 # The System
 
-Snapshot of phases, agents, workflows, and gates as of 2026-06-23.
+Snapshot of phases, agents, workflows, and gates from the originating project.
 
 ## The model in one paragraph
 

@@ -22,19 +22,19 @@ You are a founding product design lead with extensive experience in startups at 
 Re-read these before producing or revising any artifact. Treat them as ground truth over memory.
 
 - [`docs/product/personas.md`](../../docs/product/personas.md) — primary + secondary persona profiles, in-scope / out-of-scope lists, persona anti-patterns
-- [`docs/product/alex-workflow.md`](../../docs/product/alex-workflow.md) — Alex's phased journey through the product, design implication per phase
-- [`docs/product/alex-user-stories.md`](../../docs/product/alex-user-stories.md) — concrete jobs Alex executes per phase, source of wireframe input
+- [`docs/product/{PRIMARY_PERSONA_LOWER}-workflow.md`](../../docs/product/{PRIMARY_PERSONA_LOWER}-workflow.md) — {PRIMARY_PERSONA}'s phased journey through the product, design implication per phase
+- [`docs/product/{PRIMARY_PERSONA_LOWER}-user-stories.md`](../../docs/product/{PRIMARY_PERSONA_LOWER}-user-stories.md) — concrete jobs {PRIMARY_PERSONA} executes per phase, source of wireframe input
 - [`docs/product/platform.md`](../../docs/product/platform.md) — product vocabulary, surfaces, primitives — use these terms verbatim in every label / error / spec
 - [`docs/product/personality.md`](../../docs/product/personality.md) — voice + interaction principles + anti-personality drift map
 - [`docs/product/index.md`](../../docs/product/index.md) — folder map; read first when navigating the product folder
 
-> **Discovery duality — you both produce AND read these files.** The files above are the product anchor every downstream phase consumes. During the **`discovery`** phase YOU produce four of them (`platform.md`, `personas.md`, `[primary]-workflow.md`, `[primary]-user-stories.md`) from the Operator's raw brief at `docs/product/product.md` + Operator interviews. The fifth file (`personality.md`) is your **`personality`** phase output, derived from the discovery four. From `design-tokens` onwards, all five are read-only ground truth. Raw research notes / Operator interview transcripts / vocabulary brainstorms stay in `.intermediate/discovery/{topic}/` — never in `docs/`. See [`design-phases.md`](../workflows/design-phases.md) discovery row and [`docs/product/index.md`](../../docs/product/index.md) derivation order.
+> **Discovery duality — you both produce AND read these files.** The files above are the product anchor every downstream phase consumes. During the **`discovery`** phase YOU produce four of them (`platform.md`, `personas.md`, `{PRIMARY_PERSONA_LOWER}-workflow.md`, `{PRIMARY_PERSONA_LOWER}-user-stories.md`) from the Operator's raw brief at `docs/product/product.md` + Operator interviews. The fifth file (`personality.md`) is your **`personality`** phase output, derived from the discovery four. From `design-tokens` onwards, all five are read-only ground truth. Raw research notes / Operator interview transcripts / vocabulary brainstorms stay in `.intermediate/discovery/{topic}/` — never in `docs/`. See [`design-phases.md`](../workflows/design-phases.md) discovery row and [`docs/product/index.md`](../../docs/product/index.md) derivation order.
 
 External prior art (Linear, Vercel, MUI, shadcn, etc.) is input to the option space — borrow freely — but evaluated *against* the personas + personality + workflow anchor, never the anchor itself.
 
 ## Additional required reading — wireframes phase, detail/diagnostic screens
 
-For any wireframe task on a detail or diagnostic screen (Sandbox detail, Job detail, Agent detail, MCP Server detail, Volume detail, API Key detail, Policy detail, etc. — see [`design-phases.md`](../workflows/design-phases.md) → "Scenarios applicability"), the `scenarios` phase has produced an upstream artifact you MUST read:
+For any wireframe task on a detail or diagnostic screen ([resource type A] detail, [resource type B] detail, [resource type C] detail, etc. — see [`design-phases.md`](../workflows/design-phases.md) → "Scenarios applicability"), the `scenarios` phase has produced an upstream artifact you MUST read:
 
 - `.intermediate/discovery/{screen-slug}/scenarios.md` — 4–6 entry-path scenarios with audit questions, plus header-contract and default-content-contract synthesis sections (produced by `scenario-strategist`, gated PASS by `product-domain-reviewer`)
 

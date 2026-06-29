@@ -1,6 +1,6 @@
 # Worktree Protocol
 
-Single source of truth for every worktree decision the orchestrator makes — when to spawn, where to spawn from, how multiple agents share a worktree, how portal ports are handled, and how teardown runs. CLAUDE.md L67 points here as a hard stop before any worktree spawn.
+Single source of truth for every worktree decision the orchestrator makes — when to spawn, where to spawn from, how multiple agents share a worktree, how app ports are handled, and how teardown runs. CLAUDE.md L67 points here as a hard stop before any worktree spawn.
 
 ## Scope — when worktrees apply
 
@@ -108,11 +108,11 @@ Inside any worktree-isolated agent's preflight:
 
 3. **If absent** — solo invocation. Run the standard self-heal preflight in your auto-isolation worktree (see [`worktree-base-self-heal.md`](worktree-base-self-heal.md)) and continue as normal.
 
-## Portal port — Next.js auto-retries, zero per-worktree config
+## App port — Next.js auto-retries, zero per-worktree config
 
-Every worktree can run `pnpm dev` inside `apps/portal/` and get a unique URL automatically. No env files, no scripts, no orchestrator-side port assignment.
+Every worktree can run `pnpm dev` inside `apps/{APP_NAME}/` and get a unique URL automatically. No env files, no scripts, no orchestrator-side port assignment.
 
-**How it works.** `apps/portal/package.json`'s `dev` script omits `-p` and `PORT` is not set, so Next.js's commander reads its default port (3000) with `portSource === 'default'`. When that port is busy, Next.js auto-retries the next free port (3001, 3002, …) — verified at `apps/portal/node_modules/next/dist/cli/next-dev.js` L192. The chosen URL is printed to the terminal that ran `pnpm dev`.
+**How it works.** `apps/{APP_NAME}/package.json`'s `dev` script omits `-p` and `PORT` is not set, so Next.js's commander reads its default port (3000) with `portSource === 'default'`. When that port is busy, Next.js auto-retries the next free port (3001, 3002, …) — verified at `apps/{APP_NAME}/node_modules/next/dist/cli/next-dev.js` L192. The chosen URL is printed to the terminal that ran `pnpm dev`.
 
 **Resulting behavior:**
 

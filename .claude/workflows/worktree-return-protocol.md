@@ -7,12 +7,12 @@ How a worktree-isolated agent (`staff-frontend-engineer`, `design-system-archite
 For any change with a UI surface, run a live preview **before** committing so the Operator can review the rendered result prior to merge:
 
 ```bash
-pnpm --filter portal dev          # Next.js auto-retries to the next free port
+pnpm --filter {APP_NAME} dev      # Next.js auto-retries to the next free port
                                   # (main usually holds 3000, worktrees land on 3001+)
                                   # URL is printed in this terminal
 ```
 
-Mechanism: see [`worktree-protocol.md`](worktree-protocol.md) § Portal port. No port flags, no env files — just run the script and report the URL.
+Mechanism: see [`worktree-protocol.md`](worktree-protocol.md) § App port. No port flags, no env files — just run the script and report the URL.
 
 Then, after the Operator approves the preview:
 

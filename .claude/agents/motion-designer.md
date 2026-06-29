@@ -111,7 +111,7 @@ Tokens → primitives → choreography → component-specific. Always work from 
 
 1. If a value can be expressed as `--name: value;`, it's a **token** → `foundations/motion.md`.
 2. If it's a reusable named animation (`fade-in`, `slide-up-row`), it's a **primitive** → `patterns/animation-library.md`.
-3. If it composes primitives into a domain-specific sequence (e.g. eval run completing, agent rollout streaming in), it's a **choreography pattern** → `patterns/[name].animations.md` (e.g. `eval-run-stream.animations.md`).
+3. If it composes primitives into a domain-specific sequence (e.g. [domain event A] completing, [domain event B] streaming in), it's a **choreography pattern** → `patterns/[name].animations.md` (e.g. `[domain-event].animations.md`).
 4. If it's bound to one component, it's a **component animation** → `components/[name]/animations.md`.
 
 Never hard-code a duration or easing in a pattern or component spec. Reference the token by name.

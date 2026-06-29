@@ -16,7 +16,7 @@ Repeat the steps that apply to this PR until clean. "Clean" = every applicable s
 
 - Skip only when the PR touches no TS/TSX (pure docs, pure markdown, pure config-without-types).
 
-**Step 3 — Browser verify.** Applies only when the PR touches a runtime UI surface (`apps/portal/**` rendered routes, `packages/ui/**` components with reachable demo). Start `pnpm dev` in the worktree if not running (Next.js auto-picks a free port), navigate to the affected route, capture screenshots to `.intermediate/audits/<topic>/<step>-<label>.png`. For each touched UI surface walk:
+**Step 3 — Browser verify.** Applies only when the PR touches a runtime UI surface (`apps/{APP_NAME}/**` rendered routes, `packages/ui/**` components with reachable demo). Start `pnpm dev` in the worktree if not running (Next.js auto-picks a free port), navigate to the affected route, capture screenshots to `.intermediate/audits/<topic>/<step>-<label>.png`. For each touched UI surface walk:
 
 - **Outcome** — does the change do what the operator asked? Compare side-by-side against the operator's screenshot or text description.
 - **States** — default + every state reachable from this surface. For a list/table: empty (`?state=empty`), filter-induced empty (search a non-match), overflow boundary (resize to force scroll), 0 / 1 / N pluralization, loading and error (`?state=loading|error`).
@@ -30,7 +30,7 @@ When the PR has no runtime UI (docs, workflow files, libs without consumers, bac
 **Step 3.5 — Visual review lens (designer audit).** Applies only when the PR touches a runtime UI surface — same trigger as step 3. After the engineer's browser-verify captures are in `.intermediate/audits/<topic>/`, the orchestrator dispatches `product-designer` with:
 
 - the screenshot paths for default + every reachable state captured in step 3,
-- the route and persona context (which persona, which workflow phase, which entry path — pulled from `docs/product/personas.md` + `alex-user-stories.md` or `scenarios.md` if present),
+- the route and persona context (which persona, which workflow phase, which entry path — pulled from `docs/product/personas.md` + `{PRIMARY_PERSONA_LOWER}-user-stories.md` or `scenarios.md` if present),
 - the brief: *"Run the visual review lens. Return PASS / FAIL + numbered findings."*
 
 The designer loads [`visual-review-lens.md`](./visual-review-lens.md) and returns the structured verdict defined there — three-question lens (why here / 10s job / F-pattern scan) + anti-pattern catalog check. The verdict format is fixed; do not paraphrase.
@@ -50,12 +50,12 @@ Exit only when every applicable step returns zero unresolved findings AND the ou
 
 The re-read checks at minimum:
 
-- **Token discipline** — `[var(--x)]` arbitrary syntax, hardcoded hex/px, app-scoped tokens leaked into `packages/ui`. Reuse via `var()` when values match. (Per memory: app-scoped tokens belong in `apps/portal/src/app/globals.css @theme`, not `packages/ui` theme.css.)
+- **Token discipline** — `[var(--x)]` arbitrary syntax, hardcoded hex/px, app-scoped tokens leaked into `packages/ui`. Reuse via `var()` when values match. (Per memory: app-scoped tokens belong in `apps/{APP_NAME}/src/app/globals.css @theme`, not `packages/ui` theme.css.)
 - **Composition over configuration** — new `variant` / `mode` / `kind` / `type` / `layout` props, or `isX` / `showY` / `hideZ` / `compact` / `readonly` booleans that branch children or logic. Split it.
 - **State coverage** — empty, loading, error, 0 / 1 / N plurals, overflow, focus-visible, hover, keyboard interaction.
 - **Width / truncation** — fixed-width triggers (`w-40` etc.) need to fit the longest possible label. Open every dropdown that changed.
 - **Cross-screen rhythm (spacing + typography)** — when the diff introduces or modifies an instance of a shared pattern (detail page, settings list, sub-shell, table column), open at least one peer surface using the same shell primitive side-by-side and compare. Check: vertical gaps (breadcrumb→H1→description→first section→between sections), font-size hierarchy (display/body/caption applied consistently), tabular column alignment + widths follow peer convention (numerics right-aligned with `tabular-nums`, etc.). Token discipline catches hardcoded values; this catches *consistency drift* between same-class surfaces. Past misses caught only by operator: detail H1 outsizing list H1 (different parent containers), numeric columns left-aligned where peers right-align.
-- **Copy** — matches Blaxel personality (`docs/product/personality.md`), not generic engineering prose. No marketing fluff in dashboard chrome.
+- **Copy** — matches {PRODUCT_NAME} personality (`docs/product/personality.md`), not generic engineering prose. No marketing fluff in dashboard chrome.
 - **Regressions** — sibling routes, parent shell, sub-shell back behavior, prefetch, hover targets.
 - **Comment debt** — comments that describe WHAT instead of WHY; comments that reference "this PR" or "the recent fix" (rots fast). Remove them.
 

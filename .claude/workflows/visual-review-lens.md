@@ -11,17 +11,17 @@ The contract: the designer answers three questions, in order, before saying anyt
 ### 1. Why is the user on this page?
 
 Name the entry path and the persona job. Use:
-- [`docs/product/personas.md`](../../docs/product/personas.md) — primary persona is Alex unless the surface is Account → Plan & billing (Maya) or audit-flavored (Sam)
-- [`docs/product/alex-user-stories.md`](../../docs/product/alex-user-stories.md) — the concrete job per phase
+- [`docs/product/personas.md`](../../docs/product/personas.md) — primary persona is {PRIMARY_PERSONA} unless the surface is Account → Plan & billing ({TERTIARY_PERSONA}) or audit-flavored ({SECONDARY_PERSONA})
+- [`docs/product/{PRIMARY_PERSONA_LOWER}-user-stories.md`](../../docs/product/{PRIMARY_PERSONA_LOWER}-user-stories.md) — the concrete job per phase
 - `.intermediate/discovery/{screen-slug}/scenarios.md` if it exists — the entry-path scenarios already enumerate this
 
-Output one sentence: *"Alex landed here from the sidebar after a failed Job in his agent's last run — he's checking whether the Job's Sandbox is still warm or has rotated out."* If you cannot name the entry path concretely, the screen has no audience and the review is meaningless — stop and return a question to the orchestrator.
+Output one sentence: *"{PRIMARY_PERSONA} landed here from the sidebar after a failed [resource type B] in his agent's last run — he's checking whether the [resource type B]'s [resource type A] is still warm or has rotated out."* If you cannot name the entry path concretely, the screen has no audience and the review is meaningless — stop and return a question to the orchestrator.
 
 ### 2. What is the user hoping to solve in 10 seconds?
 
 The audit question. From `scenarios.md` if it exists for detail / diagnostic screens; otherwise derived from the persona job in question 1.
 
-Output one sentence framed as the user's silent question: *"Is the Sandbox still warm, and if not, when did it cool?"* The screen passes question 2 if its header zone + first content row answer this question without a click and without a scroll. The screen fails question 2 if the answer is below the fold, behind a tab, or only visible after expanding a section.
+Output one sentence framed as the user's silent question: *"Is the [resource type A] still warm, and if not, when did it cool?"* The screen passes question 2 if its header zone + first content row answer this question without a click and without a scroll. The screen fails question 2 if the answer is below the fold, behind a tab, or only visible after expanding a section.
 
 ### 3. F-pattern scan — what's in each zone, and does it earn its place?
 

@@ -13,7 +13,7 @@ The orchestrator aggregates both into the verdict file at `.intermediate/reviews
 
 ## Reference templates
 
-Reference content for every phase may live in `.claude/workflows/templates/`. **Templates, when present, are agent-only, frozen, never copied verbatim.** Load them to see the *shape* of good artifacts; generate fresh content for the Blaxel domain.
+Reference content for every phase may live in `.claude/workflows/templates/`. **Templates, when present, are agent-only, frozen, never copied verbatim.** Load them to see the *shape* of good artifacts; generate fresh content for the {PRODUCT_NAME} domain.
 
 If `.claude/workflows/templates/` is not yet populated in this project, derive shape from the existing canonical artifacts under `docs/design/` and `docs/product/`.
 
@@ -101,10 +101,10 @@ After writing the file, post a one-line human-approval ping referencing the verd
 
 - [ ] 4–6 scenarios listed per screen (not 3 or fewer — insufficient coverage; not 7+ — bloat that erodes the synthesis intersection)
 - [ ] Every scenario specifies all 6 required fields (persona, came-from, goal, audit-question, header-requirement, default-content-requirement) with concrete answers (no `TBD`, no `{{}}`)
-- [ ] Personas are Alex or Sam — verbatim, not invented; persona choice fits the entry path described
-- [ ] Each entry path maps to a phase in `docs/product/alex-workflow.md` (or the equivalent for Sam if invoked) — fabricated journeys = FAIL
+- [ ] Personas are {PRIMARY_PERSONA} or {SECONDARY_PERSONA} — verbatim, not invented; persona choice fits the entry path described
+- [ ] Each entry path maps to a phase in `docs/product/{PRIMARY_PERSONA_LOWER}-workflow.md` (or the equivalent for {SECONDARY_PERSONA} if invoked) — fabricated journeys = FAIL
 - [ ] Audit questions are answerable in ≤10s of glance — one concrete sentence per question; no multi-paragraph "why did the whole flow break" sprawl
-- [ ] Vocabulary uses `docs/product/platform.md` terms verbatim (no synonyms; cross-check against [docs.blaxel.ai](https://docs.blaxel.ai/) when a term isn't in `platform.md`)
+- [ ] Vocabulary uses `docs/product/platform.md` terms verbatim (no synonyms; cross-check against [{PRODUCT_DOCS_URL}](https://{PRODUCT_DOCS_URL}/) when a term isn't in `platform.md`)
 - [ ] Synthesis sections (header contract, default-content contract) are the *intersection* of scenarios — not invented; if a synthesis bullet doesn't appear in at least 2 scenario requirements, it's invention and FAILs
 - [ ] No layout / copy / component decisions leaked (no "card", "tab", "drawer", or microcopy in scenario fields — those are the wireframe's job)
 

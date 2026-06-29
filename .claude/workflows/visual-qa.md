@@ -22,7 +22,7 @@ Motion is NOT captured via screenshot — motion-designer drives the app live.
 
 ## Capture procedure — formal design-QA
 
-1. Start the dev server. (Auto-reload conventions live in `auto-reload.md` if present; otherwise start manually via `npm run dev` or equivalent for `apps/portal`.)
+1. Start the dev server. (Auto-reload conventions live in `auto-reload.md` if present; otherwise start manually via `npm run dev` or equivalent for `apps/{APP_NAME}`.)
 2. Drive the browser via the Chrome DevTools MCP (tools surface as `mcp__chrome-devtools__*`): navigate to the target route, force the state (empty fixture, throttled network for loading, injected error for error), then screenshot.
 3. Save to:
 
