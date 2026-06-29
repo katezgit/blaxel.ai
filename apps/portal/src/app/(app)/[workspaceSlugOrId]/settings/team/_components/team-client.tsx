@@ -273,7 +273,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
             Workspace team
           </h1>
           <p className="text-muted-foreground">
-            Members invited to this workspace and the role they hold.
+            Members invited to {workspace.name} and the role they hold.
           </p>
         </header>
         <Button

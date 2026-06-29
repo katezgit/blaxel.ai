@@ -16,6 +16,7 @@ import { IdentityCluster } from "@/components/shell/identity-cluster";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { SearchTrigger } from "@/components/shell/search-trigger";
 import { Sidebar } from "@/components/shell/sidebar";
+import { SettingsSidebarIdentity } from "@/components/shell/settings-sidebar-identity";
 import { SkipToContent } from "@/components/shell/skip-to-content";
 import { SubShellSidebarReturnHeader } from "@/components/shell/sub-shell-sidebar-return-header";
 import { CollapsibleSidebarMarker } from "@/components/shell/use-is-sidebar-rail";
@@ -190,13 +191,16 @@ export function UnifiedShell({
         groups: ACCOUNT_NAV_GROUPS,
       };
     }
-    // settings (or closed — last-rendered content stays for clean slide-out)
+    // settings (or closed — last-rendered content stays for clean slide-out).
+    // No group label: the sidebar identity card above the items already
+    // carries the "Workspace settings" signal, so the uppercase group header
+    // would be redundant noise.
     return {
       ariaLabel: "Workspace settings",
       drawerId: WORKSPACE_SETTINGS_DRAWER_ID,
       groups: [
         {
-          label: "Workspace settings",
+          label: "",
           items: workspaceSettingsNavItems(settingsSlug),
         },
       ],
@@ -247,16 +251,11 @@ export function UnifiedShell({
                 mobileNavOpen={drawerOpen}
                 onOpenMobileNav={() => setDrawerOpen(true)}
               />
-            ) : subShellKind === "settings" ? (
-              <SettingsSubShellTopbar
-                workspace={headerWorkspace}
-                workspaces={workspaces}
-                user={user}
-                mobileNavId={mobileDrawerId}
-                mobileNavOpen={drawerOpen}
-                onOpenMobileNav={() => setDrawerOpen(true)}
-              />
             ) : (
+              // Brand-only sub-shell topbar covers profile / account / settings.
+              // Settings used to carry WorkspaceSwitcher here — it has moved
+              // into the sidebar as a static identity card. The global
+              // switcher on /{slug}/* main routes is unchanged.
               <PersonalSubShellTopbar
                 user={user}
                 mobileNavId={mobileDrawerId}
@@ -282,7 +281,12 @@ export function UnifiedShell({
                       groups={subPane.groups}
                       collapsed={subPaneCollapsed}
                       header={
-                        <SubShellSidebarReturnHeader workspace={headerWorkspace} />
+                        <>
+                          <SubShellSidebarReturnHeader workspace={headerWorkspace} />
+                          {subShellKind === "settings" && (
+                            <SettingsSidebarIdentity workspace={headerWorkspace} />
+                          )}
+                        </>
                       }
                     />
                   ) : (
@@ -328,10 +332,15 @@ export function UnifiedShell({
           header={
             subShellOpen
               ? (close) => (
-                  <SubShellSidebarReturnHeader
-                    workspace={headerWorkspace}
-                    onNavigate={close}
-                  />
+                  <>
+                    <SubShellSidebarReturnHeader
+                      workspace={headerWorkspace}
+                      onNavigate={close}
+                    />
+                    {subShellKind === "settings" && (
+                      <SettingsSidebarIdentity workspace={headerWorkspace} />
+                    )}
+                  </>
                 )
               : undefined
           }
@@ -392,56 +401,6 @@ function UnifiedTopbar({
   );
 }
 
-interface SettingsSubShellTopbarProps {
-  workspace: Org;
-  workspaces: ReadonlyArray<Org>;
-  user: { name: string; email: string; tier: string };
-  mobileNavId: string;
-  mobileNavOpen: boolean;
-  onOpenMobileNav: () => void;
-}
-
-// Workspace settings sub-shell topbar — keeps the workspace switcher because
-// every screen under /{slug}/settings/* configures *this* workspace. Removing
-// the switcher would force users to leave settings to switch context, then
-// renavigate back in. WorkspaceSwitcher already preserves the path tail on
-// switch (`/skylab/settings/general` ← from `/astra-staging/settings/general`).
-function SettingsSubShellTopbar({
-  workspace,
-  workspaces,
-  user,
-  mobileNavId,
-  mobileNavOpen,
-  onOpenMobileNav,
-}: SettingsSubShellTopbarProps) {
-  return (
-    <header className="shell-topbar shell-topbar-sub">
-      <div data-zone="left">
-        <IconButton
-          variant="ghost"
-          size="md"
-          data-slot="nav-trigger"
-          aria-label="Open navigation"
-          aria-expanded={mobileNavOpen}
-          aria-controls={mobileNavId}
-          onClick={onOpenMobileNav}
-        >
-          <Menu />
-        </IconButton>
-        <span data-slot="brand">
-          <BrandMark />
-        </span>
-        <span data-slot="ws">
-          <WorkspaceSwitcher currentOrg={workspace} workspaces={workspaces} />
-        </span>
-      </div>
-      <div data-zone="right">
-        <IdentityCluster user={user} />
-      </div>
-    </header>
-  );
-}
-
 interface PersonalSubShellTopbarProps {
   user: { name: string; email: string; tier: string };
   mobileNavId: string;
@@ -449,8 +408,12 @@ interface PersonalSubShellTopbarProps {
   onOpenMobileNav: () => void;
 }
 
-// Profile + account sub-shells — not workspace-scoped, so the switcher has no
-// meaning here and the topbar stays brand-only.
+// Sub-shell topbar — brand-only. Covers profile, account, AND settings.
+// Settings is workspace-scoped, but the workspace identity now lives in the
+// sidebar as a static identity card (see settings-sidebar-identity.tsx). The
+// global WorkspaceSwitcher remains on /{slug}/* main routes; surfacing it
+// here would conflate "switch app context" with "edit a different
+// workspace's settings."
 function PersonalSubShellTopbar({
   user,
   mobileNavId,

@@ -39,14 +39,20 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
         )}
       >
         {header}
-        {groups.map((group) => (
-          <div key={group.label} data-nav-group className="flex flex-col gap-0.5">
-            <div
-              data-group-label
-              className="px-2 pb-1 font-mono typography-meta uppercase text-meta-foreground"
-            >
-              {group.label}
-            </div>
+        {groups.map((group, index) => (
+          <div
+            key={group.label || `group-${index}`}
+            data-nav-group
+            className="flex flex-col gap-0.5"
+          >
+            {group.label ? (
+              <div
+                data-group-label
+                className="px-2 pb-1 font-mono typography-meta uppercase text-meta-foreground"
+              >
+                {group.label}
+              </div>
+            ) : null}
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => (
                 <li key={item.href}>
