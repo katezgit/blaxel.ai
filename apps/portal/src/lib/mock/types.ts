@@ -165,7 +165,7 @@ export interface IntegrationConnection {
 export interface ApiKey {
   id: string;
   name: string;
-  /** Masked display value, e.g. "sk-hud-…-w6". */
+  /** Masked display value, e.g. "sk-bl-…-w6". */
   masked: string;
   createdAt: string;
   expiresAt: string | null;

@@ -78,7 +78,7 @@ export interface StarCountProps
   /** Called when the user toggles the star. Receives the next boolean state. */
   onPressedChange: (next: boolean) => void
   /**
-   * Accessible name for the entity being starred (e.g. "hud-browser").
+   * Accessible name for the entity being starred (e.g. "blaxel-browser").
    * Becomes aria-label "Star {label}" or "Unstar {label}".
    */
   label: string

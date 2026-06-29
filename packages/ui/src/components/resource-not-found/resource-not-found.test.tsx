@@ -36,7 +36,7 @@ describe("ResourceNotFound", () => {
     expect(screen.getByText("Switch to Acme Corp to view it.")).toBeInTheDocument()
   })
 
-  // ── HUD vocabulary discipline ──────────────────────────────────────────────
+  // ── Blaxel vocabulary discipline ───────────────────────────────────────────
 
   it("composes the heading with the exact label passed — Taskset", () => {
     render(

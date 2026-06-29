@@ -16,7 +16,7 @@ const columnHelper = createColumnHelper<Secret>();
 // Write-only secrets: post-save, the value is never re-readable from the UI.
 // To rotate, the user overwrites via Edit; to remove, Delete. This matches
 // GitHub Actions / Vercel encrypted env / API-key dashboards (Stripe, OpenAI,
-// Anthropic) — the issuer (W&B, HF) is the source of truth, not HUD.
+// Anthropic) — the issuer (W&B, HF) is the source of truth, not Blaxel.
 const columns = [
   columnHelper.accessor("name", {
     header: "Name",

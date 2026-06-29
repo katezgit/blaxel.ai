@@ -29,13 +29,13 @@ afterEach(() => {
 describe("CodeBlock", () => {
   describe("render", () => {
     it("renders inline variant with code string", () => {
-      render(<CodeBlock code="hud set HUD_API_KEY=abc" />)
-      expect(screen.getByText("hud set HUD_API_KEY=abc")).toBeInTheDocument()
+      render(<CodeBlock code="bl set BLAXEL_API_KEY=abc" />)
+      expect(screen.getByText("bl set BLAXEL_API_KEY=abc")).toBeInTheDocument()
     })
 
     it("renders block variant with code string", () => {
-      render(<CodeBlock variant="block" code="$ hud env create my-env" />)
-      expect(screen.getByText("$ hud env create my-env")).toBeInTheDocument()
+      render(<CodeBlock variant="block" code="$ bl env create my-env" />)
+      expect(screen.getByText("$ bl env create my-env")).toBeInTheDocument()
     })
 
     it("inline renders a <code> element with data-slot=code-block", () => {
@@ -118,9 +118,9 @@ describe("CodeBlock", () => {
     it("calls clipboard.writeText with the code string", async () => {
       // default mock is mockResolvedValue(undefined) — no override needed
       const user = userEvent.setup()
-      render(<CodeBlock code="hud set KEY=val" />)
+      render(<CodeBlock code="bl set KEY=val" />)
       await user.click(screen.getByRole("button", { name: /copy to clipboard/i }))
-      expect(writeText).toHaveBeenCalledWith("hud set KEY=val")
+      expect(writeText).toHaveBeenCalledWith("bl set KEY=val")
     })
 
     it("transitions copy button to success state after copy", async () => {

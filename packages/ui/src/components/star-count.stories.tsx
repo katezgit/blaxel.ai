@@ -24,7 +24,7 @@ const meta: Meta<typeof StarCount> = {
     size: "sm",
     pressed: false,
     count: 24,
-    label: "hud-browser",
+    label: "blaxel-browser",
     stopPropagation: true,
   },
 }
@@ -46,7 +46,7 @@ interface PlaygroundProps {
 function PlaygroundInner({
   count = 24,
   size = "sm",
-  label = "hud-browser",
+  label = "blaxel-browser",
   pressed: initialPressed = false,
   stopPropagation = true,
   className,
@@ -107,7 +107,7 @@ export const Sizes: Story = {
           count={24}
           pressed={false}
           onPressedChange={() => {}}
-          label="hud-browser"
+          label="blaxel-browser"
           size="sm"
         />
       </Row>
@@ -116,7 +116,7 @@ export const Sizes: Story = {
           count={24}
           pressed={true}
           onPressedChange={() => {}}
-          label="hud-browser"
+          label="blaxel-browser"
           size="sm"
         />
       </Row>
@@ -125,7 +125,7 @@ export const Sizes: Story = {
           count={24}
           pressed={false}
           onPressedChange={() => {}}
-          label="hud-browser"
+          label="blaxel-browser"
           size="md"
         />
       </Row>
@@ -134,7 +134,7 @@ export const Sizes: Story = {
           count={24}
           pressed={true}
           onPressedChange={() => {}}
-          label="hud-browser"
+          label="blaxel-browser"
           size="md"
         />
       </Row>

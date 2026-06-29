@@ -14,7 +14,7 @@ export default function ModelsPage() {
         <div className="flex items-center gap-2">
           <h1 className="typography-display font-semibold text-foreground">Models</h1>
           <a
-            href="https://docs.hud.ai/platform/models"
+            href="https://docs.blaxel.ai/platform/models"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Models documentation, opens in new tab"
@@ -26,7 +26,7 @@ export default function ModelsPage() {
         <p className="text-muted-foreground">
           Models served via the{" "}
           <a
-            href="https://docs.hud.ai/platform/models"
+            href="https://docs.blaxel.ai/platform/models"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Inference Gateway documentation, opens in new tab"

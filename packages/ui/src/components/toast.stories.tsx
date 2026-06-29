@@ -74,7 +74,7 @@ export const Variants: Story = {
       <Button variant="secondary" onClick={() => toast.info("New eval results available")}>Info</Button>
       <Button
         variant="secondary"
-        onClick={() => toast.success("Checkpoint saved", { description: "Weights written to s3://hud-runs/ckpt-0042." })}
+        onClick={() => toast.success("Checkpoint saved", { description: "Weights written to s3://blaxel-runs/ckpt-0042." })}
       >
         With description
       </Button>

@@ -24,7 +24,7 @@
 //
 // heading: Composed from `label` by the component ("This {label} isn't
 //   available." / "This {label} is in a different workspace.") — guarantees
-//   HUD vocabulary discipline. Prop gives flexibility; composition prevents
+//   Blaxel vocabulary discipline. Prop gives flexibility; composition prevents
 //   drift. Wrong-workspace copy differs structurally (not just a token swap),
 //   so a discriminated union on `variant` handles both cleanly.
 //
@@ -78,8 +78,8 @@ type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 interface ResourceNotFoundBaseProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
   /**
-   * HUD primitive label — the canonical resource type noun.
-   * Use exact HUD vocabulary: "Job", "Trace", "Taskset", "Environment".
+   * Blaxel primitive label — the canonical resource type noun.
+   * Use exact Blaxel vocabulary: "Agent", "Sandbox", "MCP Server", "Policy", "Job", etc.
    * Never "page", "resource", "item".
    */
   label: string

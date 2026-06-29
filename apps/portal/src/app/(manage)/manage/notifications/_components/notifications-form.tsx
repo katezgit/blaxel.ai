@@ -56,7 +56,7 @@ export function NotificationsForm() {
         />
         <SettingRow
           title="Slack"
-          description="Connect Slack to mention HUD in messages."
+          description="Connect Slack to mention Blaxel in messages."
           control={
             <Button variant="secondary">
               Connect Slack

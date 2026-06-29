@@ -295,8 +295,8 @@ export const EmptyLoadingError: Story = {
           <TableBody>
             <TableEmptyRow
               colSpan={3}
-              cliCommand="hud eval <taskset>"
-              docHref="https://hud.ai/docs/jobs"
+              cliCommand="bl eval <taskset>"
+              docHref="https://docs.blaxel.ai/jobs"
             />
           </TableBody>
         </Table>
