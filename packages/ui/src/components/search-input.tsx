@@ -1,3 +1,5 @@
+"use client"
+
 // shadcn-source: radix-wrap:n/a — thin wrapper over local Input primitive (from-scratch-approved: design-system-architect-2026-06-01) (n/a, 2026-06-01)
 import * as React from "react"
 import { Search } from "lucide-react"

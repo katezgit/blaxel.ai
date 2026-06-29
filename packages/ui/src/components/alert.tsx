@@ -1,3 +1,5 @@
+"use client"
+
 // shadcn-source: https://ui.shadcn.com/docs/components/alert (cli, 2026-05-26)
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"

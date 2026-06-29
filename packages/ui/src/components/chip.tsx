@@ -1,3 +1,5 @@
+"use client"
+
 // shadcn-source: from-scratch-approved:design-system-architect (n/a)
 // No shadcn chip primitive; no Radix toggle-group match for this shape.
 //

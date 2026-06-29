@@ -1,3 +1,5 @@
+"use client"
+
 // shadcn-source: from-scratch-approved:KateZ-2026-05-26 (n/a, 2026-05-26)
 // No shadcn primitive and no Radix primitive exist for CodeBlock.
 // From-scratch approved by task precondition: "NO shadcn baseline exists for code-block — you build from scratch."
