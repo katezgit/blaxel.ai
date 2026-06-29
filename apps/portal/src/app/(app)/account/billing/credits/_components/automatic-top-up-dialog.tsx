@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Calendar, Loader2, Zap } from "lucide-react";
+import { cn } from "@repo/ui/lib/cn";
 import { Button } from "@repo/ui/components/button";
 import {
   Dialog,
@@ -332,9 +333,10 @@ function RuleRow({
 }: RuleRowProps) {
   return (
     <div
-      className={
-        withTopBorder ? "border-t border-border pt-4 mt-4 flex flex-col gap-4" : "flex flex-col gap-4"
-      }
+      className={cn(
+        "flex flex-col gap-4",
+        withTopBorder && "border-t border-border pt-4 mt-4",
+      )}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
@@ -353,6 +355,7 @@ function RuleRow({
           aria-label={switchLabel}
         />
       </div>
+      {/* pl-11 (44px) = size-8 icon (32px) + gap-3 (12px); aligns rule body under the title text. */}
       {enabled ? <div className="pl-11 flex flex-col gap-3">{children}</div> : null}
     </div>
   );

@@ -14,9 +14,9 @@ import { useAccountState } from "@/lib/mock/account-context";
 // Account sub-shell sidebar identity chip. Mirrors SettingsSidebarIdentity in
 // shape, padding, and iconography so the two sub-shells read as siblings; the
 // distinct lucide glyph (Building2) signals "the company entity" — workspace
-// chip uses Boxes for "workspace container". Maya scans this surface; the chip
-// stays clean (owner email + sublabel only). The account ID is reachable via
-// CopyButton when expanded and via tooltip when railed.
+// chip uses Boxes for "workspace container". The chip stays minimal (owner
+// email + sublabel only) so the account ID is reachable via CopyButton when
+// expanded and via tooltip when railed, without crowding the rail.
 export function AccountSidebarIdentity() {
   const { state } = useAccountState();
   const { ownerEmail, accountId } = state.identity;

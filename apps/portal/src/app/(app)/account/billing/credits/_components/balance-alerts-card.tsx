@@ -108,6 +108,7 @@ export default function BalanceAlertsCard() {
             />
           </div>
           {enabled ? (
+            // pl-11 (44px) = size-8 RuleIcon (32px) + gap-3 (12px); aligns the threshold field under the label.
             <div className="pl-11 flex flex-col gap-3">
               <FieldRow cols={2}>
                 <Field

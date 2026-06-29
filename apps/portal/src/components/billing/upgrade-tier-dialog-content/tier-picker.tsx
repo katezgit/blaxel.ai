@@ -1,5 +1,6 @@
 "use client";
 
+// TODO: migrate to Radix RadioGroup for parity with amount-picker.tsx.
 import { CircleDollarSign } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import { Badge } from "@repo/ui/components/badge";
@@ -62,7 +63,7 @@ export default function TierPicker({
           >
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="flex items-center gap-2">
-                <span className="font-mono typography-body font-medium text-foreground">
+                <span className="font-mono typography-body font-semibold text-foreground">
                   Tier {tier}
                 </span>
                 {isRecommended ? (
