@@ -133,7 +133,7 @@ export default function CreateOrganizationForm() {
       <Button
         type="submit"
         variant="primary"
-        className="mt-1 w-full"
+        className="mt-2 w-full"
         disabled={submitDisabled}
         aria-busy={isSubmitting}
       >

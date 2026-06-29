@@ -74,7 +74,7 @@ export default function UpsellPanel() {
 
       <SchematicIllustration />
 
-      <ul className="relative flex flex-col gap-5">
+      <ul className="relative flex flex-col gap-6">
         {FEATURES.map((feature) => (
           <li key={feature.eyebrow} className="flex flex-col gap-1">
             <span className="flex items-center gap-2 font-mono typography-meta font-medium uppercase tracking-wider text-muted-foreground">

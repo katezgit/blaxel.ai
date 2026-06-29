@@ -12,7 +12,7 @@ export default function OnboardingLayout({ children }: { children: ReactNode }) 
          * Same primary-tinted ambient glow as the desktop upsell halo, scaled for mobile. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute -top-32 left-1/2 h-[320px] w-[420px] -translate-x-1/2 rounded-full bg-primary opacity-[0.10] blur-3xl"
+          className="pointer-events-none absolute -top-32 left-1/2 h-[320px] w-[420px] -translate-x-1/2 rounded-full bg-primary opacity-10 blur-3xl"
         />
       </div>
       <div className="absolute inset-0 hidden lg:grid lg:grid-cols-2">
