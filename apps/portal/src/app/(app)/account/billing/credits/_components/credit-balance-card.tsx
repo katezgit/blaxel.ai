@@ -46,7 +46,7 @@ export default function CreditBalanceCard() {
   return (
     <Card
       variant="elevated"
-      className="flex flex-col gap-6 px-6 py-6 sm:flex-row sm:items-stretch sm:justify-between"
+      className="flex flex-col gap-5 p-5 sm:flex-row sm:items-stretch sm:justify-between sm:gap-6 sm:p-6"
     >
       <div className="flex flex-1 flex-col gap-2">
         <span className="typography-meta font-mono uppercase text-meta-foreground">
@@ -73,7 +73,7 @@ export default function CreditBalanceCard() {
       </div>
       <div
         aria-hidden="true"
-        className="hidden sm:block w-px self-stretch bg-border"
+        className="h-px w-full bg-border sm:h-auto sm:w-px sm:self-stretch"
       />
       {/*
         Action column min-width (180px) prevents the primary CTA from
