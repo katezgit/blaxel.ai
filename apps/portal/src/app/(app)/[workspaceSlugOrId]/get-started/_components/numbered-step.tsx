@@ -12,7 +12,7 @@ export default function NumberedStep({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 py-6 first:pt-0 last:pb-0">
+    <div className="flex flex-col gap-4">
       <div className="flex items-start gap-3">
         <span
           aria-hidden="true"
