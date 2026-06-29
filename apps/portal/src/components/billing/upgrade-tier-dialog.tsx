@@ -25,11 +25,14 @@ export default function UpgradeTierDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      {/* DS default max-h is 80vh; lift to 85vh on ≥sm so the header + stepper +
-          two-step body + footer all fit on 13" laptops without inner scroll
-          stacking against the dialog scroll. Below sm the DS makes DialogContent
+      {/* Fixed sm+ height pins the panel chrome so toggling Monthly ↔ One-time,
+          stepping through the wizard, or expanding the "Show more quotas"
+          disclosure does not visibly resize the dialog. 880px is sized for the
+          tallest natural state (Monthly step 1 with the quota disclosure expanded
+          ≈ 873px). On viewports shorter than ~1035px the 85vh cap takes over and
+          DialogBody scrolls internally. Below sm the DS makes DialogContent
           fullscreen — leave that uncapped. */}
-      <DialogContent size="lg" className="sm:max-h-[85vh]">
+      <DialogContent size="lg" className="sm:h-[880px] sm:max-h-[85vh]">
         <UpgradeTierDialogContent
           onClose={() => setOpen(false)}
           recommendedTier={recommendedTier}

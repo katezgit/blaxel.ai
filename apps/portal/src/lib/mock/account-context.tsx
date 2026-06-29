@@ -17,6 +17,7 @@ import {
   type AddOnId,
   type AutoTopUp,
   type DomainPolicy,
+  type LowBalanceAlert,
   type MonthlyTopUp,
   type SamlConfiguration,
   type Tier,
@@ -33,6 +34,7 @@ interface AccountContextValue {
   setTier: (tier: Tier) => void;
   setAutoTopUp: (next: AutoTopUp) => void;
   setMonthlyTopUp: (next: MonthlyTopUp) => void;
+  setLowBalanceAlert: (next: LowBalanceAlert) => void;
   toggleAddOn: (id: AddOnId) => void;
   addAdmin: (admin: AccountAdmin) => void;
   removeAdmin: (id: string) => void;
@@ -106,6 +108,10 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
 
   const setMonthlyTopUp = useCallback((next: MonthlyTopUp) => {
     setState((prev) => ({ ...prev, monthlyTopUp: next }));
+  }, []);
+
+  const setLowBalanceAlert = useCallback((next: LowBalanceAlert) => {
+    setState((prev) => ({ ...prev, lowBalanceAlert: next }));
   }, []);
 
   const toggleAddOn = useCallback((id: AddOnId) => {
@@ -196,6 +202,7 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
       setTier,
       setAutoTopUp,
       setMonthlyTopUp,
+      setLowBalanceAlert,
       toggleAddOn,
       addAdmin,
       removeAdmin,
@@ -211,6 +218,7 @@ export function AccountStateProvider({ children }: AccountProviderProps) {
       setTier,
       setAutoTopUp,
       setMonthlyTopUp,
+      setLowBalanceAlert,
       toggleAddOn,
       addAdmin,
       removeAdmin,

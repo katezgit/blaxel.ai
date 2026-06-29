@@ -43,3 +43,65 @@ export function resolveAmountUsd(
 ): number {
   return TIER_SUGGESTED_MONTHLY_USD[selectedTier(values)];
 }
+
+// --- One-time top-up form ----------------------------------------------------
+//
+// Separate from the Monthly schema above on purpose: one-time has no tier
+// concept (it's a raw credit purchase), so it carries its own amount-chip
+// selection + optional custom amount. Low-balance alert lives on the Credits
+// page (Balance alerts card) — persistent setting, not a checkout-flow step.
+
+/** Preset chip values, in display order. `null` = the Custom chip. */
+export const ONE_TIME_AMOUNT_PRESETS: ReadonlyArray<number> = [
+  50, 100, 200, 500, 1000,
+];
+
+export const oneTimeTopUpSchema = z
+  .object({
+    presetAmountUsd: z.number().nullable(),
+    customAmountUsd: z
+      .number({ message: "Amount is required" })
+      .min(1, "Amount must be at least $1")
+      .max(10000, "Amount must be at most $10,000")
+      .optional(),
+    autoTopUpEnabled: z.boolean(),
+    autoTopUpThresholdUsd: z
+      .number({ message: "Threshold is required" })
+      .min(1),
+    autoTopUpAmountUsd: z.number({ message: "Amount is required" }).min(1),
+    monthlyLimitEnabled: z.boolean(),
+    monthlyLimitAmountUsd: z.number({ message: "Amount is required" }).min(1),
+  })
+  .superRefine((values, ctx) => {
+    if (values.presetAmountUsd === null && values.customAmountUsd === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["customAmountUsd"],
+        message: "Enter a custom amount",
+      });
+    }
+  });
+
+export type OneTimeTopUpFormValues = z.infer<typeof oneTimeTopUpSchema>;
+
+/** Default — $200 preset selected, protection mirrors Monthly defaults. */
+export const ONE_TIME_INITIAL_VALUES: OneTimeTopUpFormValues = {
+  presetAmountUsd: 200,
+  customAmountUsd: undefined,
+  autoTopUpEnabled: true,
+  autoTopUpThresholdUsd: 25,
+  autoTopUpAmountUsd: 75,
+  monthlyLimitEnabled: false,
+  monthlyLimitAmountUsd: 200,
+};
+
+/** Effective USD amount — either the selected preset or the custom value. Returns 0 when nothing valid is set. */
+export function resolveOneTimeAmountUsd(
+  values: Pick<OneTimeTopUpFormValues, "presetAmountUsd" | "customAmountUsd">,
+): number {
+  if (values.presetAmountUsd !== null) return values.presetAmountUsd;
+  if (typeof values.customAmountUsd === "number" && Number.isFinite(values.customAmountUsd)) {
+    return values.customAmountUsd;
+  }
+  return 0;
+}

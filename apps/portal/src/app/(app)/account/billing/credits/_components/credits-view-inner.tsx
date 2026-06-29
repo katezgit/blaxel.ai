@@ -1,6 +1,8 @@
 "use client";
 
+import BalanceAlertsCard from "./balance-alerts-card";
 import CreditBalanceCard from "./credit-balance-card";
+import CreditHistoryCard from "./credit-history-card";
 import TopUpSettingsCard from "./top-up-settings-card";
 
 // Page-chrome-free body of the Credits surface. Used directly by the standalone
@@ -11,6 +13,8 @@ export default function CreditsViewInner() {
     <div className="flex flex-col gap-8">
       <CreditBalanceCard />
       <TopUpSettingsCard />
+      <BalanceAlertsCard />
+      <CreditHistoryCard />
     </div>
   );
 }
