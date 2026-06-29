@@ -1,7 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { SearchX } from "lucide-react";
 import { Button } from "@repo/ui";
 
 interface ResourceNotFoundProps {
@@ -21,37 +19,31 @@ export default function ResourceNotFound({
   listHref,
   listLabel,
 }: ResourceNotFoundProps) {
-  const router = useRouter();
   const diagnostic = `${resourceTypeSlug}/${id}`;
 
   return (
-    <div className="flex flex-1 items-center justify-center py-12">
+    <div className="flex min-h-full w-full items-start justify-center px-6 pt-[16vh] pb-12">
       <div className="flex w-full max-w-(--inline-empty-column-w) flex-col items-center gap-4 text-center">
-        <span className="inline-flex items-center rounded-md border border-border bg-muted-surface px-3 py-1.5 font-mono typography-label font-medium text-muted-foreground">
-          not_found
-        </span>
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-md bg-icon-tile text-muted-foreground">
+          <SearchX aria-hidden="true" className="size-6" />
+        </div>
 
-        <h2 className="typography-subtitle font-semibold text-foreground tracking-(--typography-subtitle--letter-spacing)">
+        <h1 className="typography-display font-semibold text-foreground">
           {resourceLabel} not found
-        </h2>
+        </h1>
 
         <div className="flex flex-col gap-1">
-          <p className="line-clamp-2 font-mono typography-body text-muted-foreground">
+          <p className="line-clamp-2 typography-code text-muted-foreground">
             {diagnostic}
           </p>
-          <p className="line-clamp-3 typography-body text-muted-foreground">
+          <p className="line-clamp-3 text-muted-foreground">
             {supportingLine}
           </p>
         </div>
 
-        <div className="flex flex-row gap-2">
-          <Button asChild variant="primary">
-            <Link href={listHref}>{listLabel}</Link>
-          </Button>
-          <Button type="button" variant="ghost" onClick={() => router.back()}>
-            Go back
-          </Button>
-        </div>
+        <Button asChild variant="secondary">
+          <Link href={listHref}>{listLabel}</Link>
+        </Button>
       </div>
     </div>
   );

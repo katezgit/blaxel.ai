@@ -315,7 +315,7 @@ Next.js then renders `not-found.tsx` in the nearest ancestor that has one — wh
 
 ### 6.5 Group-level chrome on typo'd URLs
 
-Group-level `not-found.tsx` files (e.g. `(manage)/not-found.tsx`) only render with the group's layout (sidebar, header) wrapped around them when `notFound()` is **explicitly** called inside the group's segment chain. Next.js 16's `global-not-found.tsx` intercepts typo'd URLs by default and renders chrome-less. To preserve the group's chrome on typo'd URLs, add a catch-all under that group:
+Group-level `not-found.tsx` files (e.g. `(manage)/not-found.tsx`) render with the group's layout (sidebar, header) wrapped around them when `notFound()` is called inside the group's segment chain. For deep URL misses inside a sub-shell, the default cascade can escape past the sub-shell layout — losing the sub-shell sidebar. To pin the not-found render to the sub-shell, add a catch-all under that group:
 
 ```tsx
 // app/(group)/<root>/[...catchAll]/page.tsx
@@ -323,7 +323,7 @@ import { notFound } from "next/navigation";
 export default function CatchAll() { notFound(); }
 ```
 
-See `docs/conventions/app-conventions.loading-and-errors.md` § "Next.js 16: global-not-found.tsx shadows group-level not-found.tsx" for the engineering rule.
+See `docs/conventions/app-conventions.loading-and-errors.md` § "Pinning typo'd URLs to a sub-shell's `not-found.tsx`" for the engineering rule.
 
 ---
 

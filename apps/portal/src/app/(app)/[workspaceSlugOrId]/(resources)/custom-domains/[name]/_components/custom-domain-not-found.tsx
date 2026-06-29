@@ -16,7 +16,7 @@ export default function CustomDomainNotFound({
       <Breadcrumb parent={{ href: listHref, label: "Custom domains" }} current={name} />
       <ResourceNotFound
         resourceLabel="Custom domain"
-        resourceTypeSlug="custom-domain"
+        resourceTypeSlug="custom-domains"
         id={name}
         supportingLine="This custom domain isn't available in this workspace."
         listHref={listHref}

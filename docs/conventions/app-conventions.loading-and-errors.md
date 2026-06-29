@@ -70,24 +70,24 @@ These are complementary, not either/or. A page typically has `loading.tsx` for n
 | Page with unique error recovery | Yes | Yes |
 | Static page (no data fetching) | No | No |
 
-## Next.js 16: `global-not-found.tsx` shadows group-level `not-found.tsx`
+## Pinning typo'd URLs to a sub-shell's `not-found.tsx`
 
-`global-not-found.tsx` is a Next.js 16 file that catches **every URL that does not match any route definition**, including URLs that fall under a route-group's filesystem prefix (e.g. `/manage/typo`). When this file exists, it overrides nearer `(group)/not-found.tsx` boundaries for typo'd URLs — the group's sidebar/header are not visible.
+By default Next.js routing for an unmatched URL walks UP the segment chain to the nearest `not-found.tsx`. For deep typos (e.g. `/{workspace}/settings/foo/bar`) that walk can escape past the sub-shell layout you want preserved (e.g. WorkspaceShell's settings sub-shell) and land at the closest `(group)/not-found.tsx` — losing the sidebar context.
 
-**To keep the group's layout (sidebar, header) visible on typo'd URLs**, add an explicit catch-all route inside the group that calls `notFound()`. That converts "no route match" into "explicit notFound() propagation," which walks UP the segment chain to the nearest `not-found.tsx` — wrapped by every layout above it.
+**To pin the not-found render inside a specific sub-shell**, add an explicit catch-all route inside that segment that calls `notFound()`. The catch-all matches any deep miss, then `notFound()` propagates up to the nearest `not-found.tsx` — which is the sub-shell's, wrapped by the sub-shell's layout.
 
 ```tsx
-// app/(manage)/manage/[...catchAll]/page.tsx
+// app/(app)/[workspaceSlugOrId]/settings/[...catchAll]/page.tsx
 import { notFound } from "next/navigation";
 
-export default function ManageCatchAll() {
+export default function SettingsCatchAll() {
   notFound();
 }
 ```
 
-Catch-all priority is the lowest in Next.js matching — static and dynamic segments still win, so this only fires when nothing else matches. Add one per group you want sidebar-preserving 404s for. The matching `(group)/not-found.tsx` then renders inside `(group)/layout.tsx` + any deeper layout.
+Catch-all priority is the lowest in Next.js matching — static and dynamic segments still win, so this only fires when nothing else matches. Add one per group whose chrome you want preserved on deep misses. The matching `(group)/not-found.tsx` renders inside `(group)/layout.tsx` + any deeper layout.
 
-`global-not-found.tsx` remains the fallback for URLs that don't fit any group prefix at all (e.g. `/random-thing`).
+Root `not-found.tsx` remains the chromeless fallback for URLs that escape every group (pre-auth, unresolved workspace slug).
 
 ## Vertical sizing — `min-h-full` vs `min-h-screen`
 
@@ -101,7 +101,7 @@ Catch-all priority is the lowest in Next.js matching — static and dynamic segm
 <div className="flex min-h-screen w-full items-center justify-center">
 ```
 
-`global-error.tsx` and `global-not-found.tsx` own their own `<html>`/`<body>` (the root layout may have crashed or not be in scope). For those, `min-h-screen` is correct — there is no shell chrome to compete with.
+`global-error.tsx` owns its own `<html>`/`<body>` (the root layout may have crashed). For it, `min-h-screen` is correct — there is no shell chrome to compete with.
 
 ## Spacing on full-page error/not-found surfaces
 
