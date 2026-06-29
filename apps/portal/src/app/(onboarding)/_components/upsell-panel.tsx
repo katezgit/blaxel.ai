@@ -32,23 +32,32 @@ export default function UpsellPanel() {
         className="pointer-events-none absolute -top-24 -left-16 h-[360px] w-[420px] rounded-full bg-primary opacity-[0.07] blur-3xl"
       />
 
-      <span aria-hidden="true" className="relative flex h-7 items-center overflow-hidden">
-        <Image
-          src="/blaxel-logo.svg"
-          alt=""
-          width={98}
-          height={28}
-          priority
-          className="h-7 w-auto max-w-none dark:hidden"
-        />
-        <Image
-          src="/blaxel-logo-dark.svg"
-          alt=""
-          width={98}
-          height={28}
-          priority
-          className="hidden h-7 w-auto max-w-none dark:block"
-        />
+      <span
+        aria-hidden="true"
+        aria-label="Blaxel"
+        className="relative flex items-center gap-2"
+      >
+        <span className="flex h-7 w-7 shrink-0 items-center overflow-hidden">
+          <Image
+            src="/blaxel-logo.svg"
+            alt=""
+            width={70}
+            height={28}
+            priority
+            className="h-7 w-auto max-w-none dark:hidden"
+          />
+          <Image
+            src="/blaxel-logo-dark.svg"
+            alt=""
+            width={70}
+            height={28}
+            priority
+            className="hidden h-7 w-auto max-w-none dark:block"
+          />
+        </span>
+        <span className="text-(length:--brand-text-size) leading-none font-semibold tracking-tight text-foreground">
+          blaxel
+        </span>
       </span>
 
       <div className="relative flex flex-col gap-3">

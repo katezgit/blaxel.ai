@@ -50,13 +50,13 @@ export default function InviteMembersForm() {
 
   const onSubmit = handleSubmit(async () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
-    router.push("/");
+    router.push("/get-started");
   });
 
   const submitDisabled = isSubmitting || !emailsValue?.trim();
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <FormField id="invite-emails" label="Email addresses" required>
           <Input
@@ -104,7 +104,7 @@ export default function InviteMembersForm() {
           Send invitations
         </Button>
         <Link
-          href="/"
+          href="/get-started"
           className="typography-caption text-muted-foreground transition-colors hover:text-foreground"
         >
           Skip

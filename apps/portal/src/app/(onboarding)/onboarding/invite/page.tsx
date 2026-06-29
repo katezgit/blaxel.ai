@@ -27,7 +27,7 @@ export default function InviteMembersPage() {
             Invite members
           </h1>
           <p className="typography-caption text-muted-foreground">
-            Optional — add teammates now or skip this step.
+            Teammates join as Admins. Invite more anytime.
           </p>
         </div>
       </CardHeader>

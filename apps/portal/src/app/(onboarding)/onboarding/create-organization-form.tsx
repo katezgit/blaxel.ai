@@ -77,22 +77,17 @@ export default function CreateOrganizationForm() {
     (slugValue ?? "").trim().length < 2;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <FormField id="org-logo" label="Logo (optional)">
-        <div className="flex items-center gap-3">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => {
-              // Demo only — upload not wired. Operator review the visual; data flow is out of scope.
-            }}
-          >
-            Upload logo
-          </Button>
-          <span className="font-mono typography-meta text-muted-foreground">
-            Optional — add later in Settings
-          </span>
-        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => {
+            // Upload not wired — demo state.
+          }}
+        >
+          Upload logo
+        </Button>
       </FormField>
 
       <FormField

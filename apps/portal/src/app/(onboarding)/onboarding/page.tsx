@@ -17,7 +17,7 @@ export default function OnboardingPage() {
             Create your organization
           </h1>
           <p className="typography-caption text-muted-foreground">
-            You can change this later in Settings.
+            Change anytime in Settings.
           </p>
         </div>
       </CardHeader>
