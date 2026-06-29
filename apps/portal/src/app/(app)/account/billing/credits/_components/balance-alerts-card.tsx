@@ -1,11 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Bell } from "lucide-react";
+import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Switch } from "@repo/ui/components/switch";
@@ -47,7 +48,125 @@ function RuleIcon() {
 export default function BalanceAlertsCard() {
   const { state, setLowBalanceAlert } = useAccountState();
   const { enabled, thresholdUsd } = state.lowBalanceAlert;
+  const [isEditing, setIsEditing] = useState(false);
 
+  return (
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h2 className="typography-subtitle font-semibold text-foreground">
+          Balance alerts
+        </h2>
+        <p className="typography-body text-muted-foreground">
+          Get an email when your credit balance drops below a threshold.
+        </p>
+      </div>
+      <RuleShell>
+        {isEditing ? (
+          <EditingRow
+            thresholdUsd={thresholdUsd}
+            onCancel={() => setIsEditing(false)}
+            onSaved={() => setIsEditing(false)}
+            onSave={(next) => setLowBalanceAlert({ enabled: true, thresholdUsd: next })}
+          />
+        ) : enabled ? (
+          <CollapsedOnRow
+            thresholdUsd={thresholdUsd}
+            onToggleOff={() => {
+              setLowBalanceAlert({ enabled: false, thresholdUsd });
+              setIsEditing(false);
+              toast.success("Balance alerts disabled");
+            }}
+            onEdit={() => setIsEditing(true)}
+          />
+        ) : (
+          <OffRow
+            onEnable={() => {
+              setLowBalanceAlert({ enabled: true, thresholdUsd });
+              toast.success("Balance alerts enabled");
+            }}
+          />
+        )}
+      </RuleShell>
+    </section>
+  );
+}
+
+function OffRow({ onEnable }: { onEnable: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <RuleIcon />
+        <div className="flex flex-col gap-1">
+          <span className="typography-body font-semibold text-foreground">
+            Balance alert
+          </span>
+          <span className="typography-caption text-muted-foreground">
+            Add an email alert when your balance falls below a threshold.
+          </span>
+        </div>
+      </div>
+      <Button type="button" variant="secondary" onClick={onEnable}>
+        Enable
+      </Button>
+    </div>
+  );
+}
+
+function CollapsedOnRow({
+  thresholdUsd,
+  onToggleOff,
+  onEdit,
+}: {
+  thresholdUsd: number;
+  onToggleOff: () => void;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <RuleIcon />
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <span className="typography-body font-semibold text-foreground">
+              Balance alert
+            </span>
+            <Badge variant="success" showDot>
+              On
+            </Badge>
+          </div>
+          <span className="typography-caption text-muted-foreground">
+            Email me when balance falls below{" "}
+            <span className="font-mono text-foreground">{formatUsd(thresholdUsd)}</span>.
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <Switch
+          checked={true}
+          aria-label="Disable balance alerts"
+          onCheckedChange={(checked) => {
+            if (!checked) onToggleOff();
+          }}
+        />
+        <Button type="button" variant="ghost" onClick={onEdit}>
+          Edit
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function EditingRow({
+  thresholdUsd,
+  onCancel,
+  onSave,
+  onSaved,
+}: {
+  thresholdUsd: number;
+  onCancel: () => void;
+  onSave: (next: number) => void;
+  onSaved: () => void;
+}) {
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { thresholdUsd },
@@ -68,80 +187,56 @@ export default function BalanceAlertsCard() {
 
   const onSubmit = handleSubmit(async (values) => {
     await new Promise((resolve) => setTimeout(resolve, 250));
-    setLowBalanceAlert({ enabled: true, thresholdUsd: values.thresholdUsd });
+    onSave(values.thresholdUsd);
     reset({ thresholdUsd: values.thresholdUsd });
     toast.success("Balance alert updated");
+    onSaved();
   });
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h2 className="typography-subtitle font-semibold text-foreground">
-          Balance alerts
-        </h2>
-        <p className="typography-body text-muted-foreground">
-          Get an email when your credit balance drops below a threshold.
-        </p>
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <RuleIcon />
+        <span className="typography-body font-semibold text-foreground">
+          Balance alert
+        </span>
       </div>
-      <RuleShell>
-        <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <RuleIcon />
-              <label
-                htmlFor="balance-alert-toggle"
-                className="typography-body font-semibold text-foreground"
-              >
-                Email me when balance falls below
-              </label>
-            </div>
-            <Switch
-              id="balance-alert-toggle"
-              checked={enabled}
-              aria-label={enabled ? "Disable balance alerts" : "Enable balance alerts"}
-              onCheckedChange={(checked) => {
-                setLowBalanceAlert({ enabled: checked, thresholdUsd });
-                toast.success(
-                  checked ? "Balance alerts enabled" : "Balance alerts disabled",
-                );
-              }}
+      {/* pl-11 (44px) = size-8 RuleIcon (32px) + gap-3 (12px); aligns the threshold field under the label. */}
+      <div className="pl-11 flex flex-col gap-3">
+        <FieldRow cols={2}>
+          <Field
+            label="Alert threshold"
+            error={errors.thresholdUsd?.message}
+            hint="USD"
+          >
+            <Input
+              type="number"
+              inputMode="decimal"
+              step="1"
+              min="1"
+              aria-invalid={errors.thresholdUsd ? true : undefined}
+              {...register("thresholdUsd", { valueAsNumber: true })}
             />
-          </div>
-          {enabled ? (
-            // pl-11 (44px) = size-8 RuleIcon (32px) + gap-3 (12px); aligns the threshold field under the label.
-            <div className="pl-11 flex flex-col gap-3">
-              <FieldRow cols={2}>
-                <Field
-                  label="Alert threshold"
-                  error={errors.thresholdUsd?.message}
-                  hint="USD"
-                >
-                  <Input
-                    type="number"
-                    inputMode="decimal"
-                    step="1"
-                    min="1"
-                    aria-invalid={errors.thresholdUsd ? true : undefined}
-                    {...register("thresholdUsd", { valueAsNumber: true })}
-                  />
-                </Field>
-              </FieldRow>
-              <p className="typography-caption text-muted-foreground">
-                Currently set to {formatUsd(thresholdUsd)}.
-              </p>
-              <div className="flex items-center justify-end gap-2">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={isSubmitting || !isValid || !isDirty}
-                >
-                  {isSubmitting ? "Saving…" : "Save changes"}
-                </Button>
-              </div>
-            </div>
-          ) : null}
-        </form>
-      </RuleShell>
-    </section>
+          </Field>
+        </FieldRow>
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={isSubmitting || !isValid || !isDirty}
+          >
+            {isSubmitting ? "Saving…" : "Save changes"}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }

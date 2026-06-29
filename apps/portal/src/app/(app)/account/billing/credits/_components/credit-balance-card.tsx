@@ -1,7 +1,6 @@
 "use client";
 
 import { CreditCard, Plus } from "lucide-react";
-import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
@@ -37,11 +36,8 @@ export default function CreditBalanceCard() {
     ? `Charged to ${brand} ending ${last4}`
     : "No payment method on file";
 
-  const autoEnabled = state.autoTopUp.enabled;
-  const monthlyEnabled = state.monthlyTopUp.enabled;
-  const hasAnyRuleEnabled = autoEnabled || monthlyEnabled;
-  const ruleVariant = hasPaymentMethod ? "success" : "warning";
-  const ruleSuffix = hasPaymentMethod ? "On" : "No payment method";
+  const hasAnyRuleEnabled =
+    state.autoTopUp.enabled || state.monthlyTopUp.enabled;
 
   const secondaryLabel = hasAnyRuleEnabled
     ? "Edit top-up rules"
@@ -72,20 +68,6 @@ export default function CreditBalanceCard() {
           <CreditCard aria-hidden="true" className="size-3.5" />
           {paymentSummary}
         </p>
-        {hasAnyRuleEnabled ? (
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            {autoEnabled ? (
-              <Badge variant={ruleVariant} showDot>
-                Auto top-up · {ruleSuffix}
-              </Badge>
-            ) : null}
-            {monthlyEnabled ? (
-              <Badge variant={ruleVariant} showDot>
-                Monthly top-up · {ruleSuffix}
-              </Badge>
-            ) : null}
-          </div>
-        ) : null}
       </div>
       <div
         aria-hidden="true"
