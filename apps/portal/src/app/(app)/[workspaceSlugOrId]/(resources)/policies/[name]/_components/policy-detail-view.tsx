@@ -20,7 +20,6 @@ import MaxTokenClauseBand from "./max-token-clause-band";
 import FlavorClauseBand from "./flavor-clause-band";
 import PolicyUsageBand from "./policy-usage-band";
 import PolicyProvenanceBand from "./policy-provenance-band";
-import PolicyCliBand from "./policy-cli-band";
 import PolicyDetailSkeleton from "./policy-detail-skeleton";
 import DeletePolicyDialog from "./delete-policy-dialog";
 import {
@@ -164,7 +163,6 @@ export function PolicyDetailView({
         workspaceSlug={workspaceSlug}
         onRequestDelete={() => setPolicyToDelete(policy)}
       />
-      <PolicyCliBand policy={policy} />
       <PolicyProvenanceBand
         metadata={policy.metadata}
         policyType={policy.spec.type}

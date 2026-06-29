@@ -1,15 +1,30 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { ArrowUpRight } from "lucide-react";
+import { Code2 } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { CodeBlock } from "@repo/ui/components/code-block";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@repo/ui/components/dialog";
+import {
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@repo/ui/components/drawer";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
@@ -28,7 +43,6 @@ import {
   LocationBody,
   PolicyTypeSelectField,
   ResourceTypesField,
-  StepHeading,
   TokenUsageBody,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-pieces";
 import {
@@ -41,14 +55,6 @@ import {
   type PolicyFormValues,
   type TokenLimits,
 } from "@/app/(app)/[workspaceSlugOrId]/(resources)/policies/_components/policy-form/form-schema";
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@repo/ui/components/dialog";
 
 interface CreatePolicyViewProps {
   workspaceSlug: string;
@@ -69,34 +75,34 @@ export default function CreatePolicyView({ workspaceSlug }: CreatePolicyViewProp
 
   if (duplicateName != null && duplicateQuery.isPending) {
     return (
-      <div className={PAGE_SHELL_CLASS}>
+      <PageShell>
         <Header listHref={listHref} />
         <p className="typography-body text-muted-foreground">
           Loading source policy…
         </p>
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div className={PAGE_SHELL_CLASS}>
-      <Header listHref={listHref} />
-      <CreatePolicyForm
-        listHref={listHref}
-        initialType={typeParam}
-        duplicateFrom={duplicateQuery.data ?? null}
-      />
-    </div>
+    <CreatePolicyForm
+      listHref={listHref}
+      initialType={typeParam}
+      duplicateFrom={duplicateQuery.data ?? null}
+    />
   );
 }
 
 // Height-bound shell: fills `<main>` so the form column owns its own scroll
-// region (sections 1–5) and the footer sits below it as a natural flex sibling.
-// Page itself does not scroll — overflow-hidden prevents the whole route from
-// scrolling when sections overflow. Padding ramps with viewport so two-column
-// content keeps breathing room from the sidebar edge below the xl breakpoint.
-const PAGE_SHELL_CLASS =
-  "mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 overflow-hidden px-6 pb-6 pt-8 md:px-8 lg:px-12 xl:px-20";
+// region via ScrollArea, while header + footer stay pinned. xl padding mirrors
+// the rest of the app shell.
+function PageShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto flex h-full w-full max-w-(--page-max-width) flex-col gap-6 overflow-hidden px-6 pb-6 pt-6 md:px-8 lg:px-12 xl:px-20">
+      {children}
+    </div>
+  );
+}
 
 function Header({ listHref }: { listHref: string }) {
   return (
@@ -130,8 +136,6 @@ function CreatePolicyForm({
 }: CreatePolicyFormProps) {
   const router = useRouter();
 
-  // Flavor deep-link falls through: form pre-selects Location, but section 2
-  // surfaces a one-time notice explaining flavor is CLI-only.
   const flavorDeepLink = initialType === "flavor";
 
   const defaultValues = useMemo<PolicyFormValues>(() => {
@@ -180,10 +184,11 @@ function CreatePolicyForm({
 
   const policyType = form.watch("policyType");
   const resourceTypes = form.watch("resourceTypes");
-  const cleanName = (form.watch("name") || "my-policy").trim();
+  // Placeholder uses angle brackets so an unfilled snippet looks visibly
+  // non-runnable — discourages copying before the form is filled in.
+  const cleanName = (form.watch("name") || "<your-policy-name>").trim();
   const cleanDisplayName = (form.watch("displayName") || cleanName).trim();
 
-  // Body-editor state lives below RHF so the code-reference panel can read it.
   const INITIAL_LOCATIONS: ReadonlyArray<LocationItem> = [
     { type: "continent", name: "North America" },
     { type: "country", name: "United States of America" },
@@ -207,6 +212,19 @@ function CreatePolicyForm({
   });
   const isDirty = form.formState.isDirty || bodyDirty;
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [codeOpen, setCodeOpen] = useState(false);
+
+  const snapshot = useMemo<PolicySnapshot>(
+    () => ({
+      policyType,
+      name: cleanName,
+      displayName: cleanDisplayName,
+      resourceTypes,
+      locations,
+      tokenLimits,
+    }),
+    [policyType, cleanName, cleanDisplayName, resourceTypes, locations, tokenLimits],
+  );
 
   const onSubmit = form.handleSubmit(async () => {
     await new Promise((resolve) => setTimeout(resolve, 400));
@@ -230,110 +248,139 @@ function CreatePolicyForm({
     }
   }
 
-  // Shared step list — rendered once in the mobile single-scroll viewport,
-  // once in the lg split-column layout. React renders each <section> tree
-  // independently so useId-driven aria-* IDs stay unique per instance.
-  const formSections = (
-    <>
-      <section className="flex flex-col gap-4">
-        <StepHeading index={1} title="Choose a policy type" />
-        <PolicyTypeSelectField form={form} />
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <StepHeading
-          index={2}
-          title="Name the policy"
-          description="Display name is the dashboard label; the slug is auto-derived for CLI."
-        />
-        <IdentityEditableFields form={form} />
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <StepHeading
-          index={3}
-          title="Configure the rule"
-          description={POLICY_TYPE_BY_VALUE[policyType].hint}
-        />
-        {flavorDeepLink ? <FlavorUnavailableNotice /> : null}
-        {policyType === "location" ? (
-          <LocationBody value={locations} onChange={setLocations} />
-        ) : null}
-        {policyType === "maxToken" ? (
-          <TokenUsageBody value={tokenLimits} onChange={setTokenLimits} />
-        ) : null}
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <StepHeading
-          index={4}
-          title="Choose target workloads"
-          description="Attaches only to the workload types selected here."
-        />
-        <ResourceTypesField form={form} />
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <StepHeading
-          index={5}
-          title="Labels"
-          description="Key/value pairs for organizing and filtering. Optional."
-        />
-        <LabelsEditor form={form} />
-      </section>
-    </>
-  );
-
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      className="flex min-h-0 flex-1 flex-col gap-4"
-    >
-      {/* Layout splits at lg: mobile reads the form and code panel as one
-          continuous step list (single scroll viewport); lg+ splits into
-          form-left / code-right with each column scrolling independently.
-          Footer stays pinned in both layouts. */}
-      <ScrollArea className="block min-h-0 flex-1 lg:hidden">
-        {/* pl-1 clears the 4px focus halo (base.css) from the ScrollArea
-            viewport's overflow:hidden boundary; pr-4 keeps the scrollbar gutter. */}
-        <div className="flex flex-col gap-10 pb-2 pl-1 pr-4">
-          {formSections}
-          <CodeReferencePanel
-            policyType={policyType}
-            name={cleanName}
-            displayName={cleanDisplayName}
-            resourceTypes={resourceTypes}
-            locations={locations}
-            tokenLimits={tokenLimits}
-          />
-        </div>
-      </ScrollArea>
-
-      <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-8">
-        <ScrollArea className="min-h-0">
-          <div className="flex flex-col gap-10 pb-2 pl-1 pr-4">{formSections}</div>
-        </ScrollArea>
-
-        <ScrollArea className="min-h-0">
-          <div className="pb-2 pl-1 pr-4">
-            <CodeReferencePanel
-              policyType={policyType}
-              name={cleanName}
-              displayName={cleanDisplayName}
-              resourceTypes={resourceTypes}
-              locations={locations}
-              tokenLimits={tokenLimits}
-            />
+    <PageShell>
+      <header className="flex flex-col gap-3">
+        <Breadcrumb
+          parent={{ href: listHref, label: "Policies" }}
+          current="Create policy"
+        />
+        <div className="flex items-start justify-between gap-4">
+          <div className="page-header">
+            <h1 className="typography-display font-semibold text-foreground">
+              Create policy
+            </h1>
+            <p className="typography-body text-muted-foreground">
+              Define a rule and the workloads it attaches to.
+            </p>
           </div>
-        </ScrollArea>
-      </div>
+          {/* Below lg, the code rail is gone and the form takes full width;
+              this button summons the snippet in a drawer so the user can copy
+              it without losing the form they're filling. Hidden on lg+ where
+              the side rail is already visible. */}
+          <Button
+            type="button"
+            variant="ghost"
+            className="shrink-0 gap-1.5 lg:hidden"
+            onClick={() => setCodeOpen(true)}
+          >
+            <Code2 aria-hidden="true" className="size-4" />
+            Or use in code
+          </Button>
+        </div>
+      </header>
 
-      <FormFooter
-        isDirty={isDirty}
-        onCancel={onCancel}
-        submitting={form.formState.isSubmitting}
-      />
+      <form
+        onSubmit={onSubmit}
+        noValidate
+        className="flex min-h-0 flex-1 flex-col gap-4"
+      >
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,36rem)_minmax(0,28rem)]">
+          <ScrollArea className="min-h-0">
+            <div className="flex flex-col gap-10 pb-2 pl-1 pr-4">
+              <section className="flex flex-col gap-4">
+                <SectionHeading title="Choose a policy type" />
+                <PolicyTypeSelectField form={form} />
+              </section>
+
+              <section className="flex flex-col gap-4">
+                <SectionHeading title="Name the policy" />
+                <IdentityEditableFields form={form} />
+              </section>
+
+              <section className="flex flex-col gap-4">
+                <SectionHeading
+                  title="Configure the rule"
+                  description={POLICY_TYPE_BY_VALUE[policyType].hint}
+                />
+                {flavorDeepLink ? <FlavorUnavailableNotice /> : null}
+                {policyType === "location" ? (
+                  <LocationBody value={locations} onChange={setLocations} />
+                ) : null}
+                {policyType === "maxToken" ? (
+                  <TokenUsageBody value={tokenLimits} onChange={setTokenLimits} />
+                ) : null}
+              </section>
+
+              <section className="flex flex-col gap-4">
+                <SectionHeading
+                  title="Choose target workloads"
+                  description="Attaches only to the workload types selected here."
+                />
+                <ResourceTypesField form={form} />
+              </section>
+
+              <section className="flex flex-col gap-4">
+                <SectionHeading
+                  title="Labels"
+                  description="Key/value pairs for organizing and filtering. Optional."
+                />
+                <LabelsEditor form={form} />
+              </section>
+            </div>
+          </ScrollArea>
+
+          {/* Side rail on lg+. Below lg it's hidden and the header's
+              "Use in code" button surfaces the same panel inside a drawer. */}
+          <div className="hidden min-h-0 pb-2 pl-1 pr-4 lg:block">
+            <CodeReferencePanel snapshot={snapshot} />
+          </div>
+        </div>
+
+        {/* Footer hairline + actions live inside the form column cell — the
+            code column has no footer affordance, so the divider stops at the
+            form column gap. Buttons are anchored to max-w-sm (Display name /
+            Name input width) so they read as siblings of those fields. */}
+        <div
+          role="region"
+          aria-label={isDirty ? "Unsaved changes" : "Create policy actions"}
+          className="shrink-0 lg:grid lg:grid-cols-[minmax(0,36rem)_minmax(0,28rem)] lg:gap-8"
+        >
+          <div className="border-t border-border pt-6">
+            <div className="flex max-w-sm items-center justify-between gap-2">
+              {isDirty && !form.formState.isSubmitting ? (
+                <Button type="button" variant="ghost" onClick={onCancel}>
+                  Cancel
+                </Button>
+              ) : (
+                <span aria-hidden="true" />
+              )}
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? "Creating…" : "Create policy"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      {/* Below lg, the snippet panel lives in this drawer instead of a side
+          rail. Triggered by the header "Use in code" button. */}
+      <Drawer open={codeOpen} onOpenChange={setCodeOpen} direction="right">
+        <DrawerContent size="md">
+          <DrawerHeader>
+            <DrawerTitle>Or use in code</DrawerTitle>
+            <DrawerCloseButton />
+          </DrawerHeader>
+          <DrawerBody>
+            <CodeReferencePanel snapshot={snapshot} />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+
       <Dialog
         open={confirmDiscard}
         onOpenChange={(next) => {
@@ -370,17 +417,45 @@ function CreatePolicyForm({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </form>
+    </PageShell>
   );
 }
 
-interface CodeReferencePanelProps {
+function SectionHeading({
+  title,
+  description,
+  headingId,
+}: {
+  title: string;
+  description?: string;
+  headingId?: string;
+}) {
+  return (
+    <header className="flex flex-col gap-1">
+      <h2
+        id={headingId}
+        className="typography-body font-semibold text-foreground"
+      >
+        {title}
+      </h2>
+      {description ? (
+        <p className="typography-caption text-muted-foreground">{description}</p>
+      ) : null}
+    </header>
+  );
+}
+
+interface PolicySnapshot {
   policyType: PolicyType;
   name: string;
   displayName: string;
   resourceTypes: ReadonlyArray<PolicyResourceType>;
   locations: ReadonlyArray<LocationItem>;
   tokenLimits: TokenLimits;
+}
+
+interface CodeReferencePanelProps {
+  snapshot: PolicySnapshot;
 }
 
 const LANGUAGE_TABS = [
@@ -391,29 +466,34 @@ const LANGUAGE_TABS = [
   { value: "cli", label: "CLI", language: "bash" },
 ] as const;
 
-function CodeReferencePanel(props: CodeReferencePanelProps) {
+function CodeReferencePanel({ snapshot }: CodeReferencePanelProps) {
   const snippets = useMemo(
     () => ({
-      typescript: buildTypescriptSnippet(props),
-      python: buildPythonSnippet(props),
-      go: buildGoSnippet(props),
-      curl: buildCurlSnippet(props),
-      cli: buildCliSnippet(props),
+      typescript: buildTypescriptSnippet(snapshot),
+      python: buildPythonSnippet(snapshot),
+      go: buildGoSnippet(snapshot),
+      curl: buildCurlSnippet(snapshot),
+      cli: buildCliSnippet(snapshot),
     }),
-    [props],
+    [snapshot],
   );
 
   return (
     <aside
-      aria-labelledby="create-policy-reference-heading"
+      aria-labelledby="code-panel-heading"
       className="flex min-w-0 flex-col gap-4"
     >
-      <StepHeading
-        index={6}
-        title="Create policy"
-        description="Review the artifact below, then create."
-        headingId="create-policy-reference-heading"
-      />
+      <header className="flex flex-col gap-1">
+        <h2
+          id="code-panel-heading"
+          className="typography-body font-semibold text-foreground"
+        >
+          Or use in code
+        </h2>
+        <p className="typography-caption text-muted-foreground">
+          Updates as you fill the form.
+        </p>
+      </header>
       <Tabs defaultValue="typescript" className="gap-3">
         <TabsList variant="underline" aria-label="Client language">
           {LANGUAGE_TABS.map((tab) => (
@@ -433,39 +513,11 @@ function CodeReferencePanel(props: CodeReferencePanelProps) {
           </TabsContent>
         ))}
       </Tabs>
-      {/* Mirror of the Policies list-page footer pattern — Docs + API
-        * reference inline under the snippet so the developer eye lands on
-        * both affordances without leaving the code panel. */}
-      <p className="typography-caption text-muted-foreground">
-        <Link
-          href="https://docs.blaxel.ai/Model-Governance/Policies"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Policies documentation, opens in new tab"
-          className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
-        >
-          Docs
-          <ArrowUpRight aria-hidden="true" className="size-3 self-center" />
-        </Link>
-        {" · "}
-        <Link
-          href="https://docs.blaxel.ai/api-reference/policies/create-or-update-policy"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Policies API reference, opens in new tab"
-          className="inline-flex items-baseline gap-0.5 text-muted-foreground hover:text-foreground hover:underline"
-        >
-          API reference
-          <ArrowUpRight aria-hidden="true" className="size-3 self-center" />
-        </Link>
-      </p>
     </aside>
   );
 }
 
-type SnippetBuildContext = CodeReferencePanelProps;
-
-function buildYamlBody(ctx: SnippetBuildContext): string {
+function buildYamlBody(ctx: PolicySnapshot): string {
   const lines: string[] = [
     "kind: Policy",
     "metadata:",
@@ -500,7 +552,7 @@ function buildYamlBody(ctx: SnippetBuildContext): string {
   return lines.join("\n");
 }
 
-function buildTypescriptSnippet(ctx: SnippetBuildContext): string {
+function buildTypescriptSnippet(ctx: PolicySnapshot): string {
   const body = buildPolicyObjectLiteral(ctx, { lang: "ts" });
   return [
     'import { createPolicy } from "@blaxel/core";',
@@ -511,7 +563,7 @@ function buildTypescriptSnippet(ctx: SnippetBuildContext): string {
   ].join("\n");
 }
 
-function buildPythonSnippet(ctx: SnippetBuildContext): string {
+function buildPythonSnippet(ctx: PolicySnapshot): string {
   const body = buildPolicyObjectLiteral(ctx, { lang: "py" });
   return [
     "from blaxel import create_policy",
@@ -520,7 +572,7 @@ function buildPythonSnippet(ctx: SnippetBuildContext): string {
   ].join("\n");
 }
 
-function buildGoSnippet(ctx: SnippetBuildContext): string {
+function buildGoSnippet(ctx: PolicySnapshot): string {
   const lines = [
     `client, _ := blaxel.NewClient()`,
     ``,
@@ -562,10 +614,8 @@ function buildGoSnippet(ctx: SnippetBuildContext): string {
   return lines.join("\n");
 }
 
-function buildCurlSnippet(ctx: SnippetBuildContext): string {
+function buildCurlSnippet(ctx: PolicySnapshot): string {
   const body = buildPolicyObjectLiteral(ctx, { lang: "json" });
-  // Indent body so each subsequent line aligns under the opening `'{` of `-d '…'`.
-  // Bash single-quoted strings preserve embedded newlines — the JSON stays valid.
   const bodyLines = body.split("\n");
   const indentedBody = bodyLines
     .map((line, i) => (i === 0 ? line : `     ${line}`))
@@ -578,13 +628,13 @@ function buildCurlSnippet(ctx: SnippetBuildContext): string {
   ].join("\n");
 }
 
-function buildCliSnippet(ctx: SnippetBuildContext): string {
+function buildCliSnippet(ctx: PolicySnapshot): string {
   const yaml = buildYamlBody(ctx);
   return [`cat <<'EOF' | bl apply -f -`, yaml, `EOF`].join("\n");
 }
 
 function buildPolicyObjectLiteral(
-  ctx: SnippetBuildContext,
+  ctx: PolicySnapshot,
   opts: { lang: "ts" | "py" | "json" },
 ): string {
   const quoteKey = (key: string) =>
@@ -639,37 +689,4 @@ function indent(text: string, spaces: number): string {
     .split("\n")
     .map((line) => `${pad}${line}`)
     .join("\n");
-}
-
-function FormFooter({
-  isDirty,
-  onCancel,
-  submitting,
-}: {
-  isDirty: boolean;
-  onCancel: () => void;
-  submitting: boolean;
-}) {
-  return (
-    <div
-      role="region"
-      aria-label={isDirty ? "Unsaved changes" : "Create policy actions"}
-      className="shrink-0 border-t border-border pt-3 lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-8"
-    >
-      {/* Buttons anchor under the form column on lg+ (3fr cell), keeping the
-          primary CTA on the form's F-reading axis. Code panel (2fr cell on the
-          right) intentionally has no footer affordance — the form-filler is
-          the primary actor; the code viewer is consulting reference. */}
-      <div className="flex items-center justify-end gap-2">
-        {isDirty && !submitting && (
-          <Button type="button" variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-        )}
-        <Button type="submit" variant="primary" disabled={submitting}>
-          {submitting ? "Creating…" : "Create policy"}
-        </Button>
-      </div>
-    </div>
-  );
 }

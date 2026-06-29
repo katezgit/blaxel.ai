@@ -10,10 +10,8 @@ import type {
   PolicyFlavor,
   PolicyLocation,
   PolicyMaxTokens,
-  PolicyResourceType,
   PolicyUsageCounts,
 } from "@/lib/mock/policies";
-import { resourceTypeLabel } from "@/lib/mock/policies";
 
 // Frozen anchor so relative timestamps reproduce across screenshots. Matches
 // the convention in `lib/mock/notifications.ts` (separate anchor — policies
@@ -75,13 +73,6 @@ function formatWindow(
 ): string {
   if (step === 1) return granularity;
   return `${step} ${granularity}`;
-}
-
-export function appliesToLabel(
-  resourceTypes: ReadonlyArray<PolicyResourceType>,
-): string {
-  if (resourceTypes.length === 0) return "—";
-  return resourceTypes.map(resourceTypeLabel).join(" · ");
 }
 
 export interface AttachedResourcesSummary {
