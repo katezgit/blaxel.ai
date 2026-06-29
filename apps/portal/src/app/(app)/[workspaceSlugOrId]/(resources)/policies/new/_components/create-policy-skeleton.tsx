@@ -51,14 +51,6 @@ export default function CreatePolicySkeleton({
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,36rem)_minmax(0,28rem)]">
-          {/* Form column — five sections mirroring the live form in order
-           * AND shape so the swap from skeleton to form induces zero
-           * per-section height delta:
-           *   1. Choose a policy type — single FormField (label + select)
-           *   2. Name the policy — two stacked FormFields (Display, Name+helper)
-           *   3. Configure the rule — chip group + caption (no bordered wrap)
-           *   4. Choose target workloads — chip group wrapping to 2 rows
-           *   5. Labels — empty-state caption + add button row */}
           <div className="flex flex-col gap-10 pl-1 pr-4">
             <FormSectionSilhouette
               titleWidth="w-44"

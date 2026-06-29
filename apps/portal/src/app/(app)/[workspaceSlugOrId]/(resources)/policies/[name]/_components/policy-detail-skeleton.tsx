@@ -52,13 +52,6 @@ export default function PolicyDetailSkeleton({
         </div>
       </header>
 
-      {/* Clause band — first sibling under the heading, no top divider.
-       * Shape neutral across location/maxToken/flavor: heading row reserves
-       * 36px (the hover-reveal Edit button slot in BandFrame), then a chip
-       * row + caption silhouette that mirrors the most common (location)
-       * render. MaxToken's table is taller and contracts slightly on load;
-       * flavor's inline text expands slightly. Both are acceptable bounds
-       * vs. the original maxToken-only fidelity. */}
       <section className="flex flex-col gap-4">
         <BandHeadingSilhouette width="w-48" />
         <div className="flex flex-wrap gap-2">
