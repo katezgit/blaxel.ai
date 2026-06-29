@@ -20,6 +20,7 @@ import {
   MoreHorizontal,
   Plus,
   Search,
+  UserSearch,
 } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
@@ -175,7 +176,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
                 {row.original.name}
               </span>
               {row.original.isYou && (
-                <span className="rounded-sm bg-muted-surface px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
+                <span className="rounded-sm bg-icon-tile px-1.5 py-0.5 typography-meta font-mono text-meta-foreground">
                   you
                 </span>
               )}
@@ -326,7 +327,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
             onValueChange={(v) => setStatusFilter(v as MemberStatus | null)}
             label="Status"
             placeholder="All"
-            className="ml-auto w-44"
+            className="ml-auto w-56"
           />
         </div>
 
@@ -368,6 +369,7 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         {filteredMembers.length === 0 ? (
           <EmptyState
             variant="no-results"
+            icon={UserSearch}
             title="No members match these filters"
             subtitle="Try clearing one filter at a time."
             cta={
