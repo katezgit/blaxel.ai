@@ -30,7 +30,7 @@ export function SettingsSidebarIdentity({
       data-settings-sidebar-identity
       className={cn(
         "flex items-center rounded-md",
-        isRail ? "h-8 justify-center px-0" : "gap-2 px-2 py-1.5",
+        isRail ? "h-8 justify-center px-0" : "gap-2 px-2",
       )}
     >
       <Avatar size="xs" shape="square">

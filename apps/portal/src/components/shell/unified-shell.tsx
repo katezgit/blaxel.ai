@@ -281,12 +281,19 @@ export function UnifiedShell({
                       groups={subPane.groups}
                       collapsed={subPaneCollapsed}
                       header={
-                        <>
-                          <SubShellSidebarReturnHeader workspace={headerWorkspace} />
-                          {subShellKind === "settings" && (
+                        subShellKind === "settings" ? (
+                          // Back + identity adjoin as a single header zone
+                          // (gap-2 / 8px) so the workspace label reads as part
+                          // of the sub-shell header, not a free-floating card
+                          // between Back and the nav. The nav's outer gap-4
+                          // still separates this group from the nav list.
+                          <div className="flex flex-col gap-2">
+                            <SubShellSidebarReturnHeader workspace={headerWorkspace} />
                             <SettingsSidebarIdentity workspace={headerWorkspace} />
-                          )}
-                        </>
+                          </div>
+                        ) : (
+                          <SubShellSidebarReturnHeader workspace={headerWorkspace} />
+                        )
                       }
                     />
                   ) : (
@@ -331,17 +338,21 @@ export function UnifiedShell({
           onOpenChange={setDrawerOpen}
           header={
             subShellOpen
-              ? (close) => (
-                  <>
+              ? (close) =>
+                  subShellKind === "settings" ? (
+                    <div className="flex flex-col gap-2">
+                      <SubShellSidebarReturnHeader
+                        workspace={headerWorkspace}
+                        onNavigate={close}
+                      />
+                      <SettingsSidebarIdentity workspace={headerWorkspace} />
+                    </div>
+                  ) : (
                     <SubShellSidebarReturnHeader
                       workspace={headerWorkspace}
                       onNavigate={close}
                     />
-                    {subShellKind === "settings" && (
-                      <SettingsSidebarIdentity workspace={headerWorkspace} />
-                    )}
-                  </>
-                )
+                  )
               : undefined
           }
         />
