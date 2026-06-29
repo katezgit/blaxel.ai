@@ -10,7 +10,6 @@ import { type DisplayTier, type SelectableTier } from "@/lib/mock/billing-tiers"
 import SelectedTierSummary from "./selected-tier-summary";
 import TierPicker from "./tier-picker";
 import TierContextBanner from "./tier-context-banner";
-import BalanceProtectionCard from "./balance-protection-card";
 import {
   INITIAL_VALUES,
   resolveAmountUsd,
@@ -47,11 +46,10 @@ export default function MonthlyTopUpFlow({
     mode: "onChange",
   });
   const {
-    register,
     setValue,
     watch,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = form;
 
   const values = watch();
@@ -64,14 +62,9 @@ export default function MonthlyTopUpFlow({
   });
 
   return (
-    // Single-column flow — no right-rail About panel competing for width.
-    // Step 1: tier grid + selected-tier summary. Step 2: locked-tier banner +
-    // balance protection + charge preview. The <form> wraps DialogBody +
-    // DialogFooter as siblings: DialogBody owns the scroll, DialogFooter pins
-    // to the dialog bottom (border-t, scroll-cue), and the submit button
-    // still reaches this form's onSubmit because the footer is inside the
-    // <form>. The form itself is a flex column slot so DialogBody's
-    // flex-1 min-h-0 resolves against it.
+    // The <form> wraps DialogBody + DialogFooter as siblings so DialogBody owns
+    // the scroll while the submit button in the footer still reaches onSubmit.
+    // The form is a flex column slot so DialogBody's flex-1 min-h-0 resolves.
     <form
       onSubmit={onSubmit}
       noValidate
@@ -110,11 +103,10 @@ export default function MonthlyTopUpFlow({
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-1">
               <h3 className="typography-subtitle font-semibold text-foreground">
-                Configure balance protection
+                Review your top-up
               </h3>
               <p className="typography-body text-muted-foreground">
-                Optional settings that keep your balance above a floor and help
-                avoid downgrades.
+                Confirm the monthly charge below before checkout.
               </p>
             </div>
             <div className="flex flex-col gap-4">
@@ -122,13 +114,6 @@ export default function MonthlyTopUpFlow({
                 targetTier={targetTier}
                 amountUsd={amountUsd}
                 cadence="monthly"
-              />
-              <BalanceProtectionCard
-                register={register}
-                setValue={setValue}
-                errors={errors}
-                autoTopUpEnabled={values.autoTopUpEnabled}
-                monthlyLimitEnabled={values.monthlyLimitEnabled}
               />
               <Alert variant="info">
                 <AlertDescription>

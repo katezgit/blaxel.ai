@@ -11,11 +11,6 @@ const TIER_SELECTION_VALUES = SELECTABLE_TIERS.map(
 
 export const topUpSchema = z.object({
   selectedTier: z.enum(TIER_SELECTION_VALUES),
-  autoTopUpEnabled: z.boolean(),
-  autoTopUpThresholdUsd: z.number({ message: "Threshold is required" }).min(1),
-  autoTopUpAmountUsd: z.number({ message: "Amount is required" }).min(1),
-  monthlyLimitEnabled: z.boolean(),
-  monthlyLimitAmountUsd: z.number({ message: "Amount is required" }).min(1),
 });
 
 export type TopUpFormValues = z.infer<typeof topUpSchema>;
@@ -23,11 +18,6 @@ export type TopUpFormValues = z.infer<typeof topUpSchema>;
 /** Default selection — Tier 1, the recommended next-tier-up from Tier 0. */
 export const INITIAL_VALUES: TopUpFormValues = {
   selectedTier: "1",
-  autoTopUpEnabled: true,
-  autoTopUpThresholdUsd: 25,
-  autoTopUpAmountUsd: 75,
-  monthlyLimitEnabled: false,
-  monthlyLimitAmountUsd: 200,
 };
 
 /** Selected tier as a `SelectableTier` (numeric, 1-6) — parsed from the form string. */
@@ -48,8 +38,7 @@ export function resolveAmountUsd(
 //
 // Separate from the Monthly schema above on purpose: one-time has no tier
 // concept (it's a raw credit purchase), so it carries its own amount-chip
-// selection + optional custom amount. Low-balance alert lives on the Credits
-// page (Balance alerts card) — persistent setting, not a checkout-flow step.
+// selection + optional custom amount.
 
 /** Preset chip values, in display order. `null` = the Custom chip. */
 export const ONE_TIME_AMOUNT_PRESETS: ReadonlyArray<number> = [
@@ -64,13 +53,6 @@ export const oneTimeTopUpSchema = z
       .min(1, "Amount must be at least $1")
       .max(10000, "Amount must be at most $10,000")
       .optional(),
-    autoTopUpEnabled: z.boolean(),
-    autoTopUpThresholdUsd: z
-      .number({ message: "Threshold is required" })
-      .min(1),
-    autoTopUpAmountUsd: z.number({ message: "Amount is required" }).min(1),
-    monthlyLimitEnabled: z.boolean(),
-    monthlyLimitAmountUsd: z.number({ message: "Amount is required" }).min(1),
   })
   .superRefine((values, ctx) => {
     if (values.presetAmountUsd === null && values.customAmountUsd === undefined) {
@@ -84,15 +66,10 @@ export const oneTimeTopUpSchema = z
 
 export type OneTimeTopUpFormValues = z.infer<typeof oneTimeTopUpSchema>;
 
-/** Default — $200 preset selected, protection mirrors Monthly defaults. */
+/** Default — $200 preset selected. */
 export const ONE_TIME_INITIAL_VALUES: OneTimeTopUpFormValues = {
   presetAmountUsd: 200,
   customAmountUsd: undefined,
-  autoTopUpEnabled: true,
-  autoTopUpThresholdUsd: 25,
-  autoTopUpAmountUsd: 75,
-  monthlyLimitEnabled: false,
-  monthlyLimitAmountUsd: 200,
 };
 
 /** Effective USD amount — either the selected preset or the custom value. Returns 0 when nothing valid is set. */

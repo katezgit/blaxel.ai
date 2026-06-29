@@ -11,8 +11,9 @@ import { cn } from "@repo/ui/lib/cn";
 import { useAccountState } from "@/lib/mock/account-context";
 
 /**
- * Links to /account/billing/credits (not /account/billing/tier-quotas) —
- * this is a billing shortcut, not a tier badge.
+ * Topbar tier-and-balance shortcut. Tier is the load-bearing signal; links to
+ * Tier & quotas (the surface that explains tier mechanics and how to move up).
+ * Credits live one click away under the same Billing section.
  */
 export default function BillingPill() {
   const { state } = useAccountState();
@@ -23,8 +24,8 @@ export default function BillingPill() {
     <Tooltip>
       <TooltipTrigger asChild>
         <Link
-          href="/account/billing/credits"
-          aria-label={`Tier ${state.tier} · Open Billing`}
+          href="/account/billing/tier-quotas"
+          aria-label={`Tier ${state.tier} · View tier and quotas`}
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "text-muted-foreground hover:text-foreground",
@@ -37,7 +38,7 @@ export default function BillingPill() {
           <span className="tabular-nums">{balanceLabel}</span>
         </Link>
       </TooltipTrigger>
-      <TooltipContent>Credits &amp; top-ups</TooltipContent>
+      <TooltipContent>Tier &amp; quotas</TooltipContent>
     </Tooltip>
   );
 }
