@@ -264,19 +264,13 @@ function CreatePolicyForm({
           <ScrollArea className="min-h-0">
             <div className="flex flex-col gap-10 pb-2 pl-1 pr-4">
               <section className="flex flex-col gap-4">
-                <IdentityEditableFields form={form} />
-              </section>
-
-              <section className="flex flex-col gap-4">
+                <SectionHeading title="Choose a policy type" />
                 <PolicyTypeSelectField form={form} />
               </section>
 
               <section className="flex flex-col gap-4">
-                <SectionHeading
-                  title="Choose target workloads"
-                  description="Attaches only to the workload types selected here."
-                />
-                <ResourceTypesField form={form} />
+                <SectionHeading title="Name the policy" />
+                <IdentityEditableFields form={form} />
               </section>
 
               <section className="flex flex-col gap-4">
@@ -291,6 +285,14 @@ function CreatePolicyForm({
                 {policyType === "maxToken" ? (
                   <TokenUsageBody value={tokenLimits} onChange={setTokenLimits} />
                 ) : null}
+              </section>
+
+              <section className="flex flex-col gap-4">
+                <SectionHeading
+                  title="Choose target workloads"
+                  description="Attaches only to the workload types selected here."
+                />
+                <ResourceTypesField form={form} />
               </section>
 
               <section className="flex flex-col gap-4">

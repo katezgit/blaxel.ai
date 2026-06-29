@@ -53,27 +53,25 @@ export default function PolicyDetailSkeleton({
       </header>
 
       {/* Clause band — first sibling under the heading, no top divider.
-       * Card layout mirrors the maxToken token-limits table; location
-       * and flavor bands collapse into the same silhouette during load. */}
+       * Shape neutral across location/maxToken/flavor: heading row reserves
+       * 36px (the hover-reveal Edit button slot in BandFrame), then a chip
+       * row + caption silhouette that mirrors the most common (location)
+       * render. MaxToken's table is taller and contracts slightly on load;
+       * flavor's inline text expands slightly. Both are acceptable bounds
+       * vs. the original maxToken-only fidelity. */}
       <section className="flex flex-col gap-4">
-        <Skeleton className="h-5 w-48 rounded-sm" />
-        <div className="divide-y divide-border rounded-md border border-border bg-card">
-          {["w-24", "w-28", "w-24", "w-20"].map((valueWidth, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between px-4 py-3"
-            >
-              <Skeleton className="h-4 w-32 rounded-sm" />
-              <Skeleton className={cn("h-4 rounded-sm", valueWidth)} />
-            </div>
-          ))}
+        <BandHeadingSilhouette width="w-48" />
+        <div className="flex flex-wrap gap-2">
+          <Skeleton className="h-7 w-24 rounded-md" />
+          <Skeleton className="h-7 w-28 rounded-md" />
+          <Skeleton className="h-7 w-20 rounded-md" />
         </div>
         <Skeleton className="h-3 w-full max-w-xl rounded-sm" />
       </section>
 
       {/* Usage band — workloads card, default top divider. */}
       <section className="flex flex-col gap-4 border-t border-border pt-6">
-        <Skeleton className="h-5 w-16 rounded-sm" />
+        <BandHeadingSilhouette width="w-16" />
         <div className="flex flex-col rounded-md border border-border">
           <div className="border-b border-border px-4 py-3">
             <Skeleton className="h-4 w-56 rounded-sm" />
@@ -94,16 +92,27 @@ export default function PolicyDetailSkeleton({
 
       {/* Provenance band — top divider suppressed to match the live render. */}
       <section className="flex flex-col gap-4 pt-6">
-        <Skeleton className="h-5 w-28 rounded-sm" />
+        <BandHeadingSilhouette width="w-28" />
         <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[140px_1fr]">
           {["w-32", "w-56", "w-56", "w-28", "w-44"].map((valueWidth, idx) => (
             <div key={idx} className="contents">
-              <Skeleton className="h-4 w-24 rounded-sm" />
-              <Skeleton className={cn("h-4 rounded-sm", valueWidth)} />
+              <Skeleton className="h-5 w-24 rounded-sm" />
+              <Skeleton className={cn("h-5 rounded-sm", valueWidth)} />
             </div>
           ))}
         </dl>
       </section>
     </>
+  );
+}
+
+// BandFrame renders the heading inside a flex row that reserves space for
+// the hover-reveal Edit button (h-9). The skeleton mirrors that 36px row
+// so the silhouette → live swap doesn't push content vertically.
+function BandHeadingSilhouette({ width }: { width: string }) {
+  return (
+    <div className="flex h-9 items-center">
+      <Skeleton className={cn("h-5 rounded-sm", width)} />
+    </div>
   );
 }
