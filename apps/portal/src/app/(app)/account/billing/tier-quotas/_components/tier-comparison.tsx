@@ -248,16 +248,19 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       className={cn(
         "group relative flex flex-col gap-3 px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
         GRID_COLS,
-        isCurrent ? "bg-primary-glow" : "hover:bg-hover-surface",
+        isCurrent
+          ? "rounded-md border border-primary"
+          : "hover:bg-hover-surface",
       )}
     >
+      {isCurrent ? (
+        <span className="absolute -top-2 left-3 rounded-sm border border-primary bg-primary-glow px-1.5 font-mono typography-meta uppercase text-primary">
+          Current tier
+        </span>
+      ) : null}
+
       <div className="flex flex-col gap-1">
-        <span
-          className={cn(
-            "font-mono typography-body tabular-nums",
-            isCurrent ? "font-medium text-primary" : "text-foreground",
-          )}
-        >
+        <span className="font-mono typography-body text-foreground tabular-nums">
           Tier {tier.tier}
         </span>
         {tier.tier === 0 && onCollapseTier0 ? (
