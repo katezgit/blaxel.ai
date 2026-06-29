@@ -128,22 +128,24 @@ export default function TeamClient({ workspace }: TeamClientProps) {
     () => [
       columnHelper.display({
         id: "select",
-        header: ({ table }) => (
-          <Checkbox
-            size="sm"
-            checked={
-              table.getIsAllPageRowsSelected()
-                ? true
-                : table.getIsSomePageRowsSelected()
-                  ? "indeterminate"
-                  : false
-            }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(value === true)
-            }
-            aria-label="Select all rows"
-          />
-        ),
+        header: ({ table }) => {
+          let checked: boolean | "indeterminate" = false;
+          if (table.getIsAllPageRowsSelected()) {
+            checked = true;
+          } else if (table.getIsSomePageRowsSelected()) {
+            checked = "indeterminate";
+          }
+          return (
+            <Checkbox
+              size="sm"
+              checked={checked}
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(value === true)
+              }
+              aria-label="Select all rows"
+            />
+          );
+        },
         cell: ({ row }) => (
           <Checkbox
             size="sm"
@@ -429,6 +431,14 @@ const SORT_ICON = {
 function SortHeader({ column, label }: SortHeaderProps) {
   const sorted = column.getIsSorted();
   const Icon = SORT_ICON[sorted === false ? "none" : sorted];
+  let ariaLabel: string;
+  if (sorted === "asc") {
+    ariaLabel = `Sorted by ${label} ascending. Click to sort descending.`;
+  } else if (sorted === "desc") {
+    ariaLabel = `Sorted by ${label} descending. Click to clear sort.`;
+  } else {
+    ariaLabel = `Sort by ${label}.`;
+  }
   return (
     <button
       type="button"
@@ -438,13 +448,7 @@ function SortHeader({ column, label }: SortHeaderProps) {
         "outline-hidden focus-visible:shadow-focus-ring rounded-sm",
         sorted ? "text-foreground" : "text-meta-foreground hover:text-foreground",
       )}
-      aria-label={
-        sorted === "asc"
-          ? `Sorted by ${label} ascending. Click to sort descending.`
-          : sorted === "desc"
-            ? `Sorted by ${label} descending. Click to clear sort.`
-            : `Sort by ${label}.`
-      }
+      aria-label={ariaLabel}
     >
       <span>{label}</span>
       <Icon
