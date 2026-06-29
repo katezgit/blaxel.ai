@@ -146,14 +146,23 @@ export default function TeamClient({ workspace }: TeamClientProps) {
             />
           );
         },
-        cell: ({ row }) => (
-          <Checkbox
-            size="sm"
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(value === true)}
-            aria-label={`Select ${row.original.name}`}
-          />
-        ),
+        cell: ({ row }) => {
+          // Self row can never be a target of admin bulk actions (different
+          // endpoint, different scope). Disabling the checkbox keeps the
+          // "Select all" toggle and the bulk bar honest.
+          const isSelf = row.original.isYou === true;
+          return (
+            <Checkbox
+              size="sm"
+              checked={row.getIsSelected()}
+              onCheckedChange={(value) => row.toggleSelected(value === true)}
+              disabled={isSelf || !row.getCanSelect()}
+              aria-label={
+                isSelf ? `You can't select your own row` : `Select ${row.original.name}`
+              }
+            />
+          );
+        },
       }),
       columnHelper.accessor("name", {
         id: "member",
@@ -199,19 +208,29 @@ export default function TeamClient({ workspace }: TeamClientProps) {
       }),
       columnHelper.display({
         id: "actions",
-        cell: ({ row }) => (
-          <RowMenu
-            member={row.original}
-            onRemove={() => setPendingRemoval(row.original)}
-            onResend={() =>
-              toast.success(`Resent invitation to ${row.original.email}.`)
-            }
-            onRevoke={() => {
-              setMembers((prev) => prev.filter((m) => m.id !== row.original.id));
-              toast.success(`Revoked invitation to ${row.original.email}.`);
-            }}
-          />
-        ),
+        cell: ({ row }) => {
+          if (row.original.isYou === true) {
+            return (
+              <SelfRowMenu
+                member={row.original}
+                onLeave={() => setPendingRemoval(row.original)}
+              />
+            );
+          }
+          return (
+            <MemberRowMenu
+              member={row.original}
+              onRemove={() => setPendingRemoval(row.original)}
+              onResend={() =>
+                toast.success(`Resent invitation to ${row.original.email}.`)
+              }
+              onRevoke={() => {
+                setMembers((prev) => prev.filter((m) => m.id !== row.original.id));
+                toast.success(`Revoked invitation to ${row.original.email}.`);
+              }}
+            />
+          );
+        },
       }),
     ],
     [],
@@ -221,6 +240,10 @@ export default function TeamClient({ workspace }: TeamClientProps) {
     data: filteredMembers as TeamMember[],
     columns,
     state: { sorting, columnFilters, rowSelection },
+    // Self row opts out so "Select all" toggles every row EXCEPT self, and
+    // bulk Remove can never target the current user. Self leaves via their
+    // own row menu (different endpoint, different verb).
+    enableRowSelection: (row) => row.original.isYou !== true,
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     getRowId: (row) => row.id,
@@ -381,19 +404,21 @@ export default function TeamClient({ workspace }: TeamClientProps) {
         }}
       >
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Remove &quot;{pendingRemoval?.name ?? ""}&quot;
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {pendingRemoval?.name ?? "This member"} will lose access to every
-              resource in this workspace.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
+          {pendingRemoval?.isYou === true ? (
+            <SelfLeaveDialogBody
+              workspaceName={workspace.name}
+              onConfirm={() => {
+                setMembers((prev) =>
+                  prev.filter((m) => m.id !== pendingRemoval.id),
+                );
+                toast.success(`Left ${workspace.name}.`);
+              }}
+            />
+          ) : (
+            <RemoveMemberDialogBody
+              memberName={pendingRemoval?.name ?? ""}
+              workspaceName={workspace.name}
+              onConfirm={() => {
                 if (!pendingRemoval) return;
                 setMembers((prev) =>
                   prev.filter((m) => m.id !== pendingRemoval.id),
@@ -402,10 +427,8 @@ export default function TeamClient({ workspace }: TeamClientProps) {
                   `Removed ${pendingRemoval.name} from ${workspace.name}.`,
                 );
               }}
-            >
-              Remove member
-            </AlertDialogAction>
-          </AlertDialogFooter>
+            />
+          )}
         </AlertDialogContent>
       </AlertDialog>
     </>
@@ -506,14 +529,21 @@ function StatusCell({ status }: { status: MemberStatus }) {
   );
 }
 
-interface RowMenuProps {
+interface MemberRowMenuProps {
   member: TeamMember;
   onRemove: () => void;
   onResend: () => void;
   onRevoke: () => void;
 }
 
-function RowMenu({ member, onRemove, onResend, onRevoke }: RowMenuProps) {
+function MemberRowMenu({
+  member,
+  onRemove,
+  onResend,
+  onRevoke,
+}: MemberRowMenuProps) {
+  const isPendingOrExpired =
+    member.status === "pending" || member.status === "expired";
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -531,13 +561,10 @@ function RowMenu({ member, onRemove, onResend, onRevoke }: RowMenuProps) {
         >
           Change role
         </DropdownMenuItem>
-        {member.status === "pending" && (
+        {isPendingOrExpired && (
           <DropdownMenuItem onSelect={onResend}>Resend invite</DropdownMenuItem>
         )}
-        {member.status === "expired" && (
-          <DropdownMenuItem onSelect={onResend}>Resend invite</DropdownMenuItem>
-        )}
-        {(member.status === "pending" || member.status === "expired") && (
+        {isPendingOrExpired && (
           <DropdownMenuItem onSelect={onRevoke}>Revoke invite</DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
@@ -549,6 +576,90 @@ function RowMenu({ member, onRemove, onResend, onRevoke }: RowMenuProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+interface SelfRowMenuProps {
+  member: TeamMember;
+  onLeave: () => void;
+}
+
+// Self row has its own menu shape: "Change role" doesn't apply (can't demote
+// yourself here), invite hygiene is moot (you're accepted by definition), and
+// the destructive verb is "Leave workspace" — a different endpoint
+// (DELETE /workspaces/{name}/leave) than admin remove.
+function SelfRowMenu({ member, onLeave }: SelfRowMenuProps) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <IconButton
+          variant="ghost"
+          size="sm"
+          aria-label={`Actions for ${member.name}`}
+        >
+          <MoreHorizontal />
+        </IconButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem
+          onSelect={onLeave}
+          className="text-destructive focus:text-destructive"
+        >
+          Leave workspace
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+interface RemoveMemberDialogBodyProps {
+  memberName: string;
+  workspaceName: string;
+  onConfirm: () => void;
+}
+
+function RemoveMemberDialogBody({
+  memberName,
+  workspaceName,
+  onConfirm,
+}: RemoveMemberDialogBodyProps) {
+  return (
+    <>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Remove &quot;{memberName}&quot;</AlertDialogTitle>
+        <AlertDialogDescription>
+          {memberName || "This member"} will lose access to every resource in{" "}
+          {workspaceName}.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction onClick={onConfirm}>Remove member</AlertDialogAction>
+      </AlertDialogFooter>
+    </>
+  );
+}
+
+interface SelfLeaveDialogBodyProps {
+  workspaceName: string;
+  onConfirm: () => void;
+}
+
+function SelfLeaveDialogBody({ workspaceName, onConfirm }: SelfLeaveDialogBodyProps) {
+  return (
+    <>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Leave workspace</AlertDialogTitle>
+        <AlertDialogDescription>
+          You will lose access to every resource in {workspaceName}. An owner
+          can re-invite you later.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction onClick={onConfirm}>Leave workspace</AlertDialogAction>
+      </AlertDialogFooter>
+    </>
   );
 }
 
