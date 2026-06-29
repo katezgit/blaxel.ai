@@ -95,8 +95,6 @@ export default function UpgradeTierDialogContent({
       {mode === "one-time" ? (
         <OneTimeTopUpFlow
           key="one-time"
-          currentTier={currentTier}
-          recommendedTier={recommendedTier}
           onCancel={onClose}
           onCheckout={handleCheckout}
         />

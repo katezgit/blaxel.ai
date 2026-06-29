@@ -72,7 +72,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/account" className="items-start">
+          <Link href="/account/admins" className="items-start">
             <Building2 aria-hidden="true" className="mt-0.5 shrink-0" />
             <span className="flex flex-1 flex-col gap-0.5 leading-tight">
               <span>Account</span>
@@ -84,7 +84,7 @@ export default function AvatarMenu({ user }: AvatarMenuProps) {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/account/billing" className="items-start">
+          <Link href="/account/billing/credits" className="items-start">
             <CreditCard aria-hidden="true" className="mt-0.5 shrink-0" />
             <span className="flex flex-1 flex-col gap-0.5 leading-tight">
               <span>Plan &amp; billing</span>

@@ -25,10 +25,12 @@ export default function UpgradeTierDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      {/* DS default max-h is 80vh; lift to 85vh on ≥sm so the header + stepper +
-          two-step body + footer all fit on 13" laptops without inner scroll
-          stacking against the dialog scroll. Below sm the DS makes DialogContent
-          fullscreen — leave that uncapped. */}
+      {/* No fixed height — the dialog sizes to content. Natural heights span
+          from ~290px (One-time single step) up to ~845px (Monthly step 1 with
+          the quota disclosure expanded), and a fixed pin would leave half the
+          panel empty in the smaller states. The sm:max-h-[85vh] cap still
+          guards against tall content on short viewports by letting DialogBody
+          scroll internally. Below sm the DS makes DialogContent fullscreen. */}
       <DialogContent size="lg" className="sm:max-h-[85vh]">
         <UpgradeTierDialogContent
           onClose={() => setOpen(false)}

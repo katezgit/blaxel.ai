@@ -16,9 +16,8 @@ import { IdentityCluster } from "@/components/shell/identity-cluster";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { SearchTrigger } from "@/components/shell/search-trigger";
 import { Sidebar } from "@/components/shell/sidebar";
-import { SettingsSidebarIdentity } from "@/components/shell/settings-sidebar-identity";
 import { SkipToContent } from "@/components/shell/skip-to-content";
-import { SubShellSidebarReturnHeader } from "@/components/shell/sub-shell-sidebar-return-header";
+import { SubShellSidebarHeader } from "@/components/shell/sub-shell-sidebar-header";
 import { CollapsibleSidebarMarker } from "@/components/shell/use-is-sidebar-rail";
 import { useLastWorkspaceTracker } from "@/components/shell/use-last-workspace-tracker";
 import { readLastWorkspaceSlug } from "@/components/shell/use-last-workspace-tracker";
@@ -281,19 +280,17 @@ export function UnifiedShell({
                       groups={subPane.groups}
                       collapsed={subPaneCollapsed}
                       header={
-                        subShellKind === "settings" ? (
-                          // Back + identity adjoin as a single header zone
-                          // (gap-2 / 8px) so the workspace label reads as part
-                          // of the sub-shell header, not a free-floating card
-                          // between Back and the nav. The nav's outer gap-4
-                          // still separates this group from the nav list.
-                          <div className="flex flex-col gap-2">
-                            <SubShellSidebarReturnHeader workspace={headerWorkspace} />
-                            <SettingsSidebarIdentity workspace={headerWorkspace} />
-                          </div>
-                        ) : (
-                          <SubShellSidebarReturnHeader workspace={headerWorkspace} />
-                        )
+                        // Back + identity adjoin as a single header zone
+                        // (gap-2 / 8px) so the identity chip reads as part of
+                        // the sub-shell header, not a free-floating card
+                        // between Back and the nav. The nav's outer gap-4 still
+                        // separates this group from the nav list. Profile has
+                        // no identity chip — the topbar avatar already names
+                        // the logged-in user.
+                        <SubShellSidebarHeader
+                          kind={subShellKind}
+                          workspace={headerWorkspace}
+                        />
                       }
                     />
                   ) : (
@@ -338,21 +335,13 @@ export function UnifiedShell({
           onOpenChange={setDrawerOpen}
           header={
             subShellOpen
-              ? (close) =>
-                  subShellKind === "settings" ? (
-                    <div className="flex flex-col gap-2">
-                      <SubShellSidebarReturnHeader
-                        workspace={headerWorkspace}
-                        onNavigate={close}
-                      />
-                      <SettingsSidebarIdentity workspace={headerWorkspace} />
-                    </div>
-                  ) : (
-                    <SubShellSidebarReturnHeader
-                      workspace={headerWorkspace}
-                      onNavigate={close}
-                    />
-                  )
+              ? (close) => (
+                  <SubShellSidebarHeader
+                    kind={subShellKind}
+                    workspace={headerWorkspace}
+                    onNavigate={close}
+                  />
+                )
               : undefined
           }
         />

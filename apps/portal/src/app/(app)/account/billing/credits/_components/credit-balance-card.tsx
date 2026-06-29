@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { CreditCard, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
+import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
 import { useAccountState } from "@/lib/mock/account-context";
+import AutomaticTopUpDialog from "./automatic-top-up-dialog";
 
 const formatUsd = (value: number): string =>
   new Intl.NumberFormat("en-US", {
@@ -29,19 +30,26 @@ export default function CreditBalanceCard() {
   const lastFundedLine = lastTopUp
     ? `Last funded ${formatDate(lastTopUp.date)} · ${formatUsd(lastTopUp.amount)}`
     : "No funding yet";
-  const { brand, last4 } = state.paymentMethod;
-  const hasPaymentMethod = brand !== null;
-  const paymentSummary = hasPaymentMethod
-    ? `Charged to ${brand} ending ${last4}`
-    : "No payment method on file";
+  const hasPaymentMethod = state.paymentMethod.brand !== null;
+
+  const hasAnyRuleEnabled =
+    state.autoTopUp.enabled || state.monthlyTopUp.enabled;
+
+  const secondaryLabel = hasAnyRuleEnabled
+    ? "Edit top-up rules"
+    : "Set up auto top-up";
+  // Omit the ghost CTA when there's no card AND no rule to edit — the user
+  // can't configure top-up without a payment method; that path lives on
+  // Invoices & payment.
+  const showSecondary = hasAnyRuleEnabled || hasPaymentMethod;
 
   return (
     <Card
       variant="elevated"
-      className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between"
+      className="flex flex-col gap-5 p-5 sm:flex-row sm:items-stretch sm:justify-between sm:gap-6 sm:p-6"
     >
-      <div className="flex flex-col gap-2">
-        <span className="typography-meta font-mono uppercase tracking-[0.16em] text-meta-foreground">
+      <div className="flex flex-1 flex-col gap-2">
+        <span className="typography-meta font-mono uppercase text-meta-foreground">
           Available credits
         </span>
         <output
@@ -52,17 +60,57 @@ export default function CreditBalanceCard() {
           {formatUsd(state.balanceUsd)}
         </output>
         <p className="typography-caption text-muted-foreground">{lastFundedLine}</p>
-        <p className="flex items-center gap-1.5 typography-caption text-muted-foreground">
-          <CreditCard aria-hidden="true" className="size-3.5" />
-          {paymentSummary}
-        </p>
+        {hasAnyRuleEnabled ? (
+          <div className="mt-1 flex flex-col gap-1">
+            {state.autoTopUp.enabled ? (
+              <RuleStatus label="Auto top-up" />
+            ) : null}
+            {state.monthlyTopUp.enabled ? (
+              <RuleStatus label="Monthly top-up" />
+            ) : null}
+          </div>
+        ) : null}
       </div>
-      <Button asChild variant="primary" className="w-full sm:w-auto">
-        <Link href="/account/billing/credits/stripe-redirect">
-          <Plus aria-hidden="true" />
-          Add credits
-        </Link>
-      </Button>
+      <div
+        aria-hidden="true"
+        className="h-px w-full bg-border sm:h-auto sm:w-px sm:self-stretch"
+      />
+      {/*
+        Action column min-width (180px) prevents the primary CTA from
+        collapsing below the ghost-button label ("Set up auto top-up")
+        once the card splits side-by-side at the sm breakpoint.
+      */}
+      <div className="flex flex-col justify-center gap-2 sm:min-w-[180px]">
+        <UpgradeTierDialog
+          trigger={
+            <Button variant="primary" className="w-full">
+              <Plus aria-hidden="true" />
+              Add credits
+            </Button>
+          }
+        />
+        {showSecondary ? (
+          <AutomaticTopUpDialog
+            trigger={
+              <Button variant="ghost" className="w-full">
+                {secondaryLabel}
+              </Button>
+            }
+          />
+        ) : null}
+      </div>
     </Card>
+  );
+}
+
+function RuleStatus({ label }: { label: string }) {
+  return (
+    <span className="flex items-center gap-1.5 typography-caption text-muted-foreground">
+      <span
+        aria-hidden="true"
+        className="size-1.5 rounded-full bg-state-scored"
+      />
+      {label} · On
+    </span>
   );
 }

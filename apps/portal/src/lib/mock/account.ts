@@ -205,6 +205,11 @@ export interface MonthlyTopUp {
   amountUsd: number;
 }
 
+export interface LowBalanceAlert {
+  enabled: boolean;
+  thresholdUsd: number;
+}
+
 export interface PaymentMethod {
   /** Brand label, e.g. "Visa". `null` = no payment method on file. */
   brand: string | null;
@@ -306,6 +311,7 @@ export interface AccountState {
   monthToDateSpendBreakdown: MonthToDateSpend;
   autoTopUp: AutoTopUp;
   monthlyTopUp: MonthlyTopUp;
+  lowBalanceAlert: LowBalanceAlert;
   paymentMethod: PaymentMethod;
   billingContact: BillingContact;
   addons: ReadonlyArray<AddOn>;
@@ -411,6 +417,68 @@ const TIER_ONE_USAGE_HISTORY: CreditHistoryEntry = {
   amount: -2.88,
 };
 
+// Activity in the days after the first top-up: a steady drip of usage rows
+// plus a second top-up and a referral promo. Newest entries last in the seed;
+// the table sorts them newest-first on render.
+const TIER_ONE_EXTENDED_HISTORY: ReadonlyArray<CreditHistoryEntry> = [
+  {
+    id: "ch_usage_06_20",
+    date: "2026-06-20",
+    type: "Usage",
+    description: "Agent invocations",
+    amount: -1.42,
+  },
+  {
+    id: "ch_usage_06_21",
+    date: "2026-06-21",
+    type: "Usage",
+    description: "MCP server requests",
+    amount: -3.17,
+  },
+  {
+    id: "ch_promo_referral",
+    date: "2026-06-22",
+    type: "Promo",
+    description: "Referral bonus",
+    amount: 25,
+  },
+  {
+    id: "ch_usage_06_23",
+    date: "2026-06-23",
+    type: "Usage",
+    description: "Sandbox compute",
+    amount: -2.05,
+  },
+  {
+    id: "ch_topup_06_25",
+    date: "2026-06-25",
+    type: "Top-up",
+    description: "Top-up via Visa ending 4242",
+    amount: 25,
+  },
+  {
+    id: "ch_usage_06_26",
+    date: "2026-06-26",
+    type: "Usage",
+    description: "Sandbox compute",
+    amount: -4.93,
+  },
+  {
+    id: "ch_usage_06_27",
+    date: "2026-06-27",
+    type: "Usage",
+    description: "Batch job execution",
+    amount: -1.88,
+  },
+  {
+    id: "ch_usage_06_28",
+    date: "2026-06-28",
+    type: "Usage",
+    description: "MCP server requests",
+    amount: -0.45,
+  },
+];
+
 const TIER_ONE_INVOICE: Invoice = {
   id: "inv_2026_06",
   date: "2026-06-30",
@@ -485,6 +553,7 @@ function tier0Seed(): AccountState {
     monthToDateSpendBreakdown: { usageUsd: 0, addonsUsd: 0 },
     autoTopUp: { enabled: false, thresholdUsd: 5, amountUsd: 25 },
     monthlyTopUp: { enabled: false, amountUsd: 50 },
+    lowBalanceAlert: { enabled: true, thresholdUsd: 25 },
     paymentMethod: { brand: null, last4: null },
     billingContact: DAY_ONE_BILLING_CONTACT,
     addons: ADD_ONS_TEMPLATE,
@@ -497,13 +566,14 @@ function tier0Seed(): AccountState {
 function tierUpgradedSeed(tier: Tier): AccountState {
   const upgraded = tier0Seed();
   upgraded.tier = tier;
-  upgraded.balanceUsd = 57.12;
+  upgraded.balanceUsd = 93.22;
   upgraded.paymentMethod = { brand: "Visa", last4: "4242" };
   upgraded.wallet = [SIGNUP_PROMO_WALLET, TIER_ONE_TOPUP_WALLET];
   upgraded.creditHistory = [
     SIGNUP_PROMO_HISTORY,
     TIER_ONE_TOPUP_HISTORY,
     TIER_ONE_USAGE_HISTORY,
+    ...TIER_ONE_EXTENDED_HISTORY,
   ];
   upgraded.invoices = [TIER_ONE_INVOICE];
   upgraded.receipts = [TIER_ONE_RECEIPT];
