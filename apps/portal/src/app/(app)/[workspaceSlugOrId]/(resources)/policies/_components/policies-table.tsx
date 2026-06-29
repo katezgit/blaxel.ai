@@ -40,7 +40,6 @@ import {
 import type { Policy, PolicyType } from "@/lib/mock/policies";
 import { totalUsage } from "@/lib/mock/policies";
 import {
-  appliesToLabel,
   attachedResourcesLabel,
   fullTimestamp,
   relativeUpdated,
@@ -137,15 +136,6 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
         cell: (info) => (
           <span className="typography-body text-foreground">
             {ruleSummary(info.row.original)}
-          </span>
-        ),
-      }),
-      columnHelper.accessor((row) => row.spec.resourceTypes, {
-        id: "appliesTo",
-        header: "Applies to",
-        cell: (info) => (
-          <span className="typography-body text-muted-foreground">
-            {appliesToLabel(info.getValue())}
           </span>
         ),
       }),
@@ -394,30 +384,24 @@ function EvaluationRulesHelp() {
         className="max-w-sm"
       >
         <div className="flex flex-col gap-3">
+          <p className="typography-body text-muted-foreground">
+            When multiple policies apply to a workload, Blaxel combines them
+            by type.
+          </p>
           <div className="flex flex-col gap-1">
             <span className="typography-label font-medium text-foreground">
-              How policies combine
+              Within a type — OR
             </span>
             <p className="typography-body text-muted-foreground">
-              When more than one policy applies to a workload, Blaxel combines
-              them by type before deciding whether the workload can run.
+              Two Location policies allow any location named by either.
             </p>
           </div>
           <div className="flex flex-col gap-1">
             <span className="typography-label font-medium text-foreground">
-              Within a type — UNION (OR)
+              Across types — AND
             </span>
             <p className="typography-body text-muted-foreground">
-              Two Location policies allow any location named by either policy.
-            </p>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="typography-label font-medium text-foreground">
-              Across types — INTERSECTION (AND)
-            </span>
-            <p className="typography-body text-muted-foreground">
-              A Location and a Token usage policy both must pass for the
-              workload to run.
+              A Location and a Token usage policy both must pass.
             </p>
           </div>
         </div>

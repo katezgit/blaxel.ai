@@ -126,12 +126,8 @@ interface PolicyTypeSelectFieldProps {
 }
 
 export function PolicyTypeSelectField({ form }: PolicyTypeSelectFieldProps) {
-  const policyType = form.watch("policyType");
-  const helper = POLICY_TYPE_BY_VALUE[policyType].hint;
-  const helperId = useId();
-
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex max-w-sm flex-col gap-1.5">
       <Field label="Policy type">
         <Controller
           control={form.control}
@@ -141,11 +137,7 @@ export function PolicyTypeSelectField({ form }: PolicyTypeSelectFieldProps) {
             const CurrentIcon = current.icon;
             return (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  aria-label="Policy type"
-                  aria-describedby={helperId}
-                  className="w-full"
-                >
+                <SelectTrigger aria-label="Policy type" className="w-full">
                   <SelectValue>
                     <span className="inline-flex items-center gap-2">
                       <CurrentIcon
@@ -168,9 +160,6 @@ export function PolicyTypeSelectField({ form }: PolicyTypeSelectFieldProps) {
           }}
         />
       </Field>
-      <p id={helperId} className="text-muted-foreground">
-        {helper}
-      </p>
     </div>
   );
 }
@@ -564,7 +553,6 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
     formState: { errors },
   } = form;
   const slug = watch("name");
-  const displayHelperId = useId();
   const nameHelperId = useId();
 
   return (
@@ -573,13 +561,9 @@ export function IdentityEditableFields({ form }: IdentityEditableFieldsProps) {
         <Field label="Display name" error={errors.displayName?.message}>
           <Input
             placeholder="EU-only production"
-            aria-describedby={displayHelperId}
             {...register("displayName")}
           />
         </Field>
-        <p id={displayHelperId} className="typography-caption text-muted-foreground">
-          Shown in the dashboard.
-        </p>
       </div>
       <div className="flex max-w-sm flex-col gap-1.5">
         <Field label="Name" error={errors.name?.message}>
