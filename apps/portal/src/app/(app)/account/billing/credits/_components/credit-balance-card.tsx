@@ -1,6 +1,7 @@
 "use client";
 
-import { CreditCard, Plus, Zap } from "lucide-react";
+import { CreditCard, Plus } from "lucide-react";
+import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import UpgradeTierDialog from "@/components/billing/upgrade-tier-dialog";
@@ -11,13 +12,6 @@ const formatUsd = (value: number): string =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(value);
-
-const formatUsdCompact = (value: number): string =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
   }).format(value);
 
 const formatDate = (iso: string): string => {
@@ -43,17 +37,26 @@ export default function CreditBalanceCard() {
     ? `Charged to ${brand} ending ${last4}`
     : "No payment method on file";
 
-  const autoOn = state.autoTopUp.enabled;
-  const monthlyOn = state.monthlyTopUp.enabled;
-  const anyRuleOn = autoOn || monthlyOn;
-  const autoLabel = anyRuleOn ? "Automatic top-up" : "Enable auto top-up";
+  const autoEnabled = state.autoTopUp.enabled;
+  const monthlyEnabled = state.monthlyTopUp.enabled;
+  const hasAnyRuleEnabled = autoEnabled || monthlyEnabled;
+  const ruleVariant = hasPaymentMethod ? "success" : "warning";
+  const ruleSuffix = hasPaymentMethod ? "On" : "No payment method";
+
+  const secondaryLabel = hasAnyRuleEnabled
+    ? "Edit top-up rules"
+    : "Set up auto top-up";
+  // Omit the ghost CTA when there's no card AND no rule to edit — the user
+  // can't configure top-up without a payment method; that path lives on
+  // Invoices & payment.
+  const showSecondary = hasAnyRuleEnabled || hasPaymentMethod;
 
   return (
     <Card
       variant="elevated"
-      className="flex flex-col gap-6 px-6 py-6 sm:flex-row sm:items-start sm:justify-between"
+      className="flex flex-col gap-6 px-6 py-6 sm:flex-row sm:items-stretch sm:justify-between"
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-1 flex-col gap-2">
         <span className="typography-meta font-mono uppercase tracking-[0.16em] text-meta-foreground">
           Available credits
         </span>
@@ -69,52 +72,42 @@ export default function CreditBalanceCard() {
           <CreditCard aria-hidden="true" className="size-3.5" />
           {paymentSummary}
         </p>
+        {hasAnyRuleEnabled ? (
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            {autoEnabled ? (
+              <Badge variant={ruleVariant} showDot>
+                Auto top-up · {ruleSuffix}
+              </Badge>
+            ) : null}
+            {monthlyEnabled ? (
+              <Badge variant={ruleVariant} showDot>
+                Monthly top-up · {ruleSuffix}
+              </Badge>
+            ) : null}
+          </div>
+        ) : null}
       </div>
-      <div className="flex flex-col items-stretch gap-3 sm:items-end">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <div
+        aria-hidden="true"
+        className="hidden sm:block w-px self-stretch bg-border"
+      />
+      <div className="flex flex-col justify-center gap-2 sm:min-w-[180px]">
+        <UpgradeTierDialog
+          trigger={
+            <Button variant="primary" className="w-full">
+              <Plus aria-hidden="true" />
+              Add credits
+            </Button>
+          }
+        />
+        {showSecondary ? (
           <AutomaticTopUpDialog
             trigger={
-              <Button variant="secondary" className="w-full sm:w-auto">
-                <Zap aria-hidden="true" />
-                {autoLabel}
+              <Button variant="ghost" className="w-full">
+                {secondaryLabel}
               </Button>
             }
           />
-          <UpgradeTierDialog
-            trigger={
-              <Button variant="primary" className="w-full sm:w-auto">
-                <Plus aria-hidden="true" />
-                Add credits
-              </Button>
-            }
-          />
-        </div>
-        {anyRuleOn ? (
-          <ul className="flex flex-col gap-1 typography-caption text-muted-foreground sm:items-end sm:text-right">
-            {autoOn ? (
-              <li>
-                Auto top-up: when balance falls below{" "}
-                <span className="font-mono text-foreground">
-                  {formatUsdCompact(state.autoTopUp.thresholdUsd)}
-                </span>
-                , add{" "}
-                <span className="font-mono text-foreground">
-                  {formatUsdCompact(state.autoTopUp.amountUsd)}
-                </span>
-                {hasPaymentMethod ? null : " — awaiting payment method"}
-              </li>
-            ) : null}
-            {monthlyOn ? (
-              <li>
-                Monthly top-up:{" "}
-                <span className="font-mono text-foreground">
-                  {formatUsdCompact(state.monthlyTopUp.amountUsd)}
-                </span>{" "}
-                on the 1st
-                {hasPaymentMethod ? null : " — awaiting payment method"}
-              </li>
-            ) : null}
-          </ul>
         ) : null}
       </div>
     </Card>

@@ -1,6 +1,5 @@
 "use client";
 
-// TODO: migrate to Radix RadioGroup for parity with amount-picker.tsx.
 import { CircleDollarSign } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import { Badge } from "@repo/ui/components/badge";

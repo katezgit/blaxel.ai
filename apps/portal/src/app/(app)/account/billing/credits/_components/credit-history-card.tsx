@@ -76,6 +76,13 @@ export default function CreditHistoryCard() {
           aria-label="Credit history"
         >
           <caption className="sr-only">Credit history</caption>
+          {/*
+            Fixed column widths protect the row's reading shape:
+            - Date (140px): "Mon DD, YYYY" needs full width or it truncates mid-month.
+            - Type (110px): holds the longest Badge label ("Top-up") without wrap.
+            - Description: flexes to take the remaining row width.
+            - Amount (140px): keeps tabular-nums right-aligned with the header.
+          */}
           <colgroup>
             <col className="w-[140px]" />
             <col className="w-[110px]" />
