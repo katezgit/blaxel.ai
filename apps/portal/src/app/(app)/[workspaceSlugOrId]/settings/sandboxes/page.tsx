@@ -23,7 +23,7 @@ export default async function WorkspaceSandboxSettingsPage({
           Sandbox settings
         </h1>
         <p className="text-muted-foreground">
-          Defaults applied to every sandbox launched in this workspace.
+          Defaults applied to every sandbox launched in {workspace.name}.
         </p>
       </header>
       <SandboxSettingsClient
