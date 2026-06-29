@@ -30,7 +30,7 @@ import { cn } from "@repo/ui/lib/cn";
 import type { Integration } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
-import ConnectionDrawer from "../[provider]/_components/connection-drawer";
+import AddConnectionDialog from "../[provider]/_components/add-connection-dialog";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
 
 // Flat one-click filter: a single category state covers status + type in one
@@ -75,7 +75,7 @@ export default function IntegrationsClient() {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "name", desc: false },
   ]);
-  // First-connection path: catalog opens the create drawer inline so the user
+  // First-connection path: catalog opens the create dialog inline so the user
   // doesn't bounce through an empty detail page just to click another CTA.
   // `connectFor === null` = closed; otherwise the row whose Connect button was
   // clicked. On successful create we route to that provider's detail page so
@@ -285,17 +285,16 @@ export default function IntegrationsClient() {
       )}
 
       {connectFor && (
-        <ConnectionDrawer
+        <AddConnectionDialog
           provider={connectFor}
-          state={{ mode: "create" }}
-          onClose={(reason) => {
-            const providerId = connectFor.id;
-            setConnectFor(null);
-            if (reason === "created") {
-              router.push(
-                `/${workspaceSlug}/settings/integrations/${providerId}`,
-              );
-            }
+          open
+          onOpenChange={(next) => {
+            if (!next) setConnectFor(null);
+          }}
+          onCreated={() => {
+            router.push(
+              `/${workspaceSlug}/settings/integrations/${connectFor.id}`,
+            );
           }}
         />
       )}
