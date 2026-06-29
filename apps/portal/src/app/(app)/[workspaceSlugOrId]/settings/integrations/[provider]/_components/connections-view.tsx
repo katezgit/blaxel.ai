@@ -32,9 +32,8 @@ import type { Integration, IntegrationConnection } from "@/lib/mock/types";
 import { workspaceIntegrationQueries } from "@/lib/query/workspace-integrations";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
-import ConnectionDrawer, {
-  type DrawerState,
-} from "./connection-drawer";
+import AddConnectionDialog from "./add-connection-dialog";
+import RotateConnectionKeyDialog from "./rotate-connection-key-dialog";
 
 const DATE_FMT = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -64,7 +63,8 @@ export default function ConnectionsView({
     [allConnections, integration.id],
   );
 
-  const [drawer, setDrawer] = useState<DrawerState>(null);
+  const [adding, setAdding] = useState(false);
+  const [rotating, setRotating] = useState<IntegrationConnection | null>(null);
   const [pendingRemove, setPendingRemove] =
     useState<IntegrationConnection | null>(null);
 
@@ -100,9 +100,7 @@ export default function ConnectionsView({
         cell: ({ row }) => (
           <RowMenu
             connection={row.original}
-            onEdit={() =>
-              setDrawer({ mode: "edit", connection: row.original })
-            }
+            onRotate={() => setRotating(row.original)}
             onRemove={() => setPendingRemove(row.original)}
           />
         ),
@@ -150,10 +148,7 @@ export default function ConnectionsView({
             </div>
           </div>
           {connections.length > 0 && (
-            <Button
-              variant="primary"
-              onClick={() => setDrawer({ mode: "create" })}
-            >
+            <Button variant="primary" onClick={() => setAdding(true)}>
               <Plus aria-hidden="true" />
               <span>Create integration</span>
             </Button>
@@ -182,10 +177,7 @@ export default function ConnectionsView({
                 agents and the CLI.
               </p>
             </div>
-            <Button
-              variant="primary"
-              onClick={() => setDrawer({ mode: "create" })}
-            >
+            <Button variant="primary" onClick={() => setAdding(true)}>
               <Plus aria-hidden="true" />
               <span>Create integration</span>
             </Button>
@@ -195,10 +187,16 @@ export default function ConnectionsView({
         <ResourceTable table={table} />
       )}
 
-      <ConnectionDrawer
+      <AddConnectionDialog
         provider={integration}
-        state={drawer}
-        onClose={() => setDrawer(null)}
+        open={adding}
+        onOpenChange={setAdding}
+      />
+
+      <RotateConnectionKeyDialog
+        provider={integration}
+        connection={rotating}
+        onClose={() => setRotating(null)}
       />
 
       <Dialog
@@ -243,11 +241,11 @@ export default function ConnectionsView({
 
 interface RowMenuProps {
   connection: IntegrationConnection;
-  onEdit: () => void;
+  onRotate: () => void;
   onRemove: () => void;
 }
 
-function RowMenu({ connection, onEdit, onRemove }: RowMenuProps) {
+function RowMenu({ connection, onRotate, onRemove }: RowMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -260,7 +258,7 @@ function RowMenu({ connection, onEdit, onRemove }: RowMenuProps) {
         </IconButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuItem onSelect={onEdit}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onSelect={onRotate}>Rotate key</DropdownMenuItem>
         <DropdownMenuItem
           onSelect={onRemove}
           className="text-destructive focus:text-destructive"
