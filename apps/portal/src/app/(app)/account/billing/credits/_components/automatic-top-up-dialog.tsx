@@ -122,7 +122,7 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isSubmitting, isValid, isDirty },
+    formState: { errors, isSubmitting, isValid },
   } = form;
 
   const autoEnabled = watch("autoEnabled");
@@ -263,9 +263,7 @@ function AutomaticTopUpForm({ onClose }: { onClose: () => void }) {
         <Button
           type="submit"
           variant="primary"
-          disabled={
-            isSubmitting || !isDirty || !isValid || blockedByMissingPayment
-          }
+          disabled={isSubmitting || !isValid || blockedByMissingPayment}
         >
           {isSubmitting ? "Saving…" : "Save changes"}
         </Button>
