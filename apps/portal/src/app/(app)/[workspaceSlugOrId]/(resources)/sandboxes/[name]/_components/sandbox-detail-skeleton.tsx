@@ -12,13 +12,18 @@ interface SandboxDetailSkeletonProps {
   workspaceSlug?: string;
 }
 
+/** Loading skeleton per wireframe §2.7. Mirrors the populated header
+ * rhythm: outer `<header>` carries `gap-3 pt-2 pb-6`; title column uses
+ * `.page-header`; meta row shows 4–6 inline blocks separated by `·`.
+ * Tier-1 bands (provenance, connect-now, vitals) render shape-preserving
+ * skeletons so the page does not jump on load. */
 export default function SandboxDetailSkeleton({
   workspaceSlug,
 }: SandboxDetailSkeletonProps) {
   const listHref = workspaceSlug ? `/${workspaceSlug}/sandboxes` : null;
   return (
     <>
-      <header className="flex flex-col gap-3">
+      <header className="flex flex-col gap-3 pt-2 pb-6">
         <nav
           aria-label="Breadcrumb"
           className="flex items-center gap-1 typography-body text-muted-foreground"
@@ -39,45 +44,52 @@ export default function SandboxDetailSkeleton({
           />
           <Skeleton className="h-4 w-32 rounded-sm" />
         </nav>
-        <div className="flex flex-col items-start gap-2">
-          <Skeleton className="h-7 w-56 rounded-sm" />
-          <Skeleton className="h-4 w-[24rem] max-w-full rounded-sm" />
+        <div className="flex min-w-0 flex-col page-header">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-7 w-40 rounded-sm" />
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
+          <div className="page-header-meta">
+            {["w-24", "w-44", "w-20", "w-24", "w-32", "w-28"].map(
+              (width, idx) => (
+                <Skeleton
+                  key={idx}
+                  className={cn("h-4 rounded-sm", width)}
+                />
+              ),
+            )}
+          </div>
         </div>
       </header>
 
-      <section className="flex flex-col gap-4 pt-6">
-        <BandHeadingSilhouette width="w-32" />
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[160px_1fr]">
-          {["w-40", "w-24", "w-32", "w-44", "w-16", "w-28"].map(
-            (valueWidth, idx) => (
-              <div key={idx} className="contents">
-                <Skeleton className="h-5 w-28 rounded-sm" />
-                <Skeleton className={cn("h-5 rounded-sm", valueWidth)} />
-              </div>
-            ),
-          )}
-        </dl>
+      <section
+        aria-label="Spawned by"
+        className="flex items-center gap-3 border-t border-border pt-6"
+      >
+        <Skeleton className="h-4 w-24 rounded-sm" />
+        <Skeleton className="h-4 w-56 rounded-sm" />
       </section>
 
-      <section className="flex flex-col gap-4 border-t border-border pt-6">
-        <BandHeadingSilhouette width="w-28" />
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[160px_1fr]">
-          {["w-40", "w-44", "w-32", "w-56"].map((valueWidth, idx) => (
-            <div key={idx} className="contents">
-              <Skeleton className="h-5 w-24 rounded-sm" />
-              <Skeleton className={cn("h-5 rounded-sm", valueWidth)} />
-            </div>
-          ))}
-        </dl>
+      <section
+        aria-label="Connect now"
+        className="flex flex-col gap-2 border-t border-border pt-6"
+      >
+        <Skeleton className="h-4 w-28 rounded-sm" />
+        <Skeleton className="h-9 w-full rounded-md" />
+      </section>
+
+      <section
+        aria-label="Vitals"
+        className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 sm:grid-cols-4"
+      >
+        {Array.from({ length: 4 }).map((_, idx) => (
+          <div key={idx} className="flex flex-col gap-2">
+            <Skeleton className="h-4 w-16 rounded-sm" />
+            <Skeleton className="h-6 w-20 rounded-sm" />
+            <Skeleton className="h-4 w-24 rounded-sm" />
+          </div>
+        ))}
       </section>
     </>
-  );
-}
-
-function BandHeadingSilhouette({ width }: { width: string }) {
-  return (
-    <div className="flex h-9 items-center">
-      <Skeleton className={cn("h-5 rounded-sm", width)} />
-    </div>
   );
 }
