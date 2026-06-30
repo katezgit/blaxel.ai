@@ -37,7 +37,7 @@ import {
   AlertDialogTitle,
 } from "@repo/ui/components/alert-dialog";
 import CreateServiceAccountDialog from "./create-service-account-dialog";
-import CliLine from "./cli-line";
+import CliLine from "@/components/cli-line";
 import { formatRelativePast, oldestKeyAgeFor } from "./format";
 
 const columnHelper = createColumnHelper<ServiceAccount>();

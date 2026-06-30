@@ -17,7 +17,7 @@ export default async function ImagesPage() {
     <div className="page-shell">
       <header className="page-header">
         <h1 className="typography-display font-semibold text-foreground">Images</h1>
-        <p className="text-muted-foreground">Container images backing your sandboxes.</p>
+        <p className="text-muted-foreground">Reusable snapshots your Sandboxes fork from.</p>
       </header>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ImagesList />

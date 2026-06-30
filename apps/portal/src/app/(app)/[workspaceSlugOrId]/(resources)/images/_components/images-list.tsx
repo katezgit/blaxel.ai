@@ -11,6 +11,7 @@ import type { Image, ImageStatus } from "@/lib/mock/images";
 import { imageQueries } from "@/lib/query/images";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { ResourceTable } from "@/app/(app)/_components/resource-table";
+import CliLine from "@/components/cli-line";
 
 const STATUS_VARIANT: Record<ImageStatus, "success" | "warning" | "destructive"> = {
   ready: "success",
@@ -64,5 +65,27 @@ export function ImagesList() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  if (rows.length === 0) {
+    return <ImagesEmptyState />;
+  }
+
   return <ResourceTable table={table} />;
+}
+
+// No in-product create flow for Images by design — they are pushed from the
+// CLI (`bl push --type sandbox`). Do not add a Create button here; the command
+// is the affordance. See personality.md sacrificial choice #5.
+function ImagesEmptyState() {
+  return (
+    <div
+      role="status"
+      className="flex flex-col items-center gap-4 rounded-md border border-border bg-card px-6 py-12"
+    >
+      <p className="text-foreground">No Images in this workspace.</p>
+      <CliLine
+        className="w-full max-w-2xl"
+        command="bl push --type sandbox"
+      />
+    </div>
+  );
 }
