@@ -197,44 +197,46 @@ function EditingRow({
         </span>
       </div>
       {/* pl-11 (44px) = size-8 RuleIcon (32px) + gap-3 (12px); aligns the threshold field under the label. */}
-      <div className="pl-11 flex flex-col gap-3">
+      <div className="pl-11">
         <FieldRow cols={2}>
-          <Field
-            label="Alert threshold"
-            error={errors.thresholdUsd?.message}
-          >
-            <Input
-              type="number"
-              inputMode="decimal"
-              step="1"
-              min="1"
-              aria-invalid={errors.thresholdUsd ? true : undefined}
-              trailing={
-                <span aria-hidden="true" className="typography-meta">
-                  USD
-                </span>
-              }
-              {...register("thresholdUsd", { valueAsNumber: true })}
-            />
-          </Field>
+          <div className="flex flex-col gap-6">
+            <Field
+              label="Alert threshold"
+              error={errors.thresholdUsd?.message}
+            >
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="1"
+                min="1"
+                aria-invalid={errors.thresholdUsd ? true : undefined}
+                trailing={
+                  <span aria-hidden="true" className="typography-meta">
+                    USD
+                  </span>
+                }
+                {...register("thresholdUsd", { valueAsNumber: true })}
+              />
+            </Field>
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSubmitting || !isValid || !isDirty}
+              >
+                {isSubmitting ? "Saving…" : "Save changes"}
+              </Button>
+            </div>
+          </div>
         </FieldRow>
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isSubmitting || !isValid || !isDirty}
-          >
-            {isSubmitting ? "Saving…" : "Save changes"}
-          </Button>
-        </div>
       </div>
     </form>
   );
