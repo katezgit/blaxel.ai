@@ -36,7 +36,7 @@ export function SubShellSidebarReturnHeader({
         // sidebar.tsx where the collapse chevron's top-5 is pinned to that
         // centerline.
         "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md",
-        isRail ? "justify-center px-0" : "px-2",
+        isRail ? "justify-center px-0 w-8 mx-auto" : "px-2",
         "typography-body text-muted-foreground outline-hidden",
         "hover:text-foreground",
         "focus-visible:shadow-focus-ring",
