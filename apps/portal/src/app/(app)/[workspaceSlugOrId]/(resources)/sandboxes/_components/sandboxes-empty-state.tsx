@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { Box } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { CodeBlock } from "@repo/ui/components/code-block";
+import { EmptyState } from "@repo/ui/components/empty-state";
 
 interface SandboxesEmptyStateProps {
   createHref: string;
@@ -11,27 +13,32 @@ interface SandboxesEmptyStateProps {
 const CLI_SNIPPET = [
   "$ bl sandbox create --name my-sandbox --image blaxel/base",
   "",
-  '# SDK:',
-  'await SandboxInstance.createIfNotExists({',
+  "# SDK:",
+  "await SandboxInstance.createIfNotExists({",
   '  name: "my-sandbox",',
   '  image: "blaxel/base",',
   "});",
 ].join("\n");
 
 /**
- * Sandboxes list empty state — CLI-first by design. Alex creates Sandboxes
- * from her terminal; the dashboard "Create from console" CTA is
- * intentionally the secondary affordance under the snippet (§1.5 of the
- * wireframe / personality.md Sacrificial choice #5).
+ * Sandboxes list empty state. EmptyState (icon + title) leads; the CLI
+ * snippet and "Create from console" affordance render beneath as the
+ * actionable layer — Alex's primary path is the terminal (personality.md
+ * Sacrificial choice #5), so the CLI block stays prominent under the
+ * canonical icon-led identification.
  */
 export function SandboxesEmptyState({ createHref }: SandboxesEmptyStateProps) {
   return (
     <div className="rounded-md border border-border bg-card px-6 py-12">
-      <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
-        <p className="typography-body text-foreground">
-          No Sandboxes in this workspace.
-        </p>
-        <div className="w-full text-left">
+      <div className="mx-auto flex max-w-2xl flex-col items-center gap-6">
+        <EmptyState
+          variant="zero-state"
+          icon={Box}
+          title="No Sandboxes in this workspace"
+          subtitle="Spin one up from the CLI or from the console."
+          className="py-0 px-0"
+        />
+        <div className="w-full">
           <CodeBlock
             variant="block"
             language="bash"

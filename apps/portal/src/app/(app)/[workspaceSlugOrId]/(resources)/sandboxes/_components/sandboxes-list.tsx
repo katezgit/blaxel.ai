@@ -8,8 +8,10 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { AlertTriangle, MoreHorizontal } from "lucide-react";
+import { AlertTriangle, MoreHorizontal, SearchX } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
+import { Button } from "@repo/ui/components/button";
+import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
   DropdownMenu,
@@ -248,25 +250,18 @@ export function SandboxesList({
           <tbody className={tableBodyClass}>
             {showNoResults ? (
               <tr>
-                <td
-                  colSpan={columns.length}
-                  className="px-4 py-12 text-center"
-                >
-                  <div className="mx-auto flex max-w-md flex-col items-center gap-3">
-                    <p className="typography-body text-foreground">
-                      No Sandboxes match these filters.
-                    </p>
-                    <p className="typography-caption text-muted-foreground">
-                      Adjust your filters or search term.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={clearFilters}
-                      className="typography-body text-primary hover:underline"
-                    >
-                      Clear filters
-                    </button>
-                  </div>
+                <td colSpan={columns.length} className="p-0">
+                  <EmptyState
+                    variant="no-results"
+                    icon={SearchX}
+                    title="No Sandboxes match these filters"
+                    subtitle="Adjust your filters or search term."
+                    cta={
+                      <Button variant="ghost" onClick={clearFilters}>
+                        Clear filters
+                      </Button>
+                    }
+                  />
                 </td>
               </tr>
             ) : (
