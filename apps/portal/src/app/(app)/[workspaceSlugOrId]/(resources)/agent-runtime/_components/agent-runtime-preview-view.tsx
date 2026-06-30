@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  Bot,
   Clock,
+  Cpu,
   Fingerprint,
   Layers,
   Plug,
@@ -74,7 +74,7 @@ export default function AgentRuntimePreviewView({
             Agent Runtime
           </h1>
           <Badge variant="neutral" size="sm">
-            Soon!
+            Coming soon
           </Badge>
         </div>
         <p className="max-w-2xl typography-body text-muted-foreground">
@@ -97,7 +97,7 @@ export default function AgentRuntimePreviewView({
             aria-hidden="true"
             className="flex size-12 items-center justify-center rounded-md bg-icon-tile text-muted-foreground"
           >
-            <Bot className="size-6" />
+            <Cpu className="size-6" />
           </span>
           <div className="flex flex-col items-center gap-1">
             <h3 className="typography-display text-foreground">
