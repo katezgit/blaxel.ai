@@ -26,7 +26,7 @@ export default function InvitationRow({
         <div className="flex items-start gap-3">
           <span
             aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft typography-body font-semibold text-primary"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-icon-tile typography-body font-semibold text-muted-foreground"
           >
             {initial}
           </span>
