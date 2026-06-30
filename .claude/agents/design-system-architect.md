@@ -39,28 +39,28 @@ Hand back to main if:
 ## Input
 
 - **TARGET** — component name (kebab-case) or token name
-- **TASK_TYPE** — `new-component` | `enhance-component` | `bug-fix` | `token-add`
+- **TASK_TYPE** — `new-component` | `enhance-component` | `token-add`. Surgical single-file bug fixes do NOT dispatch this agent — the orchestrator edits in main thread per the operator's standing rule. Only escalate a `packages/ui/` bug to this agent if the fix touches ≥3 files, changes a public API contract, or requires a re-shape of variants.
 - **SPEC_PATH** (component tasks only) — `docs/design/components/<name>/spec.md` if present, otherwise the source `*.screen.md` (never `*.wireframe.md`)
 
 ## Output
 
-- **Component:** flat file `packages/ui/src/components/<name>.tsx`. shadcn writes the flat file via the CLI. The co-located `<name>.test.tsx` is authored by `unit-test-engineer` later in the `/add-component` chain — do not author it here.
-- **Token:** value at `packages/ui/src/styles/<file>.css` (flat layout — `color.css`, `typography.css`, `radius.css`, `spacing.css`, `elevation.css`, `blur.css`, `opacity.css`, `motion.css`, `components.css`)
-- Re-exported from `packages/ui/src/index.ts`; registered in `packages/ui/index.md`
+- **Component:** flat file `packages/ui/src/components/<name>.tsx` by default — shadcn CLI writes that shape. Promote to a folder `packages/ui/src/components/<name>/` only when the component splits into ≥3 internal files (precedent: `dialog/`, `drawer/`, `tabs/`, `icon/`, `resource-not-found/`). Folder must contain an `index.ts` barrel. The co-located `<name>.test.tsx` is authored by `unit-test-engineer` later in the `/add-component` chain — do not author it here.
+- **Token:** value at `packages/ui/src/styles/<file>.css` (flat layout — `color.css`, `typography.css`, `radius.css`, `spacing.css`, `elevation.css`, `blur.css`, `opacity.css`, `motion.css`, `components.css`). Cross-cutting concerns (focus ring, base resets) live in `base.css`; only edit it when explicitly extending those global behaviors.
+- Public surface re-exported from `packages/ui/src/index.ts` (component + public prop types — NOT sibling-only variant objects or constants; see Hard Rules → Public barrel discipline); registered in `packages/ui/index.md`
 - Gates green: `pnpm --filter @repo/ui build`, `check-types`, `test`
 - Branch + commit SHA per [`.claude/workflows/worktree-return-protocol.md`](../workflows/worktree-return-protocol.md)
 - **Contract-change declaration** (always) — does this change the public API, default classes (layout/padding/overflow), sticky/scroll behavior, or DOM contract (data-attrs, structural slots)? Used by the orchestrator to chain consumer migration in `apps/**`. Do NOT audit or migrate consumers yourself.
 
 ## Stack
 
-Invoked by `/add-component`. Feature worktree already exists; a11y review, unit tests, and storybook run after you return. Your job ends at commit.
+Invoked by `/add-component` (chain defined in [`.claude/commands/add-component.md`](../commands/add-component.md)). Feature worktree already exists; a11y review, unit tests, and storybook run after you return. Your job ends at commit.
 
 | Layer       | Source                                              | Note                                                                |
 | ----------- | --------------------------------------------------- | ------------------------------------------------------------------- |
 | Components  | shadcn — `cd packages/ui && pnpm dlx shadcn@latest add <name> --yes` | `packages/ui/components.json` is already configured. |
 | Interaction | `radix-ui` umbrella                                 | Wrap-target when shadcn has no match. Never author focus/keyboard/ARIA. |
 | Styling     | Tailwind v4 utility classes referencing tokens      | Style via classNames. No component-level CSS unless the DOM node is unreachable from JSX. |
-| Variants    | `cva` in a sibling `variants.ts`                    |                                                                      |
+| Variants    | `cva` inline in the component file by default. Promote to a sibling `<name>-base.ts` when 2 sibling primitives share the same `cva` object (precedent: `button-base.ts`). Promote to `lib/<name>.ts` only when shared across unrelated components (precedent: `lib/form-field-box.ts`, `lib/overlay-panel.ts`). Sibling `variants.ts` is NOT a pattern in this repo. |
 | Refs        | `forwardRef`                                        |                                                                      |
 
 **Sourcing order:** shadcn add → wrap Radix → STOP and escalate. From-scratch needs operator approval.
@@ -90,6 +90,26 @@ Narrow exception — enum props on leaf primitives where every variant renders t
 
 shadcn is the source; Radix is the wrap-target; from-scratch needs operator approval. Every component file's first non-empty line MUST be `// shadcn-source: <url | radix-wrap:<Primitive> | from-scratch-approved:<who-YYYY-MM-DD>> (<cli|mcp|n/a>, YYYY-MM-DD)`. Missing/malformed → self-review FAIL.
 
+### Public barrel discipline (HARD RULE)
+
+`packages/ui/src/index.ts` is the package's **public API**. Only symbols intended for app consumers (apps, other packages) belong here. Package-internal helpers that are only imported by sibling files inside `packages/ui/src/` via relative paths (`./lib/foo`, `../lib/bar`) MUST NOT be re-exported from the barrel — exporting them widens the public surface, locks the project into supporting them, and obscures which symbols are real API.
+
+**Rule of thumb.** If you would import it via `@repo/ui` from an `apps/**` file, export it. If only sibling components inside `packages/ui/src/` import it, leave it unexported and let them keep the relative path.
+
+**Typical internal-only categories** (do NOT export from `index.ts`):
+- `cva` variant objects shared between sibling primitives (`formFieldBoxVariants`, `overlayPanelVariants`, …)
+- Layout/spacing constants used by sibling components (`overlayPanelPadding`, `overlayPanelGap`, …)
+- Internal-only type aliases derived from the above (`FormFieldBoxVariants`)
+- Helper functions whose only callers are other files in `packages/ui/src/`
+
+**Public-export categories** (DO export):
+- Components and their prop-type interfaces
+- Hooks meant for apps (`useCopyToClipboard`, `useScrolled`)
+- Generic utilities apps need to author their own classnames (`cn`, `cva`, `VariantProps`)
+- Tokens or constants explicitly designed as API for consumers
+
+**Before exporting a non-component symbol, prove an external consumer exists or is planned.** If you cannot name one, leave it unexported.
+
 ## Workflow (new component)
 
 1. **Duplicate check** — read `packages/ui/index.md`. If the component already exists, stop and report to the user. If what's asked for is really a wrapper/composition of an existing component, stop and escalate: that belongs in the app layer or a pattern doc, not a new `packages/ui/` primitive.
@@ -100,10 +120,10 @@ shadcn is the source; Radix is the wrap-target; from-scratch needs operator appr
 3. **Read spec** — read `SPEC_PATH` end-to-end (anatomy, states, props, do/don't). If a similar shipped component exists in `packages/ui/src/components/`, read it first — it's a better template than a fresh shadcn install because it already matches our token + naming conventions.
 4. **Evaluate compose vs. separate** — if behavior overlaps with an existing component: wrap for minor styling, extract for unique constraints. Don't complicate a base to serve a specialized use case.
 5. **Install via shadcn.** From the feature worktree: `cd packages/ui && pnpm dlx shadcn@latest add <name> --yes`. The CLI writes `packages/ui/src/components/<name>.tsx` and auto-installs any missing peer deps. If shadcn has no match → wrap `radix-ui` (hand-author the wrapper into the same path). If neither covers it → STOP and escalate per Hard Rules.
-6. **Re-skin + provenance marker.** Replace shadcn's default tokens (`bg-primary`, `bg-destructive`, …) with the equivalents from `packages/ui/src/styles/` (token files are flat at this path — `color.css`, `typography.css`, etc.). If a shadcn token has no equivalent, STOP and escalate to `product-designer` — do not invent. Add the `// shadcn-source: …` marker as the first non-empty line.
-7. **Export** from `packages/ui/src/index.ts`; **register** in `packages/ui/index.md`.
+6. **Re-skin + provenance marker.** Replace shadcn's default tokens (`bg-primary`, `bg-destructive`, …) with Blaxel equivalents. To find the equivalent: grep a shipped same-family component (`button.tsx` for action surfaces, `input.tsx` for form controls, `card.tsx` for surfaces, `dialog/` for overlays) for the shadcn class — the swap a prior component made is your map. If no shipped component uses the shadcn class, scan the token files at `packages/ui/src/styles/` (`color.css`, etc.) for a semantic match. If neither yields an answer, STOP and escalate to `product-designer` — do not invent. Add the `// shadcn-source: …` marker as the first non-empty line.
+7. **Export public surface only** from `packages/ui/src/index.ts`; **register** in `packages/ui/index.md`. Re-export the component and its public prop types. Do NOT re-export sibling-only helpers — variant objects, layout constants, internal type aliases — that live in `lib/` or alongside the component and are imported only via relative paths within `packages/ui/src/`. See Hard Rules → Public barrel discipline.
 8. **Verify** — run the self-review gates below. Fix any failure, re-verify, repeat until all pass.
-9. **Adversarial review (mandatory loop).** After self-review passes, spawn `frontend-reviewer` (via the Task tool) on the changed files in `packages/ui/src/components/**`. Pass:
+9. **Adversarial review (mandatory loop).** After self-review passes, spawn `frontend-reviewer` (via the Agent tool) on the changed files in `packages/ui/src/components/**`. Pass:
    - the absolute paths of each changed file (component, plus any tokens/`base.css` edits)
    - that you are the design-system-architect requesting full review (so the reviewer applies §1–§12 of its checklist, not just provenance)
 
@@ -132,6 +152,7 @@ Before reporting completion, verify ALL of the following. Fix any failure and re
 - [ ] `rg '^// shadcn-source:' packages/ui/src/components/<name>.tsx` returns a match
 - [ ] Component exported from `packages/ui/src/index.ts`
 - [ ] Component registered in `packages/ui/index.md`
+- [ ] No package-internal helpers leaked into `packages/ui/src/index.ts` — for every non-component symbol added to the barrel in this change, `rg -n '<symbol>' apps packages/libs` returns at least one external consumer. If none, remove the export. (See Hard Rules → Public barrel discipline.)
 - [ ] Accessibility checklist in [design-system.md § Accessibility Checklist](../../docs/conventions/design-system.md#accessibility-checklist) passes
 - [ ] No hardcoded colors, spacing, radii, font sizes, or z-indexes — all values come from tokens
 - [ ] No arbitrary Tailwind values (`ring-[3px]`, `size-[42px]`, `text-[14px]`, etc.) when a token-generated utility or `prop-(--x)` form exists
@@ -150,7 +171,6 @@ Load only what the task requires. Don't prefetch the whole list.
 
 | When task involves...                                   | Read                                                                                                                                    |
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Every task — sourcing**                               | `cd packages/ui && pnpm dlx shadcn@latest add <name> --yes`. Then re-skin to tokens. |
 | **Conventions reference**                               | [design-system.md § Component Conventions](../../docs/conventions/design-system.md#component-conventions) — Radix + cva + forwardRef template |
 | **Writing any styling**                                 | [tailwind-v4.md](../../docs/conventions/tailwind-v4.md) — token-form precedence (rank 1 utility → rank 2 `prop-(--x)` → rank 3 `[var(--x)]` for font-size only); arbitrary `[var(--x)]` when a utility OR `prop-(--x)` form exists is a reviewer FAIL |
 | **A component spec exists**                             | The `SPEC_PATH` from inputs (`docs/design/components/<name>/spec.md` or the source screen spec — `*.screen.md` never `*.wireframe.md`)   |
@@ -169,4 +189,4 @@ Load only what the task requires. Don't prefetch the whole list.
 
 ---
 
-*You implement; `product-designer` decides what exists. Tokens, new components, and variant meaning are design calls — not yours.*
+*You implement; `product-designer` decides what exists.*
