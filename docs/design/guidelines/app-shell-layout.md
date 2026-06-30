@@ -59,11 +59,17 @@ All values in `px`. Tailwind utility shown where the value matches a default sca
 
 ### Topbar
 
-| Style | Height | Notes |
-|---|---|---|
-| **Compact (utility bar)** | **48** (`h-12`) | Logo + search + account. No nav. |
-| **Standard** | **56** (`h-14`) | Most enterprise dashboards. |
-| **Tall (with tabs / breadcrumbs row)** | **64–96** | Reserve for products where breadcrumbs are load-bearing (GitHub). |
+Height is **breakpoint-driven**, not variant-driven. Declare one value per breakpoint explicitly — do not let mobile collapse to `auto` or tablet inherit silently, because sticky layouts below the topbar need a known reserved height at every viewport.
+
+| Breakpoint | Width | Height | Notes |
+|---|---|---|---|
+| **Desktop** | ≥1024px | **48** (`h-12`) | Dense developer-tools floor (Grafana 48, IBM Carbon 48, shadcn dashboard-01 48). Pairs with a `size-md` (32px) IconButton row: 8px breathing room top + bottom is the tightest value that avoids collision (`docs/design/foundations/header-rhythm.md`). |
+| **Tablet** | 768–1023px | **48** | Same value as desktop — no jarring shift at the 1024px breakpoint. Still pointer-driven (iPad in desktop Safari, foldables). WCAG 2.5.8 AA (24×24 minimum) trivially met. |
+| **Mobile** | <768px | **56** (`h-14`) | Thumb-operated. WCAG 2.5.5 AAA (44×44 minimum) — a 44px hit area inside a 56px bar with 6px padding meets that target exactly. Matches Vercel / Stripe / Datadog mobile. Must be explicit, never `auto`. |
+
+**Why not one universal value.** A flat 48 fails AAA touch-target on mobile; a flat 56 wastes 8px of vertical content on every desktop and tablet view. The 8px desktop→mobile step matches the persona split: dense laptop sessions benefit from density; on-the-go mobile triage benefits from headroom.
+
+**No tall variant.** The earlier "compact 48 / standard 56 / tall 64–96" tier is retired. 64–96px topbars belong to page section headers and marketing hero zones, not the persistent app-shell topbar. If a project needs breadcrumbs / tabs in the chrome, render them as a *second row* below the topbar (each row still 48 / 56), not by stretching the topbar.
 
 ### Main content region (between sidebar and right inspector)
 
@@ -161,7 +167,7 @@ Do not narrow the sidebar to gain content width — users perceive narrower nav 
 |---|---|
 | Sidebar width? | **256** unless deep tree (then 280–320) |
 | Sidebar collapsed? | **56–64** |
-| Topbar height? | **56** |
+| Topbar height? | **48** desktop + tablet · **56** mobile (≥1024 / 768–1023 / <768) |
 | Content cap on dashboards? | **1536px** — token `--page-max-width`, utility `page-shell` |
 | Content cap on tables / traces? | **Fluid** |
 | Content cap on forms / settings? | **768** (`max-w-3xl`) nested inside the dashboard cap |
@@ -178,7 +184,8 @@ Do not narrow the sidebar to gain content width — users perceive narrower nav 
 - **Applying the form cap (640) at the page level.** Wastes screen real estate; tables and dashboards need the 1280 container with the form cap nested inside.
 - **Mixing fluid and capped content within the same screen without a clear hierarchy.** Pick one; nest the other.
 - **Narrowing the sidebar to <200px to "save space."** Truncates labels; users misclick. If you need more content width, collapse the sidebar entirely (icon rail).
-- **Topbar taller than 64px without breadcrumbs.** Wastes vertical space on laptop screens.
+- **Topbar taller than 56px on desktop.** Wastes vertical space on laptop screens. Multi-row chrome (breadcrumbs / tabs) renders as additional 48px rows below the topbar, not a stretched single row.
+- **`--topbar-h: auto` at mobile.** Sticky layouts below the topbar (filter bars, sub-headers) need a known reserved height to compute scroll offsets; `auto` makes that height content-dependent and unstable across routes.
 - **Right inspector wider than the main content.** Reverses the visual hierarchy; the inspector should always be secondary.
 
 ---
