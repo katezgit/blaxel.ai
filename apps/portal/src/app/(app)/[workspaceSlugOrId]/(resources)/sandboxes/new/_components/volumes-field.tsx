@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { HardDrive, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import {
   Dialog,
@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@repo/ui/components/dialog";
-import { EmptyState } from "@repo/ui/components/empty-state";
 import { Input } from "@repo/ui/components/input";
 import {
   FormField,
@@ -82,23 +81,19 @@ export function VolumesField({
   if (!hasWorkspaceVolumes && attached.length === 0) {
     return (
       <>
-        <div className="rounded-md border border-dashed border-border bg-card">
-          <EmptyState
-            variant="zero-state"
-            icon={HardDrive}
-            title="No Volumes in this workspace"
-            subtitle="Create one to attach persistent storage to this Sandbox."
-            cta={
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setCreateOpen(true)}
-              >
-                <Plus aria-hidden="true" />
-                Create Volume
-              </Button>
-            }
-          />
+        <div className="rounded-md border border-dashed border-border bg-card p-4">
+          <p className="typography-body text-foreground">
+            No Volumes in this workspace.
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            className="mt-3"
+            onClick={() => setCreateOpen(true)}
+          >
+            <Plus aria-hidden="true" />
+            Create Volume
+          </Button>
         </div>
         <CreateVolumeDialog
           open={createOpen}
