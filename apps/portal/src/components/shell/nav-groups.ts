@@ -76,7 +76,7 @@ export function workspaceNavGroups(
     {
       label: "Hosting",
       items: [
-        { href: `${base}/agents`, label: "Agents", icon: Bot },
+        { href: `${base}/agent-runtime`, label: "Agent Runtime", icon: Bot, badge: "Soon!" },
         { href: `${base}/jobs`, label: "Jobs", icon: Workflow },
         { href: `${base}/mcp-servers`, label: "MCP Servers", icon: Plug },
         { href: `${base}/model-apis`, label: "Model APIs", icon: BrainCircuit },
