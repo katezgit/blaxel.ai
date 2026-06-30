@@ -1,48 +1,208 @@
-export type SandboxStatus = "running" | "idle" | "stopped";
+// Canonical Sandbox shape — modeled after docs.blaxel.ai/api-reference.
+// Two-axis state: deployment `status` × runtime `state` (only meaningful
+// once DEPLOYED). Pill rendering precedence lives in
+// `app/(app)/[workspaceSlugOrId]/(resources)/sandboxes/_components/state-pill`.
+
+export type SandboxDeploymentStatus =
+  | "DEPLOYING"
+  | "DEPLOYED"
+  | "FAILED"
+  | "DELETING"
+  | "TERMINATED"
+  | "DEACTIVATING"
+  | "DEACTIVATED"
+  | "BUILT";
+
+export type SandboxRuntimeState = "RUNNING" | "STANDBY";
+
+export type SandboxRegion =
+  | "auto"
+  | "eu-fra-1"
+  | "eu-lon-1"
+  | "us-was-1"
+  | "us-pdx-1";
+
+export interface SandboxImageRef {
+  name: string;
+  sha: string;
+}
 
 export interface Sandbox {
-  id: string;
-  name: string;
-  status: SandboxStatus;
-  image: string;
-  lastActive: string;
+  metadata: {
+    name: string;
+    displayName: string;
+    externalId: string;
+    createdAt: string;
+  };
+  spec: {
+    image: SandboxImageRef;
+    region: SandboxRegion;
+    memoryMib: number;
+    ttl: "none" | "1d" | "7d" | "30d";
+    /** Seconds until expiry; null when ttl="none". */
+    expiresInSec: number | null;
+  };
+  status: SandboxDeploymentStatus;
+  state: SandboxRuntimeState;
+  /** Failure reason for FAILED rows — drives the inline recovery band. */
+  failureReason?: string;
 }
 
 const FIXTURES: ReadonlyArray<Sandbox> = [
   {
-    id: "sbx_eval_runner",
-    name: "eval-runner",
-    status: "running",
-    image: "python:3.12-slim",
-    lastActive: "2026-06-18T09:42:00Z",
+    metadata: {
+      name: "prod-runner",
+      displayName: "prod-runner",
+      externalId: "sbx-7f3a9c1e",
+      createdAt: "2026-06-12T14:00:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/python-3.12", sha: "9c1e4d6f" },
+      region: "eu-fra-1",
+      memoryMib: 2048,
+      ttl: "none",
+      expiresInSec: null,
+    },
+    status: "DEPLOYED",
+    state: "RUNNING",
   },
   {
-    id: "sbx_browse_pool_01",
-    name: "browse-pool-01",
-    status: "running",
-    image: "playwright:1.49",
-    lastActive: "2026-06-18T09:38:11Z",
+    metadata: {
+      name: "eval-batch",
+      displayName: "eval-batch",
+      externalId: "sbx-2b4d8e3f",
+      createdAt: "2026-06-21T09:10:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/base", sha: "5a4f1e9d" },
+      region: "us-pdx-1",
+      memoryMib: 4096,
+      ttl: "7d",
+      expiresInSec: 6 * 86_400 + 23 * 3_600,
+    },
+    status: "DEPLOYED",
+    state: "STANDBY",
   },
   {
-    id: "sbx_browse_pool_02",
-    name: "browse-pool-02",
-    status: "idle",
-    image: "playwright:1.49",
-    lastActive: "2026-06-18T08:11:24Z",
+    metadata: {
+      name: "browse-pool-01",
+      displayName: "browse-pool-01",
+      externalId: "sbx-8d2c6f1a",
+      createdAt: "2026-06-18T09:38:11Z",
+    },
+    spec: {
+      image: { name: "playwright/node-20", sha: "1f8a3c0b" },
+      region: "eu-lon-1",
+      memoryMib: 4096,
+      ttl: "30d",
+      expiresInSec: 21 * 86_400 + 4 * 3_600,
+    },
+    status: "DEPLOYED",
+    state: "RUNNING",
   },
   {
-    id: "sbx_code_review_ci",
-    name: "code-review-ci",
-    status: "idle",
-    image: "node:22-bookworm",
-    lastActive: "2026-06-17T22:04:00Z",
+    metadata: {
+      name: "code-review-ci",
+      displayName: "code-review-ci",
+      externalId: "sbx-4f8b71c2",
+      createdAt: "2026-06-17T22:04:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/node-22", sha: "a4f29c0e" },
+      region: "us-was-1",
+      memoryMib: 2048,
+      ttl: "1d",
+      expiresInSec: 19 * 3_600,
+    },
+    status: "DEPLOYED",
+    state: "STANDBY",
   },
   {
-    id: "sbx_legacy_repro",
-    name: "legacy-repro",
-    status: "stopped",
-    image: "ubuntu:22.04",
-    lastActive: "2026-06-15T14:20:00Z",
+    metadata: {
+      name: "near-expiry-sbx",
+      displayName: "near-expiry-sbx",
+      externalId: "sbx-1c0d77ab",
+      createdAt: "2026-06-23T08:00:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/python-3.12", sha: "9c1e4d6f" },
+      region: "eu-fra-1",
+      memoryMib: 2048,
+      ttl: "1d",
+      // < 24h → expires-in column turns warning
+      expiresInSec: 3 * 3_600 + 14 * 60,
+    },
+    status: "DEPLOYED",
+    state: "RUNNING",
+  },
+  {
+    metadata: {
+      name: "staging-agent",
+      displayName: "staging-agent",
+      externalId: "sbx-c1e7a209",
+      createdAt: "2026-06-22T11:20:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/node-20", sha: "a4f29c0e" },
+      region: "eu-lon-1",
+      memoryMib: 2048,
+      ttl: "none",
+      expiresInSec: null,
+    },
+    status: "FAILED",
+    state: "STANDBY",
+    failureReason: "Image pull failed — push Image or pick another.",
+  },
+  {
+    metadata: {
+      name: "warmup-pool-02",
+      displayName: "warmup-pool-02",
+      externalId: "sbx-90b3eaf1",
+      createdAt: "2026-06-23T14:00:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/base", sha: "5a4f1e9d" },
+      region: "us-pdx-1",
+      memoryMib: 4096,
+      ttl: "7d",
+      expiresInSec: 5 * 86_400,
+    },
+    status: "DEPLOYING",
+    state: "STANDBY",
+  },
+  {
+    metadata: {
+      name: "deactivating-runner",
+      displayName: "deactivating-runner",
+      externalId: "sbx-3411af09",
+      createdAt: "2026-06-10T10:00:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/node-22", sha: "a4f29c0e" },
+      region: "us-was-1",
+      memoryMib: 2048,
+      ttl: "30d",
+      expiresInSec: 12 * 86_400,
+    },
+    status: "DEACTIVATING",
+    state: "STANDBY",
+  },
+  {
+    metadata: {
+      name: "old-terminated",
+      displayName: "old-terminated",
+      externalId: "sbx-7e90bb22",
+      createdAt: "2026-05-15T10:00:00Z",
+    },
+    spec: {
+      image: { name: "blaxel/base", sha: "5a4f1e9d" },
+      region: "auto",
+      memoryMib: 2048,
+      ttl: "none",
+      expiresInSec: null,
+    },
+    status: "TERMINATED",
+    state: "STANDBY",
   },
 ];
 
@@ -58,9 +218,13 @@ export async function fetchSandboxes(
 export async function fetchSandbox(
   _accountId: string,
   _workspaceId: string,
-  id: string,
+  nameOrId: string,
 ): Promise<Sandbox | null> {
   void _accountId;
   void _workspaceId;
-  return FIXTURES.find((s) => s.id === id) ?? null;
+  return (
+    FIXTURES.find(
+      (s) => s.metadata.name === nameOrId || s.metadata.externalId === nameOrId,
+    ) ?? null
+  );
 }
