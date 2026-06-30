@@ -34,6 +34,7 @@ export default function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps
       className={cn(
         "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md px-2 typography-body outline-hidden",
         "focus-visible:shadow-focus-ring",
+        isRail && "w-8 mx-auto",
         isActive
           ? "bg-primary-glow text-primary"
           : "text-muted-foreground hover:text-foreground",
