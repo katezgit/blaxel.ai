@@ -205,13 +205,18 @@ export default function ServiceAccountDetailView({
         }
       />
 
-      <ApiKeysSection
-        serviceAccount={sa}
-        onCreateKey={() => setCreateKeyOpen(true)}
-        onKeyDeleted={handleKeyDeleted}
-      />
+      {/* Flat sections (no card chrome) → gap-8 between siblings so the second
+       * h2 reads as a new section. Canon: docs/design/foundations/spacing.md
+       * "Sections within a region — flat". */}
+      <div className="flex flex-col gap-8">
+        <ApiKeysSection
+          serviceAccount={sa}
+          onCreateKey={() => setCreateKeyOpen(true)}
+          onKeyDeleted={handleKeyDeleted}
+        />
 
-      <DetailsSection serviceAccount={sa} />
+        <DetailsSection serviceAccount={sa} />
+      </div>
 
       <CreateServiceAccountApiKeyDialog
         open={createKeyOpen}
