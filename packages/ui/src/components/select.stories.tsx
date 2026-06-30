@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react"
+import { ShieldIcon } from "lucide-react"
 
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectItemDescription,
   SelectLabel,
   SelectSeparator,
   SelectTrigger,
@@ -187,62 +187,99 @@ export const WithDisabledItems: Story = {
   ),
 }
 
-// ── Feature: WithItemDescriptions ────────────────────────────────────────────
-// Two-line items: title in trigger, description only in the open dropdown.
-// Demonstrates SelectItemDescription alongside single-line items.
-// Check indicator top-aligns to the title row, not the center of the two-line block.
+// ── Feature: WithRenderItem ───────────────────────────────────────────────────
+// Custom dropdown row via renderItem prop.
+// children still appear in the trigger (via ItemText); renderItem controls the dropdown row.
+// Demonstrates mixed usage: some items with renderItem, some default.
 
-export const WithItemDescriptions: Story = {
-  name: "With item descriptions",
+export const WithRenderItem: Story = {
+  name: "With renderItem (custom row content)",
   render: () => (
-    <div className="flex flex-col gap-6" style={{ width: 300 }}>
-      {/* Open-dropdown demo — shows both title and description */}
+    <div className="flex flex-col gap-6" style={{ width: 320 }}>
+      {/* Role picker — icon + title + description rows */}
       <div className="flex flex-col gap-1.5">
         <span className="typography-caption text-muted-foreground">
-          Trigger shows title only; description visible in dropdown
+          Trigger shows title only; dropdown row is fully custom via renderItem
         </span>
         <Select defaultValue="member">
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="owner">
+            <SelectItem
+              value="owner"
+              renderItem={() => (
+                <div className="flex items-start gap-2">
+                  <ShieldIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <span>Owner</span>
+                    <span className="typography-caption text-muted-foreground">
+                      Full control over the workspace, billing, and members.
+                    </span>
+                  </div>
+                </div>
+              )}
+            >
               Owner
-              <SelectItemDescription>
-                Full control over the workspace, billing, and members.
-              </SelectItemDescription>
             </SelectItem>
-            <SelectItem value="admin">
+            <SelectItem
+              value="admin"
+              renderItem={() => (
+                <div className="flex items-start gap-2">
+                  <ShieldIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <span>Admin</span>
+                    <span className="typography-caption text-muted-foreground">
+                      Can manage resources and invite members, but not billing.
+                    </span>
+                  </div>
+                </div>
+              )}
+            >
               Admin
-              <SelectItemDescription>
-                Can manage resources and invite members, but not billing.
-              </SelectItemDescription>
             </SelectItem>
-            <SelectItem value="member">
+            <SelectItem
+              value="member"
+              renderItem={() => (
+                <div className="flex items-start gap-2">
+                  <ShieldIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <span>Member</span>
+                    <span className="typography-caption text-muted-foreground">
+                      Read and deploy access. Cannot manage members or settings.
+                    </span>
+                  </div>
+                </div>
+              )}
+            >
               Member
-              <SelectItemDescription>
-                Read and deploy access. Cannot manage members or settings.
-              </SelectItemDescription>
             </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Mixed: some items with description, some without */}
+      {/* Mixed: some items with renderItem, some default single-line */}
       <div className="flex flex-col gap-1.5">
         <span className="typography-caption text-muted-foreground">
-          Mixed — single-line and two-line items together
+          Mixed — renderItem items and default single-line items together
         </span>
         <Select>
           <SelectTrigger>
             <SelectValue placeholder="Select environment" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="prod">
+            <SelectItem
+              value="prod"
+              renderItem={() => (
+                <div className="flex flex-col gap-0.5">
+                  <span>Production</span>
+                  <span className="typography-caption text-muted-foreground">
+                    Live traffic. Requires approval to deploy.
+                  </span>
+                </div>
+              )}
+            >
               Production
-              <SelectItemDescription>
-                Live traffic. Requires approval to deploy.
-              </SelectItemDescription>
             </SelectItem>
             <SelectItem value="staging">Staging</SelectItem>
             <SelectItem value="dev">Development</SelectItem>
@@ -252,4 +289,3 @@ export const WithItemDescriptions: Story = {
     </div>
   ),
 }
-

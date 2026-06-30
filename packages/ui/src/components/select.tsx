@@ -6,33 +6,6 @@ import { Select as SelectPrimitive } from "radix-ui"
 import { cn } from "@repo/ui/lib/cn"
 import { formFieldBoxVariants } from "@repo/ui/lib/form-field-box"
 
-/**
- * Optional secondary description line for a SelectItem.
- * Renders below the title in muted meta typography.
- * Stays outside SelectPrimitive.ItemText so the trigger shows title only.
- *
- * Usage:
- *   <SelectItem value="admin">
- *     Administrator
- *     <SelectItemDescription>Full access to all workspace resources.</SelectItemDescription>
- *   </SelectItem>
- */
-function SelectItemDescription({
-  className,
-  children,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      data-slot="select-item-description"
-      className={cn("typography-meta text-muted-foreground", className)}
-      {...props}
-    >
-      {children}
-    </span>
-  )
-}
-
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
@@ -162,44 +135,57 @@ function SelectLabel({
   )
 }
 
+/**
+ * SelectItem — Radix Select item with optional custom dropdown row via `renderItem`.
+ *
+ * `renderItem` prop:
+ *   () => ReactNode — when provided, renders as the visible dropdown row content.
+ *   The `children` are still passed through `SelectPrimitive.ItemText` (sr-only when
+ *   renderItem is active) so the trigger label and Radix typeahead both work correctly.
+ *
+ * Default (no renderItem): children render normally in both dropdown row and trigger.
+ *
+ * Example:
+ *   <SelectItem
+ *     value="admin"
+ *     renderItem={() => (
+ *       <div className="flex items-start gap-2">
+ *         <Shield className="size-4 mt-0.5 text-muted-foreground" />
+ *         <div className="flex flex-col gap-0.5">
+ *           <span>Admin</span>
+ *           <span className="typography-caption text-muted-foreground">
+ *             Can edit resources and invite users.
+ *           </span>
+ *         </div>
+ *       </div>
+ *     )}
+ *   >
+ *     Admin
+ *   </SelectItem>
+ */
 function SelectItem({
   className,
   children,
+  renderItem,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Item>) {
-  // Split children: SelectItemDescription elements stay outside ItemText (so trigger shows
-  // title only); everything else is the title content passed into ItemText.
-  const childArray = React.Children.toArray(children)
-  const descriptionChildren = childArray.filter(
-    (child) =>
-      React.isValidElement(child) &&
-      (child as React.ReactElement).type === SelectItemDescription
-  )
-  const titleChildren = childArray.filter(
-    (child) =>
-      !(
-        React.isValidElement(child) &&
-        (child as React.ReactElement).type === SelectItemDescription
-      )
-  )
-  const hasDescription = descriptionChildren.length > 0
-
+}: React.ComponentProps<typeof SelectPrimitive.Item> & {
+  renderItem?: () => React.ReactNode
+}) {
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
         "relative flex w-full cursor-default select-none gap-2",
-        // When a description is present, align the check indicator to the top of the title line,
-        // not the vertical center of the two-line block.
-        hasDescription ? "items-start" : "items-center",
+        // items-start so the check indicator aligns to the title row of multi-line renderItem content.
+        "items-start",
         "rounded-sm py-1.5 pr-8 pl-2",
         "outline-hidden",
         // Radix's data-[highlighted] fires on both pointer hover + keyboard nav — sidesteps the
         // Tailwind v4 :hover/:focus cascade where focus: always wins. No font-medium on highlight
         // or selected (weight shift jitters glyphs across rows; selection is signaled by indicator).
         "data-[highlighted]:bg-highlight-surface",
-        // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator
-        // (operator direction B). Forced-colors fallback restores a visible outline in Windows HC mode.
+        // Suppress global *:focus-visible ring — bg-highlight-surface is the sole active-option indicator.
+        // Forced-colors fallback restores a visible outline in Windows HC mode.
         "focus-visible:shadow-none focus-visible:outline-none",
         "forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-current",
         "data-[highlighted]:[&_svg]:text-foreground",
@@ -207,28 +193,38 @@ function SelectItem({
         // cursor-not-allowed kept without pointer-events-none — Radix gates clicks internally.
         "data-[disabled]:cursor-not-allowed data-[disabled]:text-text-disabled",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "*:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        // Default (no renderItem): cascade flex + items-center + gap-2 onto the ItemText span.
+        !renderItem && "*:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}
       {...props}
     >
-      {/* Check indicator — top-aligned so it sits beside the title even in two-line items */}
+      {/* Check indicator — positioned absolute right-edge, top-aligned to sit beside title row */}
       <span
         data-slot="select-item-indicator"
-        className="absolute right-2 flex size-3.5 items-center justify-center"
+        className="absolute right-2 top-1.5 flex size-3.5 items-center justify-center"
       >
         <SelectPrimitive.ItemIndicator>
           <CheckIcon className="size-4 text-foreground" />
         </SelectPrimitive.ItemIndicator>
       </span>
-      {hasDescription ? (
-        /* Two-line layout: ItemText wraps only the title; description sits outside */
-        <span className="flex flex-col gap-0.5">
-          <SelectPrimitive.ItemText>{titleChildren}</SelectPrimitive.ItemText>
-          {descriptionChildren}
-        </span>
+
+      {renderItem ? (
+        <>
+          {/*
+           * ItemText is visually hidden (sr-only) when renderItem is provided.
+           * It still wraps children so:
+           *   1. Radix's typeahead uses it for keyboard character matching.
+           *   2. The trigger's SelectValue reads the text content from it.
+           * renderItem() controls all visible output inside the dropdown row.
+           */}
+          <SelectPrimitive.ItemText asChild>
+            <span className="sr-only">{children}</span>
+          </SelectPrimitive.ItemText>
+          {renderItem()}
+        </>
       ) : (
-        <SelectPrimitive.ItemText>{titleChildren}</SelectPrimitive.ItemText>
+        <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
       )}
     </SelectPrimitive.Item>
   )
@@ -288,7 +284,6 @@ export {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectItemDescription,
   SelectLabel,
   SelectScrollDownButton,
   SelectScrollUpButton,
