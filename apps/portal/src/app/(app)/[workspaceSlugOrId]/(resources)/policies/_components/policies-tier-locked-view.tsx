@@ -7,6 +7,7 @@ import {
   Rocket,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import { cn } from "@repo/ui/lib/cn";
@@ -15,7 +16,14 @@ import PoliciesPageHeader from "./policies-page-header";
 
 const LOCKED_DESCRIPTION = (
   <p className="text-muted-foreground">
-    Policies are available on Tier 1 and above.{" "}
+    Policies are available on{" "}
+    <Link
+      href="/account/billing/tier-quotas"
+      className="rounded-sm text-muted-foreground hover:text-foreground hover:underline"
+    >
+      Tier 1 and above
+    </Link>
+    {" · "}
     <a
       href="https://docs.blaxel.ai/Model-Governance/Policies"
       target="_blank"
