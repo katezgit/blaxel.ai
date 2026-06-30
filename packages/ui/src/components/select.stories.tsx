@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
+import { ShieldIcon } from "lucide-react"
 
 import {
   Select,
@@ -186,3 +187,105 @@ export const WithDisabledItems: Story = {
   ),
 }
 
+// ── Feature: WithRenderItem ───────────────────────────────────────────────────
+// Custom dropdown row via renderItem prop.
+// children still appear in the trigger (via ItemText); renderItem controls the dropdown row.
+// Demonstrates mixed usage: some items with renderItem, some default.
+
+export const WithRenderItem: Story = {
+  name: "With renderItem (custom row content)",
+  render: () => (
+    <div className="flex flex-col gap-6" style={{ width: 320 }}>
+      {/* Role picker — icon + title + description rows */}
+      <div className="flex flex-col gap-1.5">
+        <span className="typography-caption text-muted-foreground">
+          Trigger shows title only; dropdown row is fully custom via renderItem
+        </span>
+        <Select defaultValue="member">
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              value="owner"
+              renderItem={() => (
+                <div className="flex items-start gap-2">
+                  <ShieldIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <span>Owner</span>
+                    <span className="typography-caption text-muted-foreground">
+                      Full control over the workspace, billing, and members.
+                    </span>
+                  </div>
+                </div>
+              )}
+            >
+              Owner
+            </SelectItem>
+            <SelectItem
+              value="admin"
+              renderItem={() => (
+                <div className="flex items-start gap-2">
+                  <ShieldIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <span>Admin</span>
+                    <span className="typography-caption text-muted-foreground">
+                      Can manage resources and invite members, but not billing.
+                    </span>
+                  </div>
+                </div>
+              )}
+            >
+              Admin
+            </SelectItem>
+            <SelectItem
+              value="member"
+              renderItem={() => (
+                <div className="flex items-start gap-2">
+                  <ShieldIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col gap-0.5">
+                    <span>Member</span>
+                    <span className="typography-caption text-muted-foreground">
+                      Read and deploy access. Cannot manage members or settings.
+                    </span>
+                  </div>
+                </div>
+              )}
+            >
+              Member
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Mixed: some items with renderItem, some default single-line */}
+      <div className="flex flex-col gap-1.5">
+        <span className="typography-caption text-muted-foreground">
+          Mixed — renderItem items and default single-line items together
+        </span>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select environment" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              value="prod"
+              renderItem={() => (
+                <div className="flex flex-col gap-0.5">
+                  <span>Production</span>
+                  <span className="typography-caption text-muted-foreground">
+                    Live traffic. Requires approval to deploy.
+                  </span>
+                </div>
+              )}
+            >
+              Production
+            </SelectItem>
+            <SelectItem value="staging">Staging</SelectItem>
+            <SelectItem value="dev">Development</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  ),
+}
