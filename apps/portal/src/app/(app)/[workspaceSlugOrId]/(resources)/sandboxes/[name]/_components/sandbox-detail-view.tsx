@@ -117,7 +117,7 @@ function SandboxDetailErrorHeader({
           <h1 className="typography-display font-semibold text-foreground">
             Failed to load Sandbox
           </h1>
-          <Button type="button" variant="primary" onClick={onRetry}>
+          <Button type="button" variant="ghost" onClick={onRetry}>
             Retry
           </Button>
         </div>

@@ -64,7 +64,7 @@ export default function SandboxVitalsStrip({ sandbox }: SandboxVitalsStripProps)
         label="Errors"
         className={cn(
           errorsActive &&
-            "rounded-md bg-state-errored-subtle px-3 py-2 -mx-3 -my-2",
+            "rounded-md border border-state-errored/50 bg-state-errored-subtle px-3 py-2 -mx-3 -my-2",
         )}
       >
         <span
