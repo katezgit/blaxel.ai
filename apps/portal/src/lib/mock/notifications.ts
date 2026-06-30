@@ -60,15 +60,6 @@ const FIXTURES: ReadonlyArray<Notification> = [
     href: `/${WORKSPACE_SLUG}/jobs`,
   },
   {
-    id: "ntf_agent_degraded",
-    category: "async-outcome",
-    title: "Agent code-reviewer degraded",
-    body: "Health flipped to degraded — 3 of 5 last invocations errored.",
-    timestamp: minutesAgo(14),
-    read: false,
-    href: `/${WORKSPACE_SLUG}/agents`,
-  },
-  {
     id: "ntf_apikey_expiring",
     category: "threshold",
     title: "API Key prod-key expires in 24h",
