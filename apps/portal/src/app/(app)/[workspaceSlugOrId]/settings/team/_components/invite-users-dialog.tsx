@@ -144,23 +144,57 @@ export function InviteUsersDialog({
               <Controller
                 control={control}
                 name="role"
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => field.onChange(v as Role)}
-                  >
-                    <SelectTrigger id="invite-role">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {INVITE_ROLES.map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {ROLE_META[r].label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => {
+                  const SelectedIcon = ROLE_META[field.value].icon;
+                  return (
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => field.onChange(v as Role)}
+                    >
+                      <SelectTrigger id="invite-role">
+                        <SelectValue>
+                          <span className="inline-flex items-center gap-2">
+                            <SelectedIcon
+                              aria-hidden="true"
+                              className="size-4 text-muted-foreground"
+                            />
+                            <span>{ROLE_META[field.value].label}</span>
+                          </span>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INVITE_ROLES.map((r) => {
+                          const { label, icon: Icon, description } =
+                            ROLE_META[r];
+                          return (
+                            <SelectItem
+                              key={r}
+                              value={r}
+                              renderItem={() => (
+                                <div className="flex items-start gap-2">
+                                  <Icon
+                                    aria-hidden="true"
+                                    className="size-4 mt-0.5 text-muted-foreground"
+                                  />
+                                  <div className="flex flex-col gap-0.5">
+                                    <span>{label}</span>
+                                    {description ? (
+                                      <span className="typography-caption text-muted-foreground">
+                                        {description}
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                </div>
+                              )}
+                            >
+                              {label}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
               />
             </FormField>
             <p className="typography-caption text-muted-foreground">

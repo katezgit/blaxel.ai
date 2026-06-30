@@ -13,10 +13,23 @@ import type {
   Role,
 } from "@/lib/mock/types";
 
-export const ROLE_META: Record<Role, { label: string; icon: LucideIcon }> = {
+export const ROLE_META: Record<
+  Role,
+  { label: string; icon: LucideIcon; description?: string }
+> = {
   owner: { label: "Owner", icon: Shield },
-  admin: { label: "Admin", icon: Shield },
-  member: { label: "Member", icon: User },
+  admin: {
+    label: "Admin",
+    icon: Shield,
+    description:
+      "Can edit resources, change workspace settings, and invite users.",
+  },
+  member: {
+    label: "Member",
+    icon: User,
+    description:
+      "Can edit resources, and view workspace settings and users.",
+  },
 };
 
 export const SOURCE_META: Record<
