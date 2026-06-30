@@ -256,11 +256,12 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
       id={`tier-${tier.tier}`}
       aria-current={isCurrent ? "true" : undefined}
       className={cn(
-        "group relative flex scroll-mt-4 flex-col gap-3 px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4 target:bg-primary-glow",
+        "group relative flex scroll-mt-4 flex-col gap-3 px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
         GRID_COLS,
         isCurrent
           ? "rounded-md border border-primary"
           : "hover:bg-hover-surface",
+        "target:bg-primary-glow target:hover:bg-primary-glow",
       )}
     >
       {isCurrent ? (
