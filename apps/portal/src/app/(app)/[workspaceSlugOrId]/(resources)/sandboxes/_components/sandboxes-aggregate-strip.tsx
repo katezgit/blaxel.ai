@@ -15,6 +15,19 @@ import {
 // Wireframe §1.3 — horizontal aggregate strip with four tile groups.
 // Composed from existing primitives only (flex + divider + button). No new
 // design-system component; the strip is sandboxes-list-only.
+//
+// Visual hierarchy: counts are the read-first element — promoted via size
+// (typography-subtitle, 16px) AND weight (semibold). Labels stay body (14px)
+// and demote to text-muted-foreground so the count dominates the row.
+//
+// Section labels (TOTAL / STATE / …) are removed: the column structure plus
+// self-describing content (state names, region IDs, image refs) already
+// communicates each tile's purpose, and a small-uppercase header band read
+// generic / placeholder against the dense content beneath it.
+//
+// State dots are removed in the strip (kept in the table StatePill) — in the
+// strip context, colored dots competed visually with the active-selection
+// 2px left bar and made unfiltered Active/Errored rows look pre-selected.
 
 interface SandboxesAggregateStripProps {
   data: AggregateData;
@@ -59,18 +72,21 @@ export function SandboxesAggregateStrip({
       aria-label="Sandbox population summary"
       className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[auto_1fr_1fr_1.5fr] lg:gap-0"
     >
-      <TileGroup label="Total" first>
-        <div className="flex flex-col gap-1 px-3 py-2">
-          <span className="typography-display font-semibold text-foreground tabular-nums">
+      <TileGroup first centered>
+        {/* Total tile is single-row; vertical-centering (centered prop)
+            anchors the count + label block to the strip's row-height so it
+            does not read as a floating island above empty space. */}
+        <div className="flex flex-col px-3">
+          <span className="typography-display font-semibold text-foreground tabular-nums leading-none">
             {formatTotal(data.total)}
           </span>
-          <span className="typography-meta text-meta-foreground">
+          <span className="typography-meta text-muted-foreground pt-1">
             {data.total === 1 ? "Sandbox" : "Sandboxes"}
           </span>
         </div>
       </TileGroup>
 
-      <TileGroup label="State">
+      <TileGroup>
         {data.state.map((row) => (
           <StateTileRow
             key={row.label}
@@ -81,7 +97,7 @@ export function SandboxesAggregateStrip({
         ))}
       </TileGroup>
 
-      <TileGroup label="Region">
+      <TileGroup>
         {data.region.length === 0 ? (
           <EmptyRow />
         ) : (
@@ -96,7 +112,7 @@ export function SandboxesAggregateStrip({
         )}
       </TileGroup>
 
-      <TileGroup label="Top Image">
+      <TileGroup>
         {data.topImages.length === 0 ? (
           <EmptyRow />
         ) : (
@@ -115,25 +131,26 @@ export function SandboxesAggregateStrip({
 }
 
 interface TileGroupProps {
-  label: string;
   first?: boolean;
+  centered?: boolean;
   children: React.ReactNode;
 }
 
-function TileGroup({ label, first, children }: TileGroupProps) {
+function TileGroup({ first, centered, children }: TileGroupProps) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 px-4 py-3",
+        "flex flex-col px-4 py-3",
+        // Vertical centering for the Total tile so its single row aligns
+        // mid-height of the taller breakdown columns. Other groups stack
+        // their rows from the top.
+        centered && "justify-center",
         // Column divider between groups (skipped on the first group + on
         // mobile, where the grid wraps and a vertical rule would be
         // sideways).
         !first && "lg:border-l lg:border-border",
       )}
     >
-      <span className="typography-caption uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
       <div className="flex flex-col">{children}</div>
     </div>
   );
@@ -142,9 +159,9 @@ function TileGroup({ label, first, children }: TileGroupProps) {
 // ─── Row primitives ──────────────────────────────────────────────────────────
 //
 // Each row is a button that owns its own selection visual: a 2px left bar +
-// `font-medium` weight when active. The bar is a positioned element on the
-// row's left edge (not a `border-left` decoration) — shape disambiguates from
-// the decoration-anti-pattern border-left flag.
+// `font-medium` weight on the COUNT when active. The bar is a positioned
+// element on the row's left edge (not a `border-left` decoration) — shape
+// disambiguates from the decoration-anti-pattern border-left flag.
 
 interface FilterRowProps {
   active: boolean;
@@ -161,12 +178,10 @@ function FilterRow({ active, onToggle, ariaLabel, children }: FilterRowProps) {
       aria-label={ariaLabel}
       onClick={onToggle}
       className={cn(
-        "group relative flex items-center justify-between gap-3 rounded-sm py-1 pl-3 pr-2",
+        "group relative flex items-center justify-between gap-3 rounded-sm py-0.5 pl-3 pr-2",
         "text-left transition-colors duration-fast ease-out-standard",
         "hover:bg-muted-surface",
         "focus-visible:outline-none focus-visible:bg-muted-surface",
-        active && "font-medium text-foreground",
-        !active && "text-foreground",
       )}
     >
       <span
@@ -181,12 +196,22 @@ function FilterRow({ active, onToggle, ariaLabel, children }: FilterRowProps) {
   );
 }
 
-const STATE_DOT_CLASS: Record<StateBreakdownLabel, string> = {
-  Active: "bg-state-scored",
-  Standby: "bg-muted-foreground",
-  Errored: "bg-state-errored",
-  Terminated: "bg-muted-foreground",
-};
+// Count cell — the read-first element. Larger (16px), heavier (semibold),
+// fully tokened text-foreground. Right-aligned via flex justify-between on
+// the row. Active state nudges weight one tick further so selection still
+// reads from the bar + a subtle weight bump.
+function CountCell({ value, active }: { value: number; active: boolean }) {
+  return (
+    <span
+      className={cn(
+        "typography-subtitle tabular-nums text-foreground",
+        active ? "font-bold" : "font-semibold",
+      )}
+    >
+      {value}
+    </span>
+  );
+}
 
 function StateTileRow({
   row,
@@ -203,19 +228,15 @@ function StateTileRow({
       onToggle={onToggle}
       ariaLabel={`Filter by ${row.label} state (${row.count} sandboxes)`}
     >
-      <span className="flex items-center gap-2">
-        <span
-          aria-hidden="true"
-          className={cn(
-            "size-1.5 shrink-0 rounded-full",
-            STATE_DOT_CLASS[row.label],
-          )}
-        />
-        <span className="typography-body">{row.label}</span>
+      <span
+        className={cn(
+          "typography-body",
+          active ? "text-foreground" : "text-muted-foreground",
+        )}
+      >
+        {row.label}
       </span>
-      <span className="typography-body tabular-nums text-meta-foreground">
-        {row.count}
-      </span>
+      <CountCell value={row.count} active={active} />
     </FilterRow>
   );
 }
@@ -235,10 +256,15 @@ function RegionTileRow({
       onToggle={onToggle}
       ariaLabel={`Filter by region ${row.region} (${row.count} sandboxes)`}
     >
-      <span className="typography-body font-mono">{regionLabel(row.region)}</span>
-      <span className="typography-body tabular-nums text-meta-foreground">
-        {row.count}
+      <span
+        className={cn(
+          "typography-body font-mono",
+          active ? "text-foreground" : "text-muted-foreground",
+        )}
+      >
+        {regionLabel(row.region)}
       </span>
+      <CountCell value={row.count} active={active} />
     </FilterRow>
   );
 }
@@ -258,16 +284,23 @@ function ImageTileRow({
       onToggle={onToggle}
       ariaLabel={`Filter by image ${row.label} (${row.count} sandboxes)`}
     >
-      <span className="typography-meta font-mono truncate">{row.label}</span>
-      <span className="typography-body tabular-nums text-meta-foreground">
-        {row.count}
+      <span
+        className={cn(
+          "typography-meta font-mono truncate",
+          active ? "text-foreground" : "text-muted-foreground",
+        )}
+      >
+        {row.label}
       </span>
+      <CountCell value={row.count} active={active} />
     </FilterRow>
   );
 }
 
 function EmptyRow() {
   return (
-    <span className="typography-meta text-meta-foreground py-1 pl-3">—</span>
+    <span className="typography-meta text-muted-foreground py-0.5 pl-3">
+      —
+    </span>
   );
 }

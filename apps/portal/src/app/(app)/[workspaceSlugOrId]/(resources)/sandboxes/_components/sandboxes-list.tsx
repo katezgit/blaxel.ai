@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   createColumnHelper,
@@ -243,20 +243,67 @@ export function SandboxesList({
   const rows = table.getRowModel().rows;
   const showNoResults = rows.length === 0;
 
-  return (
-    <div className="flex min-h-0 flex-col gap-4">
-      <Toolbar
-        search={search}
-        onSearchChange={onSearchChange}
-        stateFilters={stateFilters}
-        onStateFiltersChange={onStateFiltersChange}
-        regionFilter={regionFilter}
-        onRegionFilterChange={onRegionFilterChange}
-        includeTerminated={includeTerminated}
-        onIncludeTerminatedChange={onIncludeTerminatedChange}
-      />
+  // Overflow detection so the filter-count footer can sit inline with the
+  // toolbar when the table fits the viewport, and drop to a footer line when
+  // the table body scrolls. Sibling of the scroll container; ResizeObserver
+  // fires on both viewport and content size changes. +1 epsilon avoids
+  // flapping on sub-pixel fractional heights. Mirrors policies-table.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const check = () => setHasOverflow(el.scrollHeight > el.clientHeight + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    const inner = el.firstElementChild;
+    if (inner) ro.observe(inner);
+    return () => ro.disconnect();
+  }, [rows.length]);
 
-      <div className="relative w-full overflow-x-auto rounded-md border border-border bg-card">
+  const filterCountLabel =
+    isFiltered && rows.length > 0
+      ? `${rows.length} of ${sandboxes.length}`
+      : null;
+
+  return (
+    <div className="flex min-h-0 max-h-full flex-1 flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-3 shrink-0">
+        <Toolbar
+          search={search}
+          onSearchChange={onSearchChange}
+          stateFilters={stateFilters}
+          onStateFiltersChange={onStateFiltersChange}
+          regionFilter={regionFilter}
+          onRegionFilterChange={onRegionFilterChange}
+          includeTerminated={includeTerminated}
+          onIncludeTerminatedChange={onIncludeTerminatedChange}
+        />
+        {filterCountLabel && !hasOverflow ? (
+          <span
+            className="typography-caption text-muted-foreground"
+            aria-live="polite"
+          >
+            {filterCountLabel}
+          </span>
+        ) : null}
+      </div>
+
+      {/* Scroll container — only overflow boundary in the populated-list
+        * region. Sticky <th>s (from tableHeadVariants `sticky top-0`) stay
+        * pinned to the top of this region while the body scrolls. The page
+        * chrome above (title, strip, toolbar) sits outside.
+        *
+        * bg-muted-surface is duplicated on each <th> (alongside the shared
+        * tableHeaderClass on <thead>) because position:sticky lifts the
+        * <th> out of <thead>'s painted box — without an opaque bg on the
+        * cell, scrolled rows show through the pinned header. Mirrors the
+        * policies-table comment + pattern. */}
+      <div
+        ref={scrollRef}
+        className="relative w-full min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card"
+      >
         <table className={tableClass}>
           <thead className={tableHeaderClass}>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -268,7 +315,11 @@ export function SandboxesList({
                   return (
                     <th
                       key={header.id}
-                      className={cn(tableHeadVariants(), meta?.headerClassName)}
+                      className={cn(
+                        tableHeadVariants(),
+                        "bg-muted-surface",
+                        meta?.headerClassName,
+                      )}
                     >
                       {!header.isPlaceholder &&
                         flexRender(
@@ -333,12 +384,12 @@ export function SandboxesList({
         </table>
       </div>
 
-      {isFiltered && rows.length > 0 ? (
+      {filterCountLabel && hasOverflow ? (
         <p
           className="shrink-0 typography-caption text-muted-foreground"
           aria-live="polite"
         >
-          {rows.length} of {sandboxes.length}
+          {filterCountLabel}
         </p>
       ) : null}
     </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
+import { cn } from "@repo/ui/lib/cn";
 import { Button } from "@repo/ui/components/button";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { sandboxQueries } from "@/lib/query/sandboxes";
@@ -60,8 +61,12 @@ export function SandboxesView() {
     [sandboxes, includeTerminated],
   );
 
-  const showStrip = !isLoading && !isError && sandboxes.length > 0;
-  const showLoadingStrip = isLoading;
+  // Populated-list mode renders the aggregate strip AND bounds the page-shell
+  // to the viewport so chrome (page-header + strip + toolbar + table column
+  // header) stays fixed and only the table body scrolls. Other states
+  // (loading / error / empty) keep the natural page-shell scroll so their
+  // hero-style content fits the page on its own.
+  const showsTable = !isLoading && !isError && sandboxes.length > 0;
 
   let body: React.ReactNode;
   if (isLoading) {
@@ -90,7 +95,12 @@ export function SandboxesView() {
   }
 
   return (
-    <div className="page-shell">
+    <div
+      className={cn(
+        "page-shell",
+        showsTable && "h-full overflow-hidden pb-0",
+      )}
+    >
       <header className="page-header">
         <div className="flex items-start justify-between gap-4">
           <h1 className="typography-display font-semibold text-foreground">
@@ -104,19 +114,25 @@ export function SandboxesView() {
           </Button>
         </div>
       </header>
-      {showLoadingStrip ? <SandboxesAggregateStripSkeleton /> : null}
-      {showStrip ? (
-        <SandboxesAggregateStrip
-          data={aggregate}
-          stateFilters={stateFilters}
-          onStateFiltersChange={setStateFilters}
-          regionFilter={regionFilter}
-          onRegionFilterChange={setRegionFilter}
-          imageFilter={imageFilter}
-          onImageFilterChange={setImageFilter}
-        />
-      ) : null}
-      {body}
+      {isLoading ? <SandboxesAggregateStripSkeleton /> : null}
+      {showsTable ? (
+        // Bounded region: strip + toolbar pin to the top, table body owns the
+        // only scroll boundary. flex min-h-0 lets the scroll container shrink.
+        <div className="flex min-h-0 flex-1 flex-col gap-6">
+          <SandboxesAggregateStrip
+            data={aggregate}
+            stateFilters={stateFilters}
+            onStateFiltersChange={setStateFilters}
+            regionFilter={regionFilter}
+            onRegionFilterChange={setRegionFilter}
+            imageFilter={imageFilter}
+            onImageFilterChange={setImageFilter}
+          />
+          {body}
+        </div>
+      ) : (
+        body
+      )}
     </div>
   );
 }
