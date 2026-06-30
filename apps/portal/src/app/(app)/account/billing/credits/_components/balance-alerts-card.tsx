@@ -202,7 +202,6 @@ function EditingRow({
           <Field
             label="Alert threshold"
             error={errors.thresholdUsd?.message}
-            hint="USD"
           >
             <Input
               type="number"
@@ -210,11 +209,16 @@ function EditingRow({
               step="1"
               min="1"
               aria-invalid={errors.thresholdUsd ? true : undefined}
+              trailing={
+                <span aria-hidden="true" className="typography-meta">
+                  USD
+                </span>
+              }
               {...register("thresholdUsd", { valueAsNumber: true })}
             />
           </Field>
         </FieldRow>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <Button
             type="button"
             variant="ghost"
