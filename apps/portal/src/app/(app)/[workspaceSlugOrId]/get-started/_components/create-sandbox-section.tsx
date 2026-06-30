@@ -1,10 +1,9 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { CodeBlock } from "@repo/ui/components/code-block";
 import NumberedStep from "./numbered-step";
 import InstallCliStep from "./install-cli-step";
 import InstallSdkStep from "./install-sdk-step";
 import RunCodeStep from "./run-code-step";
+import CreatePreviewStep from "./create-preview-step";
 
 const SANDBOX_CODE = `import { SandboxInstance } from "@blaxel/core";
 
@@ -66,19 +65,10 @@ export default function CreateSandboxSection() {
         <li>
           <RunCodeStep />
         </li>
+        <li>
+          <CreatePreviewStep />
+        </li>
       </ol>
-      <Link
-        href="https://docs.blaxel.ai/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group inline-flex items-center gap-1.5 typography-body text-muted-foreground transition-colors hover:text-foreground"
-      >
-        Next: Create a preview
-        <ArrowRight
-          aria-hidden="true"
-          className="size-3.5 transition-transform group-hover:translate-x-0.5"
-        />
-      </Link>
     </section>
   );
 }
