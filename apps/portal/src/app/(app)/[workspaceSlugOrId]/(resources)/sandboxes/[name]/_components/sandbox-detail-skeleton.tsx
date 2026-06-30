@@ -64,10 +64,13 @@ export default function SandboxDetailSkeleton({
 
       <section
         aria-label="Spawned by"
-        className="flex items-center gap-3 border-t border-border pt-6"
+        className="flex flex-wrap items-center gap-2 border-t border-border pt-6"
       >
         <Skeleton className="h-4 w-24 rounded-sm" />
-        <Skeleton className="h-4 w-56 rounded-sm" />
+        <Skeleton className="h-4 w-20 rounded-sm" />
+        <Skeleton className="h-4 w-40 rounded-sm" />
+        <Skeleton className="h-4 w-32 rounded-sm" />
+        <Skeleton className="h-4 w-16 rounded-sm" />
       </section>
 
       <section

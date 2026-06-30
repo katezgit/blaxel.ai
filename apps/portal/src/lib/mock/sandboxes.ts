@@ -105,7 +105,6 @@ export interface SandboxVitals {
     status4xx: number;
     status5xx: number;
   };
-  errors: number;
   peakRamGiB: number;
   ramLimitGiB: number;
   peakCpuPct: number;
@@ -177,7 +176,6 @@ const DEFAULT_CREATED_BY: SandboxCreatedBy = {
 function emptyVitals(): SandboxVitals {
   return {
     requests: { total: 0, status2xx: 0, status4xx: 0, status5xx: 0 },
-    errors: 0,
     peakRamGiB: 0,
     ramLimitGiB: 4,
     peakCpuPct: 0,
@@ -266,7 +264,6 @@ const FIXTURES: ReadonlyArray<Sandbox> = [
     },
     vitals: {
       requests: { total: 73, status2xx: 73, status4xx: 0, status5xx: 0 },
-      errors: 0,
       peakRamGiB: 3.2,
       ramLimitGiB: 4,
       peakCpuPct: 87,
@@ -310,7 +307,6 @@ const FIXTURES: ReadonlyArray<Sandbox> = [
     },
     vitals: {
       requests: { total: 312, status2xx: 308, status4xx: 4, status5xx: 0 },
-      errors: 0,
       peakRamGiB: 1.1,
       ramLimitGiB: 4,
       peakCpuPct: 22,
@@ -352,7 +348,6 @@ const FIXTURES: ReadonlyArray<Sandbox> = [
     },
     vitals: {
       requests: { total: 1402, status2xx: 1389, status4xx: 11, status5xx: 2 },
-      errors: 2,
       peakRamGiB: 2.7,
       ramLimitGiB: 4,
       peakCpuPct: 54,
@@ -394,7 +389,6 @@ const FIXTURES: ReadonlyArray<Sandbox> = [
     },
     vitals: {
       requests: { total: 41, status2xx: 41, status4xx: 0, status5xx: 0 },
-      errors: 0,
       peakRamGiB: 0.8,
       ramLimitGiB: 2,
       peakCpuPct: 14,
@@ -438,7 +432,6 @@ const FIXTURES: ReadonlyArray<Sandbox> = [
     },
     vitals: {
       requests: { total: 188, status2xx: 184, status4xx: 4, status5xx: 0 },
-      errors: 0,
       peakRamGiB: 1.4,
       ramLimitGiB: 2,
       peakCpuPct: 38,
@@ -549,7 +542,6 @@ const FIXTURES: ReadonlyArray<Sandbox> = [
     },
     vitals: {
       requests: { total: 9, status2xx: 9, status4xx: 0, status5xx: 0 },
-      errors: 0,
       peakRamGiB: 0.4,
       ramLimitGiB: 2,
       peakCpuPct: 6,

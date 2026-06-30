@@ -15,7 +15,9 @@ interface SandboxVitalsStripProps {
  * During Deploying / Errored: every counter renders an em-dash placeholder
  * because no usage signal exists yet.
  *
- * When `errors > 0` the Errors counter flips to error-grade weight — primary
+ * Errors counter = `status4xx + status5xx` so it cannot contradict the
+ * Requests breakdown next to it. Sub-row mirrors the Requests rhythm
+ * (`4xx N · 5xx M`). Flips to error-grade weight when total > 0 — primary
  * Tier-1 failure signal per the §1.4 failure-signal split. */
 export default function SandboxVitalsStrip({ sandbox }: SandboxVitalsStripProps) {
   const { vitals, status } = sandbox;
@@ -40,9 +42,10 @@ export default function SandboxVitalsStrip({ sandbox }: SandboxVitalsStripProps)
     );
   }
 
-  const { requests, errors, peakRamGiB, ramLimitGiB, peakCpuPct, ramStrip, cpuStrip } =
+  const { requests, peakRamGiB, ramLimitGiB, peakCpuPct, ramStrip, cpuStrip } =
     vitals;
-  const errorsActive = errors > 0;
+  const errorCount = requests.status4xx + requests.status5xx;
+  const errorsActive = errorCount > 0;
 
   return (
     <Frame>
@@ -72,11 +75,16 @@ export default function SandboxVitalsStrip({ sandbox }: SandboxVitalsStripProps)
               : "text-foreground",
           )}
         >
-          {errors}
+          {errorCount}
         </span>
-        <span className="typography-meta text-meta-foreground">
-          {errorsActive ? "in last 1h" : "—"}
-        </span>
+        {errorsActive ? (
+          <ErrorBreakdown
+            status4xx={requests.status4xx}
+            status5xx={requests.status5xx}
+          />
+        ) : (
+          <span className="typography-meta text-meta-foreground">—</span>
+        )}
       </CounterShell>
 
       <CounterShell label="Peak RAM">
@@ -94,7 +102,6 @@ export default function SandboxVitalsStrip({ sandbox }: SandboxVitalsStripProps)
           {peakCpuPct}%
         </span>
         <MiniStrip points={cpuStrip} />
-        <span className="typography-meta text-meta-foreground">(last 1h)</span>
       </CounterShell>
     </Frame>
   );
@@ -165,6 +172,31 @@ function StatusBreakdown({
       <span
         className={cn(
           status5xx > 0 && "font-medium text-state-errored-text",
+        )}
+      >
+        5xx {status5xx}
+      </span>
+    </span>
+  );
+}
+
+interface ErrorBreakdownProps {
+  status4xx: number;
+  status5xx: number;
+}
+
+function ErrorBreakdown({ status4xx, status5xx }: ErrorBreakdownProps) {
+  return (
+    <span className="flex flex-wrap items-baseline gap-x-2 typography-meta text-state-errored-text">
+      <span className={cn(status4xx === 0 && "text-meta-foreground")}>
+        4xx {status4xx}
+      </span>
+      <span aria-hidden="true" className="text-meta-foreground">
+        ·
+      </span>
+      <span
+        className={cn(
+          status5xx > 0 ? "font-medium" : "text-meta-foreground",
         )}
       >
         5xx {status5xx}

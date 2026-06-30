@@ -12,7 +12,7 @@ interface SandboxConnectNowProps {
  * §1.3). The full §1.5 connection-methods band is Phase 2 — this is the
  * one-line copy operator can act on without scrolling.
  *
- * Visible during Deploying with a "not yet reachable" caption (Q11 — copy
+ * Visible during Deploying with a "ready to paste" caption (Q11 — copy
  * the command in advance). Hidden when state is Terminated; the parent
  * decides not to render this. */
 export default function SandboxConnectNow({ sandbox }: SandboxConnectNowProps) {
@@ -35,7 +35,7 @@ export default function SandboxConnectNow({ sandbox }: SandboxConnectNowProps) {
       </div>
       {isDeploying && (
         <p className="typography-meta text-meta-foreground">
-          Not yet reachable — command copies anyway.
+          Sandbox deploying — command ready to paste.
         </p>
       )}
     </section>

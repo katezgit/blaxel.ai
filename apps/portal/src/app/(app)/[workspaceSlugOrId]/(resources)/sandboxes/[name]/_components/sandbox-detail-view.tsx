@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import ResourceNotFound from "@/components/shell/resource-not-found";
@@ -101,43 +99,34 @@ interface SandboxDetailErrorHeaderProps {
 
 /** API-error shape per wireframe §2.8 — heading reverts to index-page form:
  * h1 + right-edge Retry, description below at gap-1. No meta row. Outer
- * header keeps `gap-3 pt-2 pb-6` for parity with the populated header. */
+ * header keeps `gap-3 pt-2 pb-6` for parity with the populated header.
+ * Breadcrumb carries the escape; no peer back-link to dilute Retry. */
 function SandboxDetailErrorHeader({
   sandboxName,
   listHref,
   onRetry,
 }: SandboxDetailErrorHeaderProps) {
   return (
-    <>
-      <header className="flex flex-col gap-3 pt-2 pb-6">
-        <Breadcrumb
-          parent={{ href: listHref, label: "Sandboxes" }}
-          current={sandboxName}
-        />
-        <div className="flex min-w-0 flex-col page-header">
-          <div className="flex items-center justify-between gap-2">
-            <h1 className="typography-display font-semibold text-foreground">
-              Failed to load Sandbox
-            </h1>
-            <Button type="button" variant="primary" onClick={onRetry}>
-              Retry
-            </Button>
-          </div>
-          <p className="typography-body text-muted-foreground">
-            The Sandbox{" "}
-            <code className="font-mono text-foreground">{sandboxName}</code>{" "}
-            could not be loaded. Network or API error.
-          </p>
+    <header className="flex flex-col gap-3 pt-2 pb-6">
+      <Breadcrumb
+        parent={{ href: listHref, label: "Sandboxes" }}
+        current={sandboxName}
+      />
+      <div className="flex min-w-0 flex-col page-header">
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="typography-display font-semibold text-foreground">
+            Failed to load Sandbox
+          </h1>
+          <Button type="button" variant="primary" onClick={onRetry}>
+            Retry
+          </Button>
         </div>
-      </header>
-      <p>
-        <Button asChild variant="ghost">
-          <Link href={listHref}>
-            <ArrowLeft aria-hidden="true" />
-            Back to Sandboxes
-          </Link>
-        </Button>
-      </p>
-    </>
+        <p className="typography-body text-muted-foreground">
+          The Sandbox{" "}
+          <code className="font-mono text-foreground">{sandboxName}</code> could
+          not be loaded. Network or API error.
+        </p>
+      </div>
+    </header>
   );
 }

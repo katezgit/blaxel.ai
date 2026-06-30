@@ -124,9 +124,9 @@ function TtlPill({ urgency, label }: TtlPillProps) {
         urgency === "quiet" && "bg-muted-surface text-meta-foreground",
         urgency === "none" && "bg-muted-surface text-meta-foreground",
         urgency === "warning" &&
-          "bg-state-warning-subtle text-state-warning-text",
+          "border border-state-warning/40 bg-state-warning-subtle text-state-warning-text",
         urgency === "error" &&
-          "bg-state-errored-subtle font-medium text-state-errored-text",
+          "border border-state-errored/50 bg-state-errored-subtle font-medium text-state-errored-text",
       )}
     >
       {label}
