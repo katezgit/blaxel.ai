@@ -11,12 +11,12 @@ const tooltipContentVariants = cva(
   [
     // Layout
     "z-overlay w-fit",
-    // Surface — inverse dark fill per spec
-    "rounded-sm bg-foreground shadow-popover",
-    // Typography — 12px label size + inverse surface color.
+    // Surface — light popover fill (white in light, recessed dark in dark) for a calmer, less stunning tooltip
+    "rounded-sm bg-popover shadow-popover",
+    // Typography — 12px label size + popover-paired foreground.
     // text-[length:var(--typography-label)] avoids tailwind-merge treating font-size
-    // as a color conflict with text-background (both text-* prefix).
-    "text-[length:var(--typography-label)] font-medium tracking-[0.02em] text-background", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
+    // as a color conflict with text-popover-foreground (both text-* prefix).
+    "text-[length:var(--typography-label)] font-medium tracking-[0.02em] text-popover-foreground", // eslint-disable-line no-restricted-syntax -- [length:var(--x)] is the permitted rank-3 font-size pattern; avoids twMerge text-color conflict
     // Compact label padding: px-2 py-1.5 (8px × 6px) — 6px min vertical to read as a container
     "px-2 py-1.5",
     // Text wraps at max-width; no truncation inside the tooltip
@@ -100,12 +100,12 @@ function TooltipContent({
         {...props}
       >
         {props.children}
-        {/* Arrow: 6×3px, fill matches panel (foreground) — 4px height dominated the bottom edge at equal vertical padding */}
+        {/* Arrow: 6×3px, fill matches panel — 4px height dominated the bottom edge at equal vertical padding */}
         <TooltipPrimitive.Arrow
           data-slot="tooltip-arrow"
           width={6}
           height={3}
-          className="fill-foreground"
+          className="fill-popover"
         />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
