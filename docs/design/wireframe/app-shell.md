@@ -135,7 +135,7 @@ The user has **left workspace scope**. Account is account-scoped — settings he
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
-│ ⌂ Blaxel  webflow-prod ▾                                            🔍  🔔3  ?  k    │  64px topbar
+│ ⌂ Blaxel  webflow-prod ▾                                            🔍  🔔3  ?  k    │  48px topbar
 ├──────────────┬───────────────────────────────────────────────────────────────────────┤
 │ SANDBOXES    │  Model APIs / prod-openai-chat                                         │
 │   Sandboxes  │                                                                        │
@@ -269,7 +269,6 @@ The `sb` / `vl` / etc. tokens in this ASCII represent the lucide icons (Containe
 
 ```css
 :root {
-  --topbar-h: 64px;
   --sidebar-w: 248px;
   --content-px: 32px;
 }
@@ -284,10 +283,12 @@ The `sb` / `vl` / etc. tokens in this ASCII represent the lucide icons (Containe
 }
 
 @media (max-width: 767px) {
-  :root { --topbar-h: auto; --content-px: 16px; }
+  :root { --content-px: 16px; }
   /* + topbar grid to 2-row across all shells (workspace row + brand/identity row), hide sidebar, stack page-actions */
 }
 ```
+
+**Topbar height is not a variable** — it lives on `.shell-topbar` directly via Tailwind utilities (`h-12 max-md:h-14`, i.e. 48px desktop+tablet / 56px mobile). `.shell-topbar` is the sole consumer; a `--topbar-h` custom property would add a layer without saving repetition. See [`../guidelines/app-shell-layout.md`](../guidelines/app-shell-layout.md) §2 Topbar for the breakpoint rationale.
 
 Applies to all three shell variants.
 

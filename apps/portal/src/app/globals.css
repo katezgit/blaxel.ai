@@ -8,10 +8,11 @@
  * Without this binding, dark: utilities never match in this codebase. */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-/* App-shell zone dimensions — wireframe contract (docs/design/app-shell/wireframe/index.md §7).
- * Consumed via Tailwind prop-(--topbar-h) / prop-(--sidebar-w) / prop-(--content-px)
- * on the shell's <header> / <aside> / <main>. Breakpoints follow the wireframe
- * §3–6 ramp: 248 → 220 → 64 → 0.
+/* App-shell zone dimensions — wireframe contract (docs/design/wireframe/app-shell.md §10).
+ * Sidebar width + content padding step down through the breakpoint ramp
+ * (248 → 220 → 64 → 0). Topbar height lives on the .shell-topbar utility
+ * directly via Tailwind responsive utilities — no variable needed since
+ * .shell-topbar is the only consumer.
  *
  * --shell-left-gutter: x-position (from viewport-left) where the topbar brand
  * orange-ball center and the sidebar nav-icon centers share a column. Sidebar
@@ -20,7 +21,6 @@
  * gets padding-left = --shell-left-gutter - 12px = 12px (see brand-mark.tsx).
  * Topbar's left padding is dropped at md+ so the brand fully owns the column. */
 :root {
-  --topbar-h: 56px;
   --sidebar-w: 248px;
   --sidebar-rail-w: 64px;
   --mobile-drawer-w: 280px;
@@ -50,7 +50,7 @@
   :root { --sidebar-w: 64px; --content-px: 24px; }
 }
 @media (max-width: 767px) {
-  :root { --topbar-h: auto; --content-px: 16px; }
+  :root { --content-px: 16px; }
 }
 
 /* App-shell topbar grid — wireframe contract (docs/design/wireframe/app-shell.md §6–9).
@@ -63,7 +63,7 @@
   grid-template-columns: var(--shell-left-w, var(--sidebar-w)) 1fr auto;
   grid-template-areas: "left center right";
   align-items: center;
-  height: var(--topbar-h);
+  @apply h-12 max-md:h-14;   /* 48 desktop+tablet · 56 mobile — guidelines/app-shell-layout.md §2 Topbar */
   gap: 0.75rem;
   padding-left: 0;
   padding-right: 1rem;
