@@ -379,7 +379,140 @@ const FIXTURES: ReadonlyArray<Sandbox> = [
     lastUsedAt: "2026-06-01T08:30:00Z",
     events: [],
   },
+  ...generatedFleet(),
 ];
+
+// Synthetic fleet for the list-page aggregate strip. The named fixtures above
+// (prod-runner, eval-batch, staging-agent, etc.) cover the wireframe's
+// state-matrix anchors and are deep-linked from the detail page; this
+// generator pads the workspace out to ~80 rows spread across regions,
+// images, and states so the §1.3 aggregate tiles have believable shape.
+//
+// Deterministic — uses a tiny PRNG seeded by index so reloads render the
+// same fixtures (no hydration mismatch, screenshots reproducible).
+function generatedFleet(): ReadonlyArray<Sandbox> {
+  const REGIONS: ReadonlyArray<SandboxRegion> = [
+    "eu-fra-1",
+    "us-pdx-1",
+    "eu-lon-1",
+    "us-was-1",
+    "auto",
+  ];
+  // Weighted region distribution — eu-fra-1 dominant, then us-pdx-1, then the
+  // others. Indices into REGIONS; modulus selects.
+  const REGION_DIST: ReadonlyArray<number> = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 1, 1, 1,
+    2, 2, 2, 2,
+    3, 3,
+    4,
+  ];
+  const IMAGES: ReadonlyArray<SandboxImageRef> = [
+    { name: "blaxel/python-3.12", sha: "9c1e4d6f" },
+    { name: "blaxel/node-20", sha: "a4f29c0e" },
+    { name: "blaxel/base", sha: "5a4f1e9d" },
+    { name: "blaxel/node-22", sha: "3d7f12b8" },
+    { name: "playwright/node-20", sha: "1f8a3c0b" },
+    { name: "blaxel/expo", sha: "7b2e88aa" },
+  ];
+  const IMAGE_DIST: ReadonlyArray<number> = [
+    0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 1, 1,
+    2, 2, 2, 2,
+    3, 3, 3,
+    4, 4,
+    5,
+  ];
+  // Status × state recipe — RUNNING and STANDBY dominate. A handful of
+  // FAILED / DEPLOYING / DEACTIVATING / TERMINATED rows to give the strip
+  // signal in every category.
+  const RECIPES: ReadonlyArray<{
+    status: SandboxDeploymentStatus;
+    state: SandboxRuntimeState;
+  }> = [
+    ...Array.from({ length: 20 }, () => ({
+      status: "DEPLOYED" as const,
+      state: "RUNNING" as const,
+    })),
+    ...Array.from({ length: 18 }, () => ({
+      status: "DEPLOYED" as const,
+      state: "STANDBY" as const,
+    })),
+    { status: "FAILED", state: "STANDBY" },
+    { status: "FAILED", state: "STANDBY" },
+    { status: "FAILED", state: "RUNNING" },
+    { status: "DEPLOYING", state: "STANDBY" },
+    { status: "DEPLOYING", state: "STANDBY" },
+    { status: "DEACTIVATING", state: "STANDBY" },
+    { status: "DEACTIVATED", state: "STANDBY" },
+    { status: "TERMINATED", state: "STANDBY" },
+    { status: "TERMINATED", state: "STANDBY" },
+  ];
+  const TTL_BUCKETS: ReadonlyArray<{
+    ttl: Sandbox["spec"]["ttl"];
+    expiresInSec: number | null;
+  }> = [
+    { ttl: "none", expiresInSec: null },
+    { ttl: "none", expiresInSec: null },
+    { ttl: "1d", expiresInSec: 19 * 3_600 },
+    { ttl: "7d", expiresInSec: 5 * 86_400 + 6 * 3_600 },
+    { ttl: "7d", expiresInSec: 2 * 86_400 + 11 * 3_600 },
+    { ttl: "30d", expiresInSec: 21 * 86_400 + 4 * 3_600 },
+    { ttl: "30d", expiresInSec: 12 * 86_400 },
+  ];
+  // Stable hash so id+name stay byte-identical across SSR/CSR.
+  function hash8(seed: number): string {
+    let h = seed * 2_654_435_761;
+    h = (h ^ (h >>> 13)) >>> 0;
+    return h.toString(16).padStart(8, "0").slice(0, 8);
+  }
+
+  const fleet: Array<Sandbox> = [];
+  for (let i = 0; i < 70; i += 1) {
+    const region = REGIONS[REGION_DIST[i % REGION_DIST.length]!]!;
+    const image = IMAGES[IMAGE_DIST[i % IMAGE_DIST.length]!]!;
+    const recipe = RECIPES[i % RECIPES.length]!;
+    const ttlBucket = TTL_BUCKETS[i % TTL_BUCKETS.length]!;
+    const externalId = `sbx-${hash8(i + 101)}`;
+    const name = `${image.name.split("/")[1] ?? "sbx"}-${hash8(i + 202).slice(0, 6)}`;
+    const isTerminated =
+      recipe.status === "TERMINATED" || recipe.status === "DELETING";
+    const isFailed = recipe.status === "FAILED";
+    fleet.push({
+      metadata: {
+        name,
+        displayName: name,
+        externalId,
+        createdAt: "2026-06-20T10:00:00Z",
+        workspace: DEFAULT_WORKSPACE,
+      },
+      spec: {
+        image,
+        region,
+        memoryMib: recipe.status === "DEPLOYING" ? 4096 : 2048,
+        ttl: isTerminated ? "none" : ttlBucket.ttl,
+        expiresInSec: isTerminated ? null : ttlBucket.expiresInSec,
+        enabled: !isTerminated && !isFailed,
+        runtime: { envs: DEFAULT_ENVS },
+        lifecycle: {
+          expirationPolicies: isTerminated
+            ? []
+            : defaultExpirationPolicies(ttlBucket.ttl),
+        },
+        network: { egressMode: "shared" },
+        volumes: i % 3 === 0 ? DEFAULT_VOLUMES : [],
+      },
+      status: recipe.status,
+      state: recipe.state,
+      failureReason: isFailed
+        ? "Image pull failed — push Image or pick another."
+        : undefined,
+      lastUsedAt: isTerminated ? null : "2026-06-29T12:00:00Z",
+      events: defaultEvents(recipe.status),
+    });
+  }
+  return fleet;
+}
 
 export async function fetchSandboxes(
   _accountId: string,

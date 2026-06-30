@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   createColumnHelper,
@@ -37,17 +37,17 @@ import {
   tableRowVariants,
 } from "@repo/ui/components/table";
 import type { Sandbox, SandboxRegion } from "@/lib/mock/sandboxes";
-import { StatePill, pillFor, type SandboxStateLabel } from "./state-pill";
+import { StatePill, pillFor } from "./state-pill";
+import type { StateBreakdownLabel } from "./aggregate-data";
 import {
   expiresInLabel,
   imageRefLabel,
   isExpiresInWarning,
   regionLabel,
 } from "./row-helpers";
-import { SandboxesEmptyState } from "./sandboxes-empty-state";
 
 const QUICK_FILTERS: ReadonlyArray<{
-  value: SandboxStateLabel;
+  value: StateBreakdownLabel;
   label: string;
 }> = [
   { value: "Active", label: "Active" },
@@ -64,10 +64,25 @@ const REGION_OPTIONS: ReadonlyArray<{ value: SandboxRegion | "all"; label: strin
   { value: "us-pdx-1", label: "us-pdx-1" },
 ];
 
-interface SandboxesListProps {
+export interface SandboxesListProps {
   sandboxes: ReadonlyArray<Sandbox>;
   workspaceSlug: string;
-  createHref: string;
+  // Filter state is owned by the parent (sandboxes-view) so both the strip
+  // and the toolbar dispatch into the same source of truth — they cannot
+  // desync. See wireframe §1.3 click-to-filter contract.
+  search: string;
+  onSearchChange: (value: string) => void;
+  stateFilters: ReadonlyArray<StateBreakdownLabel>;
+  onStateFiltersChange: (
+    value: ReadonlyArray<StateBreakdownLabel>,
+  ) => void;
+  regionFilter: SandboxRegion | "all";
+  onRegionFilterChange: (value: SandboxRegion | "all") => void;
+  /** Image filter — single-select; null = unfiltered. Identity = `<name>@<sha>`. */
+  imageFilter: string | null;
+  onImageFilterChange: (value: string | null) => void;
+  includeTerminated: boolean;
+  onIncludeTerminatedChange: (value: boolean) => void;
 }
 
 const columnHelper = createColumnHelper<Sandbox>();
@@ -75,13 +90,18 @@ const columnHelper = createColumnHelper<Sandbox>();
 export function SandboxesList({
   sandboxes,
   workspaceSlug,
-  createHref,
+  search,
+  onSearchChange,
+  stateFilters,
+  onStateFiltersChange,
+  regionFilter,
+  onRegionFilterChange,
+  imageFilter,
+  onImageFilterChange,
+  includeTerminated,
+  onIncludeTerminatedChange,
 }: SandboxesListProps) {
   const router = useRouter();
-  const [search, setSearch] = useState("");
-  const [stateFilters, setStateFilters] = useState<ReadonlyArray<string>>([]);
-  const [regionFilter, setRegionFilter] = useState<SandboxRegion | "all">("all");
-  const [includeTerminated, setIncludeTerminated] = useState(false);
 
   // Visible rows. Terminated/Inactive are hidden by default — the "Include
   // terminated" chip is the wireframe's escape hatch.
@@ -95,10 +115,19 @@ export function SandboxesList({
       ) {
         return false;
       }
-      if (stateFilters.length > 0 && !stateFilters.includes(pillLabel)) {
+      if (
+        stateFilters.length > 0 &&
+        !stateFilters.includes(pillLabel as StateBreakdownLabel)
+      ) {
         return false;
       }
       if (regionFilter !== "all" && sbx.spec.region !== regionFilter) {
+        return false;
+      }
+      if (
+        imageFilter !== null &&
+        `${sbx.spec.image.name}@${sbx.spec.image.sha}` !== imageFilter
+      ) {
         return false;
       }
       if (normalized) {
@@ -108,7 +137,14 @@ export function SandboxesList({
       }
       return true;
     });
-  }, [sandboxes, search, stateFilters, regionFilter, includeTerminated]);
+  }, [
+    sandboxes,
+    search,
+    stateFilters,
+    regionFilter,
+    imageFilter,
+    includeTerminated,
+  ]);
 
   const columns = useMemo(() => {
     return [
@@ -193,17 +229,15 @@ export function SandboxesList({
     search.trim() !== "" ||
     stateFilters.length > 0 ||
     regionFilter !== "all" ||
+    imageFilter !== null ||
     includeTerminated;
 
   function clearFilters() {
-    setSearch("");
-    setStateFilters([]);
-    setRegionFilter("all");
-    setIncludeTerminated(false);
-  }
-
-  if (sandboxes.length === 0) {
-    return <SandboxesEmptyState createHref={createHref} />;
+    onSearchChange("");
+    onStateFiltersChange([]);
+    onRegionFilterChange("all");
+    onImageFilterChange(null);
+    onIncludeTerminatedChange(false);
   }
 
   const rows = table.getRowModel().rows;
@@ -213,13 +247,13 @@ export function SandboxesList({
     <div className="flex min-h-0 flex-col gap-4">
       <Toolbar
         search={search}
-        onSearchChange={setSearch}
+        onSearchChange={onSearchChange}
         stateFilters={stateFilters}
-        onStateFiltersChange={setStateFilters}
+        onStateFiltersChange={onStateFiltersChange}
         regionFilter={regionFilter}
-        onRegionFilterChange={setRegionFilter}
+        onRegionFilterChange={onRegionFilterChange}
         includeTerminated={includeTerminated}
-        onIncludeTerminatedChange={setIncludeTerminated}
+        onIncludeTerminatedChange={onIncludeTerminatedChange}
       />
 
       <div className="relative w-full overflow-x-auto rounded-md border border-border bg-card">
@@ -314,8 +348,8 @@ export function SandboxesList({
 interface ToolbarProps {
   search: string;
   onSearchChange: (value: string) => void;
-  stateFilters: ReadonlyArray<string>;
-  onStateFiltersChange: (value: ReadonlyArray<string>) => void;
+  stateFilters: ReadonlyArray<StateBreakdownLabel>;
+  onStateFiltersChange: (value: ReadonlyArray<StateBreakdownLabel>) => void;
   regionFilter: SandboxRegion | "all";
   onRegionFilterChange: (value: SandboxRegion | "all") => void;
   includeTerminated: boolean;
@@ -345,7 +379,9 @@ function Toolbar({
       <div className="ml-auto flex flex-wrap items-center gap-2">
         <ChipGroup
           value={[...stateFilters]}
-          onChange={(next) => onStateFiltersChange(next)}
+          onChange={(next) =>
+            onStateFiltersChange(next as ReadonlyArray<StateBreakdownLabel>)
+          }
           aria-label="Filter by state"
         >
           {QUICK_FILTERS.map((filter) => (

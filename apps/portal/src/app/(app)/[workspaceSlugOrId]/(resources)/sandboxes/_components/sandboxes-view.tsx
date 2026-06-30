@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -7,10 +8,14 @@ import { Plus } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { sandboxQueries } from "@/lib/query/sandboxes";
-import type { Sandbox } from "@/lib/mock/sandboxes";
+import type { Sandbox, SandboxRegion } from "@/lib/mock/sandboxes";
 import { SandboxesList } from "./sandboxes-list";
 import { SandboxesErrorBand } from "./sandboxes-error-band";
 import { SandboxesTableSkeleton } from "./sandboxes-table-skeleton";
+import { SandboxesEmptyState } from "./sandboxes-empty-state";
+import { SandboxesAggregateStrip } from "./sandboxes-aggregate-strip";
+import { SandboxesAggregateStripSkeleton } from "./sandboxes-aggregate-strip-skeleton";
+import { computeAggregateData, type StateBreakdownLabel } from "./aggregate-data";
 
 // Dev simulation harness — `?state=loading|error|empty` overrides the live
 // fetch state so each wireframe state can be visually verified without
@@ -33,20 +38,53 @@ export function SandboxesView() {
     enabled: stateSim !== "loading" && stateSim !== "error",
   });
 
+  // Single source of truth for every filter the toolbar AND the strip both
+  // dispatch into. Lifted to the view so the strip↔toolbar↔table cannot
+  // desync (wireframe §1.3 sync table).
+  const [search, setSearch] = useState("");
+  const [stateFilters, setStateFilters] =
+    useState<ReadonlyArray<StateBreakdownLabel>>([]);
+  const [regionFilter, setRegionFilter] = useState<SandboxRegion | "all">("all");
+  const [imageFilter, setImageFilter] = useState<string | null>(null);
+  const [includeTerminated, setIncludeTerminated] = useState(false);
+
+  const isLoading = stateSim === "loading" || query.isPending;
+  const isError = stateSim === "error" || query.isError;
+  const sandboxes = useMemo<ReadonlyArray<Sandbox>>(
+    () => (stateSim === "empty" ? [] : (query.data ?? [])),
+    [stateSim, query.data],
+  );
+
+  const aggregate = useMemo(
+    () => computeAggregateData(sandboxes, { includeTerminated }),
+    [sandboxes, includeTerminated],
+  );
+
+  const showStrip = !isLoading && !isError && sandboxes.length > 0;
+  const showLoadingStrip = isLoading;
+
   let body: React.ReactNode;
-  if (stateSim === "loading" || query.isPending) {
+  if (isLoading) {
     body = <SandboxesTableSkeleton />;
-  } else if (stateSim === "error" || query.isError) {
+  } else if (isError) {
     body = <SandboxesErrorBand onRetry={() => query.refetch()} />;
+  } else if (sandboxes.length === 0) {
+    body = <SandboxesEmptyState createHref={createHref} />;
   } else {
-    const sandboxes = (
-      stateSim === "empty" ? [] : query.data ?? []
-    ) as ReadonlyArray<Sandbox>;
     body = (
       <SandboxesList
         sandboxes={sandboxes}
         workspaceSlug={params.workspaceSlugOrId}
-        createHref={createHref}
+        search={search}
+        onSearchChange={setSearch}
+        stateFilters={stateFilters}
+        onStateFiltersChange={setStateFilters}
+        regionFilter={regionFilter}
+        onRegionFilterChange={setRegionFilter}
+        imageFilter={imageFilter}
+        onImageFilterChange={setImageFilter}
+        includeTerminated={includeTerminated}
+        onIncludeTerminatedChange={setIncludeTerminated}
       />
     );
   }
@@ -66,6 +104,18 @@ export function SandboxesView() {
           </Button>
         </div>
       </header>
+      {showLoadingStrip ? <SandboxesAggregateStripSkeleton /> : null}
+      {showStrip ? (
+        <SandboxesAggregateStrip
+          data={aggregate}
+          stateFilters={stateFilters}
+          onStateFiltersChange={setStateFilters}
+          regionFilter={regionFilter}
+          onRegionFilterChange={setRegionFilter}
+          imageFilter={imageFilter}
+          onImageFilterChange={setImageFilter}
+        />
+      ) : null}
       {body}
     </div>
   );
