@@ -4,9 +4,9 @@ import {
   Clock,
   Cpu,
   Fingerprint,
+  Hourglass,
   Layers,
   Plug,
-  Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@repo/ui/components/badge";
@@ -171,7 +171,7 @@ function AgentRuntimeCtaPanel({ waitlistHref }: AgentRuntimeCtaPanelProps) {
         aria-hidden="true"
         className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-primary"
       >
-        <Sparkles className="size-5" />
+        <Hourglass className="size-5" />
       </span>
       <h3 className="typography-subtitle font-semibold text-foreground">
         Join the waitlist
