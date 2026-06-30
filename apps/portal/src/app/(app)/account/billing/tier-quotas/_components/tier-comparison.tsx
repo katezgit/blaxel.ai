@@ -218,7 +218,7 @@ export default function TierComparison({ currentTier }: TierComparisonProps) {
             type="button"
             onClick={() => setTier0Open(true)}
             aria-expanded={false}
-            aria-controls="tier-row-0"
+            aria-controls="tier-0"
             className="flex items-center gap-2 px-4 py-3 text-left typography-caption text-muted-foreground hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring transition-colors duration-fast ease-out-standard"
           >
             <ChevronRight className="size-4" aria-hidden="true" />
@@ -253,14 +253,15 @@ interface TierRowProps {
 function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
   return (
     <div
-      id={tier.tier === 0 ? "tier-row-0" : undefined}
+      id={`tier-${tier.tier}`}
       aria-current={isCurrent ? "true" : undefined}
       className={cn(
-        "group relative flex flex-col gap-3 px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
+        "group relative flex scroll-mt-4 flex-col gap-3 px-4 py-4 transition-colors duration-fast ease-out-standard sm:grid sm:gap-4",
         GRID_COLS,
         isCurrent
           ? "rounded-md border border-primary"
           : "hover:bg-hover-surface",
+        "target:bg-primary-glow target:hover:bg-primary-glow",
       )}
     >
       {isCurrent ? (
@@ -278,7 +279,7 @@ function TierRow({ tier, isCurrent, onCollapseTier0 }: TierRowProps) {
             type="button"
             onClick={onCollapseTier0}
             aria-expanded={true}
-            aria-controls="tier-row-0"
+            aria-controls="tier-0"
             className="-ml-1 inline-flex items-center gap-1 self-start rounded-sm px-1 typography-caption text-muted-foreground hover:text-foreground focus-visible:shadow-focus-ring"
           >
             <ChevronDown className="size-3" aria-hidden="true" />

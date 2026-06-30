@@ -1,5 +1,6 @@
 import { ArrowUpRight, Asterisk, Globe, MapPin, Rocket } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import { cn } from "@repo/ui/lib/cn";
@@ -8,7 +9,14 @@ import CustomDomainsHeader from "./custom-domains-header";
 
 const LOCKED_DESCRIPTION = (
   <p className="text-muted-foreground">
-    Custom domains are available on Tier 3 and above.{" "}
+    Custom domains are available on{" "}
+    <Link
+      href="/account/billing/tier-quotas#tier-3"
+      className="rounded-sm text-muted-foreground hover:text-foreground hover:underline"
+    >
+      Tier 3 and above
+    </Link>
+    {" · "}
     <a
       href="https://docs.blaxel.ai/Infrastructure/Custom-domains"
       target="_blank"
