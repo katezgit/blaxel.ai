@@ -15,8 +15,8 @@ Personality posture is **spare and dense** (see `docs/product/personality.md`). 
 | `spacing-2` | 0.5rem | 8px | Inline siblings (button + label, badge + dot); Input internal padding; form actions-row button gap |
 | `spacing-3` | 0.75rem | 12px | Alert icon ↔ content gap; `px-3` in form-field controls |
 | `spacing-4` | 1rem | 16px | `gap-4` between blocks; card/alert padding; form: field ↔ field |
-| `spacing-6` | 1.5rem | 24px | `gap-6` between sections inside a panel; form: last field ↔ actions row |
-| `spacing-8` | 2rem | 32px | `gap-8` between major regions; `pl-8` left-icon inset offset |
+| `spacing-6` | 1.5rem | 24px | `gap-6` between card-contained sections (card border carries separation weight); section inside a panel; form: last field ↔ actions row; Tabs trigger row ↔ panel |
+| `spacing-8` | 2rem | 32px | `gap-8` between major regions; between flat-layout sections (no chrome — gap carries the work); `pl-8` left-icon inset offset |
 
 ---
 
@@ -26,11 +26,31 @@ Tailwind ships `spacing-5` (20px), `spacing-7` (28px), `spacing-9` (36px), `spac
 
 ---
 
+## Rhythm theory
+
+Two applied rules govern every section-class value below — use these at the point of decision. Theoretical foundation (Gestalt proximity, modular scale, vertical rhythm, asymmetric whitespace), academic citations, and the derivation of these rules from first principles live in [`spacing-rationale.md`](./spacing-rationale.md). Read that once; consult the two rules below daily.
+
+**1. Chrome carries separation weight.** A card border, drop-shadow, or background-tonal shift visually separates two adjacent blocks even at a small gap. Flat layouts (no chrome between siblings) compensate with raw gap. A `<Card>`-contained section list works at `gap-6` (24px); the same content rendered flat needs `gap-8` (32px). Industry confirms: Linear flat settings, GitHub repo settings, and shadcn/v0 dashboard examples sit at 32px+ between flat sections; Vercel and Stripe collapse to 24px between cards. Any visible chrome around a section (border, background, shadow) counts as card-contained.
+
+**2. Gap above an h2 must clear its leading.** A heading reads as "a new beginning" only when the gap above it is ≥ the heading's effective leading. At our ~18–20px semibold h2, leading is ~28px — so 24px above reads as "another row of the previous section," 32px reads as "new section starts here." This is why the flat-section canon is 32px and not 24px, even under our *spare and dense* posture: density is content-per-pixel, not gap compression; a missed section boundary costs scanning speed.
+
+These two rules also explain the tight end of the scale: `gap-1` (4px) for title↔description is intentionally below body leading — same-unit signal, not new-unit.
+
+---
+
 ## Composition cheatsheet
 
 **Forms**
 - Label ↔ control: 6px / `gap-1.5`
-- Field ↔ field: 16px / `gap-4`
+- Control ↔ help / description text (muted explainer beneath input): 4px / `gap-1` — same-unit asymmetry rule (see *Rhythm theory* #4)
+- Control ↔ inline error message: 4px / `gap-1` — replaces or appears alongside help text; same rhythm
+- Inline marker (required / optional indicator next to label): 4px / `gap-1`
+- Checkbox / radio ↔ its label (horizontal): 8px / `gap-2`
+- Choice group items (vertical stack of checkbox / radio): 8px / `gap-2` for label-only rows; 12px / `gap-3` when each item has a description sub-line
+- Inline field siblings (multi-column row, e.g. First name + Last name): 16px / `gap-4` — matches vertical field gap so column/row rhythm aligns
+- Field ↔ field (single column): 16px / `gap-4`
+- Field group ↔ field group (sub-sections within a form): inherits the **Page → Sections within a region** rule below — 32px (`gap-8`) flat, 24px (`gap-6`) card-contained
+- Form section heading block ↔ first field: 24px / `gap-6` — heading anchors the section opener; first field starts the body
 - Last field ↔ actions row: 24px / `gap-6`
 - Actions row button gap: 8px / `gap-2`
 
@@ -41,18 +61,27 @@ Tailwind ships `spacing-5` (20px), `spacing-7` (28px), `spacing-9` (36px), `spac
 
 **Page**
 - Major regions (e.g. header → content, content → sidebar): 32px / `gap-8`
-- Sections within a region: 24px / `gap-6` — responsive variant `gap-6 lg:gap-8` (24px → 32px from `lg`) when section concerns are heterogeneous enough to deserve more breathing room on desktop (e.g. workspace identity / account context / danger zone on a single settings page)
+- Sections within a region — pick by layout context (see *Rhythm theory* above):
+  - **Card-contained** (each section sits inside its own `<Card>` / panel, or has its own border/background): 24px / `gap-6` — the chrome carries part of the separation weight.
+  - **Flat** (sections are siblings with no chrome between them, each anchored by an h2 + body): 32px / `gap-8` — gap is the only separator and must clear the h2's leading. Supersedes the earlier `gap-6 lg:gap-8` heterogeneity rule; flat sections are the case that rule was reaching for.
 - Blocks within a section: 16px / `gap-4`
 
 **Inline**
 - Icon ↔ label: 6px / `gap-1.5` (small icons) or 8px / `gap-2` (standard icons)
 - Badge ↔ dot or sibling badge: 8px / `gap-2`
-- Title ↔ description (single header unit): 4px / `gap-1`
+- Title ↔ description (single header unit — applies to h1 page headers, h2 section headers, h3 sub-section headers alike): 4px / `gap-1`
+
+**Tabs**
+- Tab list (triggers row) ↔ tab panel: 24px / `gap-6` — applied by the `Tabs` primitive root (`packages/ui/src/components/tabs.tsx`); do not override at the call site
+
+**Tables**
+- Toolbar ↔ table content: 16px / `gap-4` (block-within-section)
+- Bulk-action bar layout (between toolbar and table): owned by `docs/design/guidelines/toolbar.md` § Bulk-action bar — do not duplicate values here
 
 **Detail page header rhythm** (page with a breadcrumb)
 - Breadcrumb ↔ page heading block: 12px / `gap-3` — set inline on the outer `<header>`
-- H1 ↔ description (inside the heading block): 4px / `gap-1` — via the `.page-header` utility
-- Heading block ↔ page content (table, body): 24px / `gap-6` — set inline on the outer `<section>`
+- H1 ↔ description **or** metadata row (`count · slug · owner`) — inside the heading block: 4px / `gap-1` — via the `.page-header` utility. Meta-row composition (between-item `gap-2`, slug+CopyButton inline group `gap-0`) lives in `header-rhythm.md`.
+- Heading block ↔ first content block (table, body, first section): 24px / `gap-6` — set inline on the outer `<section>`. The h1's visual weight does the "new zone starts here" work even when content opens with a flat h2 section, so 24px suffices here. Subsequent section↔section gaps follow the flat-vs-card rule under **Page** above (32px flat / 24px card-contained).
 
 Canonical shape:
 ```tsx
@@ -82,4 +111,6 @@ Index pages omit the `<header className="gap-3">` wrapper (no breadcrumb) and us
 
 ## See also
 
-[`docs/conventions/typography-utility-usage.md`](../../conventions/typography-utility-usage.md) — typography role utilities, layer split (DS vs app), and role-vs-size rule.
+- [`spacing-rationale.md`](./spacing-rationale.md) — first-principles derivation of every rule in this file: Gestalt proximity, modular scale, baseline grid, asymmetric whitespace, 8-point synthesis, references.
+- [`spacing-catalog.md`](./spacing-catalog.md) — universe of spacing contexts a B2B / dashboard UI typically renders. Use for new-project planning and current-project gap analysis. Catalog enumerates; this file rules.
+- [`docs/conventions/typography-utility-usage.md`](../../conventions/typography-utility-usage.md) — typography role utilities, layer split (DS vs app), and role-vs-size rule.
