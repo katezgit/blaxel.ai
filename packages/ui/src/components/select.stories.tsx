@@ -5,6 +5,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectItemDescription,
   SelectLabel,
   SelectSeparator,
   SelectTrigger,
@@ -182,6 +183,72 @@ export const WithDisabledItems: Story = {
           <SelectItem value="enterprise" disabled>Enterprise (contact sales)</SelectItem>
         </SelectContent>
       </Select>
+    </div>
+  ),
+}
+
+// ── Feature: WithItemDescriptions ────────────────────────────────────────────
+// Two-line items: title in trigger, description only in the open dropdown.
+// Demonstrates SelectItemDescription alongside single-line items.
+// Check indicator top-aligns to the title row, not the center of the two-line block.
+
+export const WithItemDescriptions: Story = {
+  name: "With item descriptions",
+  render: () => (
+    <div className="flex flex-col gap-6" style={{ width: 300 }}>
+      {/* Open-dropdown demo — shows both title and description */}
+      <div className="flex flex-col gap-1.5">
+        <span className="typography-caption text-muted-foreground">
+          Trigger shows title only; description visible in dropdown
+        </span>
+        <Select defaultValue="member">
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="owner">
+              Owner
+              <SelectItemDescription>
+                Full control over the workspace, billing, and members.
+              </SelectItemDescription>
+            </SelectItem>
+            <SelectItem value="admin">
+              Admin
+              <SelectItemDescription>
+                Can manage resources and invite members, but not billing.
+              </SelectItemDescription>
+            </SelectItem>
+            <SelectItem value="member">
+              Member
+              <SelectItemDescription>
+                Read and deploy access. Cannot manage members or settings.
+              </SelectItemDescription>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Mixed: some items with description, some without */}
+      <div className="flex flex-col gap-1.5">
+        <span className="typography-caption text-muted-foreground">
+          Mixed — single-line and two-line items together
+        </span>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select environment" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="prod">
+              Production
+              <SelectItemDescription>
+                Live traffic. Requires approval to deploy.
+              </SelectItemDescription>
+            </SelectItem>
+            <SelectItem value="staging">Staging</SelectItem>
+            <SelectItem value="dev">Development</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   ),
 }

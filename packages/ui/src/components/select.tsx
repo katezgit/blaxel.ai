@@ -6,6 +6,33 @@ import { Select as SelectPrimitive } from "radix-ui"
 import { cn } from "@repo/ui/lib/cn"
 import { formFieldBoxVariants } from "@repo/ui/lib/form-field-box"
 
+/**
+ * Optional secondary description line for a SelectItem.
+ * Renders below the title in muted meta typography.
+ * Stays outside SelectPrimitive.ItemText so the trigger shows title only.
+ *
+ * Usage:
+ *   <SelectItem value="admin">
+ *     Administrator
+ *     <SelectItemDescription>Full access to all workspace resources.</SelectItemDescription>
+ *   </SelectItem>
+ */
+function SelectItemDescription({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      data-slot="select-item-description"
+      className={cn("typography-meta text-muted-foreground", className)}
+      {...props}
+    >
+      {children}
+    </span>
+  )
+}
+
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
@@ -140,11 +167,31 @@ function SelectItem({
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Item>) {
+  // Split children: SelectItemDescription elements stay outside ItemText (so trigger shows
+  // title only); everything else is the title content passed into ItemText.
+  const childArray = React.Children.toArray(children)
+  const descriptionChildren = childArray.filter(
+    (child) =>
+      React.isValidElement(child) &&
+      (child as React.ReactElement).type === SelectItemDescription
+  )
+  const titleChildren = childArray.filter(
+    (child) =>
+      !(
+        React.isValidElement(child) &&
+        (child as React.ReactElement).type === SelectItemDescription
+      )
+  )
+  const hasDescription = descriptionChildren.length > 0
+
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default select-none items-center gap-2",
+        "relative flex w-full cursor-default select-none gap-2",
+        // When a description is present, align the check indicator to the top of the title line,
+        // not the vertical center of the two-line block.
+        hasDescription ? "items-start" : "items-center",
         "rounded-sm py-1.5 pr-8 pl-2",
         "outline-hidden",
         // Radix's data-[highlighted] fires on both pointer hover + keyboard nav — sidesteps the
@@ -165,6 +212,7 @@ function SelectItem({
       )}
       {...props}
     >
+      {/* Check indicator — top-aligned so it sits beside the title even in two-line items */}
       <span
         data-slot="select-item-indicator"
         className="absolute right-2 flex size-3.5 items-center justify-center"
@@ -173,7 +221,15 @@ function SelectItem({
           <CheckIcon className="size-4 text-foreground" />
         </SelectPrimitive.ItemIndicator>
       </span>
-      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      {hasDescription ? (
+        /* Two-line layout: ItemText wraps only the title; description sits outside */
+        <span className="flex flex-col gap-0.5">
+          <SelectPrimitive.ItemText>{titleChildren}</SelectPrimitive.ItemText>
+          {descriptionChildren}
+        </span>
+      ) : (
+        <SelectPrimitive.ItemText>{titleChildren}</SelectPrimitive.ItemText>
+      )}
     </SelectPrimitive.Item>
   )
 }
@@ -232,6 +288,7 @@ export {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectItemDescription,
   SelectLabel,
   SelectScrollDownButton,
   SelectScrollUpButton,
