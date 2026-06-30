@@ -3,7 +3,7 @@
 import {
   FileText,
   FolderTree,
-  HardDrive,
+  Hourglass,
   Infinity as InfinityIcon,
   Share2,
 } from "lucide-react";
@@ -163,7 +163,7 @@ function AgentDriveCtaPanel({ waitlistHref }: AgentDriveCtaPanelProps) {
         aria-hidden="true"
         className="flex size-10 items-center justify-center rounded-full bg-primary/15 text-primary"
       >
-        <HardDrive className="size-5" />
+        <Hourglass className="size-5" />
       </span>
       <h3 className="typography-subtitle font-semibold text-foreground">
         Join the waitlist
