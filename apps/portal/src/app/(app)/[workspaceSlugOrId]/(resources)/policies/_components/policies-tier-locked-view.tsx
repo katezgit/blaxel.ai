@@ -18,7 +18,7 @@ const LOCKED_DESCRIPTION = (
   <p className="text-muted-foreground">
     Policies are available on{" "}
     <Link
-      href="/account/billing/tier-quotas"
+      href="/account/billing/tier-quotas#tier-1"
       className="rounded-sm text-muted-foreground hover:text-foreground hover:underline"
     >
       Tier 1 and above

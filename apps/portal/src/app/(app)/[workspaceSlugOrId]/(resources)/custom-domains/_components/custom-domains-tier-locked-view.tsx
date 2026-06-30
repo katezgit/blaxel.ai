@@ -11,7 +11,7 @@ const LOCKED_DESCRIPTION = (
   <p className="text-muted-foreground">
     Custom domains are available on{" "}
     <Link
-      href="/account/billing/tier-quotas"
+      href="/account/billing/tier-quotas#tier-3"
       className="rounded-sm text-muted-foreground hover:text-foreground hover:underline"
     >
       Tier 3 and above
