@@ -2,33 +2,25 @@
 
 import { cn } from "@repo/ui/lib/cn";
 
-// Loading variant of the aggregate strip — four skeleton groups matching the
-// live strip's footprint. Section-label band removed (the strip no longer
-// renders them). Count placeholders are taller (h-4) than label placeholders
-// (h-3) so the silhouette matches the read-first count typography.
-// Total group's count placeholder mimics the larger display number with a
-// stacked sub-label, vertically centered.
+// Loading variant of the aggregate strip — three skeleton groups matching the
+// live strip's footprint (State / Region / Top Image). Total moved to the
+// page-header subtitle, so its skeleton lives outside the strip. The State
+// group's first row is taller (h-6) to mirror the Errored hero count.
 
 export function SandboxesAggregateStripSkeleton() {
   return (
     <section
       aria-hidden="true"
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[auto_1fr_1fr_1.5fr] lg:gap-0"
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.5fr] lg:gap-0"
     >
-      <SkeletonTotalGroup />
-      <SkeletonRowsGroup
-        rows={[
-          { left: "w-14", right: "w-7" },
-          { left: "w-14", right: "w-7" },
-          { left: "w-14", right: "w-7" },
-        ]}
-      />
+      <SkeletonStateGroup />
       <SkeletonRowsGroup
         rows={[
           { left: "w-20", right: "w-7" },
           { left: "w-20", right: "w-7" },
           { left: "w-20", right: "w-7" },
         ]}
+        first
       />
       <SkeletonRowsGroup
         rows={[
@@ -41,12 +33,25 @@ export function SandboxesAggregateStripSkeleton() {
   );
 }
 
-function SkeletonTotalGroup() {
+function SkeletonStateGroup() {
   return (
-    <div className="flex flex-col justify-center px-4 py-3">
-      <div className="flex flex-col px-3">
-        <div className="h-6 w-14 animate-pulse rounded-sm bg-muted-surface" />
-        <div className="mt-1 h-3 w-16 animate-pulse rounded-sm bg-muted-surface" />
+    <div className="flex flex-col px-4 py-3">
+      <div className="flex flex-col">
+        {/* Errored hero row — taller right cell mirrors the typography-display
+            count rendered in the live strip. */}
+        <div className="flex items-center justify-between gap-3 py-1 pl-3 pr-2">
+          <div className="h-3 w-14 animate-pulse rounded-sm bg-muted-surface" />
+          <div className="h-6 w-9 animate-pulse rounded-sm bg-muted-surface" />
+        </div>
+        {[0, 1].map((idx) => (
+          <div
+            key={idx}
+            className="flex items-center justify-between gap-3 py-0.5 pl-3 pr-2"
+          >
+            <div className="h-3 w-14 animate-pulse rounded-sm bg-muted-surface" />
+            <div className="h-4 w-7 animate-pulse rounded-sm bg-muted-surface" />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -54,11 +59,17 @@ function SkeletonTotalGroup() {
 
 interface SkeletonRowsGroupProps {
   rows: ReadonlyArray<{ left: string; right: string }>;
+  first?: boolean;
 }
 
-function SkeletonRowsGroup({ rows }: SkeletonRowsGroupProps) {
+function SkeletonRowsGroup({ rows, first }: SkeletonRowsGroupProps) {
   return (
-    <div className="flex flex-col px-4 py-3 lg:border-l lg:border-border">
+    <div
+      className={cn(
+        "flex flex-col px-4 py-3",
+        !first && "lg:border-l lg:border-border",
+      )}
+    >
       <div className="flex flex-col">
         {rows.map((row, idx) => (
           <div

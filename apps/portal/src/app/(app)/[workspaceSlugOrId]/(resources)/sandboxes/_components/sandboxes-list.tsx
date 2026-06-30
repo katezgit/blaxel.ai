@@ -27,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import { Chip, ChipGroup } from "@repo/ui/components/chip";
 import {
   tableBodyClass,
   tableCellVariants,
@@ -38,22 +37,14 @@ import {
 } from "@repo/ui/components/table";
 import type { Sandbox, SandboxRegion } from "@/lib/mock/sandboxes";
 import { StatePill, pillFor } from "./state-pill";
-import type { StateBreakdownLabel } from "./aggregate-data";
+import type { StatusFilterLabel } from "./aggregate-data";
+import { StatusFilterMenu } from "./status-filter-menu";
 import {
   expiresInLabel,
   imageRefLabel,
   isExpiresInWarning,
   regionLabel,
 } from "./row-helpers";
-
-const QUICK_FILTERS: ReadonlyArray<{
-  value: StateBreakdownLabel;
-  label: string;
-}> = [
-  { value: "Active", label: "Active" },
-  { value: "Standby", label: "Standby" },
-  { value: "Errored", label: "Errored" },
-];
 
 const REGION_OPTIONS: ReadonlyArray<{ value: SandboxRegion | "all"; label: string }> = [
   { value: "all", label: "All regions" },
@@ -67,22 +58,25 @@ const REGION_OPTIONS: ReadonlyArray<{ value: SandboxRegion | "all"; label: strin
 export interface SandboxesListProps {
   sandboxes: ReadonlyArray<Sandbox>;
   workspaceSlug: string;
-  // Filter state is owned by the parent (sandboxes-view) so both the strip
-  // and the toolbar dispatch into the same source of truth — they cannot
-  // desync. See wireframe §1.3 click-to-filter contract.
+  // Filter state is owned by the parent (sandboxes-view) so the strip, the
+  // Status dropdown, and the table dispatch into the same source of truth.
+  // See wireframe §1.3 click-to-filter contract.
   search: string;
   onSearchChange: (value: string) => void;
-  stateFilters: ReadonlyArray<StateBreakdownLabel>;
-  onStateFiltersChange: (
-    value: ReadonlyArray<StateBreakdownLabel>,
-  ) => void;
+  /**
+   * Multi-select status filter — covers all 7 sandbox statuses. The "Include
+   * terminated" toggle is folded into this as Terminated + Inactive being
+   * opt-in checkboxes.
+   */
+  statusFilters: ReadonlyArray<StatusFilterLabel>;
+  onStatusFiltersChange: (value: ReadonlyArray<StatusFilterLabel>) => void;
   regionFilter: SandboxRegion | "all";
   onRegionFilterChange: (value: SandboxRegion | "all") => void;
   /** Image filter — single-select; null = unfiltered. Identity = `<name>@<sha>`. */
   imageFilter: string | null;
   onImageFilterChange: (value: string | null) => void;
-  includeTerminated: boolean;
-  onIncludeTerminatedChange: (value: boolean) => void;
+  /** Defaults set — used by Clear filters and the no-results CTA to reset. */
+  defaultStatusFilters: ReadonlyArray<StatusFilterLabel>;
 }
 
 const columnHelper = createColumnHelper<Sandbox>();
@@ -92,35 +86,25 @@ export function SandboxesList({
   workspaceSlug,
   search,
   onSearchChange,
-  stateFilters,
-  onStateFiltersChange,
+  statusFilters,
+  onStatusFiltersChange,
   regionFilter,
   onRegionFilterChange,
   imageFilter,
   onImageFilterChange,
-  includeTerminated,
-  onIncludeTerminatedChange,
+  defaultStatusFilters,
 }: SandboxesListProps) {
   const router = useRouter();
 
-  // Visible rows. Terminated/Inactive are hidden by default — the "Include
-  // terminated" chip is the wireframe's escape hatch.
+  // Visible rows. Rows with a status NOT in the active status set are hidden;
+  // Terminated/Inactive are hidden by default because they're unchecked in
+  // the Status dropdown's defaults.
   const visible = useMemo<ReadonlyArray<Sandbox>>(() => {
     const normalized = search.trim().toLowerCase();
+    const statusSet = new Set(statusFilters);
     return sandboxes.filter((sbx) => {
       const pillLabel = pillFor(sbx).label;
-      if (
-        !includeTerminated &&
-        (pillLabel === "Terminated" || pillLabel === "Inactive")
-      ) {
-        return false;
-      }
-      if (
-        stateFilters.length > 0 &&
-        !stateFilters.includes(pillLabel as StateBreakdownLabel)
-      ) {
-        return false;
-      }
+      if (!statusSet.has(pillLabel)) return false;
       if (regionFilter !== "all" && sbx.spec.region !== regionFilter) {
         return false;
       }
@@ -137,14 +121,7 @@ export function SandboxesList({
       }
       return true;
     });
-  }, [
-    sandboxes,
-    search,
-    stateFilters,
-    regionFilter,
-    imageFilter,
-    includeTerminated,
-  ]);
+  }, [sandboxes, search, statusFilters, regionFilter, imageFilter]);
 
   const columns = useMemo(() => {
     return [
@@ -225,19 +202,24 @@ export function SandboxesList({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // "Filtered" = anything narrowing the population vs the default view.
+  // Status set is considered filtered when it differs from the defaults
+  // (either subset OR superset — checking Terminated counts as a filter
+  // change too).
+  const statusFiltersChanged =
+    statusFilters.length !== defaultStatusFilters.length ||
+    statusFilters.some((s) => !defaultStatusFilters.includes(s));
   const isFiltered =
     search.trim() !== "" ||
-    stateFilters.length > 0 ||
+    statusFiltersChanged ||
     regionFilter !== "all" ||
-    imageFilter !== null ||
-    includeTerminated;
+    imageFilter !== null;
 
   function clearFilters() {
     onSearchChange("");
-    onStateFiltersChange([]);
+    onStatusFiltersChange(defaultStatusFilters);
     onRegionFilterChange("all");
     onImageFilterChange(null);
-    onIncludeTerminatedChange(false);
   }
 
   const rows = table.getRowModel().rows;
@@ -273,12 +255,10 @@ export function SandboxesList({
         <Toolbar
           search={search}
           onSearchChange={onSearchChange}
-          stateFilters={stateFilters}
-          onStateFiltersChange={onStateFiltersChange}
+          statusFilters={statusFilters}
+          onStatusFiltersChange={onStatusFiltersChange}
           regionFilter={regionFilter}
           onRegionFilterChange={onRegionFilterChange}
-          includeTerminated={includeTerminated}
-          onIncludeTerminatedChange={onIncludeTerminatedChange}
         />
         {filterCountLabel && !hasOverflow ? (
           <span
@@ -399,27 +379,26 @@ export function SandboxesList({
 interface ToolbarProps {
   search: string;
   onSearchChange: (value: string) => void;
-  stateFilters: ReadonlyArray<StateBreakdownLabel>;
-  onStateFiltersChange: (value: ReadonlyArray<StateBreakdownLabel>) => void;
+  statusFilters: ReadonlyArray<StatusFilterLabel>;
+  onStatusFiltersChange: (value: ReadonlyArray<StatusFilterLabel>) => void;
   regionFilter: SandboxRegion | "all";
   onRegionFilterChange: (value: SandboxRegion | "all") => void;
-  includeTerminated: boolean;
-  onIncludeTerminatedChange: (value: boolean) => void;
 }
 
 function Toolbar({
   search,
   onSearchChange,
-  stateFilters,
-  onStateFiltersChange,
+  statusFilters,
+  onStatusFiltersChange,
   regionFilter,
   onRegionFilterChange,
-  includeTerminated,
-  onIncludeTerminatedChange,
 }: ToolbarProps) {
+  // Single-row toolbar: Search (left anchor), Status + Region (right anchor).
+  // No wrap on desktop — the previous two-row treatment was over-bloated
+  // after the chips/terminated toggle were folded into the Status dropdown.
   return (
-    <div className="flex flex-wrap items-center gap-3 shrink-0">
-      <div className="w-full sm:max-w-xs">
+    <div className="flex w-full flex-wrap items-center gap-3">
+      <div className="w-full sm:w-auto sm:max-w-xs sm:flex-1">
         <SearchInput
           defaultValue={search}
           onLiveChange={onSearchChange}
@@ -428,25 +407,10 @@ function Toolbar({
         />
       </div>
       <div className="ml-auto flex flex-wrap items-center gap-2">
-        <ChipGroup
-          value={[...stateFilters]}
-          onChange={(next) =>
-            onStateFiltersChange(next as ReadonlyArray<StateBreakdownLabel>)
-          }
-          aria-label="Filter by state"
-        >
-          {QUICK_FILTERS.map((filter) => (
-            <Chip key={filter.value} value={filter.value}>
-              {filter.label}
-            </Chip>
-          ))}
-        </ChipGroup>
-        <Chip
-          checked={includeTerminated}
-          onCheckedChange={onIncludeTerminatedChange}
-        >
-          Include terminated
-        </Chip>
+        <StatusFilterMenu
+          value={statusFilters}
+          onChange={onStatusFiltersChange}
+        />
         <Select
           value={regionFilter}
           onValueChange={(value) =>

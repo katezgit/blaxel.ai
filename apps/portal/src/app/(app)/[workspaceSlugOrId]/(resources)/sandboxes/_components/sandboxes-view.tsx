@@ -16,7 +16,13 @@ import { SandboxesTableSkeleton } from "./sandboxes-table-skeleton";
 import { SandboxesEmptyState } from "./sandboxes-empty-state";
 import { SandboxesAggregateStrip } from "./sandboxes-aggregate-strip";
 import { SandboxesAggregateStripSkeleton } from "./sandboxes-aggregate-strip-skeleton";
-import { computeAggregateData, type StateBreakdownLabel } from "./aggregate-data";
+import {
+  computeAggregateData,
+  DEFAULT_STATUS_FILTERS,
+  formatTotal,
+  type StateBreakdownLabel,
+  type StatusFilterLabel,
+} from "./aggregate-data";
 
 // Dev simulation harness — `?state=loading|error|empty` overrides the live
 // fetch state so each wireframe state can be visually verified without
@@ -40,14 +46,13 @@ export function SandboxesView() {
   });
 
   // Single source of truth for every filter the toolbar AND the strip both
-  // dispatch into. Lifted to the view so the strip↔toolbar↔table cannot
-  // desync (wireframe §1.3 sync table).
+  // dispatch into. Lifted to the view so the strip ↔ Status dropdown ↔ table
+  // cannot desync (wireframe §1.3 sync table).
   const [search, setSearch] = useState("");
-  const [stateFilters, setStateFilters] =
-    useState<ReadonlyArray<StateBreakdownLabel>>([]);
+  const [statusFilters, setStatusFilters] =
+    useState<ReadonlyArray<StatusFilterLabel>>(DEFAULT_STATUS_FILTERS);
   const [regionFilter, setRegionFilter] = useState<SandboxRegion | "all">("all");
   const [imageFilter, setImageFilter] = useState<string | null>(null);
-  const [includeTerminated, setIncludeTerminated] = useState(false);
 
   const isLoading = stateSim === "loading" || query.isPending;
   const isError = stateSim === "error" || query.isError;
@@ -57,8 +62,8 @@ export function SandboxesView() {
   );
 
   const aggregate = useMemo(
-    () => computeAggregateData(sandboxes, { includeTerminated }),
-    [sandboxes, includeTerminated],
+    () => computeAggregateData(sandboxes),
+    [sandboxes],
   );
 
   // Populated-list mode renders the aggregate strip AND bounds the page-shell
@@ -67,6 +72,18 @@ export function SandboxesView() {
   // (loading / error / empty) keep the natural page-shell scroll so their
   // hero-style content fits the page on its own.
   const showsTable = !isLoading && !isError && sandboxes.length > 0;
+
+  // Strip → Status dropdown sync: clicking a State tile isolates that single
+  // status. Clicking the same tile again (it's already isolated) returns the
+  // Status filter to defaults. The reverse direction (dropdown → strip) is
+  // implicit — the strip reads `statusFilters` and lights the matching tile.
+  function isolateState(label: StateBreakdownLabel) {
+    if (statusFilters.length === 1 && statusFilters[0] === label) {
+      setStatusFilters(DEFAULT_STATUS_FILTERS);
+    } else {
+      setStatusFilters([label]);
+    }
+  }
 
   let body: React.ReactNode;
   if (isLoading) {
@@ -82,17 +99,26 @@ export function SandboxesView() {
         workspaceSlug={params.workspaceSlugOrId}
         search={search}
         onSearchChange={setSearch}
-        stateFilters={stateFilters}
-        onStateFiltersChange={setStateFilters}
+        statusFilters={statusFilters}
+        onStatusFiltersChange={setStatusFilters}
         regionFilter={regionFilter}
         onRegionFilterChange={setRegionFilter}
         imageFilter={imageFilter}
         onImageFilterChange={setImageFilter}
-        includeTerminated={includeTerminated}
-        onIncludeTerminatedChange={setIncludeTerminated}
+        defaultStatusFilters={DEFAULT_STATUS_FILTERS}
       />
     );
   }
+
+  // Total moves out of the strip into the page-header subtitle. Alex doesn't
+  // decide on raw total, so it reads as context, not a focal number.
+  const totalSandboxes = aggregate.total;
+  const totalLabel =
+    totalSandboxes === 0
+      ? null
+      : `${formatTotal(totalSandboxes)} ${
+          totalSandboxes === 1 ? "sandbox" : "sandboxes"
+        }`;
 
   return (
     <div
@@ -103,9 +129,16 @@ export function SandboxesView() {
     >
       <header className="page-header">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="typography-display font-semibold text-foreground">
-            Sandboxes
-          </h1>
+          <div className="flex flex-col gap-1">
+            <h1 className="typography-display font-semibold text-foreground">
+              Sandboxes
+            </h1>
+            {showsTable && totalLabel ? (
+              <p className="typography-caption tabular-nums text-muted-foreground">
+                {totalLabel}
+              </p>
+            ) : null}
+          </div>
           <Button asChild variant="primary">
             <Link href={createHref}>
               <Plus aria-hidden="true" />
@@ -121,8 +154,11 @@ export function SandboxesView() {
         <div className="flex min-h-0 flex-1 flex-col gap-6">
           <SandboxesAggregateStrip
             data={aggregate}
-            stateFilters={stateFilters}
-            onStateFiltersChange={setStateFilters}
+            stateFilters={statusFilters.filter(
+              (s): s is StateBreakdownLabel =>
+                s === "Active" || s === "Standby" || s === "Errored",
+            )}
+            onIsolateState={isolateState}
             regionFilter={regionFilter}
             onRegionFilterChange={setRegionFilter}
             imageFilter={imageFilter}

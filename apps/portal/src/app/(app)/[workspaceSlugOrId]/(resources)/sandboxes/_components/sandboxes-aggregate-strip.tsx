@@ -4,7 +4,7 @@ import { cn } from "@repo/ui/lib/cn";
 import type { SandboxRegion } from "@/lib/mock/sandboxes";
 import { regionLabel } from "./row-helpers";
 import {
-  formatTotal,
+  statusToneClasses,
   type AggregateData,
   type ImageCount,
   type RegionCount,
@@ -12,28 +12,34 @@ import {
   type StateCount,
 } from "./aggregate-data";
 
-// Wireframe §1.3 — horizontal aggregate strip with four tile groups.
-// Composed from existing primitives only (flex + divider + button). No new
-// design-system component; the strip is sandboxes-list-only.
+// Wireframe §1.3 — horizontal aggregate strip with three tile groups
+// (State / Region / Top Image). Total moved to the page header subtitle —
+// Alex doesn't decide on raw total, so it's context, not focal.
 //
-// Visual hierarchy: counts are the read-first element — promoted via size
-// (typography-subtitle, 16px) AND weight (semibold). Labels stay body (14px)
-// and demote to text-muted-foreground so the count dominates the row.
+// Visual hierarchy reflects Alex's priorities:
+//   1. Errored — the actionable read. Rendered at display size (24px) in
+//      state-errored color, dominating the strip.
+//   2. Active / Standby — secondary peer to Top Image. State color lives on
+//      the count number (not on a decorative dot), keeping the at-a-glance
+//      health signal while avoiding the "competing visual cues" finding from
+//      the previous pass.
+//   3. Region — tertiary. Same rows as before but everything renders in muted
+//      contrast.
 //
-// Section labels (TOTAL / STATE / …) are removed: the column structure plus
-// self-describing content (state names, region IDs, image refs) already
-// communicates each tile's purpose, and a small-uppercase header band read
-// generic / placeholder against the dense content beneath it.
-//
-// State dots are removed in the strip (kept in the table StatePill) — in the
-// strip context, colored dots competed visually with the active-selection
-// 2px left bar and made unfiltered Active/Errored rows look pre-selected.
+// Selection visual: 2px left bar + count weight bump. No dots — color
+// disambiguates the count cells, the bar disambiguates selection state.
 
 interface SandboxesAggregateStripProps {
   data: AggregateData;
-  /** Currently selected state filters (toolbar source of truth). */
+  /** Currently selected state filters — Status dropdown source of truth. */
   stateFilters: ReadonlyArray<StateBreakdownLabel>;
-  onStateFiltersChange: (next: ReadonlyArray<StateBreakdownLabel>) => void;
+  /**
+   * Click a State tile to isolate that single state in the Status filter.
+   * Clicking the same tile again resets to defaults. Inverse-direction sync
+   * is wired by the parent: the active prop is `true` only when the dropdown
+   * holds exactly that one state.
+   */
+  onIsolateState: (label: StateBreakdownLabel) => void;
   /** Region filter — single-select; "all" = unfiltered. */
   regionFilter: SandboxRegion | "all";
   onRegionFilterChange: (next: SandboxRegion | "all") => void;
@@ -45,20 +51,12 @@ interface SandboxesAggregateStripProps {
 export function SandboxesAggregateStrip({
   data,
   stateFilters,
-  onStateFiltersChange,
+  onIsolateState,
   regionFilter,
   onRegionFilterChange,
   imageFilter,
   onImageFilterChange,
 }: SandboxesAggregateStripProps) {
-  function toggleStateFilter(label: StateBreakdownLabel) {
-    if (stateFilters.includes(label)) {
-      onStateFiltersChange(stateFilters.filter((s) => s !== label));
-    } else {
-      onStateFiltersChange([...stateFilters, label]);
-    }
-  }
-
   function toggleRegion(region: SandboxRegion) {
     onRegionFilterChange(regionFilter === region ? "all" : region);
   }
@@ -67,32 +65,39 @@ export function SandboxesAggregateStrip({
     onImageFilterChange(imageFilter === id ? null : id);
   }
 
+  // A state tile reads as "active" only when the Status filter holds exactly
+  // that single label — i.e. the tile click successfully isolated that state.
+  // Any other combination (defaults, dropdown subset, etc.) leaves all state
+  // tiles inactive.
+  function isStateIsolated(label: StateBreakdownLabel): boolean {
+    return stateFilters.length === 1 && stateFilters[0] === label;
+  }
+
+  // Errored is the visual anchor; it leads the State group with a larger
+  // count cell rendered in state-errored. Reorder rows so Errored renders
+  // first within the group.
+  const erroredRow = data.state.find((row) => row.label === "Errored");
+  const otherStateRows = data.state.filter((row) => row.label !== "Errored");
+
   return (
     <section
       aria-label="Sandbox population summary"
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[auto_1fr_1fr_1.5fr] lg:gap-0"
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.5fr] lg:gap-0"
     >
-      <TileGroup first centered>
-        {/* Total tile is single-row; vertical-centering (centered prop)
-            anchors the count + label block to the strip's row-height so it
-            does not read as a floating island above empty space. */}
-        <div className="flex flex-col px-3">
-          <span className="typography-display font-semibold text-foreground tabular-nums leading-none">
-            {formatTotal(data.total)}
-          </span>
-          <span className="typography-meta text-muted-foreground pt-1">
-            {data.total === 1 ? "Sandbox" : "Sandboxes"}
-          </span>
-        </div>
-      </TileGroup>
-
-      <TileGroup>
-        {data.state.map((row) => (
+      <TileGroup first>
+        {erroredRow ? (
+          <ErroredHeroRow
+            row={erroredRow}
+            active={isStateIsolated("Errored")}
+            onIsolate={() => onIsolateState("Errored")}
+          />
+        ) : null}
+        {otherStateRows.map((row) => (
           <StateTileRow
             key={row.label}
             row={row}
-            active={stateFilters.includes(row.label)}
-            onToggle={() => toggleStateFilter(row.label)}
+            active={isStateIsolated(row.label)}
+            onIsolate={() => onIsolateState(row.label)}
           />
         ))}
       </TileGroup>
@@ -132,22 +137,16 @@ export function SandboxesAggregateStrip({
 
 interface TileGroupProps {
   first?: boolean;
-  centered?: boolean;
   children: React.ReactNode;
 }
 
-function TileGroup({ first, centered, children }: TileGroupProps) {
+function TileGroup({ first, children }: TileGroupProps) {
   return (
     <div
       className={cn(
         "flex flex-col px-4 py-3",
-        // Vertical centering for the Total tile so its single row aligns
-        // mid-height of the taller breakdown columns. Other groups stack
-        // their rows from the top.
-        centered && "justify-center",
         // Column divider between groups (skipped on the first group + on
-        // mobile, where the grid wraps and a vertical rule would be
-        // sideways).
+        // mobile, where the grid wraps and a vertical rule would be sideways).
         !first && "lg:border-l lg:border-border",
       )}
     >
@@ -167,10 +166,18 @@ interface FilterRowProps {
   active: boolean;
   onToggle: () => void;
   ariaLabel: string;
+  /** Reserve extra vertical room for the Errored hero row. */
+  size?: "default" | "hero";
   children: React.ReactNode;
 }
 
-function FilterRow({ active, onToggle, ariaLabel, children }: FilterRowProps) {
+function FilterRow({
+  active,
+  onToggle,
+  ariaLabel,
+  size = "default",
+  children,
+}: FilterRowProps) {
   return (
     <button
       type="button"
@@ -178,7 +185,8 @@ function FilterRow({ active, onToggle, ariaLabel, children }: FilterRowProps) {
       aria-label={ariaLabel}
       onClick={onToggle}
       className={cn(
-        "group relative flex items-center justify-between gap-3 rounded-sm py-0.5 pl-3 pr-2",
+        "group relative flex items-center justify-between gap-3 rounded-sm pl-3 pr-2",
+        size === "hero" ? "py-1" : "py-0.5",
         "text-left transition-colors duration-fast ease-out-standard",
         "hover:bg-muted-surface",
         "focus-visible:outline-none focus-visible:bg-muted-surface",
@@ -196,37 +204,59 @@ function FilterRow({ active, onToggle, ariaLabel, children }: FilterRowProps) {
   );
 }
 
-// Count cell — the read-first element. Larger (16px), heavier (semibold),
-// fully tokened text-foreground. Right-aligned via flex justify-between on
-// the row. Active state nudges weight one tick further so selection still
-// reads from the bar + a subtle weight bump.
-function CountCell({ value, active }: { value: number; active: boolean }) {
+function ErroredHeroRow({
+  row,
+  active,
+  onIsolate,
+}: {
+  row: StateCount;
+  active: boolean;
+  onIsolate: () => void;
+}) {
+  // Hero treatment: count rendered at display size in state-errored. Becomes
+  // the eye-magnet of the strip — Alex reads "any errored?" before anything
+  // else.
+  const tone = statusToneClasses("Errored");
   return (
-    <span
-      className={cn(
-        "typography-subtitle tabular-nums text-foreground",
-        active ? "font-bold" : "font-semibold",
-      )}
+    <FilterRow
+      active={active}
+      onToggle={onIsolate}
+      ariaLabel={`Show only Errored sandboxes (${row.count})`}
+      size="hero"
     >
-      {value}
-    </span>
+      <span className={cn("typography-body font-medium", tone.text)}>
+        {row.label}
+      </span>
+      <span
+        className={cn(
+          "typography-display tabular-nums leading-none",
+          active ? "font-bold" : "font-semibold",
+          tone.text,
+        )}
+      >
+        {row.count}
+      </span>
+    </FilterRow>
   );
 }
 
 function StateTileRow({
   row,
   active,
-  onToggle,
+  onIsolate,
 }: {
   row: StateCount;
   active: boolean;
-  onToggle: () => void;
+  onIsolate: () => void;
 }) {
+  // Active / Standby — count number carries the state color so the at-a-
+  // glance health signal still reads, but at peer scale vs the Errored hero.
+  const tone = statusToneClasses(row.label);
   return (
     <FilterRow
       active={active}
-      onToggle={onToggle}
-      ariaLabel={`Filter by ${row.label} state (${row.count} sandboxes)`}
+      onToggle={onIsolate}
+      ariaLabel={`Show only ${row.label} sandboxes (${row.count})`}
     >
       <span
         className={cn(
@@ -236,7 +266,15 @@ function StateTileRow({
       >
         {row.label}
       </span>
-      <CountCell value={row.count} active={active} />
+      <span
+        className={cn(
+          "typography-subtitle tabular-nums",
+          active ? "font-bold" : "font-semibold",
+          tone.text,
+        )}
+      >
+        {row.count}
+      </span>
     </FilterRow>
   );
 }
@@ -250,6 +288,8 @@ function RegionTileRow({
   active: boolean;
   onToggle: () => void;
 }) {
+  // Region demotes one tier vs State: label + count both render muted by
+  // default. Active selection still promotes to foreground + bar.
   return (
     <FilterRow
       active={active}
@@ -264,7 +304,14 @@ function RegionTileRow({
       >
         {regionLabel(row.region)}
       </span>
-      <CountCell value={row.count} active={active} />
+      <span
+        className={cn(
+          "typography-subtitle tabular-nums text-muted-foreground",
+          active ? "font-bold text-foreground" : "font-semibold",
+        )}
+      >
+        {row.count}
+      </span>
     </FilterRow>
   );
 }
@@ -292,7 +339,14 @@ function ImageTileRow({
       >
         {row.label}
       </span>
-      <CountCell value={row.count} active={active} />
+      <span
+        className={cn(
+          "typography-subtitle tabular-nums text-foreground",
+          active ? "font-bold" : "font-semibold",
+        )}
+      >
+        {row.count}
+      </span>
     </FilterRow>
   );
 }
