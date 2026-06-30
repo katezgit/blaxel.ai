@@ -199,10 +199,10 @@ function SelectItem({
       )}
       {...props}
     >
-      {/* Check indicator — positioned absolute right-edge, top-aligned to sit beside title row */}
+      {/* Check indicator — positioned absolute right-edge, vertically centered on the full row */}
       <span
         data-slot="select-item-indicator"
-        className="absolute right-2 top-1.5 flex size-3.5 items-center justify-center"
+        className="absolute right-2 top-1/2 -translate-y-1/2 flex size-3.5 items-center justify-center"
       >
         <SelectPrimitive.ItemIndicator>
           <CheckIcon className="size-4 text-foreground" />
