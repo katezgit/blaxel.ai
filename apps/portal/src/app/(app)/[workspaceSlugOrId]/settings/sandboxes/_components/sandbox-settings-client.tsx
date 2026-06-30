@@ -15,7 +15,7 @@ export default function SandboxSettingsClient({
   const [logsDisabled, setLogsDisabled] = useState(initial);
 
   return (
-    <Card className="w-full max-w-3xl flex-row items-start justify-between gap-4 px-4 py-3">
+    <Card className="w-full max-w-3xl flex-row items-center justify-between gap-4 px-4 py-3">
       <div className="flex flex-col gap-0.5">
         <label
           htmlFor="disable-process-logging"
