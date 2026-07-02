@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
 import { IconButton } from "@repo/ui/components/icon-button";
@@ -16,32 +16,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@repo/ui/components/tooltip";
-import { cn } from "@repo/ui/lib/cn";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import DetailPageHeader from "@/components/shell/detail-page-header";
 import type { CustomDomain } from "@/lib/mock/custom-domains";
 import { formatRegion } from "../../_lib/region";
+import DomainStatusBadge from "../../_components/status-badge";
 import DeleteDomainDialog from "./delete-domain-dialog";
 
 interface DetailHeaderProps {
   domain: CustomDomain;
   workspaceSlug: string;
 }
-
-const STATUS_LABEL = {
-  pending: "Pending",
-  verified: "Verified",
-  failed: "Failed",
-} as const;
-
-// Each status is colored semantically so the meta-strip word, the per-row
-// outcome label in the DNS records table, and the badge on the list page all
-// read in the same hue.
-const STATUS_DESCRIPTION_CLASS = {
-  pending: "font-medium text-state-warning-text",
-  verified: "font-medium text-state-scored-text",
-  failed: "font-medium text-state-errored-text",
-} as const;
 
 export default function DetailHeader({ domain, workspaceSlug }: DetailHeaderProps) {
   const { metadata, spec } = domain;
@@ -66,12 +51,16 @@ export default function DetailHeader({ domain, workspaceSlug }: DetailHeaderProp
             current={metadata.name}
           />
         }
-        heading={metadata.name}
+        heading={
+          <span className="inline-flex items-center gap-3">
+            <span>{metadata.name}</span>
+            <DomainStatusBadge status={spec.status} />
+          </span>
+        }
         description={
           <CustomDomainDescription
             displayName={metadata.displayName}
             region={spec.region}
-            status={spec.status}
           />
         }
         action={
@@ -128,26 +117,22 @@ export default function DetailHeader({ domain, workspaceSlug }: DetailHeaderProp
 interface CustomDomainDescriptionProps {
   displayName: string | null;
   region: string;
-  status: CustomDomain["spec"]["status"];
 }
 
 function CustomDomainDescription({
   displayName,
   region,
-  status,
 }: CustomDomainDescriptionProps) {
   const formatted = formatRegion(region);
   return (
     <>
-      <StatusInline status={status} />
       {displayName && (
         <>
-          <span aria-hidden="true"> · </span>
           <span className="text-muted-foreground">Display name: </span>
           <span className="text-foreground">{displayName}</span>
+          <span aria-hidden="true"> · </span>
         </>
       )}
-      <span aria-hidden="true"> · </span>
       <span className="inline-flex items-center gap-1.5">
         <span aria-hidden="true" className="text-base leading-none">
           {formatted.flag}
@@ -160,30 +145,5 @@ function CustomDomainDescription({
         )}
       </span>
     </>
-  );
-}
-
-function StatusInline({
-  status,
-}: {
-  status: CustomDomain["spec"]["status"];
-}) {
-  if (status === "pending") {
-    return (
-      <span
-        className={cn(
-          "inline-flex items-center gap-1.5",
-          STATUS_DESCRIPTION_CLASS.pending,
-        )}
-      >
-        <Loader2 className="size-3 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-        {STATUS_LABEL.pending}
-      </span>
-    );
-  }
-  return (
-    <span className={STATUS_DESCRIPTION_CLASS[status]}>
-      {STATUS_LABEL[status]}
-    </span>
   );
 }
