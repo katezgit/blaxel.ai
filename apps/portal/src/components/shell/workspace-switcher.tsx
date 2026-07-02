@@ -59,11 +59,13 @@ export default function WorkspaceSwitcher({
     <DropdownMenuTrigger
       aria-label={triggerAriaLabel}
       className={cn(
-        // 14px + medium keeps the workspace name visibly dominant over the
-        // 10px group labels below without reading as bold.
-        "flex h-8 min-w-0 max-w-full items-center rounded-md typography-body font-medium text-foreground",
+        // Muted at rest so the workspace name doesn't compete with nav labels
+        // for attention; brightens to foreground on hover when the user is
+        // reaching for the switcher. `text-left` overrides the browser's
+        // default center-alignment on <button>.
+        "flex h-8 min-w-0 max-w-full items-center rounded-md text-left typography-body font-medium text-muted-foreground",
         "transition-colors duration-fast ease-out-standard",
-        "hover:bg-hover-surface focus-visible:shadow-focus-ring",
+        "hover:bg-hover-surface hover:text-foreground focus-visible:shadow-focus-ring",
         isRail
           ? "size-8 mx-auto shrink-0 max-w-none cursor-pointer p-0 justify-center"
           : "w-full gap-1.5 border border-transparent hover:border-border px-2 max-md:gap-1 max-md:px-1.5",
