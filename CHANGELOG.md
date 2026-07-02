@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-07-01 — refinement(portal/custom-domains): promote status badge to second column + h1 inline ([#215](https://github.com/katezgit/blaxel.ai/pull/215))
+
+### Changed
+
+- Custom domains list table column order: Status now appears second (after Domain), ahead of Region, reflecting its role as the primary decision signal.
+- Custom domains detail header: status is now rendered as the same `DomainStatusBadge` filled pill used on the list, placed inline next to the h1, replacing the plain-text label in the meta row.
+
+---
+
 ## 2026-07-01 — refinement(portal/workspace-switcher): mute name at rest, brighten on hover ([#214](https://github.com/katezgit/blaxel.ai/pull/214))
 
 ### Changed
