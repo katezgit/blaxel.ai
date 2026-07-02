@@ -26,8 +26,8 @@ export default function CustomDomainsTableSkeleton() {
         <thead className={tableHeaderClass}>
           <tr>
             <th className={tableHeadVariants()}>Domain</th>
-            <th className={tableHeadVariants()}>Region</th>
             <th className={tableHeadVariants()}>Status</th>
+            <th className={tableHeadVariants()}>Region</th>
             <th className={tableHeadVariants()}>Last verified</th>
             <th className={cn(tableHeadVariants(), "w-10")} aria-hidden="true" />
           </tr>
@@ -39,10 +39,10 @@ export default function CustomDomainsTableSkeleton() {
                 <DomainCellSkeleton />
               </td>
               <td className={tableCellVariants()}>
-                <RegionCellSkeleton />
+                <Skeleton className="h-5 w-16 rounded-full" />
               </td>
               <td className={tableCellVariants()}>
-                <Skeleton className="h-5 w-16 rounded-full" />
+                <RegionCellSkeleton />
               </td>
               <td className={tableCellVariants()}>
                 <Skeleton className="h-3 w-12 rounded-sm" />

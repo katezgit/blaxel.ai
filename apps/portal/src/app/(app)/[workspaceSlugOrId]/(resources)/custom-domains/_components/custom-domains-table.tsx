@@ -140,8 +140,8 @@ export default function CustomDomainsTable({ domains }: CustomDomainsTableProps)
           <thead className={tableHeaderClass}>
             <tr>
               <th className={tableHeadVariants()}>Domain</th>
-              <th className={tableHeadVariants()}>Region</th>
               <th className={tableHeadVariants()}>Status</th>
+              <th className={tableHeadVariants()}>Region</th>
               <th className={tableHeadVariants()}>Last verified</th>
             </tr>
           </thead>
@@ -241,6 +241,9 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
           </div>
           <LabelChips labels={metadata.labels} />
         </td>
+        <td className={tableCellVariants()}>
+          <DomainStatusBadge status={spec.status} />
+        </td>
         <td className={cn(tableCellVariants(), "text-muted-foreground")}>
           <span className="inline-flex items-center gap-1.5">
             <span aria-hidden="true" className="text-base leading-none">{region.flag}</span>
@@ -249,9 +252,6 @@ function DomainRow({ domain, workspaceSlug }: DomainRowProps) {
               <span className="font-mono text-muted-foreground">({region.slug})</span>
             )}
           </span>
-        </td>
-        <td className={tableCellVariants()}>
-          <DomainStatusBadge status={spec.status} />
         </td>
         <td className={cn(tableCellVariants(), "text-muted-foreground")}>
           {formatRelative(spec.lastVerifiedAt)}
