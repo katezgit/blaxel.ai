@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -113,11 +112,9 @@ export function SandboxesView() {
               />
             ) : null}
           </div>
-          <Button asChild variant="primary">
-            <Link href={createHref}>
-              <Plus aria-hidden="true" />
-              Create Sandbox
-            </Link>
+          <Button variant="primary" disabled>
+            <Plus aria-hidden="true" />
+            Create Sandbox
           </Button>
         </div>
       </header>
