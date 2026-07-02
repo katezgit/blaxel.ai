@@ -1,16 +1,26 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@repo/ui/components/button";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import ResourceNotFound from "@/components/shell/resource-not-found";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { sandboxQueries } from "@/lib/query/sandboxes";
+import {
+  SandboxActivityChartHeader,
+  SandboxCardWrapper,
+} from "./sandbox-activity-card";
 import SandboxDetailHeader from "./sandbox-detail-header";
 import SandboxDetailSkeleton from "./sandbox-detail-skeleton";
-import SandboxDetailTabs from "./sandbox-detail-tabs";
+import SandboxDetailStickyTabs from "./sandbox-detail-sticky-tabs";
+import { sandboxDetailTabFromPath } from "./sandbox-detail-tab-from-path";
+import {
+  sandboxViewModeStorageKey,
+  tabSupportsCardMode,
+  type SandboxViewMode,
+} from "./sandbox-view-mode";
 
 interface SandboxDetailLayoutClientProps {
   workspaceSlug: string;
@@ -35,12 +45,39 @@ export default function SandboxDetailLayoutClient({
 }: SandboxDetailLayoutClientProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const stateSim = readStateSim(searchParams.get("state"));
+  const basePath = `/${workspaceSlug}/sandboxes/${sandboxName}`;
   const listHref = `/${workspaceSlug}/sandboxes`;
+  const activeTab = sandboxDetailTabFromPath(pathname, basePath);
   const sandboxQuery = useQuery({
     ...sandboxQueries.detail(accountId, workspaceId, sandboxName),
     enabled: stateSim === null,
   });
+
+  const [viewMode, setViewMode] = useState<SandboxViewMode>("flat");
+  const viewModeKey = sandboxViewModeStorageKey(sandboxName, activeTab);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = window.localStorage.getItem(viewModeKey);
+      setViewMode(stored === "card" ? "card" : "flat");
+    } catch {
+      setViewMode("flat");
+    }
+  }, [viewModeKey]);
+  const handleViewModeChange = useCallback(
+    (next: SandboxViewMode) => {
+      setViewMode(next);
+      if (typeof window === "undefined") return;
+      try {
+        window.localStorage.setItem(viewModeKey, next);
+      } catch {
+        // storage may be blocked (private mode, quota) — UI state still updates.
+      }
+    },
+    [viewModeKey],
+  );
 
   if (stateSim === "loading" || sandboxQuery.isPending) {
     return (
@@ -82,11 +119,31 @@ export default function SandboxDetailLayoutClient({
     );
   }
 
+  const isCardMode = viewMode === "card" && tabSupportsCardMode(activeTab);
+
   return (
     <div className="page-shell">
       <SandboxDetailHeader sandbox={sandbox} workspaceSlug={workspaceSlug} />
-      <SandboxDetailTabs workspaceSlug={workspaceSlug} sandboxName={sandboxName} />
-      {children}
+      <SandboxDetailStickyTabs
+        workspaceSlug={workspaceSlug}
+        sandboxName={sandboxName}
+        activeTab={activeTab}
+        viewMode={viewMode}
+        onViewModeChange={handleViewModeChange}
+      />
+      {isCardMode ? (
+        <SandboxCardWrapper
+          header={
+            activeTab === "overview" ? (
+              <SandboxActivityChartHeader sandbox={sandbox} />
+            ) : undefined
+          }
+        >
+          {children}
+        </SandboxCardWrapper>
+      ) : (
+        children
+      )}
     </div>
   );
 }
