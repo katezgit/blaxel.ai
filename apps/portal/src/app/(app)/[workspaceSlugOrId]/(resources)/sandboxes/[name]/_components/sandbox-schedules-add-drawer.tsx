@@ -235,7 +235,7 @@ export default function SandboxSchedulesAddDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button type="button" variant="secondary">
+        <Button type="button" variant="primary">
           <Plus aria-hidden="true" />
           Add schedule
         </Button>
