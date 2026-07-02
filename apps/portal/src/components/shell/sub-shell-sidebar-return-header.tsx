@@ -29,14 +29,11 @@ export function SubShellSidebarReturnHeader({
       data-sub-shell-return
       onClick={onNavigate}
       className={cn(
-        // Geometry copy of SidebarNavItem: h-8, rounded-md, sits inside the
-        // parent <nav>'s px-2 gutter so the hover background is a rounded
-        // pill, not a full-width band. Wrapper below uses symmetric py-1 so
-        // the row's vertical center stays at y≈20 — see comment in
-        // sidebar.tsx where the collapse chevron's top-5 is pinned to that
-        // centerline.
-        "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md",
-        isRail ? "justify-center px-0 w-8 mx-auto" : "px-2",
+        // Expanded: inline-flex so the pill sizes to its intrinsic content
+        // (arrow + "Back") — not stretched to full sidebar width. Row keeps
+        // the leading px-2 gutter that aligns with nav items below.
+        "group sidebar-row-hover inline-flex h-8 items-center gap-2 rounded-md",
+        isRail ? "flex justify-center px-0 w-8 mx-auto" : "px-2",
         "typography-body text-muted-foreground outline-hidden",
         "hover:text-foreground",
         "focus-visible:shadow-focus-ring",
@@ -45,7 +42,7 @@ export function SubShellSidebarReturnHeader({
       <ArrowLeft
         aria-hidden="true"
         data-sub-shell-return-icon
-        className="size-4 shrink-0"
+        className={cn("shrink-0", isRail ? "size-[18px]" : "size-4")}
       />
       <span
         data-sub-shell-return-label
@@ -56,16 +53,15 @@ export function SubShellSidebarReturnHeader({
     </Link>
   );
 
-  return (
-    <div className="py-1 border-b border-sidebar-border">
-      {isRail ? (
-        <Tooltip>
-          <TooltipTrigger asChild>{link}</TooltipTrigger>
-          <TooltipContent side="right">{LABEL}</TooltipContent>
-        </Tooltip>
-      ) : (
-        link
-      )}
-    </div>
+  // No inner border-b, no vertical padding — Zone A's outer wrapper in
+  // <Sidebar> owns the hairline separator between Zone A and the nav below
+  // and controls the spacing beneath.
+  return isRail ? (
+    <Tooltip>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side="right">{LABEL}</TooltipContent>
+    </Tooltip>
+  ) : (
+    link
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -19,7 +19,8 @@ import {
 import { cn } from "@repo/ui/lib/cn";
 import {
   formatRelativeTime,
-  getNotifications,
+  markNotificationRead,
+  useEffectiveNotifications,
   type Notification,
   type NotificationCategory,
 } from "@/lib/mock/notifications";
@@ -38,76 +39,16 @@ const CATEGORY_LABEL: Record<NotificationCategory, string> = {
   security: "Security",
 };
 
-// Carries read-overrides across in-app navigation. Demo memory only — never
-// persisted to a backend; sessionStorage clears on tab close.
-const READ_STORAGE_KEY = "blaxel:notifications:read";
-
-function loadReadOverrides(): Set<string> {
-  if (typeof window === "undefined") return new Set();
-  try {
-    const raw = window.sessionStorage.getItem(READ_STORAGE_KEY);
-    if (!raw) return new Set();
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return new Set();
-    return new Set(parsed.filter((v): v is string => typeof v === "string"));
-  } catch {
-    return new Set();
-  }
-}
-
-function persistReadOverrides(ids: ReadonlySet<string>): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.setItem(
-      READ_STORAGE_KEY,
-      JSON.stringify(Array.from(ids)),
-    );
-  } catch {
-    // Storage quota / private-mode — fall through silently; demo state degrades to in-memory only.
-  }
-}
-
+// Mobile-topbar wrapper — trigger IconButton + Popover that opens downward.
+// Desktop sidebar utility row uses NotificationList directly, wired to its
+// own trigger + right-side popover; this wrapper stays for the mobile chrome.
 export function NotificationPanel() {
   const [open, setOpen] = useState(false);
-  const baseNotifications = useMemo(() => getNotifications(), []);
-  // First render (SSR + first client paint) starts empty so hydrated HTML
-  // matches; the effect below pulls any prior in-session reads from
-  // sessionStorage so the badge survives in-app navigation. Demo-only memory —
-  // sessionStorage clears on tab close.
-  const [readOverrides, setReadOverrides] = useState<ReadonlySet<string>>(
-    () => new Set(),
+  const notifications = useEffectiveNotifications();
+  const unreadCount = notifications.reduce(
+    (acc, n) => (n.read ? acc : acc + 1),
+    0,
   );
-
-  useEffect(() => {
-    const stored = loadReadOverrides();
-    if (stored.size > 0) setReadOverrides(stored);
-  }, []);
-
-  const notifications: ReadonlyArray<Notification> = useMemo(
-    () =>
-      baseNotifications.map((n) =>
-        readOverrides.has(n.id) ? { ...n, read: true } : n,
-      ),
-    [baseNotifications, readOverrides],
-  );
-
-  const unreadCount = notifications.reduce((acc, n) => (n.read ? acc : acc + 1), 0);
-
-  const markRead = (id: string) => {
-    setReadOverrides((prev) => {
-      if (prev.has(id)) return prev;
-      const next = new Set(prev);
-      next.add(id);
-      persistReadOverrides(next);
-      return next;
-    });
-  };
-
-  const handleSelect = (notification: Notification) => {
-    markRead(notification.id);
-    setOpen(false);
-  };
-
   const hasUnread = unreadCount > 0;
 
   return (
@@ -117,16 +58,9 @@ export function NotificationPanel() {
           variant="ghost"
           size="md"
           aria-label={
-            hasUnread
-              ? `Notifications, ${unreadCount} unread`
-              : "Notifications"
+            hasUnread ? `Notifications, ${unreadCount} unread` : "Notifications"
           }
-          className={cn(
-            "relative [&_svg]:size-5",
-            hasUnread
-              ? "[&_svg]:text-foreground"
-              : "[&_svg]:text-muted-foreground hover:[&_svg]:text-foreground",
-          )}
+          className="relative [&_svg]:size-5 [&_svg]:text-muted-foreground hover:[&_svg]:text-foreground"
         >
           <Bell />
           {hasUnread ? (
@@ -144,39 +78,65 @@ export function NotificationPanel() {
         align="end"
         sideOffset={8}
         className="w-96 p-0"
-        aria-labelledby="notification-panel-heading"
       >
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <h2
-            id="notification-panel-heading"
-            className="typography-label font-medium text-foreground"
-          >
-            Notifications
-          </h2>
-          <span className="font-mono typography-meta text-muted-foreground tabular-nums">
-            {hasUnread ? `${unreadCount} unread` : "All read"}
-          </span>
-        </div>
-
-        {notifications.length === 0 ? (
-          <p className="px-3 py-6 typography-caption text-muted-foreground">
-            No notifications.
-          </p>
-        ) : (
-          // max-h-[28rem]: caps the scroll region at ~viewport-half on a 13" laptop so the popover never pushes past the topbar's reach; rows past this scroll.
-          <ul role="list" className="max-h-[28rem] overflow-y-auto p-1">
-            {notifications.map((n) => (
-              <li key={n.id}>
-                <NotificationRow
-                  notification={n}
-                  onSelect={() => handleSelect(n)}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
+        <NotificationList onDismiss={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
+  );
+}
+
+interface NotificationListProps {
+  onDismiss?: () => void;
+}
+
+// Popover body renderer. The trigger (icon + badge) lives at the call site —
+// this component only owns the panel body (header + scroll list) so it can
+// mount inside the sidebar utility row's Popover or any other surface.
+export function NotificationList({ onDismiss }: NotificationListProps) {
+  const notifications = useEffectiveNotifications();
+  const unreadCount = notifications.reduce(
+    (acc, n) => (n.read ? acc : acc + 1),
+    0,
+  );
+  const hasUnread = unreadCount > 0;
+
+  const handleSelect = (notification: Notification) => {
+    markNotificationRead(notification.id);
+    onDismiss?.();
+  };
+
+  return (
+    <div aria-labelledby="notification-panel-heading">
+      <div className="flex items-center justify-between px-3 py-2">
+        <h2
+          id="notification-panel-heading"
+          className="typography-label font-medium text-foreground"
+        >
+          Notifications
+        </h2>
+        <span className="font-mono typography-meta text-muted-foreground tabular-nums">
+          {hasUnread ? `${unreadCount} unread` : "All read"}
+        </span>
+      </div>
+
+      {notifications.length === 0 ? (
+        <p className="px-3 py-6 typography-caption text-muted-foreground">
+          No notifications.
+        </p>
+      ) : (
+        // max-h-[28rem]: caps the scroll region at ~viewport-half on a 13" laptop so the popover never pushes past the sidebar's reach; rows past this scroll.
+        <ul role="list" className="max-h-[28rem] overflow-y-auto p-1">
+          {notifications.map((n) => (
+            <li key={n.id}>
+              <NotificationRow
+                notification={n}
+                onSelect={() => handleSelect(n)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

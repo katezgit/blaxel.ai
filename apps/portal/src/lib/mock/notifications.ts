@@ -11,6 +11,8 @@
  * "X ago" display stays deterministic regardless of when the demo is opened.
  */
 
+import { useSyncExternalStore } from "react";
+
 export type NotificationCategory =
   | "async-outcome"
   | "threshold"
@@ -169,4 +171,85 @@ export function formatRelativeTime(iso: string): string {
   if (days < 30) return `${days}d ago`;
   const date = new Date(iso);
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+// Shared read-state store — bell badge (sidebar strip + mobile topbar) and
+// panel body both derive unread status from this single source, so marking a
+// row read inside the panel flips the badge immediately. Persisted per-tab
+// via sessionStorage so in-app navigation doesn't lose the state.
+const READ_STORAGE_KEY = "blaxel:notifications:read";
+const EMPTY_SET: ReadonlySet<string> = new Set();
+
+let overrides: ReadonlySet<string> = EMPTY_SET;
+let initialized = false;
+const listeners = new Set<() => void>();
+
+function loadOverridesFromStorage(): ReadonlySet<string> {
+  if (typeof window === "undefined") return EMPTY_SET;
+  try {
+    const raw = window.sessionStorage.getItem(READ_STORAGE_KEY);
+    if (!raw) return EMPTY_SET;
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return EMPTY_SET;
+    return new Set(parsed.filter((v): v is string => typeof v === "string"));
+  } catch {
+    return EMPTY_SET;
+  }
+}
+
+function persistOverrides(ids: ReadonlySet<string>): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(READ_STORAGE_KEY, JSON.stringify(Array.from(ids)));
+  } catch {
+    // Storage quota / private-mode — degrade to in-memory only.
+  }
+}
+
+function ensureInitialized(): void {
+  if (initialized || typeof window === "undefined") return;
+  overrides = loadOverridesFromStorage();
+  initialized = true;
+}
+
+function subscribeReadOverrides(listener: () => void): () => void {
+  ensureInitialized();
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function getReadOverridesSnapshot(): ReadonlySet<string> {
+  ensureInitialized();
+  return overrides;
+}
+
+function getServerSnapshot(): ReadonlySet<string> {
+  return EMPTY_SET;
+}
+
+export function markNotificationRead(id: string): void {
+  ensureInitialized();
+  if (overrides.has(id)) return;
+  const next = new Set(overrides);
+  next.add(id);
+  overrides = next;
+  persistOverrides(overrides);
+  listeners.forEach((l) => l());
+}
+
+/**
+ * Notifications with per-row `read` reconciled against the shared override
+ * store. Bell badge and panel body both derive unread state from this so the
+ * count on the bell never drifts from what the panel visually reflects.
+ */
+export function useEffectiveNotifications(): ReadonlyArray<Notification> {
+  const overrides = useSyncExternalStore(
+    subscribeReadOverrides,
+    getReadOverridesSnapshot,
+    getServerSnapshot,
+  );
+  if (overrides.size === 0) return FIXTURES;
+  return FIXTURES.map((n) => (overrides.has(n.id) ? { ...n, read: true } : n));
 }
