@@ -31,11 +31,8 @@ interface SandboxExtendActionProps {
  *  when the Sandbox has no TTL (`expiresInSec === null`) — the `···` menu
  *  remains as the sole affordance.
  *
- * Urgency (per `docs/design/screens/sandbox-detail-2026-06-30.wireframe.md`
- * §1.1.1):
- *   - `> 1h` → ghost tokens
- *   - `≤ 1h` → `text-state-warning-text`
- *   - `≤ 10m` → `text-state-errored-text font-medium` (button IS the alert)
+ * Any TTL = borrowed time, so the warning surface is ambient rather than
+ * threshold-gated. `≤ 10m` escalates to the error tier and adds weight.
  *
  * The countdown ticks each second off a client-side wall-clock delta from
  * the initial `expiresInSec` snapshot. No network polling. */
@@ -84,8 +81,9 @@ export function SandboxExtendAction({ sandbox }: SandboxExtendActionProps) {
           aria-label={`Extend TTL — currently ${label}`}
           className={cn(
             "font-mono tabular-nums",
-            urgency === "warning" && "text-state-warning-text",
-            urgency === "error" && "text-state-errored-text font-medium",
+            urgency === "error"
+              ? "bg-state-errored-subtle text-state-errored-text font-medium not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-state-errored-subtle"
+              : "bg-state-warning-subtle text-state-warning-text not-disabled:not-aria-disabled:[&:not([data-loading])]:hover:bg-state-warning-subtle",
           )}
         >
           Extend · {label}
