@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useState } from "react";
 import {
   ArrowUpRight,
   Bell,
@@ -15,7 +15,6 @@ import {
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
   Popover,
-  PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
 } from "@repo/ui/components/popover";
@@ -29,14 +28,10 @@ import { NotificationList } from "@/components/shell/notification-panel";
 import { useIsSidebarRail } from "@/components/shell/use-is-sidebar-rail";
 import { useEffectiveNotifications } from "@/lib/mock/notifications";
 
-interface Measurable {
-  getBoundingClientRect(): DOMRect;
-}
-
 // Zone C — footer icon strip above the user chip. Three concern-scoped
-// triggers, left → right: Resources, Help, Notifications. All three popovers
-// share one anchor so they open at the same horizontal offset from the
-// sidebar edge and the same vertical baseline flush with the icons row.
+// triggers, left → right: Resources, Help, Notifications. Each popover anchors
+// to its own trigger with a uniform sideOffset, so every icon shows the same
+// visible gap to its popover.
 //
 // Group-hover dim pattern: at rest all three icons render muted; hovering
 // anywhere on the strip brightens all three. Individual button hover still
@@ -44,70 +39,34 @@ interface Measurable {
 // on unread — unread is signaled by the badge alone (one signal per tile).
 export function SidebarFooterIconStrip() {
   const isRail = useIsSidebarRail();
-  // `useState` for the aside triggers a re-render once located — Radix
-  // `PopperAnchor` reads `virtualRef.current` inside a dep-less effect that
-  // only picks up new values on re-render.
-  const stripRef = useRef<HTMLDivElement>(null);
-  const [aside, setAside] = useState<HTMLElement | null>(null);
-  useEffect(() => {
-    const found = stripRef.current?.closest("aside");
-    if (found instanceof HTMLElement) setAside(found);
-  }, []);
-  const anchorRef = useRef<Measurable | null>(null);
-  anchorRef.current =
-    aside && stripRef.current
-      ? {
-          getBoundingClientRect: () => {
-            const asideRect = aside.getBoundingClientRect();
-            const stripRect = stripRef.current!.getBoundingClientRect();
-            // Rect spanning the aside horizontally and ending at the strip's
-            // bottom border. `side="right" align="end"` reads right = aside.right
-            // (→ popover.left = aside.right + sideOffset) and
-            // bottom = strip.bottom (→ popover.bottom = strip.bottom, so the
-            // popover shares a baseline with the icons row — same anchor
-            // pattern as the user chip below).
-            return new DOMRect(
-              asideRect.left,
-              0,
-              asideRect.width,
-              stripRect.bottom,
-            );
-          },
-        }
-      : null;
-  const sharedAnchor = anchorRef as RefObject<Measurable>;
 
-  // Rail state renders icon-only in a 64px column with no adjacent labels, so
-  // 18px reads better. Expanded state sits alongside body copy — matching
-  // `typography-body` at 14px keeps visual weight aligned with the sidebar text.
-  const iconSizeClass = isRail ? "[&_svg]:size-[18px]" : "[&_svg]:size-[14px]";
+  const iconSizeClass = isRail ? "[&_svg]:size-[18px]" : "[&_svg]:size-5";
   const triggerClass = cn(iconSizeClass, triggerIconColorClass);
 
   return (
     <div
-      ref={stripRef}
       className={cn(
         "group flex items-center gap-1 border-b border-sidebar-border pb-2",
         isRail ? "flex-col" : "justify-around",
       )}
     >
-      <ResourcesTrigger anchorRef={sharedAnchor} triggerClass={triggerClass} />
-      <HelpTrigger anchorRef={sharedAnchor} triggerClass={triggerClass} />
-      <NotificationsTrigger
-        anchorRef={sharedAnchor}
-        triggerClass={triggerClass}
-      />
+      <ResourcesTrigger triggerClass={triggerClass} />
+      <HelpTrigger triggerClass={triggerClass} />
+      <NotificationsTrigger triggerClass={triggerClass} />
     </div>
   );
 }
 
 // Item wrapping style for Popover menu rows — mirrors the DropdownMenuItem
 // look (rounded row, ghost hover pill, muted external arrow that brightens on
-// hover) so switching to Popover for shared anchor positioning doesn't
-// visually regress. The `group/item` scope keeps the arrow hover isolated to
-// its row.
+// hover). The `group/item` scope keeps the arrow hover isolated to its row.
+// `bg-highlight-surface` is the sole active-option indicator; suppress the
+// universal `*:focus-visible` ring (outline + shadow) so it doesn't double up.
+// Windows High Contrast Mode ignores box-shadow tints entirely, so keep a
+// 2px `outline-current` fallback for keyboard users on that surface — matches
+// the DS dropdown-menu pattern.
 const menuItemClass =
-  "group/item flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left typography-body text-foreground hover:bg-highlight-surface focus-visible:bg-highlight-surface focus-visible:outline-none";
+  "group/item flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left typography-body text-foreground hover:bg-highlight-surface focus-visible:bg-highlight-surface focus-visible:shadow-none focus-visible:outline-none forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-current";
 
 function ExternalArrow() {
   return (
@@ -124,18 +83,13 @@ function ExternalArrow() {
 const triggerIconColorClass =
   "[&_svg]:text-muted-foreground group-hover:[&_svg]:text-foreground hover:[&_svg]:text-foreground";
 
-interface AnchoredTriggerProps {
-  // Radix `virtualRef` types the current as non-null Measurable, but ours is
-  // populated post-mount — RefObject<Measurable> matches Radix's Prop shape and
-  // Radix reads `.current` inside a dep-less effect that tolerates a null value.
-  anchorRef: RefObject<Measurable>;
+interface TriggerProps {
   triggerClass: string;
 }
 
-function ResourcesTrigger({ anchorRef, triggerClass }: AnchoredTriggerProps) {
+function ResourcesTrigger({ triggerClass }: TriggerProps) {
   return (
     <Popover>
-      <PopoverAnchor virtualRef={anchorRef} />
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
@@ -208,10 +162,9 @@ function ResourcesTrigger({ anchorRef, triggerClass }: AnchoredTriggerProps) {
   );
 }
 
-function HelpTrigger({ anchorRef, triggerClass }: AnchoredTriggerProps) {
+function HelpTrigger({ triggerClass }: TriggerProps) {
   return (
     <Popover>
-      <PopoverAnchor virtualRef={anchorRef} />
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
@@ -257,10 +210,7 @@ function HelpTrigger({ anchorRef, triggerClass }: AnchoredTriggerProps) {
   );
 }
 
-function NotificationsTrigger({
-  anchorRef,
-  triggerClass,
-}: AnchoredTriggerProps) {
+function NotificationsTrigger({ triggerClass }: TriggerProps) {
   const notifications = useEffectiveNotifications();
   const unreadCount = notifications.reduce(
     (acc, n) => (n.read ? acc : acc + 1),
@@ -275,7 +225,6 @@ function NotificationsTrigger({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverAnchor virtualRef={anchorRef} />
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
@@ -291,7 +240,7 @@ function NotificationsTrigger({
                   aria-hidden="true"
                   className={cn(
                     "absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full",
-                    "bg-state-errored px-1 font-mono typography-meta font-semibold tracking-normal text-white",
+                    "bg-state-errored px-1 typography-meta text-white",
                   )}
                 >
                   {unreadCount > 9 ? "9+" : unreadCount}
