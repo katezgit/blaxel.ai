@@ -28,9 +28,9 @@ function Command({
       data-slot="command"
       className={cn(
         "flex flex-col",
-        // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+        // Border provides the crisp edge; shadow-popover provides depth (no built-in ring).
         "rounded-lg bg-popover text-popover-foreground typography-body",
-        "shadow-popover",
+        "border border-border shadow-popover",
         className
       )}
       {...props}
@@ -55,10 +55,10 @@ function CommandDialog({
         "fixed top-[10vh] left-1/2 z-overlay -translate-x-1/2",
         "w-full max-w-[640px]",
         "overflow-hidden",
-        // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+        // Border provides the crisp edge; shadow-command provides depth (no built-in ring).
         "rounded-xl",
         "bg-popover text-foreground",
-        "shadow-command",
+        "border border-border shadow-command",
         "outline-none",
         "data-[state=open]:animate-slide-up-in",
         "data-[state=closed]:animate-slide-down-out",

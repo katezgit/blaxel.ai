@@ -477,9 +477,9 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
             sideOffset={8}
             style={{ width: "var(--radix-popover-trigger-width)" }}
             className={cn(
-              // No border — shadow-popover has a built-in 1px ring; a CSS border creates a perceived double-edge.
+              // shadow-popover carries depth only (no ring); DS ships the border so ComboboxContent has a crisp edge matching other popover-tier surfaces.
               "z-overlay overflow-hidden rounded-lg",
-              "bg-popover text-foreground shadow-popover outline-none p-1",
+              "bg-popover text-foreground shadow-popover outline-none p-1 border border-border",
               "data-[state=open]:animate-in data-[state=open]:fade-in-0",
               "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
               "data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1",

@@ -11,10 +11,10 @@ import { cn } from "@repo/ui/lib/cn"
 const popoverContentVariants = cva(
   [
     "z-overlay min-w-40 max-w-80 overflow-hidden",
-    // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+    // shadow-popover carries depth only (no ring); DS ships the border so every Popover instance has a crisp edge — matches DropdownMenuContent.
     "rounded-lg",
     "bg-popover text-popover-foreground",
-    "shadow-popover",
+    "shadow-popover border border-border",
     "outline-none",
     "data-[state=open]:animate-in data-[state=open]:fade-in-0",
     "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",

@@ -6,9 +6,7 @@ import { cn } from "@repo/ui/lib/cn"
 
 const cardVariants = cva(
   // Base: text, radius, flex layout — bg and border intentionally omitted here;
-  // each variant sets them explicitly so elevated can rely on shadow-card's ring
-  // as its sole boundary (avoids the doubled-outline artifact when the 1px ring
-  // shadow and border-border sit adjacent).
+  // each variant sets them explicitly.
   [
     "relative flex flex-col",
     "rounded-surface",
@@ -24,13 +22,10 @@ const cardVariants = cva(
         default: ["bg-card", "border border-border"],
 
         /**
-         * Elevated: card surface with shadow-card providing both the 1px ring
-         * boundary AND the soft drop. No explicit border — the ring layer of
-         * --shadow-1 (0 0 0 1px rgba) is the single edge, which avoids the
-         * double-outline artifact when border + ring sit adjacent.
-         * Visually distinct from default: shadow replaces border as the edge.
+         * Elevated: card surface with shadow-card providing depth.
+         * Border provides the crisp edge — shadow-card has no built-in ring.
          */
-        elevated: ["bg-card", "shadow-card"],
+        elevated: ["bg-card", "border border-border", "shadow-card"],
 
         /**
          * Interactive: clickable/hoverable tile.

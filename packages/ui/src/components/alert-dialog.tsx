@@ -70,9 +70,9 @@ function AlertDialogContent({
           "fixed top-1/2 left-1/2 z-overlay -translate-x-1/2 -translate-y-1/2",
           "flex flex-col w-full",
           "max-w-[min(480px,calc(100vw-2rem))]",
-          // Surface — no border; shadow-modal provides the 0 0 0 1px ring + halo
+          // Surface — border provides the crisp edge; shadow-modal provides depth (no built-in ring).
           overlayPanelSurface,
-          "shadow-modal rounded-lg",
+          "shadow-modal rounded-lg border border-border",
           // outline-none: focus managed by Radix; panel is not itself a focus target
           "outline-none",
           // Motion — matches Dialog enter/exit
