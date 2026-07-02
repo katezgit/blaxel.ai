@@ -35,7 +35,7 @@ export default function SandboxSettingsLifecycle({
   terminationAt,
 }: SandboxSettingsLifecycleProps) {
   return (
-    <BandFrame label="Lifecycle">
+    <BandFrame label="Lifecycle" className="border-t-0 pt-0">
       <div className="flex flex-col gap-6">
         <LifecycleSubsection label="TTL extension">
           <SandboxTtlControl sandbox={sandbox} />

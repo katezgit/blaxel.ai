@@ -24,8 +24,6 @@ import {
   type SandboxSchedule,
   type SandboxScheduleType,
 } from "@/lib/mock/sandbox-schedules-fixtures";
-import SandboxSchedulesAddPopover from "./sandbox-schedules-add-popover";
-
 interface SandboxSchedulesSectionProps {
   schedules: ReadonlyArray<SandboxSchedule>;
 }
@@ -48,11 +46,7 @@ const TYPE_PILL_LABEL: Record<SandboxScheduleType, string> = {
 /** Schedules — Sandbox-internal command scheduler section. Owns toolbar
  *  filter + search state locally so the parent page stays a thin
  *  composition. Empty state renders the canonical CLI example so the
- *  primitive is self-explanatory the first time the operator sees it.
- *
- *  The wireframe pairs the `+ Add schedule` CTA at the bottom-left below
- *  the populated table; in the empty state the inline CLI example carries
- *  the same affordance, so the button only renders alongside data. */
+ *  primitive is self-explanatory the first time the operator sees it. */
 export default function SandboxSchedulesSection({
   schedules,
 }: SandboxSchedulesSectionProps) {
@@ -75,10 +69,7 @@ export default function SandboxSchedulesSection({
   const noResults = !isEmpty && visible.length === 0;
 
   return (
-    <section
-      aria-label="Schedules"
-      className="flex flex-col gap-4 border-t border-border pt-6"
-    >
+    <section aria-label="Schedules" className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <h2 className="typography-subtitle text-foreground">Schedules</h2>
         <p className="typography-body text-muted-foreground">
@@ -92,6 +83,14 @@ export default function SandboxSchedulesSection({
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <SearchInput
+                defaultValue={search}
+                onLiveChange={setSearch}
+                placeholder="Search schedules…"
+                aria-label="Search schedules"
+              />
+            </div>
             <Select
               value={typeFilter}
               onValueChange={(value) => setTypeFilter(value as TypeFilter)}
@@ -110,14 +109,6 @@ export default function SandboxSchedulesSection({
                 ))}
               </SelectContent>
             </Select>
-            <div className="w-full sm:w-auto sm:max-w-xs sm:flex-1">
-              <SearchInput
-                defaultValue={search}
-                onLiveChange={setSearch}
-                placeholder="Search schedules…"
-                aria-label="Search schedules"
-              />
-            </div>
           </div>
 
           <Table
@@ -171,10 +162,6 @@ export default function SandboxSchedulesSection({
               )}
             </TableBody>
           </Table>
-
-          <div className="flex">
-            <SandboxSchedulesAddPopover />
-          </div>
         </>
       )}
     </section>
@@ -203,9 +190,6 @@ function SchedulesEmptyState() {
           value={ADD_SCHEDULE_CLI_EXAMPLE}
           ariaLabel="Copy CLI example"
         />
-      </div>
-      <div className="flex justify-center">
-        <SandboxSchedulesAddPopover />
       </div>
     </div>
   );

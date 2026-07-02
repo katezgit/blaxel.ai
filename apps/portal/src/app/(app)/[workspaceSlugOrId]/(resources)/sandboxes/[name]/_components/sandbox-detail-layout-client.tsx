@@ -16,6 +16,7 @@ import SandboxDetailHeader from "./sandbox-detail-header";
 import SandboxDetailSkeleton from "./sandbox-detail-skeleton";
 import SandboxDetailStickyTabs from "./sandbox-detail-sticky-tabs";
 import { sandboxDetailTabFromPath } from "./sandbox-detail-tab-from-path";
+import SandboxSchedulesAddDrawer from "./sandbox-schedules-add-drawer";
 import {
   sandboxViewModeStorageKey,
   tabSupportsCardMode,
@@ -120,10 +121,16 @@ export default function SandboxDetailLayoutClient({
   }
 
   const isCardMode = viewMode === "card" && tabSupportsCardMode(activeTab);
+  const headerActions =
+    activeTab === "schedules" ? <SandboxSchedulesAddDrawer /> : undefined;
 
   return (
     <div className="page-shell">
-      <SandboxDetailHeader sandbox={sandbox} workspaceSlug={workspaceSlug} />
+      <SandboxDetailHeader
+        sandbox={sandbox}
+        workspaceSlug={workspaceSlug}
+        actions={headerActions}
+      />
       <SandboxDetailStickyTabs
         workspaceSlug={workspaceSlug}
         sandboxName={sandboxName}

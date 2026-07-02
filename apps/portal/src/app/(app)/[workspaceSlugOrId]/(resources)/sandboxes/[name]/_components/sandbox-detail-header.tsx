@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, type ReactNode } from "react";
 import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -19,6 +19,10 @@ import { SandboxTtlControl } from "./sandbox-ttl-control";
 interface SandboxDetailHeaderProps {
   sandbox: Sandbox;
   workspaceSlug: string;
+  /** Tab-owned CTA (e.g. Schedules → Add schedule). Rendered at the right
+   *  edge of the title row, immediately before the overflow `[···]` menu.
+   *  Undefined on tabs without a page-level action. */
+  actions?: ReactNode;
 }
 
 /** Sandbox detail page header per wireframe §1.1. Owns:
@@ -37,6 +41,7 @@ interface SandboxDetailHeaderProps {
 export default function SandboxDetailHeader({
   sandbox,
   workspaceSlug,
+  actions,
 }: SandboxDetailHeaderProps) {
   const heading = sandbox.metadata.displayName || sandbox.metadata.name;
   const listHref = `/${workspaceSlug}/sandboxes`;
@@ -61,30 +66,33 @@ export default function SandboxDetailHeader({
             </h1>
             <StatePill sandbox={sandbox} />
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <IconButton
-                variant="ghost"
-                aria-label={`Actions for ${heading}`}
-              >
-                <MoreHorizontal aria-hidden="true" />
-              </IconButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => undefined}>
-                Restart
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={handleOpenInCli}>
-                Open in CLI
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                variant="destructive"
-                onSelect={() => undefined}
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex shrink-0 items-center gap-2">
+            {actions}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <IconButton
+                  variant="ghost"
+                  aria-label={`Actions for ${heading}`}
+                >
+                  <MoreHorizontal aria-hidden="true" />
+                </IconButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onSelect={() => undefined}>
+                  Restart
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleOpenInCli}>
+                  Open in CLI
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onSelect={() => undefined}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="page-header-meta">

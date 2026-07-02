@@ -18,7 +18,7 @@ export default function SandboxSettingsDeploymentConfig({
   deploymentId,
 }: SandboxSettingsDeploymentConfigProps) {
   return (
-    <BandFrame label="Deployment config">
+    <BandFrame label="Deployment config" className="border-t-0 pt-0">
       <dl className="flex flex-col gap-4">
         <ConfigRow label="Image">
           <span className="font-mono typography-body text-foreground">

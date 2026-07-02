@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { CheckCircle2, CircleDashed, MinusCircle, XCircle } from "lucide-react";
+import { Badge, type BadgeProps } from "@repo/ui/components/badge";
 import { SearchInput } from "@repo/ui/components/search-input";
 import {
   Table,
@@ -12,7 +12,6 @@ import {
   TableHeaderCell,
   TableRow,
 } from "@repo/ui/components/table";
-import { cn } from "@repo/ui/lib/cn";
 import type {
   ScheduleExecution,
   ScheduleExecutionStatus,
@@ -91,30 +90,18 @@ export default function SandboxSchedulesExecutionHistory({
   const noResults = !isEmpty && visible.length === 0;
 
   return (
-    <section
-      aria-label="Execution history"
-      className="flex flex-col gap-4 border-t border-border pt-6"
-    >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h2 className="typography-subtitle text-foreground">
-            Execution history
-          </h2>
-          <p className="typography-body text-muted-foreground">
-            Recent schedule runs in this sandbox.
-          </p>
+    <section aria-label="Execution history" className="flex flex-col gap-4">
+      <h2 className="typography-subtitle text-foreground">Execution history</h2>
+      {!isEmpty && (
+        <div>
+          <SearchInput
+            defaultValue={search}
+            onLiveChange={setSearch}
+            placeholder="Search executions…"
+            aria-label="Search executions"
+          />
         </div>
-        {!isEmpty && (
-          <div className="w-full sm:w-auto sm:max-w-xs">
-            <SearchInput
-              defaultValue={search}
-              onLiveChange={setSearch}
-              placeholder="Search executions…"
-              aria-label="Search executions"
-            />
-          </div>
-        )}
-      </div>
+      )}
 
       {isEmpty ? (
         <p className="rounded-md border border-border bg-card px-6 py-10 text-center typography-body text-muted-foreground">

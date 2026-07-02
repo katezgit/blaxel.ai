@@ -44,7 +44,7 @@ export default function SandboxSettingsResources({
   settings,
 }: SandboxSettingsResourcesProps) {
   return (
-    <BandFrame label="Resources">
+    <BandFrame label="Resources" className="border-t-0 pt-0">
       <div className="flex flex-col gap-8">
         <PreviewsSubsection previews={settings.previews} />
         <VolumesSubsection volumes={settings.volumesAttached} />

@@ -43,7 +43,7 @@ export default function SandboxSettingsAudit({
   audit,
 }: SandboxSettingsAuditProps) {
   return (
-    <BandFrame label="Audit">
+    <BandFrame label="Audit" className="border-t-0 pt-0">
       <dl className="flex flex-col gap-4">
         <UserRow label="Created by" user={audit.createdBy} occurredAt={audit.createdAt} />
         <UserRow label="Updated by" user={audit.updatedBy} occurredAt={audit.updatedAt} />

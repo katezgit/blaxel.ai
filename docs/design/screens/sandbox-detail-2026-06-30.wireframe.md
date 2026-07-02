@@ -560,3 +560,189 @@ Production tab strip: `Overview · Settings · Schedules · Logs · Terminal` + 
 - [`./sandboxes-2026-06-30.wireframe.md`](./sandboxes-2026-06-30.wireframe.md) — entry-point list; state pill model; column convention.
 - [`../foundations/header-rhythm.md`](../foundations/header-rhythm.md), [`../foundations/spacing.md`](../foundations/spacing.md) — detail-page heading rhythm.
 - `.intermediate/discovery/current-dashboard/sandbox-detail-overview-2026-06-30.png` — current production capture (Overview baseline). Settings · Schedules · Logs · Terminal captures reviewed inline 2026-06-30.
+
+---
+
+## 7. Sticky tab heading + card-view alternate mode (2026-06-30)
+
+Two behavioral extensions. They share the same anchor — the tab strip row — and are specified together to keep the toggle placement and sticky anatomy coherent in a single section.
+
+---
+
+### 7.1 Sticky tab strip
+
+#### Behavior
+
+As Alex scrolls past the identity band (§1.1), the tab strip (`Overview · Settings · Schedules · Logs · Terminal`) becomes `position: sticky` and pins just below the fixed topbar. The `h1`, state pill, action button row, and meta line all scroll away. Only the tab strip row sticks.
+
+**Rationale.** Phase 5 debug: Alex scrolls through forensic bands (§1.4 vitals → §1.6 events → §1.7 log tail → §1.9 security) in sequence during an incident. Without the sticky strip, the "which tab am I in" orientation breaks after one scroll. The tab strip is the lightest possible sticky element that restores it — it adds no new chrome, just pins existing chrome. The identity band above it carries display name + state; Alex has read those in the first 5 seconds. They do not need to persist.
+
+#### Sticky strip anatomy
+
+```
+┌─ STICKY BAR  position:sticky  top:{topbar-height}  z-above-content ─────────┐
+│  [ Overview ] [ Settings ] [ Schedules ] [ Logs ] [ Terminal ]   [⊞] [≡]   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+- **Background:** `bg-surface`. No elevation (no shadow, no blur). Before the user has scrolled past the identity band: no separator. After scroll: `border-b border-border` appears below the strip to separate pinned chrome from scrolling content.
+- **Height:** identical to the tab strip in normal document flow. No resize on stick, no layout shift.
+- **Right-side slot:** view-mode toggle icons (§7.2). They occupy the right end of this same row.
+- **z-index:** above page content (events timeline, chart, process table), below modal / toast / popover layer.
+
+#### Breakpoint rules
+
+| Breakpoint | Sticky behavior |
+|---|---|
+| Desktop (≥1280px) | Sticks below fixed topbar. `top` offset = `topbar-height` token only. See §7.5 Q1 on whether sidebar has an additional fixed header. |
+| Tablet (768–1279px) | Same. Tab label truncation is the tab component's responsibility; sticky mechanism unchanged. |
+| Mobile (<768px) | Sticky preserved. If the strip overflows horizontally: `overflow-x: auto`, locked to one row — never wraps to two rows. |
+
+#### States
+
+| Condition | Strip appearance |
+|---|---|
+| Identity band in viewport | Tab strip in normal flow; no `border-b`. |
+| Identity band scrolled past | Tab strip pinned; `border-b border-border` visible. |
+| Active tab | Active label: `text-foreground font-medium` + bottom indicator. Unchanged by sticky state. |
+| Card mode ON | Toggle icons in right slot reflect active mode (§7.2). Strip itself unchanged. |
+
+---
+
+### 7.2 Card-view alternate mode
+
+#### Motivation
+
+Flat mode (default) is Alex's incident mode: dense bands, raw log tail, events timeline. Card mode is an opt-in lens for a different reading shape — "show me the activity envelope for this Sandbox, then the data inside it." The activity chart at the card header answers "is the call rate trending down or was this a spike?" — a question the §1.4 counters (totals) and §1.6 events (individual rows) do not answer at a glance.
+
+Card mode is opt-in. It does not change information density. It adds one visual container and one chart band; it removes nothing from the tab body.
+
+#### View-mode toggle
+
+**Placement:** right end of the sticky tab strip (annotated in §7.1 strip anatomy above).
+
+```
+[ Overview ] [ Settings ] [ Schedules ] [ Logs ] [ Terminal ]   [⊞] [≡]
+                                                                  ↑   ↑
+                                                             card  flat
+```
+
+- `[⊞]` — card/grid icon (reuse `LayoutGrid` or equivalent existing icon primitive). Tooltip: `"Card view"`. `aria-label`: `"Switch to card view"`.
+- `[≡]` — list icon (reuse `List` or equivalent existing icon primitive). Tooltip: `"List view"`. `aria-label`: `"Switch to list view"`.
+- Active state: `text-foreground bg-surface-secondary` on the active button. Inactive: `text-muted-foreground`.
+- Icon size: 16px. Touch target: minimum 32×32px each, 4px gap between them.
+- Icon-only; tooltips are mandatory (both visible tooltip and `aria-label`).
+- **No new icons.** Both primitives must already exist in the design system. If neither maps, escalate before implementing — do not introduce a new icon.
+
+#### Persistence
+
+- **Scope:** per-tab, per-sandbox. Card mode on Overview does not activate it on Logs.
+- **Storage:** `localStorage`. Key: `blaxel.sandbox-detail.view-mode.{sandboxName}.{tabName}`. Default: `flat`.
+- **Cross-session:** persists across page reloads on the same device. Does not sync across devices.
+- **Why per-tab:** Logs and Terminal are full-viewport streaming surfaces where a card wrapper produces no visible change (§7.2 per-tab matrix). Per-tab scope prevents the toggle from silently no-op-ing on those tabs while appearing to be a global setting.
+
+#### Card wrapper
+
+When card mode is active, the tab body renders inside a `<Card>` that satisfies `card-usage.md §1` all-three criteria:
+
+1. **Discrete object** — the Sandbox's activity surface is a named entity with stable identity.
+2. **Actionable as unit** — the card houses the chart time-window control; the user interacts with it as a whole.
+3. **Sits alongside peers of the same shape** — alongside flat mode, card mode is one of two explicitly selectable layouts, not a default grouping.
+
+```
+┌─ STICKY TAB STRIP ──────────────────────────────────────────────────────────┐
+│  [ Overview* ] [ Settings ] [ Schedules ] [ Logs ] [ Terminal ]  [⊞*] [≡]  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─ CARD WRAPPER  border border-border rounded-md bg-surface ──────────────────┐
+│                                                                              │
+│  ┌─ ACTIVITY CHART HEADER ─────────────────────────────────────────────── ┐ │
+│  │  Calls                               [ 1h ] [ 6h ] [ 24h ] [ 7d ]     │ │
+│  │  ─────────────────────────────────────────────────────────────────────  │ │
+│  │  [line chart, 80px tall]                                               │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  [border-t border-border]                                                   │
+│                                                                              │
+│  [tab body — §1.4 vitals, §1.6 events, §1.7 log tail, §1.8–§1.9]          │
+│  Identical content to flat mode; inner padding px-4 py-4.                   │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Card tokens:** `border border-border rounded-md bg-surface`. No shadow. No colored left border (`decoration.md §1` — forbidden). No `border-left` accent of any kind.
+
+#### Activity chart spec
+
+| Attribute | Spec |
+|---|---|
+| Data source | Same call-count signal as §1.4 vitals counters. No new API endpoint — reuse what already powers the counter row. |
+| Default time window | 1h — matches §1.4 counter default. |
+| Time window control | Segment `[ 1h ] [ 6h ] [ 24h ] [ 7d ]`, right-anchored in chart header. Single-select. Changing this control updates the §1.4 counter window to match (one control governs both). See §7.5 Q4 to confirm this coupling. |
+| Chart height | 80px — compact, shows trend shape only. Not a primary analytics surface. |
+| Chart type | Line chart. No fill / area shading — area fill at 80px competes visually with content below. |
+| Tooltip | Timestamp + count at hover bucket. `font-mono text-meta`. Reuse existing chart tooltip primitive. |
+| Loading | 80px skeleton block. No spinner overlay. |
+| Error | Inline: "Failed to load activity data. [Retry]". Same error-voice pattern as §1.4. |
+| Zero-data | Flat zero line + caption: "No calls in this window." No illustration. |
+| Metric label | "Calls" — confirm canonical term in §7.5 Q2. |
+
+#### Per-tab card mode behavior
+
+| Tab | Card mode effect |
+|---|---|
+| **Overview** | Full card: activity chart header + card wrapper around §1.4–§1.9 bands. |
+| **Settings** | Card wrapper only (no activity chart — config content, not time-series). |
+| **Schedules** | Card wrapper only (no activity chart). |
+| **Logs** | Toggle present; no visible rendering change. Log stream fills the viewport regardless of card chrome. See §7.5 Q3 on whether to hide the toggle here. |
+| **Terminal** | Toggle present; no visible rendering change. Terminal is full-viewport. See §7.5 Q3. |
+
+#### Density in card mode
+
+Card mode does NOT introduce a separate density tier. Typography, font weights, and spacing tokens inside the tab body are identical in flat and card modes. The only additions: card chrome (`border border-border rounded-md`), chart band (80px + header row), inner padding `px-4 py-4`. No `compact` / `comfortable` prop introduced.
+
+Sticky tabs apply in card mode identically to flat mode.
+
+---
+
+### 7.3 State matrix extension
+
+Additional columns for §4 state matrix — all existing states inherit these values:
+
+| State | Sticky strip | Card mode: chart | Card mode: wrapper |
+|---|---|---|---|
+| Active | Pins past identity band; `border-b border-border` on scroll | Live line chart, populated | Rendered with `px-4 py-4` inner padding |
+| Standby | Same | Live (flat near-zero line) | Same |
+| Errored | Same; failure card (§2.3) appears inside card body | Chart may show zero or last-known values | Same |
+| Deploying | Same | 80px skeleton (no data yet) | Same — skeleton chart header |
+| Expiring soon | Same | Live | Same |
+| Terminated | Same | Final-snapshot chart | Same |
+| Loading (page) | Tab strip skeleton until resolved; sticky activates only after strip renders | Chart skeleton | Card border skeleton |
+| API error | Strip not rendered | Not rendered | Not rendered |
+
+---
+
+### 7.4 Self-review (§7)
+
+- [x] **Inheritance** — sticky strip is a CSS position change to the existing tab strip; no new component. Card wrapper follows `card-usage.md §1` three-criteria test (stated in §7.2). View-mode toggle reuses existing icon primitives only; no new icons introduced.
+- [x] **Tokens** — `bg-surface`, `border-border`, `border-b`, `rounded-md`, `text-foreground`, `font-medium`, `bg-surface-secondary`, `text-muted-foreground`, `font-mono`, `text-meta`, `px-4 py-4` — all role-semantic tokens from existing foundations. No new tokens.
+- [x] **States** — sticky strip: in-flow / pinned. Card mode: per-tab matrix in §7.2, chart loading/error/empty in chart spec. Full state matrix extension in §7.3.
+- [x] **Vocabulary** — "Card view / List view" as mode labels. "Calls" as chart metric label — flagged for alignment with §1.4 "Requests" in §7.5 Q2. Tab names unchanged from §3.
+- [x] **Anti-patterns** — card wrapper: no `border-left` colored decoration (`decoration.md §1` PASS); card is not a hairline separator wrapping a heading section (`decoration.md §2` PASS); card mode is opt-in so not the "card-as-default-container" anti-pattern; no area fill on the 80px chart (line only); no new hues introduced; no illustration in any chart state; no welcome hero; no celebration copy. All `personality.md` Counterexample checks clear.
+- [x] **Drift** — card mode is per-tab scoped (not global) to avoid Logs/Terminal no-op confusion; rationale stated. Chart window control is coupled to §1.4 counter window; intentional, flagged for operator confirmation in §7.5 Q4. "Calls" vs "Requests" discrepancy surfaced in §7.5 Q2. Sticky does not change the h1 visibility — explicitly decided that the identity band scrolls away in full (display name + state pill do not persist in the sticky strip).
+
+PASS — all checks resolved or escalated to §7.5.
+
+---
+
+### 7.5 Operator audit questions (§7)
+
+1. **Sticky top offset.** Does the fixed topbar include a sticky sub-element (workspace switcher, announcement banner) that would increase the `top` offset? Confirm the exact `topbar-height` CSS custom property value before implementation so the sticky calculation is correct at every breakpoint.
+
+2. **"Calls" vs "Requests" label.** §1.4 vitals use "Requests" as the primary count label; the chart header here uses "Calls" (activity signal vocabulary). These must be the same noun on the same page. Confirm the canonical term for Sandbox invocation count — "Requests" or "Calls" — and apply it to both §1.4 and the chart header.
+
+3. **Toggle visibility on Logs and Terminal.** §7.2 specifies card mode toggle is present on Logs and Terminal but produces no visible change. Confirm shipped behavior: (a) keep toggle but no-op silently, (b) hide toggle on these tabs, or (c) show toggle disabled with tooltip "Not available in this view." Recommendation: (b) hide — a visible toggle that does nothing breaks the interaction model.
+
+4. **Time window coupling.** The chart's `[ 1h ] [ 6h ] [ 24h ] [ 7d ]` control is specified to update §1.4 counter window as well. If Alex wants a 7d chart alongside 1h counters, this coupling blocks her. Confirm: shared window (simpler, one control) vs independent controls (more flexible, two controls in different locations).
+
+5. **localStorage key namespace.** Confirm `blaxel.sandbox-detail.view-mode.{sandboxName}.{tabName}` matches existing portal `localStorage` conventions before implementation. Nominate the correct namespace prefix if different.

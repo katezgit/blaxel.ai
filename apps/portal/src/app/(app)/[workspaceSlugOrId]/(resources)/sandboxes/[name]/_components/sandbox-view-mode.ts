@@ -17,14 +17,12 @@ export function sandboxViewModeStorageKey(
   return `portal:sandbox-detail:view-mode:${sandboxName}:${tab}`;
 }
 
-/** Tabs where card mode has no visible effect — Logs is a full-viewport
- * streaming surface, Terminal is a full-viewport shell. Wireframe §7.5 Q3
- * closed by hiding the toggle rather than rendering a no-op affordance. */
-export const CARD_MODE_TABS: ReadonlyArray<SandboxDetailTab> = [
-  "overview",
-  "settings",
-  "schedules",
-];
+/** Tabs where card mode has a visible effect. Overview is the only surface
+ * whose flat vs card presentation reads as a distinct alternate view (with
+ * the 80px activity chart header). Settings / Schedules / Logs / Terminal
+ * have no alternate "list" form, so the toggle is hidden rather than
+ * rendering a no-op affordance. */
+export const CARD_MODE_TABS: ReadonlyArray<SandboxDetailTab> = ["overview"];
 
 export function tabSupportsCardMode(tab: SandboxDetailTab): boolean {
   return CARD_MODE_TABS.includes(tab);
