@@ -229,13 +229,11 @@ function describeCron(expr: string): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-/** `+ Add schedule` CTA — opens a right-side, non-modal drawer so the
- *  schedules list beneath stays visible and clickable while composing. */
 export default function SandboxSchedulesAddDrawer() {
   const [open, setOpen] = useState(false);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} modal={false}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button type="button" variant="secondary">
           <Plus aria-hidden="true" />
@@ -697,7 +695,7 @@ function AdvancedDisclosure({ control }: { control: Control<FormValues> }) {
           Advanced
         </button>
       </CollapsibleTrigger>
-      <CollapsibleContent>
+      <CollapsibleContent className="data-[state=open]:overflow-visible">
         <div className="flex flex-col gap-4 pt-3">
           <FormField id="add-schedule-timezone" label="Timezone">
             <Controller

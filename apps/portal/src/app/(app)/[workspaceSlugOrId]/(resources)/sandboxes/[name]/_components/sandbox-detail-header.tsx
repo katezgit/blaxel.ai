@@ -24,18 +24,11 @@ import {
 } from "@repo/ui/components/dropdown-menu";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import { IconButton } from "@repo/ui/components/icon-button";
-import { cn } from "@repo/ui/lib/cn";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import { useCurrentTenancy } from "@/lib/query/tenancy-context";
 import { sandboxQueries } from "@/lib/query/sandboxes";
 import type { Sandbox } from "@/lib/mock/sandboxes";
-import {
-  allocatedRamLabel,
-  createdAtLabel,
-  peakRamCell,
-} from "../../_components/row-helpers";
 import { StatePill } from "../../_components/state-pill";
-import { formatRelative } from "./format-helpers";
 import { SandboxExtendAction } from "./sandbox-extend-action";
 
 interface SandboxDetailHeaderProps {
@@ -47,9 +40,9 @@ interface SandboxDetailHeaderProps {
   actions?: ReactNode;
 }
 
-/** Sandbox detail page header. Meta row mirrors the list-page vocabulary so
- *  Alex drilling list → detail reads the same shape:
- *  `slug · region · Alloc · Peak (24h) · Created · Last used`.
+/** Sandbox detail page header. Meta row is trimmed to at-a-glance essentials
+ *  — `slug+copy · region`. Alloc / Peak / Created / Last used live in the
+ *  Overview body where they compose with the RAM card and stat context.
  *  Top-right action cluster carries the identity-band actions:
  *  `[Extend · countdown] [···]` — Extend is visible only when a TTL is set.
  *
@@ -183,11 +176,10 @@ export default function SandboxDetailHeader({
   );
 }
 
-/** List-parity meta row: slug+copy · region · Alloc · Peak (24h) · Created ·
- *  Last used. FAILED sandboxes never reached a usable state, so the last
- *  segment renders "Deploy failed {relative}" instead of "Last used". */
+/** Trimmed meta row: slug+copy · region. Resource details (Alloc / Peak) live
+ *  in the Overview RAM card; provenance (Created / Last used) lives at the
+ *  top of the Overview body. */
 function MetaRow({ sandbox }: { sandbox: Sandbox }) {
-  const peak = peakRamCell(sandbox);
   return (
     <div className="page-header-meta">
       <span className="page-header-meta-group">
@@ -199,79 +191,10 @@ function MetaRow({ sandbox }: { sandbox: Sandbox }) {
           ariaLabel={`Copy slug ${sandbox.metadata.name}`}
         />
       </span>
-      <DotSeparator />
+      <span aria-hidden="true" className="text-meta-foreground">
+        ·
+      </span>
       <span className="font-mono">{sandbox.spec.region}</span>
-      <DotSeparator />
-      <span className="font-mono tabular-nums">
-        Alloc: {allocatedRamLabel(sandbox.spec.memoryMib)}
-      </span>
-      <DotSeparator />
-      <PeakSegment peak={peak} />
-      <DotSeparator />
-      <span title={createdAtLabel(sandbox.metadata.createdAt)}>
-        Created {formatRelative(sandbox.metadata.createdAt)}
-      </span>
-      <DotSeparator />
-      <LifecycleItem sandbox={sandbox} />
     </div>
-  );
-}
-
-/** `Peak (24h): N MB (P%)` — percentage flips to `text-state-warning-text`
- *  at ≥ 80% (same threshold as the list column). Renders `—` when no strip
- *  data exists (Deploying / never active). */
-function PeakSegment({
-  peak,
-}: {
-  peak: { label: string; percent: number } | null;
-}) {
-  if (!peak) {
-    return (
-      <span className="font-mono tabular-nums">
-        Peak (24h): <span className="text-meta-foreground">—</span>
-      </span>
-    );
-  }
-  const parenIdx = peak.label.lastIndexOf(" (");
-  const bytes = peak.label.slice(0, parenIdx);
-  const percentSuffix = peak.label.slice(parenIdx);
-  return (
-    <span className="font-mono tabular-nums">
-      Peak (24h): {bytes}
-      <span
-        className={cn(peak.percent >= 80 && "text-state-warning-text")}
-      >
-        {percentSuffix}
-      </span>
-    </span>
-  );
-}
-
-function DotSeparator() {
-  return (
-    <span aria-hidden="true" className="text-meta-foreground">
-      ·
-    </span>
-  );
-}
-
-/** Last-used vs deploy-failure variant. Failed sandboxes never reached a
- * usable state, so the meta row replaces "Last used …" with "Deploy failed
- * at …" (wireframe §2.3). */
-function LifecycleItem({ sandbox }: { sandbox: Sandbox }) {
-  if (sandbox.status === "FAILED") {
-    return (
-      <span title={sandbox.metadata.createdAt}>
-        Deploy failed {formatRelative(sandbox.metadata.createdAt)}
-      </span>
-    );
-  }
-  if (sandbox.lastUsedAt === null) {
-    return <span className="text-meta-foreground">Never used</span>;
-  }
-  return (
-    <span title={sandbox.lastUsedAt}>
-      Last used {formatRelative(sandbox.lastUsedAt)}
-    </span>
   );
 }

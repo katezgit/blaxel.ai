@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown, Expand, Pause, Search } from "lucide-react";
+import {
+  ChevronDown,
+  Expand,
+  Pause,
+  Play,
+  RefreshCw,
+  Search,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -17,6 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@repo/ui/components/popover";
+import { ScrollArea } from "@repo/ui/components/scroll-area";
 import {
   Select,
   SelectContent,
@@ -125,10 +133,12 @@ const DEMO_STREAM_TEMPLATES: ReadonlyArray<string> = [
 /** Logs tab body — v2 dark-terminal styling. Top toolbar splits into a
  *  left search input and a right cluster (source select + time range
  *  menu + severity popover). Volume band binned to 32 slots below. The
- *  table sits inside a `bg-code-bg` panel with a Live/Paused toggle chip +
- *  fullscreen affordance in its own header row. Clicking the chip pauses
- *  the demo stream — new entries accumulate in a hidden buffer until
- *  resumed, then flush into the visible list and the log scrolls to bottom. */
+ *  table sits inside a `bg-code-bg` panel; header row exposes a
+ *  state-dependent action cluster — Pause+Fullscreen while live,
+ *  Play+Refresh+Fullscreen while paused. Pausing accumulates new stream
+ *  rows in a hidden buffer; resuming flushes and auto-scrolls to bottom.
+ *  Refresh drops the accumulated live rows + buffer back to the base
+ *  fixture window without leaving the paused state. */
 export default function SandboxLogsView() {
   const searchParams = useSearchParams();
   const sourceParam = searchParams.get("source");
@@ -143,10 +153,18 @@ export default function SandboxLogsView() {
   const [paused, setPaused] = useState(false);
   const [liveEntries, setLiveEntries] = useState<ReadonlyArray<LogEntry>>([]);
   const [buffer, setBuffer] = useState<ReadonlyArray<LogEntry>>([]);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const scrollRootRef = useRef<HTMLDivElement | null>(null);
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
   const tickRef = useRef(0);
+
+  // Radix ScrollArea's scroll container is the Viewport, not the Root. Auto-
+  // follow + resume-scroll-to-bottom both need scrollTop on the viewport;
+  // querying by data-slot avoids a viewportRef API the primitive doesn't ship.
+  const getScrollViewport = (): HTMLElement | null =>
+    scrollRootRef.current?.querySelector<HTMLElement>(
+      '[data-slot="scroll-area-viewport"]',
+    ) ?? null;
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -169,18 +187,26 @@ export default function SandboxLogsView() {
     return () => window.clearInterval(id);
   }, []);
 
-  const toggleStream = () => {
-    if (paused) {
-      setLiveEntries((prev) => [...prev, ...buffer]);
-      setBuffer([]);
-      setPaused(false);
-      requestAnimationFrame(() => {
-        const el = scrollRef.current;
-        if (el) el.scrollTop = el.scrollHeight;
-      });
-    } else {
-      setPaused(true);
-    }
+  const resumeStream = () => {
+    setLiveEntries((prev) => [...prev, ...buffer]);
+    setBuffer([]);
+    setPaused(false);
+    requestAnimationFrame(() => {
+      const el = getScrollViewport();
+      if (el) el.scrollTop = el.scrollHeight;
+    });
+  };
+
+  const pauseStream = () => {
+    setPaused(true);
+  };
+
+  // Manual re-fetch in the fixture-only world: drop accumulated live-stream
+  // rows + any buffered rows and let `filtered` fall back to the base
+  // fixture window for the current source. Stays paused.
+  const refreshLogs = () => {
+    setLiveEntries([]);
+    setBuffer([]);
   };
 
   const activeRange =
@@ -224,22 +250,21 @@ export default function SandboxLogsView() {
   const visibleCount = filtered.length;
   useEffect(() => {
     if (paused) return;
-    const el = scrollRef.current;
+    const el = getScrollViewport();
     if (el) el.scrollTop = el.scrollHeight;
   }, [visibleCount, paused]);
 
   const bufferCount = buffer.length;
   const bufferNoun = bufferCount === 1 ? "entry" : "entries";
-  const resumeBufferSuffix =
-    bufferCount > 0 ? ` and flush ${bufferCount} buffered ${bufferNoun}` : "";
-  const toggleLabel = paused
-    ? `Resume live stream${resumeBufferSuffix}`
-    : "Pause live stream";
+  const resumeIndicatorLabel =
+    bufferCount > 0
+      ? `Resume live tail and flush ${bufferCount} buffered ${bufferNoun}`
+      : "Resume live tail";
 
   return (
     <section aria-label="Logs" className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="relative w-72">
+      <div className="flex items-center justify-between gap-3">
+        <div className="relative min-w-0 flex-1">
           <Search
             aria-hidden="true"
             className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
@@ -252,7 +277,7 @@ export default function SandboxLogsView() {
             className="pl-8"
           />
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Select
             value={source}
             onValueChange={(v) => setSource(v as LogSource)}
@@ -283,35 +308,67 @@ export default function SandboxLogsView() {
         windowEnd={windowEnd}
       />
 
-      <div className="flex min-h-[560px] flex-col overflow-hidden rounded-lg border border-code-border bg-code-bg">
+      <div className="flex flex-col overflow-hidden rounded-lg border border-code-border bg-code-bg">
         <div className="flex items-center justify-between gap-4 border-b border-code-border px-3 py-1.5 typography-meta text-code-muted">
-          <span>
-            {filtered.length} {filtered.length === 1 ? "entry" : "entries"} ·{" "}
-            {activeRange.label.toLowerCase()}
-          </span>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleStream}
-              aria-pressed={paused}
-              aria-label={toggleLabel}
-              className="flex items-center gap-1.5 rounded-sm px-1.5 py-0.5 transition-colors hover:bg-white/5 hover:text-code-fg"
-            >
-              {paused ? (
-                <Pause
+            {paused ? (
+              <button
+                type="button"
+                onClick={resumeStream}
+                aria-label={resumeIndicatorLabel}
+                className="flex items-center gap-1.5 rounded-sm px-1.5 py-0.5 transition-colors hover:bg-white/5 hover:text-code-fg"
+              >
+                <span
                   aria-hidden="true"
-                  className="size-3 fill-current text-code-muted"
+                  className="size-1.5 rounded-full bg-state-warning"
                 />
-              ) : (
+                Paused
+                {bufferCount > 0 ? (
+                  <span className="text-code-muted">({bufferCount} new)</span>
+                ) : null}
+              </button>
+            ) : (
+              <span className="flex items-center gap-1.5 px-1.5 py-0.5">
                 <span
                   aria-hidden="true"
                   className="size-1.5 rounded-full bg-state-scored animate-pulse"
                 />
-              )}
-              {paused ? "Paused" : "Live"}
-              {paused && bufferCount > 0 ? (
-                <span className="text-code-muted">({bufferCount} new)</span>
-              ) : null}
+                Live
+              </span>
+            )}
+            <span>
+              {filtered.length} {filtered.length === 1 ? "entry" : "entries"} ·{" "}
+              {activeRange.label.toLowerCase()}
+            </span>
+          </div>
+          <div className="flex items-center gap-0.5">
+            {paused ? (
+              <button
+                type="button"
+                aria-label="Resume live tail"
+                onClick={resumeStream}
+                className="rounded-sm p-1 transition-colors hover:bg-white/10 hover:text-code-fg"
+              >
+                <Play aria-hidden="true" className="size-3.5" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                aria-label="Pause live tail"
+                onClick={pauseStream}
+                className="rounded-sm p-1 transition-colors hover:bg-white/10 hover:text-code-fg"
+              >
+                <Pause aria-hidden="true" className="size-3.5" />
+              </button>
+            )}
+            <button
+              type="button"
+              aria-label="Refresh logs"
+              onClick={refreshLogs}
+              disabled={!paused}
+              className="rounded-sm p-1 transition-colors hover:bg-white/10 hover:text-code-fg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-code-muted"
+            >
+              <RefreshCw aria-hidden="true" className="size-3.5" />
             </button>
             <button
               type="button"
@@ -327,9 +384,12 @@ export default function SandboxLogsView() {
             </button>
           </div>
         </div>
-        <div ref={scrollRef} className="flex-1 overflow-auto">
+        <ScrollArea
+          ref={scrollRootRef}
+          className="h-[min(calc(100vh-24rem),35rem)]"
+        >
           <table className="w-full border-collapse typography-code text-code-fg">
-            <thead className="sticky top-0 bg-code-bg">
+            <thead className="sticky top-0 z-10 bg-code-bg">
               <tr className="border-b border-code-border text-code-muted">
                 <LogHeaderCell className="w-12 text-right">#</LogHeaderCell>
                 <LogHeaderCell className="w-56">Timestamp</LogHeaderCell>
@@ -381,7 +441,7 @@ export default function SandboxLogsView() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollArea>
       </div>
     </section>
   );
@@ -442,7 +502,6 @@ function TimeRangeMenu({ value, onChange }: TimeRangeMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="secondary" aria-label="Time range">
-          <span className="text-muted-foreground">Time range ·</span>
           {label}
           <ChevronDown aria-hidden="true" />
         </Button>

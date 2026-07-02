@@ -1,9 +1,14 @@
-import type { SandboxDetailTab } from "./sandbox-view-mode";
+export type SandboxDetailTab =
+  | "overview"
+  | "settings"
+  | "schedules"
+  | "logs"
+  | "terminal";
 
 /** Derive the active sandbox-detail tab from the current pathname.
  *  Falls back to `overview` when the tail segment doesn't match a known tab —
- *  keeps the sticky strip + view-toggle behavior deterministic for any
- *  future sub-route not enumerated here. */
+ *  keeps the sticky strip deterministic for any future sub-route not
+ *  enumerated here. */
 export function sandboxDetailTabFromPath(
   pathname: string,
   basePath: string,
