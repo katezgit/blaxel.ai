@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SandboxOverviewBands from "./_components/sandbox-overview-bands";
+import SandboxOverviewBands from "../_components/sandbox-overview-bands";
 
 export const metadata: Metadata = {
   title: "Sandbox",
