@@ -13,7 +13,7 @@ const ROWS = 3;
 
 // Silhouette mirror of CustomDomainsTable: each cell echoes the shape of the
 // populated render (Domain cell stacks name + display name + label chips;
-// Region cell pairs a flag-glyph dot with city + mono slug; Status is a pill;
+// Status is a pill; Region cell pairs a flag-glyph dot with city + mono slug;
 // Last verified is a tight relative-time bar) so the swap-in is layout-neutral.
 //
 // Diverges from `(app)/_components/resource-table.tsx` because skeleton rows
