@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@repo/ui/components/button";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
@@ -11,7 +11,6 @@ import { sandboxQueries } from "@/lib/query/sandboxes";
 import SandboxDetailHeader from "./sandbox-detail-header";
 import SandboxDetailSkeleton from "./sandbox-detail-skeleton";
 import SandboxDetailStickyTabs from "./sandbox-detail-sticky-tabs";
-import { sandboxDetailTabFromPath } from "./sandbox-detail-tab-from-path";
 
 interface SandboxDetailLayoutClientProps {
   workspaceSlug: string;
@@ -36,11 +35,8 @@ export default function SandboxDetailLayoutClient({
 }: SandboxDetailLayoutClientProps) {
   const { accountId, workspaceId } = useCurrentTenancy();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const stateSim = readStateSim(searchParams.get("state"));
-  const basePath = `/${workspaceSlug}/sandboxes/${sandboxName}`;
   const listHref = `/${workspaceSlug}/sandboxes`;
-  const activeTab = sandboxDetailTabFromPath(pathname, basePath);
   const sandboxQuery = useQuery({
     ...sandboxQueries.detail(accountId, workspaceId, sandboxName),
     enabled: stateSim === null,
