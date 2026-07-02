@@ -221,7 +221,7 @@ export function SandboxesList({
     const acc: Record<StatusFilterLabel, number> = {
       Active: 0,
       Standby: 0,
-      Errored: 0,
+      Failed: 0,
       Deploying: 0,
       Terminated: 0,
     };
@@ -570,14 +570,13 @@ export function SandboxesList({
               rows.map((row) => {
                 const sbx = row.original;
                 const pill = pillFor(sbx);
-                const isErrored = pill.label === "Errored";
+                const isFailed = pill.label === "Failed";
                 const isFadingOut = fadingOutNames.has(sbx.metadata.name);
                 const href = `/${workspaceSlug}/sandboxes/${sbx.metadata.name}`;
                 return (
                   <SandboxRow
                     key={row.id}
-                    sandbox={sbx}
-                    isErrored={isErrored}
+                    isFailed={isFailed}
                     isSelected={row.getIsSelected()}
                     isFadingOut={isFadingOut}
                     onClick={() => router.push(href)}
@@ -594,7 +593,6 @@ export function SandboxesList({
                         cell.getContext(),
                       ),
                     }))}
-                    columnsCount={columns.length}
                   />
                 );
               })
@@ -716,8 +714,7 @@ function Toolbar({
 }
 
 interface SandboxRowProps {
-  sandbox: Sandbox;
-  isErrored: boolean;
+  isFailed: boolean;
   isSelected: boolean;
   isFadingOut: boolean;
   onClick: () => void;
@@ -727,18 +724,15 @@ interface SandboxRowProps {
     className: string | undefined;
     node: React.ReactNode;
   }>;
-  columnsCount: number;
 }
 
 function SandboxRow({
-  sandbox,
-  isErrored,
+  isFailed,
   isSelected,
   isFadingOut,
   onClick,
   onMouseEnter,
   cells,
-  columnsCount,
 }: SandboxRowProps) {
   function handleClick(event: React.MouseEvent<HTMLTableRowElement>) {
     if (isFadingOut) return;
@@ -752,64 +746,26 @@ function SandboxRow({
     onClick();
   }
   return (
-    <>
-      <tr
-        onClick={handleClick}
-        onMouseEnter={onMouseEnter}
-        data-state={isSelected ? "selected" : undefined}
-        aria-selected={isSelected || undefined}
-        className={cn(
-          tableRowVariants(),
-          "group/sbx-row cursor-pointer transition-opacity duration-150",
-          isErrored && sandbox.failure && "border-b-0",
-          isFadingOut && "pointer-events-none opacity-0",
-        )}
-      >
-        {cells.map((cell) => (
-          <td key={cell.key} className={cn(tableCellVariants(), cell.className)}>
-            {cell.node}
-          </td>
-        ))}
-      </tr>
-      {isErrored && sandbox.failure ? (
-        <tr className="border-b border-border bg-state-errored-subtle">
-          <td colSpan={columnsCount} className="pl-6 pr-6 py-2">
-            <div className="flex flex-wrap items-center gap-3 typography-meta text-state-errored-text">
-              <span className="inline-flex items-center gap-1.5">
-                <TriangleAlert
-                  aria-hidden="true"
-                  className="size-3.5 shrink-0"
-                />
-                {sandbox.failure.cause} — push Image or pick another.
-              </span>
-              <div className="ml-auto flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1 rounded-sm px-2 py-1 typography-meta font-medium text-state-errored-text hover:bg-state-errored-subtle focus-visible:outline-none focus-visible:shadow-focus-ring"
-                >
-                  <RotateCw aria-hidden="true" className="size-3" />
-                  Retry
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigator.clipboard?.writeText(
-                      `bl connect sandbox ${sandbox.metadata.name}`,
-                    );
-                  }}
-                  className="inline-flex items-center gap-1 rounded-sm px-2 py-1 typography-meta font-medium text-state-errored-text hover:bg-state-errored-subtle focus-visible:outline-none focus-visible:shadow-focus-ring"
-                >
-                  <Terminal aria-hidden="true" className="size-3" />
-                  Open in CLI
-                </button>
-              </div>
-            </div>
-          </td>
-        </tr>
-      ) : null}
-    </>
+    <tr
+      onClick={handleClick}
+      onMouseEnter={onMouseEnter}
+      data-state={isSelected ? "selected" : undefined}
+      aria-selected={isSelected || undefined}
+      className={cn(
+        tableRowVariants(),
+        "group/sbx-row cursor-pointer transition-opacity duration-150",
+        isFailed &&
+          // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+          "bg-state-errored-subtle shadow-[inset_2px_0_0_var(--color-state-errored)] hover:bg-state-errored-subtle",
+        isFadingOut && "pointer-events-none opacity-0",
+      )}
+    >
+      {cells.map((cell) => (
+        <td key={cell.key} className={cn(tableCellVariants(), cell.className)}>
+          {cell.node}
+        </td>
+      ))}
+    </tr>
   );
 }
 
