@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Badge, type BadgeProps } from "@repo/ui/components/badge";
+import {
+  CheckCircle2,
+  CircleDashed,
+  MinusCircle,
+  XCircle,
+} from "lucide-react";
 import { SearchInput } from "@repo/ui/components/search-input";
+import { cn } from "@repo/ui/lib/cn";
 import {
   Table,
   TableBody,
