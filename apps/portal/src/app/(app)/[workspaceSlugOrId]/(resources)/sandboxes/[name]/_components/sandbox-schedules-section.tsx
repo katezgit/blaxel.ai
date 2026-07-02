@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CopyButton } from "@repo/ui/components/copy-button";
+import { CalendarClock, SearchX } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
+import { EmptyState } from "@repo/ui/components/empty-state";
 import { SearchInput } from "@repo/ui/components/search-input";
 import {
   Select,
@@ -20,7 +22,6 @@ import {
 } from "@repo/ui/components/table";
 import { cn } from "@repo/ui/lib/cn";
 import {
-  ADD_SCHEDULE_CLI_EXAMPLE,
   type SandboxSchedule,
   type SandboxScheduleType,
 } from "@/lib/mock/sandbox-schedules-fixtures";
@@ -83,119 +84,112 @@ export default function SandboxSchedulesSection({
         <SandboxSchedulesAddDrawer />
       </div>
 
-      {isEmpty ? (
-        <SchedulesEmptyState />
-      ) : (
-        <>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <SearchInput
-                defaultValue={search}
-                onLiveChange={setSearch}
-                placeholder="Search schedules…"
-                aria-label="Search schedules"
-              />
-            </div>
-            <Select
-              value={typeFilter}
-              onValueChange={(value) => setTypeFilter(value as TypeFilter)}
-            >
-              <SelectTrigger
-                className="w-40"
-                aria-label="Filter schedules by type"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {isEmpty ? null : (
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <SearchInput
+              defaultValue={search}
+              onLiveChange={setSearch}
+              placeholder="Search schedules…"
+              aria-label="Search schedules"
+            />
           </div>
-
-          <Table
-            totalCount={visible.length}
-            pageOffset={0}
-            bordered
-            className="bg-card"
+          <Select
+            value={typeFilter}
+            onValueChange={(value) => setTypeFilter(value as TypeFilter)}
           >
-            <TableHeader>
-              <tr>
-                <TableHeaderCell label="Type" />
-                <TableHeaderCell label="When" />
-                <TableHeaderCell label="Command" />
-              </tr>
-            </TableHeader>
-            <TableBody>
-              {noResults ? (
-                <tr>
-                  <TableCell
-                    colSpan={3}
-                    className="py-8 text-center text-muted-foreground"
-                  >
-                    No schedules match these filters.
-                  </TableCell>
-                </tr>
-              ) : (
-                visible.map((schedule) => (
-                  <TableRow key={schedule.id}>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-md bg-muted-surface px-2 py-0.5",
-                          "typography-meta font-mono text-meta-foreground",
-                        )}
-                      >
-                        {TYPE_PILL_LABEL[schedule.type]}
-                      </span>
-                    </TableCell>
-                    <TableCell variant="numeric" className="text-left">
-                      <span className="font-mono typography-code text-foreground">
-                        {schedule.when}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-mono typography-code text-foreground">
-                        {schedule.command}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </>
+            <SelectTrigger
+              className="w-40"
+              aria-label="Filter schedules by type"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TYPE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       )}
-    </section>
-  );
-}
 
-/** Empty-state copy + the canonical CLI example. Lives in this file because
- *  it is single-use (only the schedules section's empty branch renders it)
- *  and pulling it into its own file would split context without reuse. */
-function SchedulesEmptyState() {
-  return (
-    <div className="flex flex-col gap-4 rounded-md border border-border bg-card px-6 py-10">
-      <div className="flex flex-col gap-1 text-center">
-        <p className="typography-body font-medium text-foreground">
-          No schedules yet.
-        </p>
-        <p className="typography-body text-muted-foreground">
-          Add one from the CLI to run a command automatically.
-        </p>
-      </div>
-      <div className="mx-auto flex w-full max-w-2xl items-center gap-1.5 rounded-md border border-border bg-muted-surface px-3 py-2">
-        <code className="min-w-0 flex-1 overflow-x-auto whitespace-pre font-mono typography-code text-foreground">
-          {ADD_SCHEDULE_CLI_EXAMPLE}
-        </code>
-        <CopyButton
-          value={ADD_SCHEDULE_CLI_EXAMPLE}
-          ariaLabel="Copy CLI example"
-        />
-      </div>
-    </div>
+      <Table
+        totalCount={visible.length}
+        pageOffset={0}
+        bordered
+        className="bg-card"
+      >
+        <TableHeader>
+          <tr>
+            <TableHeaderCell label="Type" />
+            <TableHeaderCell label="When" />
+            <TableHeaderCell label="Command" />
+          </tr>
+        </TableHeader>
+        <TableBody>
+          {isEmpty && (
+            <tr>
+              <TableCell colSpan={3} className="py-6">
+                <EmptyState
+                  variant="zero-state"
+                  icon={CalendarClock}
+                  title="No schedules yet."
+                />
+              </TableCell>
+            </tr>
+          )}
+          {!isEmpty && noResults && (
+            <tr>
+              <TableCell colSpan={3} className="py-6">
+                <EmptyState
+                  variant="no-results"
+                  icon={SearchX}
+                  title="No schedules match these filters."
+                  cta={
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setSearch("");
+                        setTypeFilter("all");
+                      }}
+                    >
+                      Clear filters
+                    </Button>
+                  }
+                />
+              </TableCell>
+            </tr>
+          )}
+          {!isEmpty &&
+            !noResults &&
+            visible.map((schedule) => (
+              <TableRow key={schedule.id}>
+                <TableCell>
+                  <span
+                    className={cn(
+                      "inline-flex items-center rounded-md bg-muted-surface px-2 py-0.5",
+                      "typography-meta font-mono text-meta-foreground",
+                    )}
+                  >
+                    {TYPE_PILL_LABEL[schedule.type]}
+                  </span>
+                </TableCell>
+                <TableCell variant="numeric" className="text-left">
+                  <span className="font-mono typography-code text-foreground">
+                    {schedule.when}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-mono typography-code text-foreground">
+                    {schedule.command}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </section>
   );
 }

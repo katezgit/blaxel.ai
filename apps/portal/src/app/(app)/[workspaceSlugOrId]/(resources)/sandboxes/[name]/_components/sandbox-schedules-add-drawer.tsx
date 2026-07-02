@@ -235,7 +235,7 @@ export default function SandboxSchedulesAddDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button type="button" variant="secondary">
+        <Button type="button" variant="primary">
           <Plus aria-hidden="true" />
           Add schedule
         </Button>
@@ -337,7 +337,7 @@ function AddScheduleForm({ onClose }: AddScheduleFormProps) {
         <AdvancedDisclosure control={control} />
       </DrawerBody>
 
-      <DrawerFooter className="flex justify-end gap-2">
+      <DrawerFooter className="flex justify-end">
         <Button type="button" variant="ghost" onClick={onClose}>
           Cancel
         </Button>
@@ -375,7 +375,7 @@ function TypeField({ control }: { control: Control<FormValues> }) {
             <SelectContent>
               {TYPE_OPTIONS.map(({ value, label, Icon }) => (
                 <SelectItem key={value} value={value}>
-                  <Icon aria-hidden="true" />
+                  <Icon aria-hidden="true" className="size-3.5 shrink-0" />
                   {label}
                 </SelectItem>
               ))}
@@ -393,33 +393,35 @@ function ScheduleField({ control }: { control: Control<FormValues> }) {
   const mode = useWatch({ control, name: "scheduleMode" });
 
   return (
-    <div className="flex flex-col gap-3">
-      <Label>Schedule</Label>
-      <Controller
-        control={control}
-        name="scheduleMode"
-        render={({ field }) => (
-          <SegmentedControl
-            value={field.value}
-            onValueChange={(v) => field.onChange(v as ScheduleMode)}
-            aria-label="Schedule mode"
-            className="w-full"
-          >
-            <SegmentedControl.Item value="presets" className="flex-1">
-              <Clock aria-hidden="true" />
-              Presets
-            </SegmentedControl.Item>
-            <SegmentedControl.Item value="custom" className="flex-1">
-              <Calendar aria-hidden="true" />
-              Custom
-            </SegmentedControl.Item>
-            <SegmentedControl.Item value="advanced" className="flex-1">
-              <Settings2 aria-hidden="true" />
-              Advanced
-            </SegmentedControl.Item>
-          </SegmentedControl>
-        )}
-      />
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <Label>Schedule</Label>
+        <Controller
+          control={control}
+          name="scheduleMode"
+          render={({ field }) => (
+            <SegmentedControl
+              value={field.value}
+              onValueChange={(v) => field.onChange(v as ScheduleMode)}
+              aria-label="Schedule mode"
+              className="w-full"
+            >
+              <SegmentedControl.Item value="presets" className="flex-1">
+                <Clock aria-hidden="true" className="size-3.5 shrink-0" />
+                Presets
+              </SegmentedControl.Item>
+              <SegmentedControl.Item value="custom" className="flex-1">
+                <Calendar aria-hidden="true" className="size-3.5 shrink-0" />
+                Custom
+              </SegmentedControl.Item>
+              <SegmentedControl.Item value="advanced" className="flex-1">
+                <Settings2 aria-hidden="true" className="size-3.5 shrink-0" />
+                Advanced
+              </SegmentedControl.Item>
+            </SegmentedControl>
+          )}
+        />
+      </div>
 
       {mode === "presets" && <PresetsBody control={control} />}
       {mode === "custom" && <CustomBody control={control} />}
@@ -604,7 +606,7 @@ function CurrentSchedulePreview({ cronExpr }: { cronExpr: string }) {
   const description = describeCron(cronExpr);
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
+    <div className="flex items-center justify-between gap-4 rounded-md border border-border bg-card px-3 py-2.5">
       <div className="flex min-w-0 flex-col">
         <span className="typography-label font-medium text-foreground">
           Current Schedule
