@@ -19,7 +19,7 @@ import {
 import { Breadcrumb } from "@/components/shell/breadcrumb";
 import DetailPageHeader from "@/components/shell/detail-page-header";
 import type { CustomDomain } from "@/lib/mock/custom-domains";
-import { formatRegion } from "../../_lib/region";
+import { formatRegion } from "@/lib/regions";
 import DomainStatusBadge from "../../_components/status-badge";
 import DeleteDomainDialog from "./delete-domain-dialog";
 

@@ -22,7 +22,7 @@ import {
 } from "@repo/ui/components/table";
 import { cn } from "@repo/ui/lib/cn";
 import type { CustomDomain, CustomDomainStatus } from "@/lib/mock/custom-domains";
-import { formatRegion } from "../_lib/region";
+import { formatRegion } from "@/lib/regions";
 import { formatRelative } from "../_lib/relative-time";
 import DomainStatusBadge from "./status-badge";
 

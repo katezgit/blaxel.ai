@@ -1,11 +1,18 @@
 export type VolumeStatus = "attached" | "available" | "detached";
 
+export type VolumeRegion =
+  | "eu-fra-1"
+  | "eu-lon-1"
+  | "us-was-1"
+  | "us-pdx-1";
+
 export interface Volume {
   id: string;
   name: string;
   status: VolumeStatus;
   sizeGb: number;
   attachedTo: string | null;
+  region: VolumeRegion;
 }
 
 const FIXTURES: ReadonlyArray<Volume> = [
@@ -15,6 +22,7 @@ const FIXTURES: ReadonlyArray<Volume> = [
     status: "attached",
     sizeGb: 200,
     attachedTo: "eval-runner",
+    region: "eu-fra-1",
   },
   {
     id: "vol_artifacts",
@@ -22,6 +30,7 @@ const FIXTURES: ReadonlyArray<Volume> = [
     status: "attached",
     sizeGb: 80,
     attachedTo: "code-review-ci",
+    region: "us-was-1",
   },
   {
     id: "vol_browser_cache",
@@ -29,6 +38,7 @@ const FIXTURES: ReadonlyArray<Volume> = [
     status: "available",
     sizeGb: 32,
     attachedTo: null,
+    region: "eu-lon-1",
   },
   {
     id: "vol_archive",
@@ -36,6 +46,7 @@ const FIXTURES: ReadonlyArray<Volume> = [
     status: "detached",
     sizeGb: 512,
     attachedTo: null,
+    region: "us-pdx-1",
   },
 ];
 

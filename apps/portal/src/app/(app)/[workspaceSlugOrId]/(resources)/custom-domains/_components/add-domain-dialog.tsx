@@ -24,9 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import { REGION_SLUGS, formatRegion } from "../_lib/region";
+import { CUSTOM_DOMAIN_REGION_SLUGS, formatRegion } from "@/lib/regions";
 
-const DEFAULT_REGION = REGION_SLUGS[0];
+const DEFAULT_REGION = CUSTOM_DOMAIN_REGION_SLUGS[0];
 
 const schema = z.object({
   // Loose DNS label check; the API is the real validator. A name with a dot and
@@ -141,7 +141,7 @@ export default function AddDomainDialog({ open, onOpenChange }: AddDomainDialogP
                       <SelectValue placeholder="Select a region" />
                     </SelectTrigger>
                     <SelectContent>
-                      {REGION_SLUGS.map((slug) => {
+                      {CUSTOM_DOMAIN_REGION_SLUGS.map((slug) => {
                         const { flag, label } = formatRegion(slug);
                         return (
                           <SelectItem key={slug} value={slug}>
