@@ -51,6 +51,7 @@ import {
   tableRowVariants,
 } from "@repo/ui/components/table";
 import type { Sandbox, SandboxRegion } from "@/lib/mock/sandboxes";
+import { formatRegion } from "@/lib/regions";
 import { StatePill, pillFor } from "./state-pill";
 import type { StatusFilterLabel } from "./aggregate-data";
 import { StatusFilterMenu } from "./status-filter-menu";
@@ -61,7 +62,6 @@ import {
   expiresInBadgeLabel,
   isExpiresInWarning,
   peakRamCell,
-  regionLabel,
 } from "./row-helpers";
 import { ActivitySparkline } from "./activity-sparkline";
 import {
@@ -240,12 +240,25 @@ export function SandboxesList({
       columnHelper.accessor((row) => row.spec.region, {
         id: "region",
         header: "Region",
-        cell: (info) => (
-          <span className="typography-meta text-meta-foreground">
-            {regionLabel(info.getValue())}
-          </span>
-        ),
-        meta: { headerClassName: "w-[104px]" },
+        cell: (info) => {
+          const region = formatRegion(info.getValue());
+          return (
+            <span className="inline-flex items-center gap-1.5 typography-meta text-meta-foreground whitespace-nowrap">
+              {region.flag ? (
+                <span aria-hidden="true" className="text-base leading-none">
+                  {region.flag}
+                </span>
+              ) : null}
+              <span className="text-foreground">{region.label}</span>
+              {region.label !== region.slug && (
+                <span className="font-mono text-meta-foreground">
+                  ({region.slug})
+                </span>
+              )}
+            </span>
+          );
+        },
+        meta: { headerClassName: "w-[200px]" },
       }),
       columnHelper.accessor((row) => row.spec.memoryMib, {
         id: "allocRam",

@@ -1,20 +1,10 @@
-// Pure helpers for the Sandboxes list cells. Region label / TTL countdown /
-// image-ref / RAM / created-at formatting kept here so the table column
-// defs stay declarative.
+// Pure helpers for the Sandboxes list cells. TTL countdown / image-ref / RAM
+// / created-at formatting kept here so the table column defs stay
+// declarative. (Region formatting lives in the shared `@/lib/regions` helper
+// so it stays consistent with Custom Domains and any future region-bearing
+// surface.)
 
-import type { Sandbox, SandboxRegion } from "@/lib/mock/sandboxes";
-
-const REGION_LABEL: Record<SandboxRegion, string> = {
-  auto: "auto",
-  "eu-fra-1": "eu-fra-1",
-  "eu-lon-1": "eu-lon-1",
-  "us-was-1": "us-was-1",
-  "us-pdx-1": "us-pdx-1",
-};
-
-export function regionLabel(region: SandboxRegion): string {
-  return REGION_LABEL[region];
-}
+import type { Sandbox } from "@/lib/mock/sandboxes";
 
 export function imageRefLabel(image: Sandbox["spec"]["image"]): string {
   // Display short form: `<name>@<sha-prefix>…` — the wireframe uses 4-char
