@@ -24,6 +24,7 @@ import {
   type SandboxSchedule,
   type SandboxScheduleType,
 } from "@/lib/mock/sandbox-schedules-fixtures";
+import SandboxSchedulesAddDrawer from "./sandbox-schedules-add-drawer";
 interface SandboxSchedulesSectionProps {
   schedules: ReadonlyArray<SandboxSchedule>;
 }
@@ -76,6 +77,10 @@ export default function SandboxSchedulesSection({
           Schedules run a command inside this sandbox automatically, on a
           recurring cron, at a specific date, or after a delay.
         </p>
+      </div>
+
+      <div className="flex justify-end">
+        <SandboxSchedulesAddDrawer />
       </div>
 
       {isEmpty ? (

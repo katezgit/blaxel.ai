@@ -12,7 +12,6 @@ import SandboxDetailHeader from "./sandbox-detail-header";
 import SandboxDetailSkeleton from "./sandbox-detail-skeleton";
 import SandboxDetailStickyTabs from "./sandbox-detail-sticky-tabs";
 import { sandboxDetailTabFromPath } from "./sandbox-detail-tab-from-path";
-import SandboxSchedulesAddDrawer from "./sandbox-schedules-add-drawer";
 
 interface SandboxDetailLayoutClientProps {
   workspaceSlug: string;
@@ -87,16 +86,9 @@ export default function SandboxDetailLayoutClient({
     );
   }
 
-  const headerActions =
-    activeTab === "schedules" ? <SandboxSchedulesAddDrawer /> : undefined;
-
   return (
     <div className="page-shell">
-      <SandboxDetailHeader
-        sandbox={sandbox}
-        workspaceSlug={workspaceSlug}
-        actions={headerActions}
-      />
+      <SandboxDetailHeader sandbox={sandbox} workspaceSlug={workspaceSlug} />
       <SandboxDetailStickyTabs
         workspaceSlug={workspaceSlug}
         sandboxName={sandboxName}

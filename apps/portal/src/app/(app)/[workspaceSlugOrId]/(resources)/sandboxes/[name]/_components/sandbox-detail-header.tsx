@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal, RotateCw, ScrollText, Terminal, Trash2 } from "lucide-react";
@@ -34,10 +34,6 @@ import { SandboxExtendAction } from "./sandbox-extend-action";
 interface SandboxDetailHeaderProps {
   sandbox: Sandbox;
   workspaceSlug: string;
-  /** Tab-owned CTA (e.g. Schedules → Add schedule). Rendered at the right
-   *  edge of the title row, immediately before the Extend + overflow
-   *  cluster. Undefined on tabs without a page-level action. */
-  actions?: ReactNode;
 }
 
 /** Sandbox detail page header. Meta row is trimmed to at-a-glance essentials
@@ -52,7 +48,6 @@ interface SandboxDetailHeaderProps {
 export default function SandboxDetailHeader({
   sandbox,
   workspaceSlug,
-  actions,
 }: SandboxDetailHeaderProps) {
   const heading = sandbox.metadata.displayName || sandbox.metadata.name;
   const listHref = `/${workspaceSlug}/sandboxes`;
@@ -115,7 +110,6 @@ export default function SandboxDetailHeader({
             <StatePill sandbox={sandbox} />
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            {actions}
             <SandboxExtendAction sandbox={sandbox} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
