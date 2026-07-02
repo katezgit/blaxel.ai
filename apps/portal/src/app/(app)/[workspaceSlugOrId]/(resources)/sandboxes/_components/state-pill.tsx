@@ -58,7 +58,7 @@ export function StatePill({ sandbox }: StatePillProps) {
   // showDot is suppressed for neutral by Badge's own dot map; we leave it on
   // so success/destructive/running keep their dot.
   return (
-    <Badge variant={variant} showDot>
+    <Badge variant={variant} showDot className="border-transparent bg-transparent">
       {label}
     </Badge>
   );
