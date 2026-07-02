@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowUp } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
+import { CopyButton } from "@repo/ui/components/copy-button";
 import {
   Table,
   TableBody,
@@ -92,28 +93,36 @@ function PreviewsSubsection({
             <TableRow>
               <TableHeaderCell label="Name" />
               <TableHeaderCell label="URL" />
-              <TableHeaderCell label="Port" />
+              <TableHeaderCell label="Port" numeric />
               <TableHeaderCell label="Access" />
               <TableHeaderCell label="Expires at" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {previews.map((preview) => (
-              <TableRow key={preview.name}>
+              <TableRow key={preview.name} className="group/row">
                 <TableCell>
                   <span className="font-mono text-foreground">
                     {preview.name}
                   </span>
                 </TableCell>
                 <TableCell>
-                  <a
-                    href={preview.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-mono text-foreground transition-colors hover:text-primary"
-                  >
-                    {preview.url}
-                  </a>
+                  <span className="inline-flex items-center gap-1.5">
+                    <a
+                      href={preview.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono text-foreground transition-colors hover:text-primary"
+                    >
+                      {preview.url}
+                    </a>
+                    <CopyButton
+                      value={preview.url}
+                      ariaLabel={`Copy URL ${preview.url}`}
+                      tooltipLabel="Copy URL"
+                      className="opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+                    />
+                  </span>
                 </TableCell>
                 <TableCell variant="numeric">{preview.port}</TableCell>
                 <TableCell>

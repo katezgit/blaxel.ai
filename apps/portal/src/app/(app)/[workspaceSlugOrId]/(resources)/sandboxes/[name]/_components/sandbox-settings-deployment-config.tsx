@@ -19,7 +19,7 @@ export default function SandboxSettingsDeploymentConfig({
 }: SandboxSettingsDeploymentConfigProps) {
   return (
     <BandFrame label="Deployment config" className="border-t-0 pt-0">
-      <dl className="flex flex-col gap-4">
+      <dl className="flex flex-col gap-6">
         <ConfigRow label="Image">
           <span className="font-mono typography-body text-foreground">
             {imageWithShaLabel(sandbox.spec.image)}
@@ -68,9 +68,9 @@ function ConfigRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="flex flex-col gap-2">
       <dt className="typography-meta text-meta-foreground">{label}</dt>
-      <dd className="min-w-0">{children}</dd>
+      <dd>{children}</dd>
     </div>
   );
 }
