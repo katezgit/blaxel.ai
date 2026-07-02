@@ -34,7 +34,7 @@ export function AccountSidebarIdentity() {
         aria-hidden="true"
         className={cn(
           "size-4 shrink-0 text-meta-foreground",
-          isRail && "size-5",
+          isRail && "size-[18px]",
         )}
       />
       {!isRail && (

@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import SidebarNavItem from "@/components/shell/sidebar-nav-item";
 import { useIsSidebarRail } from "@/components/shell/use-is-sidebar-rail";
@@ -10,35 +9,67 @@ import type { NavGroup } from "@/components/shell/nav-groups";
 interface SidebarProps {
   ariaLabel: string;
   groups: ReadonlyArray<NavGroup>;
+  /** Zone A row 1 — brand + search + collapse chevron. */
+  brand?: ReactNode;
+  /** Zone A row 2 — WorkspaceSwitcher on main routes, or Back link on
+   * sub-shell routes. Sits above the Zone A/B hairline. */
   header?: ReactNode;
+  /** Top of Zone B — content rendered inside the nav container above the
+   * groups. Used for the sub-shell identity chip so the hairline separates
+   * `Back` (chrome) from the chip (nav content). */
+  preNav?: ReactNode;
+  /** Zone C + D — footer icon strip stacked on top of the identity chip. */
+  footer?: ReactNode;
   collapsed?: boolean;
-  onToggle?: () => void;
 }
 
-// Width transition is owned by the wrapper CSS in globals.css
-// (.shell-pane-column). Slide-in animation lives on the keyed wrapper around
-// this primitive in <UnifiedShell> — keep the primitive transition-agnostic.
-export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle }: SidebarProps) {
+// Full-viewport-height at md+. Four vertical zones inside the aside:
+// Zone A top (brand row + header row), Zone B middle (nav — scrollable if
+// overflow), Zone C+D bottom (footer icon strip + user chip). Width
+// transition is owned by the wrapper CSS in globals.css (.shell-pane-column).
+// Slide-in animation lives on the keyed wrapper around this primitive in
+// <UnifiedShell> — keep the primitive transition-agnostic.
+export function Sidebar({
+  ariaLabel,
+  groups,
+  brand,
+  header,
+  preNav,
+  footer,
+  collapsed = false,
+}: SidebarProps) {
   const isRail = useIsSidebarRail();
 
   return (
     <aside
       aria-label={ariaLabel}
       className={cn(
-        "relative h-full shrink-0 border-r border-sidebar-border bg-sidebar",
+        "flex h-full shrink-0 flex-col border-r border-sidebar-border bg-sidebar",
         collapsed ? "lg:w-(--sidebar-rail-w)" : "lg:w-(--sidebar-w)",
         "md:w-(--sidebar-rail-w)",
       )}
     >
+      {/* Zone A: brand row + header row. Fixed height, does not scroll.
+       * gap-2 keeps the two rows visually distinct without feeling stacked.
+       * Hairline bottom-border separates Zone A from Zone B (nav) — pb-1.5
+       * keeps the hairline close under the header row so sub-shell Back rows
+       * don't inflate dead vertical space above the identity chip. */}
+      {(brand || header) && (
+        <div className="flex flex-col gap-2 border-b border-sidebar-border px-2 pt-3 pb-1.5">
+          {brand}
+          {header}
+        </div>
+      )}
+      {/* Middle zone: nav. Grows to fill remaining height, scrolls internally
+       * if the group list overflows. */}
       <nav
         aria-label={ariaLabel}
         data-rail={isRail || undefined}
         className={cn(
-          "flex h-full flex-col gap-4 overflow-y-auto overflow-x-hidden px-2 pb-3",
-          header ? "pt-0" : "pt-3",
+          "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden px-2 pt-3 pb-2",
         )}
       >
-        {header}
+        {preNav}
         {groups.map((group, index) => (
           <div
             key={group.label || `group-${index}`}
@@ -48,7 +79,7 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
             {group.label ? (
               <div
                 data-group-label
-                className="px-2 pb-1 font-mono typography-meta uppercase text-meta-foreground"
+                className="px-2 typography-meta font-sans tracking-normal text-meta-foreground"
               >
                 {group.label}
               </div>
@@ -63,22 +94,17 @@ export function Sidebar({ ariaLabel, groups, header, collapsed = false, onToggle
           </div>
         ))}
       </nav>
-      {onToggle ? (
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-label={isRail ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
-          aria-pressed={isRail}
-          // Centered vertically on the first sidebar row — Back in sub-shells,
-          // the first section label in the main shell. Both rows' centerlines
-          // land at ~y=20 inside the sidebar (sub-shell: pt-1 wrapper + h-8
-          // row → center at 4+16=20; main shell: pt-3 + small label, center
-          // ~20), so a single top-5 value rides both.
-          className="absolute top-5 -right-3 z-10 hidden size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-sidebar text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring lg:inline-flex"
+      {/* Bottom zone: footer. Fixed at viewport-bottom, hairline separator
+       * against the nav. Empty in mobile drawer (not passed). */}
+      {footer && (
+        <div
+          data-sidebar-footer
+          data-rail={isRail || undefined}
+          className="flex flex-col gap-2 border-t border-sidebar-border px-2 py-2"
         >
-          {isRail ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
-        </button>
-      ) : null}
+          {footer}
+        </div>
+      )}
     </aside>
   );
 }

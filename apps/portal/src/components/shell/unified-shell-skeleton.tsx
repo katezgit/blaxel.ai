@@ -1,8 +1,20 @@
 "use client";
 
-import { ArrowLeft, Boxes, ChevronDown, Menu, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  Bell,
+  BookOpen,
+  Boxes,
+  ChevronDown,
+  ChevronsUpDown,
+  HelpCircle,
+  Menu,
+  PanelLeft,
+  Search,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { cn } from "@repo/ui/lib/cn";
 import { BrandMark } from "@/components/shell/brand-mark";
@@ -26,34 +38,21 @@ import {
 } from "@/components/shell/sub-shell-path";
 
 // Loading-boundary skin for the unified shell. Locks the destination shape
-// (topbar variant + rail + sub-pane + content area) so the swap to the real
-// shell, once data resolves, lands without reflow. Sub-shell discrimination
-// reuses the same URL predicates the real shell consumes.
-//
-// On first paint into a sub-shell route (/profile/security, /account/...,
-// /{slug}/settings/general), this renders at rest with the sub-pane already
-// in the open position — the CSS `transition` only fires on a property change,
-// not on the initial style application.
+// (aside full-height with brand row + top utility row + optional header +
+// nav + footer icon strip + user chip + content area) so the swap to the
+// real shell, once data resolves, lands without reflow.
 export function UnifiedShellSkeleton() {
   const pathname = usePathname();
   const subShellKind = subShellKindForPath(pathname);
   const subShellOpen = subShellKind !== null;
   const { collapsed } = useSidebarState();
 
-  // Workspace slug for resource nav + sub-pane settings nav. The first path
-  // segment on workspace routes; on profile/account it's unknown — fall back
-  // to a placeholder slug so href construction stays string-stable.
   const segments = pathname.split("/").filter(Boolean);
   const workspaceSlug = segments[0] && !["profile", "account"].includes(segments[0])
     ? segments[0]
     : "";
   const settingsSlug = workspaceSlugFromPath(pathname) ?? workspaceSlug;
 
-  // Mirror unified-shell's `subPaneCollapsed` reset semantics. The real shell
-  // resets the sub-pane to expanded every time `subShellOpen` flips false→true
-  // — including the very first paint on a sub-shell route. The skeleton must
-  // paint the same visible-pane state so hydration doesn't snap the sub-pane
-  // open. The rail keeps the saved preference (off-screen here anyway).
   const visibleCollapsed = subShellOpen ? false : collapsed;
 
   const railGroups = useMemo(
@@ -79,42 +78,42 @@ export function UnifiedShellSkeleton() {
     };
   }, [subShellKind, settingsSlug]);
 
+  const footerSkeleton = (
+    <>
+      <FooterIconStripSkeleton />
+      <UserChipSkeleton />
+    </>
+  );
+
   return (
     <div
       data-shell-frame
       data-sub-shell-open={subShellOpen || undefined}
-      className={cn(
-        "relative flex h-screen flex-col overflow-hidden text-foreground",
-        // ⌘B is the single source of truth on both buckets — width follows
-        // the rail OR sub-pane the user is about to see. Set explicitly in
-        // both branches so the chevron's left-(--shell-left-w) anchor reads a
-        // non-empty variable. Matches unified-shell, including the sub-shell
-        // entry reset (sub-pane always paints expanded on entry).
-        visibleCollapsed
-          ? "[--shell-left-w:var(--sidebar-rail-w)]"
-          : "[--shell-left-w:var(--sidebar-w)]",
-      )}
+      className="relative flex h-screen flex-col overflow-hidden bg-grid-backdrop bg-background text-foreground"
     >
       <SkipToContent />
       <CollapsibleSidebarMarker
         value={{ inCollapsible: true, userCollapsed: visibleCollapsed }}
       >
-        {subShellOpen ? (
-          subShellKind === "settings" ? (
-            <SettingsSubShellTopbarSkeleton />
-          ) : (
-            <PersonalSubShellTopbarSkeleton />
-          )
-        ) : (
-          <WorkspaceTopbarSkeleton />
-        )}
-        <div className="relative flex min-h-0 flex-1">
+        {/* Mobile-only topbar. Hidden at md+ via CSS. */}
+        <MobileTopbarSkeleton subShellOpen={subShellOpen} />
+        <div
+          className={cn(
+            "relative flex min-h-0 flex-1",
+            visibleCollapsed
+              ? "[--shell-left-w:var(--sidebar-rail-w)]"
+              : "[--shell-left-w:var(--sidebar-w)]",
+          )}
+        >
           <div className="shell-pane-column hidden md:block">
             {subShellOpen ? (
+              // Sub-shell hides footer entirely — matches UnifiedShell so the
+              // skeleton → real-shell swap does not reflow.
               <Sidebar
                 ariaLabel={subPane.ariaLabel}
                 groups={subPane.groups}
                 collapsed={visibleCollapsed}
+                brand={<BrandRowSkeleton />}
                 header={<ReturnHeaderSkeleton />}
               />
             ) : (
@@ -122,10 +121,13 @@ export function UnifiedShellSkeleton() {
                 ariaLabel="Workspace resources"
                 groups={railGroups}
                 collapsed={collapsed}
+                brand={<BrandRowSkeleton />}
+                header={<WorkspaceSwitcherSkeleton />}
+                footer={footerSkeleton}
               />
             )}
           </div>
-          <main className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-background">
+          <main className="min-w-0 flex-1 overflow-y-auto">
             <RouteSpinner />
           </main>
         </div>
@@ -134,10 +136,15 @@ export function UnifiedShellSkeleton() {
   );
 }
 
-function WorkspaceTopbarSkeleton() {
-  const isRail = useIsSidebarRail();
+interface MobileTopbarSkeletonProps {
+  subShellOpen: boolean;
+}
+
+function MobileTopbarSkeleton({ subShellOpen }: MobileTopbarSkeletonProps) {
   return (
-    <header className="shell-topbar">
+    <header
+      className={cn("shell-topbar", subShellOpen && "shell-topbar-sub")}
+    >
       <div data-zone="left">
         <button
           type="button"
@@ -148,89 +155,74 @@ function WorkspaceTopbarSkeleton() {
         >
           <Menu className="size-4" aria-hidden="true" />
         </button>
-        <span data-slot="brand" className="hidden md:inline-flex">
+        <span data-slot="brand">
           <BrandMark />
         </span>
-        <span data-slot="ws">
-          <WorkspaceSwitcherSkeleton isRail={isRail} />
-        </span>
+        {!subShellOpen && (
+          <span data-slot="ws">
+            <MobileWorkspaceSwitcherSkeleton />
+          </span>
+        )}
       </div>
       <div data-zone="center">
-        <SearchTriggerSkeleton />
+        <MobileSearchTriggerSkeleton />
       </div>
       <div data-zone="right">
-        <IdentityClusterSkeleton />
+        <MobileIdentityClusterSkeleton />
       </div>
     </header>
   );
 }
 
-function SettingsSubShellTopbarSkeleton() {
+function BrandRowSkeleton() {
   const isRail = useIsSidebarRail();
+  const searchIcon = (
+    <span
+      role="presentation"
+      aria-hidden="true"
+      className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground"
+    >
+      <Search className="size-4" />
+    </span>
+  );
+  const toggle = (
+    <span
+      role="presentation"
+      aria-hidden="true"
+      className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground"
+    >
+      <PanelLeft className="size-5" />
+    </span>
+  );
+  if (isRail) {
+    return <div className="flex justify-center">{toggle}</div>;
+  }
   return (
-    <header className="shell-topbar shell-topbar-sub">
-      <div data-zone="left">
-        <button
-          type="button"
-          data-slot="nav-trigger"
-          aria-label="Open navigation"
-          disabled
-          className="inline-flex size-8 items-center justify-center rounded-md text-foreground"
-        >
-          <Menu className="size-4" aria-hidden="true" />
-        </button>
-        <span data-slot="brand" className="hidden md:inline-flex">
-          <BrandMark />
-        </span>
-        <span data-slot="ws">
-          <WorkspaceSwitcherSkeleton isRail={isRail} />
-        </span>
+    <div className="flex h-8 items-center gap-1">
+      <div className="flex min-w-0 flex-1 items-center">
+        <BrandMark />
       </div>
-      <div data-zone="right">
-        <IdentityClusterSkeleton />
-      </div>
-    </header>
+      {searchIcon}
+      {toggle}
+    </div>
   );
 }
 
-function PersonalSubShellTopbarSkeleton() {
-  return (
-    <header className="shell-topbar shell-topbar-sub">
-      <div data-zone="left">
-        <button
-          type="button"
-          data-slot="nav-trigger"
-          aria-label="Open navigation"
-          disabled
-          className="inline-flex size-8 items-center justify-center rounded-md text-foreground"
-        >
-          <Menu className="size-4" aria-hidden="true" />
-        </button>
-        <span data-slot="brand" className="hidden md:inline-flex">
-          <BrandMark />
-        </span>
-      </div>
-      <div data-zone="right">
-        <IdentityClusterSkeleton />
-      </div>
-    </header>
-  );
-}
-
-function WorkspaceSwitcherSkeleton({ isRail }: { isRail: boolean }) {
+function WorkspaceSwitcherSkeleton() {
+  const isRail = useIsSidebarRail();
   return (
     <div
       role="presentation"
       className={cn(
-        "flex min-w-0 max-w-full items-center rounded-md border typography-label font-medium text-foreground",
+        "flex min-w-0 max-w-full items-center rounded-md border border-transparent typography-label font-medium text-foreground",
         isRail
-          ? "border-transparent p-1"
-          : "w-full gap-1.5 border-border px-2 py-1 max-md:gap-1 max-md:px-1.5 max-md:py-0.5",
+          ? "size-8 mx-auto justify-center"
+          : "w-full gap-1.5 px-2 py-1",
       )}
     >
       <Boxes
         aria-hidden="true"
-        className="size-4 shrink-0 text-meta-foreground"
+        className={cn("shrink-0 text-meta-foreground", isRail ? "size-5" : "size-4")}
       />
       {!isRail && (
         <>
@@ -245,26 +237,92 @@ function WorkspaceSwitcherSkeleton({ isRail }: { isRail: boolean }) {
   );
 }
 
-function SearchTriggerSkeleton() {
+function FooterIconStripSkeleton() {
+  const isRail = useIsSidebarRail();
   return (
     <div
       role="presentation"
-      data-slot="search"
-      className="flex h-8 w-full max-w-sm items-center gap-2 rounded-lg border border-form-field-border bg-field-rest px-2.5 typography-body text-muted-foreground max-md:size-8 max-md:justify-center max-md:border-transparent max-md:bg-transparent max-md:px-0"
+      className={cn(
+        "flex items-center gap-1 border-b border-sidebar-border pb-2",
+        isRail ? "flex-col" : "justify-around",
+      )}
     >
-      <Search className="size-4 shrink-0" aria-hidden="true" />
-      <Skeleton className="hidden h-3 flex-1 rounded-sm md:block" />
+      {[BookOpen, HelpCircle, Bell].map((Icon, i) => (
+        <span
+          key={i}
+          aria-hidden="true"
+          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground"
+        >
+          <Icon className="size-5" />
+        </span>
+      ))}
     </div>
   );
 }
 
-function IdentityClusterSkeleton() {
+function UserChipSkeleton() {
+  const isRail = useIsSidebarRail();
   return (
-    <div className="flex items-center">
+    <div
+      role="presentation"
+      className={cn(
+        "flex items-center rounded-md",
+        isRail ? "size-8 mx-auto justify-center" : "w-full gap-2 px-2 py-1.5",
+      )}
+    >
+      <Avatar size="sm">
+        <AvatarFallback>?</AvatarFallback>
+      </Avatar>
+      {!isRail && (
+        <>
+          <Skeleton className="h-3 min-w-0 flex-1 rounded-sm" />
+          <ChevronsUpDown
+            aria-hidden="true"
+            className="size-4 shrink-0 text-meta-foreground"
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
+function MobileWorkspaceSwitcherSkeleton() {
+  return (
+    <div
+      role="presentation"
+      className="flex min-w-0 max-w-full items-center rounded-md border border-border px-1.5 py-0.5 gap-1 typography-label font-medium text-foreground"
+    >
+      <Boxes
+        aria-hidden="true"
+        className="size-4 shrink-0 text-meta-foreground"
+      />
+      <Skeleton className="h-4 min-w-0 flex-1 rounded-sm" />
+      <ChevronDown
+        aria-hidden="true"
+        className="size-4 shrink-0 text-meta-foreground"
+      />
+    </div>
+  );
+}
+
+function MobileSearchTriggerSkeleton() {
+  return (
+    <div
+      role="presentation"
+      data-slot="search"
+      className="flex size-8 items-center justify-center rounded-lg text-muted-foreground"
+    >
+      <Search className="size-4 shrink-0" aria-hidden="true" />
+    </div>
+  );
+}
+
+function MobileIdentityClusterSkeleton() {
+  return (
+    <div className="flex items-center gap-2">
       <Skeleton className="size-8 rounded-md" />
-      <Skeleton className="ml-2 size-8 rounded-md" />
-      <Skeleton className="ml-3 h-7 w-24 rounded-md" />
-      <Skeleton className="ml-3 size-8 rounded-full" />
+      <Skeleton className="size-8 rounded-md" />
+      <Skeleton className="size-8 rounded-full" />
     </div>
   );
 }
@@ -272,20 +330,20 @@ function IdentityClusterSkeleton() {
 function ReturnHeaderSkeleton() {
   const isRail = useIsSidebarRail();
   return (
-    <div className="pt-1 pb-2 border-b border-sidebar-border">
+    <div className="py-1">
       <div
         data-sub-shell-return
         aria-hidden="true"
         className={cn(
-          "flex h-8 items-center gap-2 rounded-md",
-          isRail ? "justify-center px-0" : "px-2",
+          "h-8 items-center gap-2 rounded-md",
+          isRail ? "flex justify-center px-0" : "inline-flex px-2",
           "typography-body text-muted-foreground",
         )}
       >
         <ArrowLeft
           data-sub-shell-return-icon
           aria-hidden="true"
-          className="size-4 shrink-0"
+          className={cn("shrink-0", isRail ? "size-5" : "size-4")}
         />
         {!isRail && <Skeleton className="h-3 w-12 rounded-sm" />}
       </div>

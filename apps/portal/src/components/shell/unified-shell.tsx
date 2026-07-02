@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
@@ -16,8 +16,14 @@ import { IdentityCluster } from "@/components/shell/identity-cluster";
 import { MobileNavDrawer } from "@/components/shell/mobile-nav-drawer";
 import { SearchTrigger } from "@/components/shell/search-trigger";
 import { Sidebar } from "@/components/shell/sidebar";
+import { SidebarBrandRow } from "@/components/shell/sidebar-brand-row";
+import { SidebarFooterIconStrip } from "@/components/shell/sidebar-footer-icon-strip";
+import { SidebarUserChip } from "@/components/shell/sidebar-user-chip";
 import { SkipToContent } from "@/components/shell/skip-to-content";
-import { SubShellSidebarHeader } from "@/components/shell/sub-shell-sidebar-header";
+import {
+  SubShellSidebarHeader,
+  SubShellSidebarIdentity,
+} from "@/components/shell/sub-shell-sidebar-header";
 import { CollapsibleSidebarMarker } from "@/components/shell/use-is-sidebar-rail";
 import { useLastWorkspaceTracker } from "@/components/shell/use-last-workspace-tracker";
 import { readLastWorkspaceSlug } from "@/components/shell/use-last-workspace-tracker";
@@ -37,14 +43,16 @@ import {
 import WorkspaceSwitcher from "@/components/shell/workspace-switcher";
 import type { Org } from "@/lib/mock/types";
 
-// One shell across every authenticated route. ONE <Sidebar> mounts at a time;
-// a `key` change on its wrapper forces React to unmount the old sidebar and
-// mount the new one when `subShellOpen` flips. The new one slides in via the
-// `shell-pane-slide-in-from-*` keyframe; the old one just disappears (no exit
-// animation). Mirrors the Oak pattern at
-// apps/web/app/_components/app-shell/sidebar.tsx — eliminates the two-pane
-// translate-swap artifacts (content jump mid-slide, slow exit "old man
-// walking") that came from keeping both <aside> elements mounted.
+// One shell across every authenticated route. At md+ the topbar element does
+// not render (CSS: .shell-topbar { display: none }); the sidebar spans the
+// full viewport height and owns brand + workspace + nav + utility chrome.
+// Below md the topbar renders as the mobile chrome band above content — the
+// sidebar is hidden and its contents surface via the drawer.
+//
+// ONE <Sidebar> mounts at a time; a `key` change on its wrapper forces React
+// to unmount the old sidebar and mount the new one when `subShellOpen` flips.
+// The new one slides in via the `shell-pane-slide-in-from-*` keyframe.
+// Mirrors the Oak pattern at apps/web/app/_components/app-shell/sidebar.tsx.
 //
 // Sub-pane content is route-derived inside the shell (settings / profile /
 // account). The active workspace on workspace routes is resolved from the URL
@@ -75,20 +83,12 @@ export function UnifiedShell({
   const subShellKind = subShellKindForPath(pathname);
   const subShellOpen = subShellKind !== null;
 
-  // Workspace resolved from the URL — null on /profile and /account, the
-  // canonical Org on any /{slug}/* route (workspace or settings). The lookup
-  // accepts either slug or id because the route segment is workspaceSlugOrId.
   const urlSlug = workspaceSlugFromAnyPath(pathname);
   const urlWorkspace = useMemo(() => {
     if (!urlSlug) return null;
     return workspaces.find((w) => w.slug === urlSlug || w.id === urlSlug) ?? null;
   }, [urlSlug, workspaces]);
 
-  // Workspace shown in the topbar switcher + sub-shell return header.
-  // Priority: URL workspace > last-visited tracker (sub-shell routes) > fallback.
-  // The tracker write happens further down via useLastWorkspaceTracker —
-  // mounting this unconditionally means /profile and /account always get a
-  // resolved workspace even on first paint (the fallback is the seed).
   const [trackedSlug, setTrackedSlug] = useState<string | null>(null);
   useEffect(() => {
     setTrackedSlug(readLastWorkspaceSlug());
@@ -103,8 +103,6 @@ export function UnifiedShell({
     return fallbackWorkspace;
   }, [urlWorkspace, trackedSlug, workspaces, fallbackWorkspace]);
 
-  // Tracker writes the workspace slug whenever a workspace route is active.
-  // No-ops on /profile and /account (slug stays the last good value).
   useLastWorkspaceTracker(urlWorkspace?.slug ?? "");
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -114,9 +112,7 @@ export function UnifiedShell({
 
   // Sub-pane collapse: ephemeral. Resets to false (expanded) every time
   // `subShellOpen` flips false → true — entering a sub-shell from a main route,
-  // OR first paint on a sub-shell route (the ref starts as undefined, so the
-  // first effect run with subShellOpen=true counts as a transition). Never
-  // persisted; toggling here must not write to the rail's storage key.
+  // OR first paint on a sub-shell route.
   const [subPaneCollapsed, setSubPaneCollapsed] = useState(false);
   const prevSubShellOpenRef = useRef<boolean | undefined>(undefined);
   useEffect(() => {
@@ -126,14 +122,9 @@ export function UnifiedShell({
     prevSubShellOpenRef.current = subShellOpen;
   }, [subShellOpen]);
 
-  // Slide-in direction tracking. Computed during render (Oak pattern at
-  // apps/web/app/_components/app-shell/sidebar.tsx:154-167): when subShellOpen
-  // flips, set the class for the *incoming* sidebar — entering a sub-shell
-  // slides in from the right (going deeper), leaving slides the workspace nav
-  // back in from the left (returning to parent). The ref persists the class
-  // across renders so it stays applied to the keyed wrapper while mounted; on
-  // first paint the ref is empty so no animation fires (which is what we want
-  // — initial render is not a navigation event).
+  // Slide-in direction tracking. Computed during render (Oak pattern):
+  // entering a sub-shell slides in from the right (going deeper), leaving
+  // slides the workspace nav back in from the left (returning to parent).
   const paneAnimClassRef = useRef("");
   const prevSubShellOpenForAnimRef = useRef<boolean | undefined>(undefined);
   if (prevSubShellOpenForAnimRef.current !== subShellOpen) {
@@ -146,9 +137,6 @@ export function UnifiedShell({
   }
   const paneAnimClass = paneAnimClassRef.current;
 
-  // Whichever pane is on screen owns the chevron + ⌘B. Read its collapsed
-  // value, call its toggler. ⌘B inside a sub-shell must NOT touch the rail's
-  // persisted state — that's the whole point of the split.
   const visibleCollapsed = subShellOpen ? subPaneCollapsed : railCollapsed;
   const toggleVisiblePane = useCallback(() => {
     if (subShellOpen) {
@@ -159,17 +147,11 @@ export function UnifiedShell({
   }, [subShellOpen, toggleRail]);
   useSidebarShortcut(toggleVisiblePane);
 
-  // The rail (top-level workspace nav) — always renders workspace-resource
-  // groups derived from the active workspace's slug.
   const railGroups = useMemo(
     () => workspaceNavGroups(headerWorkspace.slug),
     [headerWorkspace.slug],
   );
 
-  // The sub-pane content depends on which sub-shell is open. When closed, we
-  // still render the pane offscreen with whatever the last open content was so
-  // the slide-out direction stays correct. To keep DOM identity stable, we
-  // always render the pane and just swap its inner groups + label by kind.
   const settingsSlug =
     subShellKind === "settings"
       ? workspaceSlugFromPath(pathname) ?? headerWorkspace.slug
@@ -190,10 +172,6 @@ export function UnifiedShell({
         groups: ACCOUNT_NAV_GROUPS,
       };
     }
-    // settings (or closed — last-rendered content stays for clean slide-out).
-    // No group label: the sidebar identity card above the items already
-    // carries the "Workspace settings" signal, so the uppercase group header
-    // would be redundant noise.
     return {
       ariaLabel: "Workspace settings",
       drawerId: WORKSPACE_SETTINGS_DRAWER_ID,
@@ -206,14 +184,24 @@ export function UnifiedShell({
     };
   }, [subShellKind, settingsSlug]);
 
-  // Topbar variant — workspace routes show the full topbar (workspace switcher
-  // + search); sub-shell routes show the simplified sub-topbar.
-  const showFullTopbar = !subShellOpen;
   const mobileDrawerId = subShellOpen
     ? subPane.drawerId
     : WORKSPACE_RESOURCES_DRAWER_ID;
   const mobileGroups = subShellOpen ? subPane.groups : railGroups;
   const mobileAriaLabel = subShellOpen ? subPane.ariaLabel : "Workspace resources";
+
+  const sidebarBrand = (
+    <SidebarBrandRow
+      onToggleCollapse={toggleVisiblePane}
+      collapsed={visibleCollapsed}
+    />
+  );
+  const sidebarFooter = (
+    <>
+      <SidebarFooterIconStrip />
+      <SidebarUserChip user={{ name: user.name, email: user.email }} />
+    </>
+  );
 
   return (
     <CommandPaletteProvider>
@@ -221,28 +209,24 @@ export function UnifiedShell({
         <div
           data-shell-frame
           data-sub-shell-open={subShellOpen || undefined}
-          className={cn(
-            "relative flex h-screen flex-col overflow-hidden text-foreground",
-            // --shell-left-w drives the topbar grid column, the pane-stack
-            // width, and the shared chevron's anchor. Tracks the currently
-            // visible pane: on main routes it follows the rail (persistent);
-            // on sub-shell routes it follows the sub-pane (ephemeral, resets
-            // expanded on entry). Set explicitly in both branches so consumers
-            // (including the chevron's left-(--shell-left-w)) never see an
-            // empty variable. The variable is @property-registered as <length>
-            // in globals.css so consumers interpolate in lockstep instead of
-            // snapping at frame 0.
-            visibleCollapsed
-              ? "[--shell-left-w:var(--sidebar-rail-w)]"
-              : "[--shell-left-w:var(--sidebar-w)]",
-          )}
+          className="relative flex h-screen flex-col overflow-hidden bg-grid-backdrop bg-background text-foreground"
         >
           <SkipToContent />
           <CollapsibleSidebarMarker
             value={{ inCollapsible: true, userCollapsed: visibleCollapsed }}
           >
-            {showFullTopbar ? (
-              <UnifiedTopbar
+            {/* Mobile-only topbar. .shell-topbar is display:none at md+, so
+             * this row consumes zero layout space above the aside+main row on
+             * desktop and tablet. */}
+            {subShellOpen ? (
+              <MobileSubShellTopbar
+                user={user}
+                mobileNavId={mobileDrawerId}
+                mobileNavOpen={drawerOpen}
+                onOpenMobileNav={() => setDrawerOpen(true)}
+              />
+            ) : (
+              <MobileWorkspaceTopbar
                 workspace={headerWorkspace}
                 workspaces={workspaces}
                 user={user}
@@ -250,44 +234,39 @@ export function UnifiedShell({
                 mobileNavOpen={drawerOpen}
                 onOpenMobileNav={() => setDrawerOpen(true)}
               />
-            ) : (
-              // Brand-only sub-shell topbar covers profile / account / settings.
-              // Settings used to carry WorkspaceSwitcher here — it has moved
-              // into the sidebar as a static identity card. The global
-              // switcher on /{slug}/* main routes is unchanged.
-              <PersonalSubShellTopbar
-                user={user}
-                mobileNavId={mobileDrawerId}
-                mobileNavOpen={drawerOpen}
-                onOpenMobileNav={() => setDrawerOpen(true)}
-              />
             )}
-            <div className="relative flex min-h-0 flex-1">
-              {/* Sidebar column reserves layout width (via --shell-left-w) and
-                  clips the slide-in. Inside, exactly ONE <Sidebar> is mounted
-                  — the keyed wrapper unmounts the previous one and mounts the
-                  next when `subShellOpen` flips, triggering the slide-in
-                  keyframe. The chevron lives outside this column so the
-                  overflow:hidden clip doesn't catch it. */}
+            <div
+              className={cn(
+                "relative flex min-h-0 flex-1",
+                visibleCollapsed
+                  ? "[--shell-left-w:var(--sidebar-rail-w)]"
+                  : "[--shell-left-w:var(--sidebar-w)]",
+              )}
+            >
+              {/* Sidebar column reserves layout width and clips the slide-in.
+               * Inside, exactly ONE <Sidebar> is mounted at a time. */}
               <div className="shell-pane-column hidden md:block">
                 <div
                   key={subShellOpen ? "sub" : "rail"}
                   className={cn("h-full", paneAnimClass)}
                 >
                   {subShellOpen ? (
+                    // Sub-shell (settings / profile / account) hides Zone C
+                    // (icon strip) and Zone D (user chip) entirely — focused
+                    // settings context with only brand + Back + identity chip
+                    // + sub-nav. Footer prop is intentionally omitted.
                     <Sidebar
                       ariaLabel={subPane.ariaLabel}
                       groups={subPane.groups}
                       collapsed={subPaneCollapsed}
+                      brand={sidebarBrand}
                       header={
-                        // Back + identity adjoin as a single header zone
-                        // (gap-2 / 8px) so the identity chip reads as part of
-                        // the sub-shell header, not a free-floating card
-                        // between Back and the nav. The nav's outer gap-4 still
-                        // separates this group from the nav list. Profile has
-                        // no identity chip — the topbar avatar already names
-                        // the logged-in user.
                         <SubShellSidebarHeader
+                          workspace={headerWorkspace}
+                        />
+                      }
+                      preNav={
+                        <SubShellSidebarIdentity
                           kind={subShellKind}
                           workspace={headerWorkspace}
                         />
@@ -298,29 +277,21 @@ export function UnifiedShell({
                       ariaLabel="Workspace resources"
                       groups={railGroups}
                       collapsed={railCollapsed}
+                      brand={sidebarBrand}
+                      header={
+                        <WorkspaceSwitcher
+                          currentOrg={headerWorkspace}
+                          workspaces={workspaces}
+                        />
+                      }
+                      footer={sidebarFooter}
                     />
                   )}
                 </div>
               </div>
-              {/* Shared collapse chevron — sibling of the sidebar column so it
-                  never gets clipped by the column's overflow:hidden. Centered
-                  on the column's right edge via left:--shell-left-w +
-                  translate-x. Visible only at lg+ (matches Sidebar's
-                  lg:w-(--sidebar-w) responsive breakpoint where the collapse
-                  affordance applies). */}
-              <button
-                type="button"
-                onClick={toggleVisiblePane}
-                aria-label={visibleCollapsed ? "Expand sidebar (⌘B)" : "Collapse sidebar (⌘B)"}
-                aria-pressed={visibleCollapsed}
-                data-shell-collapse-chevron
-                className="absolute top-5 left-(--shell-left-w) z-overlay hidden size-6 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-border bg-sidebar text-meta-foreground shadow-card transition before:absolute before:-inset-1 before:content-[''] hover:text-foreground hover:bg-hover-surface focus-visible:shadow-focus-ring lg:inline-flex"
-              >
-                {visibleCollapsed ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
-              </button>
               <main
                 id="main-content"
-                className="min-w-0 flex-1 overflow-y-auto bg-grid-backdrop bg-background"
+                className="min-w-0 flex-1 overflow-y-auto"
               >
                 {children}
               </main>
@@ -336,11 +307,16 @@ export function UnifiedShell({
           header={
             subShellOpen
               ? (close) => (
-                  <SubShellSidebarHeader
-                    kind={subShellKind}
-                    workspace={headerWorkspace}
-                    onNavigate={close}
-                  />
+                  <div className="flex flex-col gap-2">
+                    <SubShellSidebarHeader
+                      workspace={headerWorkspace}
+                      onNavigate={close}
+                    />
+                    <SubShellSidebarIdentity
+                      kind={subShellKind}
+                      workspace={headerWorkspace}
+                    />
+                  </div>
                 )
               : undefined
           }
@@ -351,7 +327,7 @@ export function UnifiedShell({
   );
 }
 
-interface UnifiedTopbarProps {
+interface MobileWorkspaceTopbarProps {
   workspace: Org;
   workspaces: ReadonlyArray<Org>;
   user: { name: string; email: string; tier: string };
@@ -360,16 +336,18 @@ interface UnifiedTopbarProps {
   onOpenMobileNav: () => void;
 }
 
-function UnifiedTopbar({
+// Mobile topbar (<md only — .shell-topbar is display:none at md+). Renders
+// brand + workspace-switcher + search + identity cluster in the horizontal
+// chrome band above content. At md+ this element consumes zero layout space.
+function MobileWorkspaceTopbar({
   workspace,
   workspaces,
   user,
   mobileNavId,
   mobileNavOpen,
   onOpenMobileNav,
-}: UnifiedTopbarProps) {
+}: MobileWorkspaceTopbarProps) {
   const { setOpen: setPaletteOpen } = useCommandPaletteContext();
-
   return (
     <header className="shell-topbar">
       <div data-zone="left">
@@ -384,7 +362,7 @@ function UnifiedTopbar({
         >
           <Menu />
         </IconButton>
-        <span data-slot="brand" className="hidden md:inline-flex">
+        <span data-slot="brand">
           <BrandMark />
         </span>
         <span data-slot="ws">
@@ -401,25 +379,23 @@ function UnifiedTopbar({
   );
 }
 
-interface PersonalSubShellTopbarProps {
+interface MobileSubShellTopbarProps {
   user: { name: string; email: string; tier: string };
   mobileNavId: string;
   mobileNavOpen: boolean;
   onOpenMobileNav: () => void;
 }
 
-// Sub-shell topbar — brand-only. Covers profile, account, AND settings.
-// Settings is workspace-scoped, but the workspace identity now lives in the
-// sidebar as a static identity card (see settings-sidebar-identity.tsx). The
-// global WorkspaceSwitcher remains on /{slug}/* main routes; surfacing it
-// here would conflate "switch app context" with "edit a different
-// workspace's settings."
-function PersonalSubShellTopbar({
+// Mobile sub-shell topbar — brand-only + identity cluster. Covers profile /
+// account / settings on mobile. At md+ this element consumes zero layout
+// space (CSS: display: none).
+function MobileSubShellTopbar({
   user,
   mobileNavId,
   mobileNavOpen,
   onOpenMobileNav,
-}: PersonalSubShellTopbarProps) {
+}: MobileSubShellTopbarProps) {
+  const { setOpen: setPaletteOpen } = useCommandPaletteContext();
   return (
     <header className="shell-topbar shell-topbar-sub">
       <div data-zone="left">
@@ -434,9 +410,12 @@ function PersonalSubShellTopbar({
         >
           <Menu />
         </IconButton>
-        <span data-slot="brand" className="hidden md:inline-flex">
+        <span data-slot="brand">
           <BrandMark />
         </span>
+      </div>
+      <div data-zone="center">
+        <SearchTrigger onClick={() => setPaletteOpen(true)} />
       </div>
       <div data-zone="right">
         <IdentityCluster user={user} />
@@ -444,3 +423,5 @@ function PersonalSubShellTopbar({
     </header>
   );
 }
+
+

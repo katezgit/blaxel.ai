@@ -59,24 +59,26 @@ export default function WorkspaceSwitcher({
     <DropdownMenuTrigger
       aria-label={triggerAriaLabel}
       className={cn(
-        "flex h-8 min-w-0 max-w-full items-center rounded-md border border-transparent typography-label font-medium text-foreground",
+        // 14px + medium keeps the workspace name visibly dominant over the
+        // 10px group labels below without reading as bold.
+        "flex h-8 min-w-0 max-w-full items-center rounded-md typography-body font-medium text-foreground",
         "transition-colors duration-fast ease-out-standard",
-        "hover:bg-hover-surface hover:border-border focus-visible:shadow-focus-ring",
+        "hover:bg-hover-surface focus-visible:shadow-focus-ring",
         isRail
-          ? "size-8 shrink-0 max-w-none cursor-pointer p-0 justify-center"
-          : "w-full gap-1.5 px-2 max-md:gap-1 max-md:px-1.5",
+          ? "size-8 mx-auto shrink-0 max-w-none cursor-pointer p-0 justify-center"
+          : "w-full gap-1.5 border border-transparent hover:border-border px-2 max-md:gap-1 max-md:px-1.5",
       )}
     >
       <Boxes
         aria-hidden="true"
         className={cn(
-          "size-4 shrink-0 text-meta-foreground",
-          isRail && "size-5",
+          "shrink-0 text-meta-foreground",
+          isRail ? "size-[18px]" : "size-4",
         )}
       />
       {!isRail && (
         <>
-          <span className="min-w-0 flex-1 truncate max-md:text-sm">
+          <span className="min-w-0 flex-1 truncate">
             {currentOrg.name}
           </span>
           <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-meta-foreground" />
@@ -97,7 +99,7 @@ export default function WorkspaceSwitcher({
       ) : (
         trigger
       )}
-      <DropdownMenuContent align="start" className="w-64">
+      <DropdownMenuContent side="right" align="start" sideOffset={12} className="w-64">
         <DropdownMenuLabel className="font-mono uppercase tracking-[0.16em]">Switch workspace</DropdownMenuLabel>
         {workspaces.map((ws) => {
           const isCurrent = ws.id === currentOrg.id;

@@ -10,34 +10,26 @@
 
 /* App-shell zone dimensions — wireframe contract (docs/design/wireframe/app-shell.md §10).
  * Sidebar width + content padding step down through the breakpoint ramp
- * (248 → 220 → 64 → 0). Topbar height lives on the .shell-topbar utility
- * directly via Tailwind responsive utilities — no variable needed since
- * .shell-topbar is the only consumer.
- *
- * --shell-left-gutter: x-position (from viewport-left) where the topbar brand
- * orange-ball center and the sidebar nav-icon centers share a column. Sidebar
- * arithmetic: nav px-2 (8) + link px-2 (8) + half-icon (8) = 24. Brand
- * arithmetic: ball-center is offset 12px inside the SVG, so the brand wrapper
- * gets padding-left = --shell-left-gutter - 12px = 12px (see brand-mark.tsx).
- * Topbar's left padding is dropped at md+ so the brand fully owns the column. */
+ * (248 → 220 → 64 → 0). At md+ the topbar no longer renders; the sidebar
+ * spans the full viewport height and owns brand + workspace + nav + utility
+ * chrome. Below md the topbar still renders as the mobile chrome band. */
 :root {
   --sidebar-w: 248px;
   --sidebar-rail-w: 64px;
   --mobile-drawer-w: 280px;
   --cmdk-modal-w: 640px;
-  --brand-text-size: 24px;
+  /* Brand chrome whispers: sidebar Zone A carries only the brand and a
+   * couple of small triggers, so the wordmark reads at label scale (~15px)
+   * rather than the topbar-era 24px. */
+  --brand-text-size: 15px;
   --content-px: 32px;
-  --shell-left-gutter: 24px;
-  --brand-svg-ball-offset: 12px;
 }
 
-/* Register --shell-left-w as a <length> so every consumer interpolates in
- * lockstep on sidebar collapse/expand: the pane column width (.shell-pane-column),
- * the topbar grid column (shell-topbar grid-template-columns), and the shared
- * collapse chevron's left anchor. Without registration, var() values switch
- * abruptly at frame 0 — the column animates while the chevron jumps. The
- * actual collapse duration + easing live on .shell-pane-column (B1/B2 motion
- * spec); registration just unlocks interpolation for downstream readers. */
+/* Register --shell-left-w as a <length> so .shell-pane-column can interpolate
+ * its width across sidebar collapse/expand. Without registration, var()
+ * values switch abruptly at frame 0. The actual collapse duration + easing
+ * live on .shell-pane-column (B1/B2 motion spec); registration just unlocks
+ * interpolation for downstream readers. */
 @property --shell-left-w {
   syntax: "<length>";
   inherits: true;
@@ -53,56 +45,36 @@
   :root { --content-px: 16px; }
 }
 
-/* App-shell topbar grid — wireframe contract (docs/design/wireframe/app-shell.md §6–9).
- * Desktop/tablet: left zone (brand + workspace) anchored start; right zone
- * (identity cluster) anchored end. No center zone — search collapsed into the
- * identity cluster as an icon (§3 rule 2). Mobile: workspace shell wraps to
- * 2 rows (nav+brand+identity / workspace); sub-shells stay 1-row. */
+/* App-shell topbar (mobile-only). At md+ the topbar element does not render;
+ * the sidebar spans full viewport height and owns all shell chrome. Below md
+ * the topbar carries [nav-trigger] [brand] [ws-switcher] [search] [identity]
+ * as a horizontal chrome strip above the content, with a hairline bottom
+ * border against the solid --color-topbar fill. */
 @utility shell-topbar {
-  display: grid;
-  grid-template-columns: var(--shell-left-w, var(--sidebar-w)) 1fr auto;
-  grid-template-areas: "left center right";
-  align-items: center;
-  @apply h-12 max-md:h-14;   /* 48 desktop+tablet · 56 mobile — guidelines/app-shell-layout.md §2 Topbar */
-  gap: 0.75rem;
-  padding-left: 0;
-  padding-right: 1rem;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-topbar);
-  /* Track the registered --shell-left-w so the left grid column resizes
-   * in lockstep with the sidebar pane. Symmetric --motion-enter in both
-   * directions — see .shell-pane-column for the structural-continuity
-   * framing this surface inherits. */
-  transition: grid-template-columns var(--motion-enter);
+  display: none;
 }
-.shell-topbar > [data-zone="left"]   { grid-area: left;   justify-self: stretch; min-width: 0; display: flex; align-items: center; gap: 0.5rem; }
-.shell-topbar [data-slot="ws"]       { min-width: 0; flex: 1 1 auto; display: flex; }
-.shell-topbar > [data-zone="center"] { grid-area: center; justify-self: end; display: flex; justify-content: flex-end; min-width: 0; }
-.shell-topbar > [data-zone="right"]  { grid-area: right;  justify-self: end;   display: flex; align-items: center; }
-.shell-topbar [data-slot="brand"]    > a { padding-inline: calc(var(--shell-left-gutter) - var(--brand-svg-ball-offset)) 0; }
-.shell-topbar [data-slot="nav-trigger"] { display: none; }
-@media (max-width: 767px) {
-  .shell-topbar [data-slot="nav-trigger"] { display: inline-flex; }
-}
-
 @media (max-width: 767px) {
   .shell-topbar {
+    display: grid;
     grid-template-columns: auto auto 1fr auto auto;
-    grid-template-rows: auto;
     grid-template-areas: "nav ws stretch search actions";
+    align-items: center;
+    height: 3.5rem; /* 56px */
     column-gap: 0.5rem;
     padding-left: 0.5rem;
+    padding-right: 1rem;
+    background: var(--color-topbar);
+    border-bottom: 1px solid var(--color-border);
   }
   .shell-topbar > [data-zone="left"]   { display: contents; max-width: none; }
-  .shell-topbar > [data-zone="center"] { grid-area: search; justify-self: end; justify-content: flex-end; width: auto; }
+  .shell-topbar > [data-zone="center"] { grid-area: search; justify-self: end; display: flex; justify-content: flex-end; }
   .shell-topbar > [data-zone="center"] [data-slot="search"] { width: 2rem; max-width: 2rem; }
-  .shell-topbar > [data-zone="right"]  { grid-area: actions; }
-  .shell-topbar [data-slot="ws"]          { grid-area: ws;    justify-self: start; width: auto; min-width: 0; }
-  .shell-topbar [data-slot="nav-trigger"] { grid-area: nav;   justify-self: start; }
+  .shell-topbar > [data-zone="right"]  { grid-area: actions; display: flex; align-items: center; }
+  .shell-topbar [data-slot="ws"]           { grid-area: ws;    justify-self: start; min-width: 0; flex: 1 1 auto; display: flex; }
+  .shell-topbar [data-slot="nav-trigger"]  { grid-area: nav;   justify-self: start; display: inline-flex; }
 
   .shell-topbar-sub {
     grid-template-columns: auto 1fr auto auto;
-    grid-template-rows: auto;
     grid-template-areas: "nav stretch search actions";
   }
 }
@@ -306,7 +278,6 @@
 .shell-pane-column {
   position: relative;
   width: var(--shell-left-w, var(--sidebar-w));
-  height: 100%;
   flex-shrink: 0;
   overflow: hidden;
   /* Perpetual structural-continuity, not Swift dismissal — sidebar reshapes
@@ -316,14 +287,6 @@
    * to surfaces that persist in the layout.
    * Reduced-motion: tokens collapse to 0ms upstream (theme.css). */
   transition: width var(--motion-enter);
-}
-
-/* Shared collapse chevron rides --shell-left-w via `left:` — same symmetric
- * motion keeps it glued to the sidebar's right edge during the transition.
- * Without this, the chevron snaps to the final anchor at frame 0 while the
- * column animates. */
-[data-shell-frame] [data-shell-collapse-chevron] {
-  transition: left var(--motion-enter);
 }
 
 @keyframes shell-pane-slide-in-from-right {
