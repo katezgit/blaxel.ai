@@ -16,146 +16,74 @@ interface SandboxSettingsIdentityProps {
   initialDescription: string;
 }
 
-/** Top of the Settings tab — Display name + Description. The only two
- *  inline-editable fields on the Settings surface (every other row is
- *  read-only per wireframe §3). Each row is its own self-contained
- *  state machine — entering edit on one row does not affect the other. */
 export default function SandboxSettingsIdentity({
   sandboxName,
   initialDisplayName,
   initialDescription,
 }: SandboxSettingsIdentityProps) {
+  const { accountId, workspaceId } = useCurrentTenancy();
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [description, setDescription] = useState(initialDescription);
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return (
+      <IdentityForm
+        initialDisplayName={displayName}
+        initialDescription={description}
+        onCancel={() => setEditing(false)}
+        onSubmit={async (next) => {
+          await saveSandboxIdentity(accountId, workspaceId, sandboxName, {
+            displayName: next.displayName,
+            description: next.description,
+          });
+          setDisplayName(next.displayName);
+          setDescription(next.description);
+          setEditing(false);
+          toast.success("Identity updated.");
+        }}
+      />
+    );
+  }
 
   return (
     <section
       aria-label="Identity"
-      className="flex flex-col gap-6 pt-2"
+      className="flex items-start justify-between gap-3 pt-2"
     >
-      <DisplayNameRow
-        sandboxName={sandboxName}
-        value={displayName}
-        onSaved={setDisplayName}
-      />
-      <DescriptionRow
-        sandboxName={sandboxName}
-        value={description}
-        onSaved={setDescription}
-      />
+      <div className="flex flex-1 flex-col gap-6">
+        <IdentityField label="Display name" value={displayName} />
+        <IdentityField
+          label="Description"
+          value={description || "—"}
+          muted={!description}
+        />
+      </div>
+      <IconButton
+        type="button"
+        variant="ghost"
+        size="sm"
+        aria-label="Edit identity"
+        onClick={() => setEditing(true)}
+      >
+        <Pencil aria-hidden="true" />
+      </IconButton>
     </section>
   );
 }
 
-interface DisplayNameRowProps {
-  sandboxName: string;
-  value: string;
-  onSaved: (next: string) => void;
-}
-
-function DisplayNameRow({ sandboxName, value, onSaved }: DisplayNameRowProps) {
-  const { accountId, workspaceId } = useCurrentTenancy();
-  const [editing, setEditing] = useState(false);
-
-  if (editing) {
-    return (
-      <InlineEditFrame label="Display name">
-        <InlineEditForm
-          fieldKind="input"
-          initialValue={value}
-          ariaLabel="Display name"
-          onCancel={() => setEditing(false)}
-          onSubmit={async (next) => {
-            await saveSandboxIdentity(accountId, workspaceId, sandboxName, {
-              displayName: next,
-            });
-            onSaved(next);
-            setEditing(false);
-            toast.success("Display name updated.");
-          }}
-        />
-      </InlineEditFrame>
-    );
-  }
-
-  return (
-    <InlineEditFrame label="Display name">
-      <ValueRow
-        value={value}
-        editLabel="Edit display name"
-        onEdit={() => setEditing(true)}
-      />
-    </InlineEditFrame>
-  );
-}
-
-interface DescriptionRowProps {
-  sandboxName: string;
-  value: string;
-  onSaved: (next: string) => void;
-}
-
-function DescriptionRow({ sandboxName, value, onSaved }: DescriptionRowProps) {
-  const { accountId, workspaceId } = useCurrentTenancy();
-  const [editing, setEditing] = useState(false);
-
-  if (editing) {
-    return (
-      <InlineEditFrame label="Description">
-        <InlineEditForm
-          fieldKind="textarea"
-          initialValue={value}
-          ariaLabel="Description"
-          onCancel={() => setEditing(false)}
-          onSubmit={async (next) => {
-            await saveSandboxIdentity(accountId, workspaceId, sandboxName, {
-              description: next,
-            });
-            onSaved(next);
-            setEditing(false);
-            toast.success("Description updated.");
-          }}
-        />
-      </InlineEditFrame>
-    );
-  }
-
-  return (
-    <InlineEditFrame label="Description">
-      <ValueRow
-        value={value || "—"}
-        muted={!value}
-        editLabel="Edit description"
-        onEdit={() => setEditing(true)}
-      />
-    </InlineEditFrame>
-  );
-}
-
-interface InlineEditFrameProps {
+function IdentityField({
+  label,
+  value,
+  muted,
+}: {
   label: string;
-  children: React.ReactNode;
-}
-
-function InlineEditFrame({ label, children }: InlineEditFrameProps) {
+  value: string;
+  muted?: boolean;
+}) {
   return (
     <div className="flex flex-col gap-2">
       <h3 className="typography-meta text-meta-foreground">{label}</h3>
-      {children}
-    </div>
-  );
-}
-
-interface ValueRowProps {
-  value: string;
-  muted?: boolean;
-  editLabel: string;
-  onEdit: () => void;
-}
-
-function ValueRow({ value, muted, editLabel, onEdit }: ValueRowProps) {
-  return (
-    <div className="flex items-start justify-between gap-3">
       <p
         className={
           muted
@@ -165,37 +93,32 @@ function ValueRow({ value, muted, editLabel, onEdit }: ValueRowProps) {
       >
         {value}
       </p>
-      <IconButton
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-label={editLabel}
-        onClick={onEdit}
-      >
-        <Pencil aria-hidden="true" />
-      </IconButton>
     </div>
   );
 }
 
-interface InlineEditFormProps {
-  fieldKind: "input" | "textarea";
-  initialValue: string;
-  ariaLabel: string;
+interface IdentityFormProps {
+  initialDisplayName: string;
+  initialDescription: string;
   onCancel: () => void;
-  onSubmit: (next: string) => Promise<void>;
+  onSubmit: (next: {
+    displayName: string;
+    description: string;
+  }) => Promise<void>;
 }
 
-function InlineEditForm({
-  fieldKind,
-  initialValue,
-  ariaLabel,
+function IdentityForm({
+  initialDisplayName,
+  initialDescription,
   onCancel,
   onSubmit,
-}: InlineEditFormProps) {
-  const [value, setValue] = useState(initialValue);
+}: IdentityFormProps) {
+  const [displayName, setDisplayName] = useState(initialDisplayName);
+  const [description, setDescription] = useState(initialDescription);
   const [saving, setSaving] = useState(false);
-  const dirty = value !== initialValue;
+  const dirty =
+    displayName !== initialDisplayName ||
+    description !== initialDescription;
 
   async function handleSave() {
     if (!dirty) {
@@ -204,66 +127,80 @@ function InlineEditForm({
     }
     setSaving(true);
     try {
-      await onSubmit(value);
+      await onSubmit({ displayName, description });
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <form
-      noValidate
-      onSubmit={(event) => {
-        event.preventDefault();
-        void handleSave();
-      }}
-      className="flex flex-col gap-3"
-    >
-      {fieldKind === "input" ? (
-        <Input
-          aria-label={ariaLabel}
-          value={value}
-          autoFocus
-          onChange={(event) => setValue(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              event.preventDefault();
-              onCancel();
-            }
-          }}
-        />
-      ) : (
-        <Textarea
-          aria-label={ariaLabel}
-          value={value}
-          autoFocus
-          rows={3}
-          onChange={(event) => setValue(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              event.preventDefault();
-              onCancel();
-            }
-          }}
-        />
-      )}
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onCancel}
-          disabled={saving}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={saving || !dirty}
-        >
-          {saving ? "Saving…" : "Save"}
-        </Button>
-      </div>
-    </form>
+    <section aria-label="Identity" className="pt-2">
+      <form
+        noValidate
+        onSubmit={(event) => {
+          event.preventDefault();
+          void handleSave();
+        }}
+        className="flex flex-col gap-6"
+      >
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="identity-display-name"
+            className="typography-meta text-meta-foreground"
+          >
+            Display name
+          </label>
+          <Input
+            id="identity-display-name"
+            value={displayName}
+            autoFocus
+            onChange={(event) => setDisplayName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                onCancel();
+              }
+            }}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="identity-description"
+            className="typography-meta text-meta-foreground"
+          >
+            Description
+          </label>
+          <Textarea
+            id="identity-description"
+            value={description}
+            rows={3}
+            onChange={(event) => setDescription(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                onCancel();
+              }
+            }}
+          />
+        </div>
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={saving}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={saving || !dirty}
+          >
+            {saving ? "Saving…" : "Save"}
+          </Button>
+        </div>
+      </form>
+    </section>
   );
 }

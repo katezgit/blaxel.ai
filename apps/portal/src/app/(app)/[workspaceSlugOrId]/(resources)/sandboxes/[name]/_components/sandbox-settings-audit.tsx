@@ -44,7 +44,7 @@ export default function SandboxSettingsAudit({
 }: SandboxSettingsAuditProps) {
   return (
     <BandFrame label="Audit" className="border-t-0 pt-0">
-      <dl className="flex flex-col gap-4">
+      <dl className="flex flex-col gap-6">
         <UserRow label="Created by" user={audit.createdBy} occurredAt={audit.createdAt} />
         <UserRow label="Updated by" user={audit.updatedBy} occurredAt={audit.updatedAt} />
       </dl>
@@ -60,14 +60,14 @@ interface UserRowProps {
 
 function UserRow({ label, user, occurredAt }: UserRowProps) {
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex flex-col gap-2">
       <dt className="typography-meta text-meta-foreground">{label}</dt>
       <dd className="flex items-center gap-3">
         <Avatar size="sm">
           <AvatarImage src={user.avatarUrl} alt="" />
           <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
         </Avatar>
-        <span className="flex flex-col items-end gap-0.5">
+        <span className="flex flex-col gap-0.5">
           <span className="typography-body text-foreground">
             {user.displayName}
           </span>
