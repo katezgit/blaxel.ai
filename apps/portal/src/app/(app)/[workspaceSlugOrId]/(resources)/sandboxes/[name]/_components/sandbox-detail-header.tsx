@@ -31,7 +31,9 @@ interface SandboxDetailHeaderProps {
  *    RAM is in §1.4 Vitals (peak ratio), spawn user is in §1.2 Provenance —
  *    none repeat in the meta row.
  *
- * Outer `<header>` rhythm comes from `header-rhythm.md`: `gap-3 pt-2 pb-6`. */
+ * Outer `<header>` rhythm: `gap-3 pt-2` (breadcrumb → title-block). The
+ * header→tabs gap is owned by `page-shell`'s `gap-6` — no local `pb-*` here,
+ * otherwise the two stack and produce a doubled empty band. */
 export default function SandboxDetailHeader({
   sandbox,
   workspaceSlug,
@@ -46,7 +48,7 @@ export default function SandboxDetailHeader({
   }, [sandbox.metadata.name]);
 
   return (
-    <header className="flex flex-col gap-3 pt-2 pb-6">
+    <header className="flex flex-col gap-3 pt-2">
       <Breadcrumb
         parent={{ href: listHref, label: "Sandboxes" }}
         current={heading}
