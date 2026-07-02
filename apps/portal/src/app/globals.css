@@ -18,10 +18,10 @@
   --sidebar-rail-w: 64px;
   --mobile-drawer-w: 280px;
   --cmdk-modal-w: 640px;
-  /* Brand chrome whispers: sidebar Zone A carries only the brand and a
-   * couple of small triggers, so the wordmark reads at label scale (~15px)
-   * rather than the topbar-era 24px. */
-  --brand-text-size: 15px;
+  /* Sidebar Zone A wordmark sits at section-heading scale (16px, matches
+   * --typography-subtitle) so it out-ranks the 14px nav labels below it —
+   * dropping to 15px label scale under-ranked the brand against the rows. */
+  --brand-text-size: 16px;
   --content-px: 32px;
 }
 
