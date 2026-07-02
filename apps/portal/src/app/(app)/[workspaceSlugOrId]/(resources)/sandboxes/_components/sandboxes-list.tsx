@@ -9,7 +9,6 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   type PaginationState,
-  type RowSelectionState,
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -37,7 +36,6 @@ import {
   AlertDialogTitle,
 } from "@repo/ui/components/alert-dialog";
 import { Button } from "@repo/ui/components/button";
-import { Checkbox } from "@repo/ui/components/checkbox";
 import { Chip } from "@repo/ui/components/chip";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
@@ -83,7 +81,6 @@ import {
   SandboxesPagination,
   type PageSize,
 } from "./sandboxes-pagination";
-import { SandboxesBulkActionBar } from "./sandboxes-bulk-action-bar";
 
 const REGION_OPTIONS: ReadonlyArray<{ value: SandboxRegion | "all"; label: string }> = [
   { value: "all", label: "All regions" },
@@ -221,7 +218,7 @@ export function SandboxesList({
     const acc: Record<StatusFilterLabel, number> = {
       Active: 0,
       Standby: 0,
-      Errored: 0,
+      Failed: 0,
       Deploying: 0,
       Terminated: 0,
     };
@@ -245,43 +242,9 @@ export function SandboxesList({
     pageIndex: 0,
     pageSize: DEFAULT_PAGE_SIZE,
   });
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const columns = useMemo(() => {
     return [
-      columnHelper.display({
-        id: "select",
-        header: ({ table }) => (
-          <Checkbox
-            size="sm"
-            aria-label="Select all Sandboxes on this page"
-            checked={
-              table.getIsAllPageRowsSelected()
-                ? true
-                : table.getIsSomePageRowsSelected()
-                  ? "indeterminate"
-                  : false
-            }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(value === true)
-            }
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            size="sm"
-            aria-label={`Select ${row.original.metadata.displayName}`}
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(value === true)}
-            onClick={(e) => e.stopPropagation()}
-          />
-        ),
-        enableSorting: false,
-        meta: {
-          headerClassName: "w-8",
-          cellClassName: "w-8",
-        },
-      }),
       columnHelper.display({
         id: "identity",
         header: "Name / ID",
@@ -443,11 +406,9 @@ export function SandboxesList({
   const table = useReactTable({
     data: visible as Sandbox[],
     columns,
-    state: { sorting, pagination, rowSelection },
+    state: { sorting, pagination },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
-    onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.metadata.name,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -462,10 +423,6 @@ export function SandboxesList({
 
   const rows = table.getRowModel().rows;
   const showNoResults = rows.length === 0;
-  const selectedRowIds = Object.keys(rowSelection).filter(
-    (id) => rowSelection[id],
-  );
-  const selectedCount = selectedRowIds.length;
 
   return (
     <div className="flex min-h-0 max-h-full flex-1 flex-col gap-4">
@@ -482,14 +439,6 @@ export function SandboxesList({
           onIncludeTerminatedChange={onIncludeTerminatedChange}
         />
       </div>
-
-      {selectedCount > 0 ? (
-        <SandboxesBulkActionBar
-          selectedCount={selectedCount}
-          onClearSelection={() => setRowSelection({})}
-          onDelete={() => setRowSelection({})}
-        />
-      ) : null}
 
       <div className="relative w-full min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
         <table className={tableClass}>
@@ -570,15 +519,13 @@ export function SandboxesList({
               rows.map((row) => {
                 const sbx = row.original;
                 const pill = pillFor(sbx);
-                const isErrored = pill.label === "Errored";
+                const isFailed = pill.label === "Failed";
                 const isFadingOut = fadingOutNames.has(sbx.metadata.name);
                 const href = `/${workspaceSlug}/sandboxes/${sbx.metadata.name}`;
                 return (
                   <SandboxRow
                     key={row.id}
-                    sandbox={sbx}
-                    isErrored={isErrored}
-                    isSelected={row.getIsSelected()}
+                    isFailed={isFailed}
                     isFadingOut={isFadingOut}
                     onClick={() => router.push(href)}
                     onMouseEnter={() => router.prefetch(href)}
@@ -594,7 +541,6 @@ export function SandboxesList({
                         cell.getContext(),
                       ),
                     }))}
-                    columnsCount={columns.length}
                   />
                 );
               })
@@ -716,9 +662,7 @@ function Toolbar({
 }
 
 interface SandboxRowProps {
-  sandbox: Sandbox;
-  isErrored: boolean;
-  isSelected: boolean;
+  isFailed: boolean;
   isFadingOut: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
@@ -727,89 +671,40 @@ interface SandboxRowProps {
     className: string | undefined;
     node: React.ReactNode;
   }>;
-  columnsCount: number;
 }
 
 function SandboxRow({
-  sandbox,
-  isErrored,
-  isSelected,
+  isFailed,
   isFadingOut,
   onClick,
   onMouseEnter,
   cells,
-  columnsCount,
 }: SandboxRowProps) {
   function handleClick(event: React.MouseEvent<HTMLTableRowElement>) {
     if (isFadingOut) return;
     const target = event.target as HTMLElement;
-    if (
-      target.closest(
-        "a, button, [role='menuitem'], [role='menu'], [data-slot=checkbox]",
-      )
-    )
-      return;
+    if (target.closest("a, button, [role='menuitem'], [role='menu']")) return;
     onClick();
   }
   return (
-    <>
-      <tr
-        onClick={handleClick}
-        onMouseEnter={onMouseEnter}
-        data-state={isSelected ? "selected" : undefined}
-        aria-selected={isSelected || undefined}
-        className={cn(
-          tableRowVariants(),
-          "group/sbx-row cursor-pointer transition-opacity duration-150",
-          isErrored && sandbox.failure && "border-b-0",
-          isFadingOut && "pointer-events-none opacity-0",
-        )}
-      >
-        {cells.map((cell) => (
-          <td key={cell.key} className={cn(tableCellVariants(), cell.className)}>
-            {cell.node}
-          </td>
-        ))}
-      </tr>
-      {isErrored && sandbox.failure ? (
-        <tr className="border-b border-border bg-state-errored-subtle">
-          <td colSpan={columnsCount} className="pl-6 pr-6 py-2">
-            <div className="flex flex-wrap items-center gap-3 typography-meta text-state-errored-text">
-              <span className="inline-flex items-center gap-1.5">
-                <TriangleAlert
-                  aria-hidden="true"
-                  className="size-3.5 shrink-0"
-                />
-                {sandbox.failure.cause} — push Image or pick another.
-              </span>
-              <div className="ml-auto flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1 rounded-sm px-2 py-1 typography-meta font-medium text-state-errored-text hover:bg-state-errored-subtle focus-visible:outline-none focus-visible:shadow-focus-ring"
-                >
-                  <RotateCw aria-hidden="true" className="size-3" />
-                  Retry
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigator.clipboard?.writeText(
-                      `bl connect sandbox ${sandbox.metadata.name}`,
-                    );
-                  }}
-                  className="inline-flex items-center gap-1 rounded-sm px-2 py-1 typography-meta font-medium text-state-errored-text hover:bg-state-errored-subtle focus-visible:outline-none focus-visible:shadow-focus-ring"
-                >
-                  <Terminal aria-hidden="true" className="size-3" />
-                  Open in CLI
-                </button>
-              </div>
-            </div>
-          </td>
-        </tr>
-      ) : null}
-    </>
+    <tr
+      onClick={handleClick}
+      onMouseEnter={onMouseEnter}
+      className={cn(
+        tableRowVariants(),
+        "group/sbx-row cursor-pointer transition-opacity duration-150",
+        isFailed &&
+          // eslint-disable-next-line no-restricted-syntax -- inset accent sits inside the bordered table container; no @theme utility expresses inset-shadow position+width for a color token
+          "bg-state-errored-subtle shadow-[inset_2px_0_0_var(--color-state-errored)] hover:bg-state-errored-subtle",
+        isFadingOut && "pointer-events-none opacity-0",
+      )}
+    >
+      {cells.map((cell) => (
+        <td key={cell.key} className={cn(tableCellVariants(), cell.className)}>
+          {cell.node}
+        </td>
+      ))}
+    </tr>
   );
 }
 
