@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@repo/ui/components/button";
+import { Checkbox } from "@repo/ui/components/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -218,7 +219,11 @@ export default function SandboxLogsView() {
     [windowEnd, activeRange.minutes],
   );
 
-  const filtered = useMemo<ReadonlyArray<LogEntry>>(() => {
+  // Pre-severity result set: Source + Time-range + Search applied, severity
+  // filter NOT applied. Feeds both the visible list (after a final severity
+  // pass) and the per-severity count map shown in the Severity popover so
+  // toggling a severity does not shift the counts under Alex.
+  const windowedBeforeSeverity = useMemo<ReadonlyArray<LogEntry>>(() => {
     const startMs = windowStart.getTime();
     // Live entries carry now-timestamps that sit past LOGS_NOW; extend the
     // upper bound so demo-stream rows are not filtered out by the fixed
@@ -229,11 +234,28 @@ export default function SandboxLogsView() {
     return combined.filter((entry) => {
       const t = new Date(entry.occurredAt).getTime();
       if (t < startMs || t > endMs) return false;
-      if (!enabledLevels.includes(entry.level)) return false;
       if (query.length === 0) return true;
       return entry.message.toLowerCase().includes(query);
     });
-  }, [source, search, enabledLevels, windowStart, windowEnd, liveEntries]);
+  }, [source, search, windowStart, windowEnd, liveEntries]);
+
+  const filtered = useMemo<ReadonlyArray<LogEntry>>(
+    () =>
+      windowedBeforeSeverity.filter((entry) => enabledLevels.includes(entry.level)),
+    [windowedBeforeSeverity, enabledLevels],
+  );
+
+  const severityCounts = useMemo<Record<LogSeverity, number>>(() => {
+    const zeros = LEVELS.reduce(
+      (acc, level) => {
+        acc[level] = 0;
+        return acc;
+      },
+      {} as Record<LogSeverity, number>,
+    );
+    for (const entry of windowedBeforeSeverity) zeros[entry.level] += 1;
+    return zeros;
+  }, [windowedBeforeSeverity]);
 
   const { bins, peak } = useMemo(
     () => buildVolumeBins(filtered, windowStart, windowEnd),
@@ -296,6 +318,7 @@ export default function SandboxLogsView() {
           <SeverityMenu
             enabledLevels={enabledLevels}
             onToggleLevel={toggleLevel}
+            counts={severityCounts}
           />
         </div>
       </div>
@@ -523,9 +546,10 @@ function TimeRangeMenu({ value, onChange }: TimeRangeMenuProps) {
 interface SeverityMenuProps {
   enabledLevels: ReadonlyArray<LogSeverity>;
   onToggleLevel: (level: LogSeverity) => void;
+  counts: Readonly<Record<LogSeverity, number>>;
 }
 
-function SeverityMenu({ enabledLevels, onToggleLevel }: SeverityMenuProps) {
+function SeverityMenu({ enabledLevels, onToggleLevel, counts }: SeverityMenuProps) {
   const enabledCount = enabledLevels.length;
   const totalCount = LEVELS.length;
   const stackedDotColors = pickStackedDotColors(enabledLevels);
@@ -549,42 +573,74 @@ function SeverityMenu({ enabledLevels, onToggleLevel }: SeverityMenuProps) {
           <ChevronDown aria-hidden="true" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-56 p-2">
-        <div className="flex flex-col gap-0.5">
-          {LEVELS.map((level) => {
-            const isEnabled = enabledLevels.includes(level);
-            return (
-              <button
-                key={level}
-                type="button"
-                onClick={() => onToggleLevel(level)}
-                className="flex items-center justify-between rounded-sm px-2 py-1.5 text-left transition-colors hover:bg-hover-surface"
-              >
-                <span className="flex items-center gap-2 typography-body">
-                  <span
-                    aria-hidden="true"
-                    className={cn("size-2 rounded-full", LEVEL_DOT[level])}
-                  />
-                  <span className="text-foreground">{level}</span>
-                </span>
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "size-4 rounded border transition-colors",
-                    isEnabled
-                      ? "border-primary bg-primary"
-                      : "border-border bg-background",
-                  )}
-                />
-                <span className="sr-only">
-                  {isEnabled ? "enabled" : "disabled"}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <PopoverContent
+        variant="action"
+        align="end"
+        className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width)"
+      >
+        <ul role="group" aria-label="Log severity filter">
+          {LEVELS.map((level) => (
+            <SeverityRow
+              key={level}
+              level={level}
+              checked={enabledLevels.includes(level)}
+              count={counts[level]}
+              onToggle={() => onToggleLevel(level)}
+            />
+          ))}
+        </ul>
       </PopoverContent>
     </Popover>
+  );
+}
+
+function SeverityRow({
+  level,
+  checked,
+  count,
+  onToggle,
+}: {
+  level: LogSeverity;
+  checked: boolean;
+  count: number;
+  onToggle: () => void;
+}) {
+  // Row wraps a Radix Checkbox (itself a <button>), so the container is a
+  // <div> with a click handler — matches the Status filter row pattern. The
+  // Checkbox stays the single keyboard / a11y target; clicks on padding /
+  // dot / label still toggle.
+  function handleRowClick(event: React.MouseEvent<HTMLDivElement>) {
+    if ((event.target as HTMLElement).closest("[data-slot=checkbox]")) return;
+    onToggle();
+  }
+  return (
+    <li>
+      <div
+        onClick={handleRowClick}
+        className={cn(
+          "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5",
+          "typography-body text-foreground",
+          "hover:bg-muted-surface",
+          "has-[[data-slot=checkbox]:focus-visible]:bg-muted-surface",
+          "transition-colors duration-fast ease-out-standard",
+        )}
+      >
+        <Checkbox
+          checked={checked}
+          onCheckedChange={onToggle}
+          size="sm"
+          aria-label={level}
+        />
+        <span
+          aria-hidden="true"
+          className={cn("size-2 shrink-0 rounded-full", LEVEL_DOT[level])}
+        />
+        <span className="flex-1 select-none text-left">{level}</span>
+        <span className="typography-meta shrink-0 tabular-nums text-meta-foreground">
+          {count}
+        </span>
+      </div>
+    </li>
   );
 }
 
