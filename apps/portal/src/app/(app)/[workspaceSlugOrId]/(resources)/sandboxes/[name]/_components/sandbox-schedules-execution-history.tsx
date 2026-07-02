@@ -5,9 +5,13 @@ import { useMemo, useState } from "react";
 import {
   CheckCircle2,
   CircleDashed,
+  History,
   MinusCircle,
+  SearchX,
   XCircle,
 } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
+import { EmptyState } from "@repo/ui/components/empty-state";
 import { SearchInput } from "@repo/ui/components/search-input";
 import { cn } from "@repo/ui/lib/cn";
 import {
@@ -109,77 +113,93 @@ export default function SandboxSchedulesExecutionHistory({
         </div>
       )}
 
-      {isEmpty ? (
-        <p className="rounded-md border border-border bg-card px-6 py-10 text-center typography-body text-muted-foreground">
-          No executions yet. Runs appear here once a schedule fires.
-        </p>
-      ) : (
-        <Table
-          totalCount={visible.length}
-          pageOffset={0}
-          bordered
-          className="bg-card"
-        >
-          <TableHeader>
+      <Table
+        totalCount={visible.length}
+        pageOffset={0}
+        bordered
+        className="bg-card"
+      >
+        <TableHeader>
+          <tr>
+            <TableHeaderCell label="Schedule" />
+            <TableHeaderCell label="Trigger status" />
+            <TableHeaderCell label="When" />
+            <TableHeaderCell label="Logs" />
+          </tr>
+        </TableHeader>
+        <TableBody>
+          {isEmpty && (
             <tr>
-              <TableHeaderCell label="Schedule" />
-              <TableHeaderCell label="Trigger status" />
-              <TableHeaderCell label="When" />
-              <TableHeaderCell label="Logs" />
+              <TableCell colSpan={4} className="py-6">
+                <EmptyState
+                  variant="zero-state"
+                  icon={History}
+                  title="No executions yet."
+                  subtitle="Runs appear here once a schedule fires."
+                />
+              </TableCell>
             </tr>
-          </TableHeader>
-          <TableBody>
-            {noResults ? (
-              <tr>
-                <TableCell
-                  colSpan={4}
-                  className="py-8 text-center text-muted-foreground"
-                >
-                  No executions match this search.
-                </TableCell>
-              </tr>
-            ) : (
-              visible.map((execution) => {
-                const tone = STATUS_TONE[execution.status];
-                const Icon = tone.icon;
-                return (
-                  <TableRow key={execution.id}>
-                    <TableCell>
-                      <span className="font-mono typography-code text-foreground">
-                        {execution.scheduleLabel}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1.5 typography-body",
-                          tone.className,
-                        )}
-                      >
-                        <Icon aria-hidden="true" className="size-3.5" />
-                        {tone.label}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-mono typography-meta text-meta-foreground">
-                        {formatExecutionTime(execution.occurredAt)}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={execution.logsHref}
-                        className="typography-body text-foreground underline-offset-4 hover:underline"
-                      >
-                        View logs
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      )}
+          )}
+          {!isEmpty && noResults && (
+            <tr>
+              <TableCell colSpan={4} className="py-6">
+                <EmptyState
+                  variant="no-results"
+                  icon={SearchX}
+                  title="No executions match this search."
+                  cta={
+                    <Button
+                      variant="secondary"
+                      onClick={() => setSearch("")}
+                    >
+                      Clear search
+                    </Button>
+                  }
+                />
+              </TableCell>
+            </tr>
+          )}
+          {!isEmpty &&
+            !noResults &&
+            visible.map((execution) => {
+              const tone = STATUS_TONE[execution.status];
+              const Icon = tone.icon;
+              return (
+                <TableRow key={execution.id}>
+                  <TableCell>
+                    <span className="font-mono typography-code text-foreground">
+                      {execution.scheduleLabel}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1.5 typography-body",
+                        tone.className,
+                      )}
+                    >
+                      <Icon aria-hidden="true" className="size-3.5" />
+                      {tone.label}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-mono typography-meta text-meta-foreground">
+                      {formatExecutionTime(execution.occurredAt)}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      href={execution.logsHref}
+                      className="typography-body text-foreground underline-offset-4 hover:underline"
+                    >
+                      View logs
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+        </TableBody>
+      </Table>
     </section>
   );
 }

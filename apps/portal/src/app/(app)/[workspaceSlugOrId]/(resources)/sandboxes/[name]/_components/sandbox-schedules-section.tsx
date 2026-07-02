@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CalendarClock, SearchX } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
+import { EmptyState } from "@repo/ui/components/empty-state";
 import { SearchInput } from "@repo/ui/components/search-input";
 import {
   Select,
@@ -126,25 +129,41 @@ export default function SandboxSchedulesSection({
           </tr>
         </TableHeader>
         <TableBody>
-          {isEmpty ? (
+          {isEmpty && (
             <tr>
-              <TableCell
-                colSpan={3}
-                className="py-8 text-center text-muted-foreground"
-              >
-                No schedules yet.
+              <TableCell colSpan={3} className="py-6">
+                <EmptyState
+                  variant="zero-state"
+                  icon={CalendarClock}
+                  title="No schedules yet."
+                />
               </TableCell>
             </tr>
-          ) : noResults ? (
+          )}
+          {!isEmpty && noResults && (
             <tr>
-              <TableCell
-                colSpan={3}
-                className="py-8 text-center text-muted-foreground"
-              >
-                No schedules match these filters.
+              <TableCell colSpan={3} className="py-6">
+                <EmptyState
+                  variant="no-results"
+                  icon={SearchX}
+                  title="No schedules match these filters."
+                  cta={
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setSearch("");
+                        setTypeFilter("all");
+                      }}
+                    >
+                      Clear filters
+                    </Button>
+                  }
+                />
               </TableCell>
             </tr>
-          ) : (
+          )}
+          {!isEmpty &&
+            !noResults &&
             visible.map((schedule) => (
               <TableRow key={schedule.id}>
                 <TableCell>
@@ -168,8 +187,7 @@ export default function SandboxSchedulesSection({
                   </span>
                 </TableCell>
               </TableRow>
-            ))
-          )}
+            ))}
         </TableBody>
       </Table>
     </section>
