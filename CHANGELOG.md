@@ -2,6 +2,14 @@
 
 ---
 
+## 2026-07-01 — refinement(portal/workspace-switcher): mute name at rest, brighten on hover ([#214](https://github.com/katezgit/blaxel.ai/pull/214))
+
+### Changed
+
+- Workspace-switcher trigger: name now renders muted at rest and brightens on hover, reducing visual competition with sidebar nav labels.
+
+---
+
 ## 2026-06-28 — fix(portal/api-keys): rebalance Create API key dialog proportions ([#139](https://github.com/katezgit/blaxel.ai/pull/139))
 
 ### Fixed
