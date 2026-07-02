@@ -1,16 +1,31 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  type PaginationState,
+  type RowSelectionState,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { AlertTriangle, MoreHorizontal, SearchX } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  MoreHorizontal,
+  RotateCw,
+  SearchX,
+  Terminal,
+  TriangleAlert,
+} from "lucide-react";
 import { cn } from "@repo/ui/lib/cn";
 import { Button } from "@repo/ui/components/button";
+import { Checkbox } from "@repo/ui/components/checkbox";
+import { Chip } from "@repo/ui/components/chip";
 import { EmptyState } from "@repo/ui/components/empty-state";
 import { IconButton } from "@repo/ui/components/icon-button";
 import {
@@ -40,11 +55,21 @@ import { StatePill, pillFor } from "./state-pill";
 import type { StatusFilterLabel } from "./aggregate-data";
 import { StatusFilterMenu } from "./status-filter-menu";
 import {
-  expiresInLabel,
-  imageRefLabel,
+  activityBarsFor,
+  allocatedRamLabel,
+  createdAtLabel,
+  expiresInBadgeLabel,
   isExpiresInWarning,
+  peakRamCell,
   regionLabel,
 } from "./row-helpers";
+import { ActivitySparkline } from "./activity-sparkline";
+import {
+  PAGE_SIZE_OPTIONS,
+  SandboxesPagination,
+  type PageSize,
+} from "./sandboxes-pagination";
+import { SandboxesBulkActionBar } from "./sandboxes-bulk-action-bar";
 
 const REGION_OPTIONS: ReadonlyArray<{ value: SandboxRegion | "all"; label: string }> = [
   { value: "all", label: "All regions" },
@@ -55,19 +80,22 @@ const REGION_OPTIONS: ReadonlyArray<{ value: SandboxRegion | "all"; label: strin
   { value: "us-pdx-1", label: "us-pdx-1" },
 ];
 
+const DEFAULT_PAGE_SIZE: PageSize = PAGE_SIZE_OPTIONS[0];
+
 export interface SandboxesListProps {
   sandboxes: ReadonlyArray<Sandbox>;
   workspaceSlug: string;
-  // Filter state is owned by the parent (sandboxes-view) so the Status
-  // dropdown and the table dispatch into the same source of truth.
   search: string;
   onSearchChange: (value: string) => void;
-  /** Multi-select status filter — covers all 5 sandbox statuses. */
   statusFilters: ReadonlyArray<StatusFilterLabel>;
   onStatusFiltersChange: (value: ReadonlyArray<StatusFilterLabel>) => void;
   regionFilter: SandboxRegion | "all";
   onRegionFilterChange: (value: SandboxRegion | "all") => void;
-  /** Defaults set — used by Clear filters and the no-results CTA to reset. */
+  /** Terminated is a separate right-anchor toolbar toggle per wireframe §1.2.
+   *  When true, Terminated rows are added to the result set on top of the
+   *  Status dropdown selection. */
+  includeTerminated: boolean;
+  onIncludeTerminatedChange: (value: boolean) => void;
   defaultStatusFilters: ReadonlyArray<StatusFilterLabel>;
 }
 
@@ -82,16 +110,19 @@ export function SandboxesList({
   onStatusFiltersChange,
   regionFilter,
   onRegionFilterChange,
+  includeTerminated,
+  onIncludeTerminatedChange,
   defaultStatusFilters,
 }: SandboxesListProps) {
   const router = useRouter();
 
-  // Visible rows. Rows with a status NOT in the active status set are hidden;
-  // Terminated is hidden by default because it's unchecked in the Status
-  // dropdown's defaults.
+  // Filter set: Status dropdown checks + Terminated toggle. Terminated is a
+  // separate axis so the dropdown stays four items; Alex only wants it when
+  // triaging deletes.
   const visible = useMemo<ReadonlyArray<Sandbox>>(() => {
     const normalized = search.trim().toLowerCase();
-    const statusSet = new Set(statusFilters);
+    const statusSet = new Set<StatusFilterLabel>(statusFilters);
+    if (includeTerminated) statusSet.add("Terminated");
     return sandboxes.filter((sbx) => {
       const pillLabel = pillFor(sbx).label;
       if (!statusSet.has(pillLabel)) return false;
@@ -105,22 +136,74 @@ export function SandboxesList({
       }
       return true;
     });
-  }, [sandboxes, search, statusFilters, regionFilter]);
+  }, [sandboxes, search, statusFilters, regionFilter, includeTerminated]);
+
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: DEFAULT_PAGE_SIZE,
+  });
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const columns = useMemo(() => {
     return [
+      columnHelper.display({
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            size="sm"
+            aria-label="Select all Sandboxes on this page"
+            checked={
+              table.getIsAllPageRowsSelected()
+                ? true
+                : table.getIsSomePageRowsSelected()
+                  ? "indeterminate"
+                  : false
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(value === true)
+            }
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            size="sm"
+            aria-label={`Select ${row.original.metadata.displayName}`}
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(value === true)}
+            onClick={(e) => e.stopPropagation()}
+          />
+        ),
+        enableSorting: false,
+        meta: {
+          headerClassName: "w-8",
+          cellClassName: "w-8",
+        },
+      }),
       columnHelper.display({
         id: "identity",
         header: "Name / ID",
         cell: (info) => {
           const sbx = info.row.original;
+          const showExpiryBadge = isExpiresInWarning(sbx.spec.expiresInSec);
           return (
             <div className="flex flex-col leading-tight">
               <span className="typography-body font-medium text-foreground underline-offset-4 decoration-meta-foreground group-hover/sbx-row:underline">
                 {sbx.metadata.displayName}
+                {showExpiryBadge && sbx.spec.expiresInSec !== null ? (
+                  <span className="ml-2 inline-flex items-center gap-0.5 typography-meta font-medium text-state-warning-text">
+                    <TriangleAlert
+                      aria-hidden="true"
+                      className="size-3"
+                    />
+                    {expiresInBadgeLabel(sbx.spec.expiresInSec)}
+                  </span>
+                ) : null}
               </span>
               <span className="typography-meta font-mono text-meta-foreground">
-                {sbx.metadata.externalId}
+                {sbx.metadata.name}
               </span>
             </div>
           );
@@ -128,8 +211,10 @@ export function SandboxesList({
       }),
       columnHelper.display({
         id: "state",
-        header: "State",
+        header: "Status",
         cell: (info) => <StatePill sandbox={info.row.original} />,
+        enableSorting: false,
+        meta: { headerClassName: "w-[120px]" },
       }),
       columnHelper.accessor((row) => row.spec.region, {
         id: "region",
@@ -139,39 +224,94 @@ export function SandboxesList({
             {regionLabel(info.getValue())}
           </span>
         ),
+        meta: { headerClassName: "w-[104px]" },
       }),
-      columnHelper.accessor((row) => row.spec.image, {
-        id: "image",
-        header: "Image",
+      columnHelper.accessor((row) => row.spec.memoryMib, {
+        id: "allocRam",
+        header: "Alloc. RAM",
         cell: (info) => (
-          <span className="typography-meta font-mono text-meta-foreground">
-            {imageRefLabel(info.getValue())}
+          <span className="typography-meta font-mono tabular-nums text-meta-foreground">
+            {allocatedRamLabel(info.getValue())}
           </span>
         ),
+        meta: { headerClassName: "w-[112px]" },
       }),
-      columnHelper.accessor((row) => row.spec.expiresInSec, {
-        id: "expiresIn",
-        header: "Expires in",
+      columnHelper.accessor(
+        (row) => {
+          const cell = peakRamCell(row);
+          return cell?.percent ?? null;
+        },
+        {
+          id: "peakRam",
+          header: "Peak RAM (24h)",
+          cell: (info) => {
+            const cell = peakRamCell(info.row.original);
+            if (!cell) {
+              return (
+                <span className="typography-meta font-mono text-meta-foreground">
+                  —
+                </span>
+              );
+            }
+            return (
+              <span
+                className={cn(
+                  "typography-meta font-mono tabular-nums",
+                  cell.percent >= 80
+                    ? "text-state-warning-text"
+                    : "text-meta-foreground",
+                )}
+              >
+                {cell.label}
+              </span>
+            );
+          },
+          sortUndefined: "last",
+          meta: { headerClassName: "w-[160px]" },
+        },
+      ),
+      columnHelper.accessor((row) => row.metadata.createdAt, {
+        id: "createdAt",
+        header: "Created at",
+        cell: (info) => (
+          <span className="typography-meta tabular-nums text-meta-foreground">
+            {createdAtLabel(info.getValue())}
+          </span>
+        ),
+        meta: { headerClassName: "w-[160px]" },
+      }),
+      columnHelper.display({
+        id: "activity",
+        header: "Activity",
         cell: (info) => {
-          const sec = info.getValue();
+          const bars = activityBarsFor(info.row.original.vitals.ramStrip);
+          if (!bars) {
+            return (
+              <span
+                aria-label="No activity data"
+                className="typography-meta text-meta-foreground"
+              >
+                —
+              </span>
+            );
+          }
+          const avg = bars.reduce((sum, v) => sum + v, 0) / bars.length;
+          const trend = avg > 0.55 ? "high" : avg > 0.25 ? "moderate" : "low";
           return (
-            <span
-              className={cn(
-                "typography-meta font-mono tabular-nums",
-                isExpiresInWarning(sec)
-                  ? "text-state-warning-text"
-                  : "text-meta-foreground",
-              )}
-            >
-              {expiresInLabel(sec)}
-            </span>
+            <ActivitySparkline
+              bars={bars}
+              ariaLabel={`Activity trend (last 24h): ${trend}`}
+            />
           );
         },
+        enableSorting: false,
+        meta: { headerClassName: "w-[88px]" },
       }),
       columnHelper.display({
         id: "actions",
         header: "",
         cell: (info) => <RowActions sandbox={info.row.original} />,
+        enableSorting: false,
         meta: {
           headerClassName: "w-10",
           cellClassName: "w-10 text-right",
@@ -183,57 +323,33 @@ export function SandboxesList({
   const table = useReactTable({
     data: visible as Sandbox[],
     columns,
+    state: { sorting, pagination, rowSelection },
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
+    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.metadata.name,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
-
-  // "Filtered" = anything narrowing the population vs the default view.
-  // Status set is considered filtered when it differs from the defaults
-  // (either subset OR superset — checking Terminated counts as a filter
-  // change too).
-  const statusFiltersChanged =
-    statusFilters.length !== defaultStatusFilters.length ||
-    statusFilters.some((s) => !defaultStatusFilters.includes(s));
-  const isFiltered =
-    search.trim() !== "" ||
-    statusFiltersChanged ||
-    regionFilter !== "all";
 
   function clearFilters() {
     onSearchChange("");
     onStatusFiltersChange(defaultStatusFilters);
     onRegionFilterChange("all");
+    onIncludeTerminatedChange(false);
   }
 
   const rows = table.getRowModel().rows;
   const showNoResults = rows.length === 0;
-
-  // Overflow detection so the filter-count footer can sit inline with the
-  // toolbar when the table fits the viewport, and drop to a footer line when
-  // the table body scrolls. Sibling of the scroll container; ResizeObserver
-  // fires on both viewport and content size changes. +1 epsilon avoids
-  // flapping on sub-pixel fractional heights. Mirrors policies-table.
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [hasOverflow, setHasOverflow] = useState(false);
-  useLayoutEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const check = () => setHasOverflow(el.scrollHeight > el.clientHeight + 1);
-    check();
-    const ro = new ResizeObserver(check);
-    ro.observe(el);
-    const inner = el.firstElementChild;
-    if (inner) ro.observe(inner);
-    return () => ro.disconnect();
-  }, [rows.length]);
-
-  const filterCountLabel =
-    isFiltered && rows.length > 0
-      ? `${rows.length} of ${sandboxes.length}`
-      : null;
+  const selectedRowIds = Object.keys(rowSelection).filter(
+    (id) => rowSelection[id],
+  );
+  const selectedCount = selectedRowIds.length;
 
   return (
     <div className="flex min-h-0 max-h-full flex-1 flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3 shrink-0">
+      <div className="flex w-full flex-wrap items-center gap-3 shrink-0">
         <Toolbar
           search={search}
           onSearchChange={onSearchChange}
@@ -241,31 +357,20 @@ export function SandboxesList({
           onStatusFiltersChange={onStatusFiltersChange}
           regionFilter={regionFilter}
           onRegionFilterChange={onRegionFilterChange}
+          includeTerminated={includeTerminated}
+          onIncludeTerminatedChange={onIncludeTerminatedChange}
         />
-        {filterCountLabel && !hasOverflow ? (
-          <span
-            className="typography-caption text-muted-foreground"
-            aria-live="polite"
-          >
-            {filterCountLabel}
-          </span>
-        ) : null}
       </div>
 
-      {/* Scroll container — only overflow boundary in the populated-list
-        * region. Sticky <th>s (from tableHeadVariants `sticky top-0`) stay
-        * pinned to the top of this region while the body scrolls. The page
-        * chrome above (title, toolbar) sits outside.
-        *
-        * bg-muted-surface is duplicated on each <th> (alongside the shared
-        * tableHeaderClass on <thead>) because position:sticky lifts the
-        * <th> out of <thead>'s painted box — without an opaque bg on the
-        * cell, scrolled rows show through the pinned header. Mirrors the
-        * policies-table comment + pattern. */}
-      <div
-        ref={scrollRef}
-        className="relative w-full min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card"
-      >
+      {selectedCount > 0 ? (
+        <SandboxesBulkActionBar
+          selectedCount={selectedCount}
+          onClearSelection={() => setRowSelection({})}
+          onDelete={() => setRowSelection({})}
+        />
+      ) : null}
+
+      <div className="relative w-full min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
         <table className={tableClass}>
           <thead className={tableHeaderClass}>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -274,20 +379,49 @@ export function SandboxesList({
                   const meta = header.column.columnDef.meta as
                     | { headerClassName?: string }
                     | undefined;
+                  const canSort = header.column.getCanSort();
+                  const sortDir = header.column.getIsSorted();
+                  const ariaSort =
+                    sortDir === "asc"
+                      ? "ascending"
+                      : sortDir === "desc"
+                        ? "descending"
+                        : canSort
+                          ? "none"
+                          : undefined;
                   return (
                     <th
                       key={header.id}
+                      scope="col"
+                      aria-sort={ariaSort}
                       className={cn(
                         tableHeadVariants(),
                         "bg-muted-surface",
                         meta?.headerClassName,
                       )}
                     >
-                      {!header.isPlaceholder &&
+                      {header.isPlaceholder ? null : canSort ? (
+                        <button
+                          type="button"
+                          onClick={header.column.getToggleSortingHandler()}
+                          className="inline-flex items-center gap-1 text-left hover:text-foreground focus-visible:outline-none focus-visible:text-foreground"
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {sortDir === "asc" ? (
+                            <ArrowUp aria-hidden="true" className="size-3" />
+                          ) : sortDir === "desc" ? (
+                            <ArrowDown aria-hidden="true" className="size-3" />
+                          ) : null}
+                        </button>
+                      ) : (
                         flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
-                        )}
+                        )
+                      )}
                     </th>
                   );
                 })}
@@ -302,7 +436,7 @@ export function SandboxesList({
                     variant="no-results"
                     icon={SearchX}
                     title="No Sandboxes match these filters"
-                    subtitle="Adjust your filters or search term."
+                    subtitle="Adjust your search or filters."
                     cta={
                       <Button variant="ghost" onClick={clearFilters}>
                         Clear filters
@@ -315,14 +449,14 @@ export function SandboxesList({
               rows.map((row) => {
                 const sbx = row.original;
                 const pill = pillFor(sbx);
-                const isFailed = pill.label === "Failed";
+                const isErrored = pill.label === "Errored";
                 const href = `/${workspaceSlug}/sandboxes/${sbx.metadata.name}`;
                 return (
                   <SandboxRow
                     key={row.id}
                     sandbox={sbx}
-                    isFailed={isFailed}
-                    href={href}
+                    isErrored={isErrored}
+                    isSelected={row.getIsSelected()}
                     onClick={() => router.push(href)}
                     onMouseEnter={() => router.prefetch(href)}
                     cells={row.getVisibleCells().map((cell) => ({
@@ -346,14 +480,15 @@ export function SandboxesList({
         </table>
       </div>
 
-      {filterCountLabel && hasOverflow ? (
-        <p
-          className="shrink-0 typography-caption text-muted-foreground"
-          aria-live="polite"
-        >
-          {filterCountLabel}
-        </p>
-      ) : null}
+      <div className="shrink-0">
+        <SandboxesPagination
+          pageIndex={table.getState().pagination.pageIndex}
+          pageSize={table.getState().pagination.pageSize as PageSize}
+          totalRows={rows.length > 0 ? visible.length : 0}
+          onPageIndexChange={table.setPageIndex}
+          onPageSizeChange={(size) => table.setPageSize(size)}
+        />
+      </div>
     </div>
   );
 }
@@ -365,6 +500,8 @@ interface ToolbarProps {
   onStatusFiltersChange: (value: ReadonlyArray<StatusFilterLabel>) => void;
   regionFilter: SandboxRegion | "all";
   onRegionFilterChange: (value: SandboxRegion | "all") => void;
+  includeTerminated: boolean;
+  onIncludeTerminatedChange: (value: boolean) => void;
 }
 
 function Toolbar({
@@ -374,10 +511,9 @@ function Toolbar({
   onStatusFiltersChange,
   regionFilter,
   onRegionFilterChange,
+  includeTerminated,
+  onIncludeTerminatedChange,
 }: ToolbarProps) {
-  // Single-row toolbar: Search (left anchor), Status + Region (right anchor).
-  // No wrap on desktop — the previous two-row treatment was over-bloated
-  // after the chips/terminated toggle were folded into the Status dropdown.
   return (
     <div className="flex w-full flex-wrap items-center gap-3">
       <div className="w-full sm:w-auto sm:max-w-xs sm:flex-1">
@@ -410,6 +546,15 @@ function Toolbar({
             ))}
           </SelectContent>
         </Select>
+        <Chip
+          checked={includeTerminated}
+          onCheckedChange={onIncludeTerminatedChange}
+          color="neutral"
+          variant="light"
+          aria-label="Include Terminated Sandboxes"
+        >
+          Terminated
+        </Chip>
       </div>
     </div>
   );
@@ -417,8 +562,8 @@ function Toolbar({
 
 interface SandboxRowProps {
   sandbox: Sandbox;
-  isFailed: boolean;
-  href: string;
+  isErrored: boolean;
+  isSelected: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
   cells: ReadonlyArray<{
@@ -431,7 +576,8 @@ interface SandboxRowProps {
 
 function SandboxRow({
   sandbox,
-  isFailed,
+  isErrored,
+  isSelected,
   onClick,
   onMouseEnter,
   cells,
@@ -439,7 +585,12 @@ function SandboxRow({
 }: SandboxRowProps) {
   function handleClick(event: React.MouseEvent<HTMLTableRowElement>) {
     const target = event.target as HTMLElement;
-    if (target.closest("a, button, [role='menuitem'], [role='menu']")) return;
+    if (
+      target.closest(
+        "a, button, [role='menuitem'], [role='menu'], [data-slot=checkbox]",
+      )
+    )
+      return;
     onClick();
   }
   return (
@@ -447,10 +598,12 @@ function SandboxRow({
       <tr
         onClick={handleClick}
         onMouseEnter={onMouseEnter}
+        data-state={isSelected ? "selected" : undefined}
+        aria-selected={isSelected || undefined}
         className={cn(
           tableRowVariants(),
           "group/sbx-row cursor-pointer",
-          isFailed && "border-b-0",
+          isErrored && sandbox.failure && "border-b-0",
         )}
       >
         {cells.map((cell) => (
@@ -459,27 +612,40 @@ function SandboxRow({
           </td>
         ))}
       </tr>
-      {isFailed && sandbox.failure ? (
+      {isErrored && sandbox.failure ? (
         <tr className="border-b border-border bg-state-errored-subtle">
-          <td colSpan={columnsCount} className="px-4 py-2">
-            <div className="flex items-center gap-2 typography-caption text-state-errored-text">
-              <AlertTriangle
-                aria-hidden="true"
-                className="size-3.5 shrink-0"
-              />
-              <span>
-                {sandbox.failure.cause} — registry returned{" "}
-                {sandbox.failure.httpStatus}.
+          <td colSpan={columnsCount} className="pl-6 pr-6 py-2">
+            <div className="flex flex-wrap items-center gap-3 typography-meta text-state-errored-text">
+              <span className="inline-flex items-center gap-1.5">
+                <TriangleAlert
+                  aria-hidden="true"
+                  className="size-3.5 shrink-0"
+                />
+                {sandbox.failure.cause} — push Image or pick another.
               </span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                className="ml-2 typography-caption text-state-errored-text underline-offset-2 hover:underline"
-              >
-                Retry
-              </button>
+              <div className="ml-auto flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 rounded-sm px-2 py-1 typography-meta font-medium text-state-errored-text hover:bg-state-errored-subtle focus-visible:outline-none focus-visible:shadow-focus-ring"
+                >
+                  <RotateCw aria-hidden="true" className="size-3" />
+                  Retry
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard?.writeText(
+                      `bl connect sandbox ${sandbox.metadata.name}`,
+                    );
+                  }}
+                  className="inline-flex items-center gap-1 rounded-sm px-2 py-1 typography-meta font-medium text-state-errored-text hover:bg-state-errored-subtle focus-visible:outline-none focus-visible:shadow-focus-ring"
+                >
+                  <Terminal aria-hidden="true" className="size-3" />
+                  Open in CLI
+                </button>
+              </div>
             </div>
           </td>
         </tr>
@@ -494,6 +660,7 @@ function RowActions({ sandbox }: { sandbox: Sandbox }) {
       <DropdownMenuTrigger asChild>
         <IconButton
           variant="ghost"
+          size="sm"
           aria-label={`Actions for ${sandbox.metadata.displayName}`}
           onClick={(e) => e.stopPropagation()}
         >

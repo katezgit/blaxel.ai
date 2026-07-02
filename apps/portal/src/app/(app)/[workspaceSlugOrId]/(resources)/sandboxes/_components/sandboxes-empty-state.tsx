@@ -41,7 +41,7 @@ export function SandboxesEmptyState({ createHref }: SandboxesEmptyStateProps) {
         </div>
         <div className="flex items-center gap-3 typography-body text-muted-foreground">
           <span>Or</span>
-          <Button asChild variant="secondary">
+          <Button asChild variant="ghost">
             <Link href={createHref}>Create from console</Link>
           </Button>
         </div>

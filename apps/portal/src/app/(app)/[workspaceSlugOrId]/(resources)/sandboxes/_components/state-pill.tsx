@@ -8,14 +8,16 @@ import type {
 } from "@/lib/mock/sandboxes";
 
 // Pill priority — failure and in-progress deployment statuses win; runtime
-// state only drives the label once status=DEPLOYED. User-facing "Failed"
-// matches the API's FAILED value.
+// state only drives the label once status=DEPLOYED. Failed API status
+// renders as `Errored` per sandboxes-list-2026-07-01 wireframe §State
+// model reconciliation (Errored is runtime vocab; Failed is reserved for
+// Batch Job outcomes).
 
 export type SandboxStateLabel =
   | "Active"
   | "Standby"
   | "Deploying"
-  | "Failed"
+  | "Errored"
   | "Terminated";
 
 interface PillSpec {
@@ -35,7 +37,7 @@ export function pillForStatus(
     return { label: "Deploying", variant: "running" };
   }
   if (status === "FAILED") {
-    return { label: "Failed", variant: "destructive" };
+    return { label: "Errored", variant: "destructive" };
   }
   if (status === "TERMINATED" || status === "DELETING") {
     return { label: "Terminated", variant: "neutral" };

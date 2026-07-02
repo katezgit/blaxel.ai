@@ -1156,6 +1156,26 @@ function generatedFleet(): ReadonlyArray<Tier1Sandbox> {
     return h.toString(16).padStart(8, "0").slice(0, 8);
   }
 
+  // Base epoch for staggered createdAt values — one Sandbox created every 3h
+  // starting 2026-05-15 gives ~9 days of history across 70 rows so the default
+  // Created-at-desc sort has real signal (vs every row sharing one timestamp).
+  const BASE_CREATED_MS = Date.parse("2026-05-15T00:00:00Z");
+  const HOUR_MS = 3_600_000;
+
+  // Plausible RAM signal for synthetic rows so Peak RAM (24h) column carries
+  // information instead of showing `—` for the whole fleet. Named fixtures
+  // above supply their own vitals; synthetic rows get shape derived from the
+  // recipe + index so the 24h peak varies from ~10% to ~95% of allocated.
+  function syntheticRamStrip(seed: number): ReadonlyArray<number> {
+    const points: Array<number> = [];
+    for (let k = 0; k < 12; k += 1) {
+      const wave = 0.35 + 0.4 * Math.sin((seed + k) * 0.7);
+      const jitter = ((seed * 31 + k * 17) % 100) / 500;
+      points.push(Math.max(0.05, Math.min(1, wave + jitter)));
+    }
+    return points;
+  }
+
   const fleet: Array<Tier1Sandbox> = [];
   for (let i = 0; i < 70; i += 1) {
     const region = REGIONS[REGION_DIST[i % REGION_DIST.length]!]!;
@@ -1167,19 +1187,66 @@ function generatedFleet(): ReadonlyArray<Tier1Sandbox> {
     const isTerminated =
       recipe.status === "TERMINATED" || recipe.status === "DELETING";
     const isFailed = recipe.status === "FAILED";
+    const isDeploying = recipe.status === "DEPLOYING" || recipe.status === "BUILT";
+    const createdIso = new Date(BASE_CREATED_MS + i * 3 * HOUR_MS).toISOString();
+
+    // RAM allocation: give the synthetic fleet a plausible spread across the
+    // canonical tiers so the Alloc. RAM column doesn't read like every row is
+    // 2 GiB. Weighted so 2/4 GiB dominate; 1 & 8 GiB show up for signal.
+    const ramTiers = [1024, 2048, 2048, 4096, 4096, 4096, 8192];
+    const memoryMib = ramTiers[i % ramTiers.length]!;
+
+    // Peak-RAM shape: RUNNING rows peak higher than STANDBY (matches the
+    // steady-state semantic — standby is idle). One in ~10 pushes into the
+    // ≥80% warning band so the color signal has coverage.
+    const stripSeed = i + 3;
+    const ramStrip =
+      isDeploying || isFailed || isTerminated
+        ? null
+        : syntheticRamStrip(stripSeed);
+    const runningBoost = recipe.state === "RUNNING" ? 1.05 : 0.55;
+    const stressed = i % 9 === 0 && recipe.state === "RUNNING" ? 1.35 : 1;
+    const peakFraction = ramStrip
+      ? Math.min(0.98, Math.max(...ramStrip) * runningBoost * stressed)
+      : 0;
+    const peakRamGiB =
+      isDeploying || isFailed || isTerminated
+        ? 0
+        : Math.round(peakFraction * (memoryMib / 1024) * 100) / 100;
+    const cpuStrip =
+      isDeploying || isFailed || isTerminated
+        ? null
+        : ramStrip!.map((v) => Math.max(0.05, Math.min(1, v * 0.6)));
+    const vitals: SandboxVitals =
+      isDeploying || isFailed || isTerminated
+        ? { ...emptyVitals(), ramLimitGiB: memoryMib / 1024 }
+        : {
+            requests: {
+              total: 20 + ((i * 37) % 500),
+              status2xx: 20 + ((i * 37) % 500) - (i % 5),
+              status4xx: i % 5,
+              status5xx: 0,
+            },
+            peakRamGiB,
+            ramLimitGiB: memoryMib / 1024,
+            peakCpuPct: Math.round(peakFraction * 90),
+            ramStrip,
+            cpuStrip,
+          };
+
     fleet.push({
       metadata: {
         name,
         displayName: name,
         externalId,
-        createdAt: "2026-06-20T10:00:00Z",
+        createdAt: createdIso,
         workspace: DEFAULT_WORKSPACE,
         createdBy: DEFAULT_CREATED_BY,
       },
       spec: {
         image,
         region,
-        memoryMib: recipe.status === "DEPLOYING" ? 4096 : 2048,
+        memoryMib,
         ttl: isTerminated ? "none" : ttlBucket.ttl,
         expiresInSec: isTerminated ? null : ttlBucket.expiresInSec,
         enabled: !isTerminated && !isFailed,
@@ -1211,9 +1278,9 @@ function generatedFleet(): ReadonlyArray<Tier1Sandbox> {
         agentName: "synthetic-agent",
         agentHref: `/${DEFAULT_WORKSPACE}/agents/synthetic-agent`,
         sessionId: `ses-${externalId.slice(4)}`,
-        occurredAt: "2026-06-20T10:00:00Z",
+        occurredAt: createdIso,
       },
-      vitals: emptyVitals(),
+      vitals,
       events: defaultEvents(recipe.status),
     });
   }

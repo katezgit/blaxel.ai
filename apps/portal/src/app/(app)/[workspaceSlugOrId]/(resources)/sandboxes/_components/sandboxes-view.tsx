@@ -13,10 +13,17 @@ import { SandboxesList } from "./sandboxes-list";
 import { SandboxesErrorBand } from "./sandboxes-error-band";
 import { SandboxesTableSkeleton } from "./sandboxes-table-skeleton";
 import { SandboxesEmptyState } from "./sandboxes-empty-state";
+import { SandboxQuotaChip } from "./sandbox-quota-chip";
 import {
   DEFAULT_STATUS_FILTERS,
   type StatusFilterLabel,
 } from "./aggregate-data";
+
+// Tier 0 quota per docs/product/platform.md — Free tier caps active
+// Sandboxes at 16. Detail-page quota lookup is out of scope; the mock
+// resolves to the Tier 0 shape everywhere.
+const TIER_0_QUOTA = 16;
+const CURRENT_TIER = 0;
 
 // Dev simulation harness — `?state=loading|error|empty` overrides the live
 // fetch state so each wireframe state can be visually verified without
@@ -39,11 +46,11 @@ export function SandboxesView() {
     enabled: stateSim !== "loading" && stateSim !== "error",
   });
 
-  // Single source of truth for every filter the toolbar dispatches into.
   const [search, setSearch] = useState("");
   const [statusFilters, setStatusFilters] =
     useState<ReadonlyArray<StatusFilterLabel>>(DEFAULT_STATUS_FILTERS);
   const [regionFilter, setRegionFilter] = useState<SandboxRegion | "all">("all");
+  const [includeTerminated, setIncludeTerminated] = useState(false);
 
   const isLoading = stateSim === "loading" || query.isPending;
   const isError = stateSim === "error" || query.isError;
@@ -52,7 +59,18 @@ export function SandboxesView() {
     [stateSim, query.data],
   );
 
-  const showsTable = !isLoading && !isError && sandboxes.length > 0;
+  // Quota chip: count active (non-Terminated) Sandboxes and compute remaining
+  // against Tier 0. Terminated rows don't count against quota.
+  const activeCount = sandboxes.filter(
+    (s) => s.status !== "TERMINATED" && s.status !== "DELETING",
+  ).length;
+  const remainingQuota = Math.max(0, TIER_0_QUOTA - activeCount);
+
+  // Quota chip: visible whenever the workspace has at least one Sandbox (or
+  // is loading — chip renders once data arrives). Hidden on the pure zero-
+  // records empty state and on top-level fetch error where the chip's ambient
+  // context has no counterpart to anchor to.
+  const showQuotaChip = !isError && (isLoading || sandboxes.length > 0);
 
   let body: React.ReactNode;
   if (isLoading) {
@@ -72,27 +90,29 @@ export function SandboxesView() {
         onStatusFiltersChange={setStatusFilters}
         regionFilter={regionFilter}
         onRegionFilterChange={setRegionFilter}
+        includeTerminated={includeTerminated}
+        onIncludeTerminatedChange={setIncludeTerminated}
         defaultStatusFilters={DEFAULT_STATUS_FILTERS}
       />
     );
   }
 
-  // Workspace total reads as inline context next to the title — Alex decides
-  // on row-level signal, not fleet counts, so it's a quiet sibling of the h1.
-  const totalSandboxes = sandboxes.length;
-
   return (
     <div className="page-shell">
       <header className="page-header">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="typography-display font-semibold text-foreground">
-            Sandboxes
-            {showsTable && totalSandboxes > 0 ? (
-              <span className="ml-2 tabular-nums font-normal text-muted-foreground">
-                · {totalSandboxes.toLocaleString("en-US")}
-              </span>
+          <div className="flex flex-col gap-1">
+            <h1 className="typography-display font-semibold text-foreground">
+              Sandboxes
+            </h1>
+            {showQuotaChip ? (
+              <SandboxQuotaChip
+                remaining={remainingQuota}
+                tier={CURRENT_TIER}
+                quotaCap={TIER_0_QUOTA}
+              />
             ) : null}
-          </h1>
+          </div>
           <Button asChild variant="primary">
             <Link href={createHref}>
               <Plus aria-hidden="true" />
