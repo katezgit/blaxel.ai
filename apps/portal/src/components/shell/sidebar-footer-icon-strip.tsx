@@ -29,8 +29,6 @@ import { NotificationList } from "@/components/shell/notification-panel";
 import { useIsSidebarRail } from "@/components/shell/use-is-sidebar-rail";
 import { useEffectiveNotifications } from "@/lib/mock/notifications";
 
-const POPOVER_GAP = 8;
-
 interface Measurable {
   getBoundingClientRect(): DOMRect;
 }
@@ -38,7 +36,7 @@ interface Measurable {
 // Zone C — footer icon strip above the user chip. Three concern-scoped
 // triggers, left → right: Resources, Help, Notifications. All three popovers
 // share one anchor so they open at the same horizontal offset from the
-// sidebar edge and the same vertical baseline just above the strip.
+// sidebar edge and the same vertical baseline flush with the icons row.
 //
 // Group-hover dim pattern: at rest all three icons render muted; hovering
 // anywhere on the strip brightens all three. Individual button hover still
@@ -62,17 +60,17 @@ export function SidebarFooterIconStrip() {
           getBoundingClientRect: () => {
             const asideRect = aside.getBoundingClientRect();
             const stripRect = stripRef.current!.getBoundingClientRect();
-            // Rect spanning the aside horizontally and ending 8px above the
-            // strip. `side="right" align="end"` reads right = aside.right
+            // Rect spanning the aside horizontally and ending at the strip's
+            // bottom border. `side="right" align="end"` reads right = aside.right
             // (→ popover.left = aside.right + sideOffset) and
-            // bottom = strip.top − 8 (→ popover.bottom = strip.top − 8, so
-            // an 8px gap sits between the popover and the strip).
-            const bottom = stripRect.top - POPOVER_GAP;
+            // bottom = strip.bottom (→ popover.bottom = strip.bottom, so the
+            // popover shares a baseline with the icons row — same anchor
+            // pattern as the user chip below).
             return new DOMRect(
               asideRect.left,
               0,
               asideRect.width,
-              Math.max(bottom, 0),
+              stripRect.bottom,
             );
           },
         }

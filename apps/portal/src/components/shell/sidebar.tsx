@@ -79,7 +79,7 @@ export function Sidebar({
             {group.label ? (
               <div
                 data-group-label
-                className="px-2 typography-meta font-sans tracking-normal text-meta-foreground"
+                className="px-2 typography-caption text-meta-foreground"
               >
                 {group.label}
               </div>
