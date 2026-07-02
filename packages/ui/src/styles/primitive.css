@@ -128,59 +128,56 @@
   --border-seed-dark:  255 255 255;
 
 /* ─── Elevation tiers ────────────────────────────────────────────────────────
- * Progressive ring+shadow ladder.
+ * Progressive shadow ladder.
  *   --shadow-1 = card
  *   --shadow-2 = popover
- *   --shadow-3 = modal / command
+ *   --shadow-3 = modal / command / drawer
  *   --shadow-chip = chip / badge boundary
- * Use semantic aliases (shadow-card, shadow-popover, etc.) from theme.css. */
+ * Use semantic aliases (shadow-card, shadow-popover, etc.) from theme.css.
+ *
+ * Ring policy — NO tier bakes in a 0 0 0 1px ring. All consumers add
+ * `border border-border` themselves for a crisp visible edge. This eliminates
+ * the double-edge artifact (ring + CSS border = two parallel hairlines) and
+ * gives consumers full control over whether/how they show an edge.
+ *   --shadow-1 (card): no ring. Consumers set border via variant (default/interactive/selected)
+ *     or shadow-only (elevated, which adds `border border-border` explicitly).
+ *   --shadow-2 (popover): no ring. Popovers/dropdowns apply `border border-border`.
+ *   --shadow-3 (modal/command/drawer): no ring. Dialog/AlertDialog/Command apply
+ *     `border border-border`. Right-drawer uses --shadow-drawer-edge (inset CSS border
+ *     on one visible edge); left/top/bottom drawers apply direction-scoped CSS borders. */
+  /* --shadow-1 (card) — single-layer light downward glow, no ring.
+   * Offset 2 / blur 4 / spread -2 → effective blur 2px (no crisp near-edge),
+   * top bleed (offset − effective blur = 0) sits exactly at the box top so
+   * no halo above the top edge. Low-elevation surface; border carries the edge. */
   --shadow-1: light-dark(
-                0 0 0 1px rgba(9,9,11,.06),
-                0 0 0 1px rgba(255,255,255,.05)
-              ),
-              light-dark(
-                0 1px 1px -.5px rgba(9,9,11,.06),
-                0 1px 1px -.5px rgba(0,0,0,.24)
+                0 2px 4px -2px rgba(9,9,11,.08),
+                0 2px 4px -2px rgba(0,0,0,.20)
               );
+  /* --shadow-2 (popover) — 2-layer downward glow, no ring.
+   * Prior stack was too subtle (all 0.06 alpha with tiny offsets) and both
+   * layers had a 1px top bleed. Refit: layer 1 is a tight near-shadow, layer
+   * 2 is a wider diffuse drop; both spread=−offset so effective top bleed
+   * is 0 and no crisp near-edge forms under the box.
+   * Tier weight sits between card (shadow-1) and modal (shadow-3). */
   --shadow-2: light-dark(
-                0 0 0 1px rgba(9,9,11,.06),
-                0 0 0 1px rgba(255,255,255,.05)
+                0 2px 4px -2px rgba(9,9,11,.06),
+                0 2px 4px -2px rgba(0,0,0,.15)
               ),
               light-dark(
-                0 1px 1px -.5px rgba(9,9,11,.06),
-                0 1px 2px rgba(0,0,0,.20)
-              ),
-              light-dark(
-                0 3px 3px -1.5px rgba(9,9,11,.06),
-                0 3px 6px rgba(0,0,0,.26)
-              ),
-              light-dark(
-                0 6px 6px -3px rgba(9,9,11,.06),
-                0 6px 12px rgba(0,0,0,.22)
+                0 8px 16px -8px rgba(9,9,11,.10),
+                0 8px 16px -8px rgba(0,0,0,.22)
               );
-  /* Last layer dropped: dark-mode `inset 0 1px 0 rgba(255,255,255,.07)` sat 1px
-   * inside the outset 1px ring → two parallel light lines on the top edge → every
-   * dialog and command panel read as double-bordered. Light-mode's paired
-   * `0 24px 24px -12px rgba(9,9,11,.06)` was nearly invisible; both go together. */
+  /* --shadow-3 (modal/command/drawer) — single-layer downward glow.
+   * Prior 2-layer stack had a tight `0 4px 6px -4px` near-edge whose
+   * effective blur (blur − |spread| = 2px) rendered as a crisp line right
+   * under the box bottom → read as a second border next to the CSS border
+   * consumers now carry = double-edge on Dialog / AlertDialog / Command.
+   * Collapsed to one layer at 12/20/-8: effective blur (12px) is soft enough
+   * that no near-edge forms, and top bleed (offset − effective blur = 0) sits
+   * exactly at the box top so no halo competes with the border above. */
   --shadow-3: light-dark(
-                0 0 0 1px rgba(9,9,11,.06),
-                0 0 0 1px rgba(255,255,255,.06)
-              ),
-              light-dark(
-                0 1px 1px -.5px rgba(9,9,11,.06),
-                0 1px 2px rgba(0,0,0,.22)
-              ),
-              light-dark(
-                0 3px 3px -1.5px rgba(9,9,11,.06),
-                0 3px 6px rgba(0,0,0,.26)
-              ),
-              light-dark(
-                0 6px 6px -3px rgba(9,9,11,.06),
-                0 8px 16px rgba(0,0,0,.28)
-              ),
-              light-dark(
-                0 12px 12px -6px rgba(9,9,11,.06),
-                0 16px 32px rgba(0,0,0,.24)
+                0 12px 20px -8px rgba(9,9,11,.12),
+                0 12px 20px -8px rgba(0,0,0,.30)
               );
   --shadow-chip: light-dark(
                    0 0 0 1px rgba(9,9,11,.06),

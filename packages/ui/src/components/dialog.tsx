@@ -83,13 +83,15 @@ const dialogContentVariants = cva(
     "outline-none",
     "data-[state=open]:animate-slide-up-from-bottom",
     "data-[state=closed]:animate-slide-down-to-bottom",
-    // Restore panel chrome: rounded corners, drop shadow (no border — shadow alone
-    // defines the panel edge; a 1px border next to a soft halo reads as double edge).
+    // Restore panel chrome: rounded corners, drop shadow, border.
+    // Border is scoped to sm+ — mobile fullscreen sheet has no visible edge to border.
+    // shadow-modal has no built-in ring; border provides the crisp edge.
     // sm:top-dialog-top-offset / sm:max-h-dialog-max-h scoped to sm+ so mobile fullscreen is not height-capped.
     "sm:inset-auto sm:top-(--dialog-top-offset) sm:left-1/2 sm:-translate-x-1/2",
     "sm:max-h-(--dialog-max-h)",
     "sm:shadow-modal",
     "sm:rounded-lg",
+    "sm:border sm:border-border",
     "sm:data-[state=open]:animate-slide-up-in",
     "sm:data-[state=closed]:animate-slide-down-out",
   ],

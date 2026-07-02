@@ -84,9 +84,9 @@ function SelectContent({
         className={cn(
           "relative z-overlay overflow-hidden",
           "bg-popover text-foreground typography-body",
-          // No border: drop shadow alone defines the panel edge. Adding a 1px border on top of the shadow creates a sharp hairline next to a soft halo — perceived as a "double edge."
+          // shadow-popover carries depth only (no ring); DS ships the border so SelectContent has a crisp edge matching other popover-tier surfaces.
           "rounded-lg",
-          "shadow-popover",
+          "shadow-popover border border-border",
           "min-w-[8rem]",
           "max-h-[240px]",
           "origin-(--radix-select-content-transform-origin)",
