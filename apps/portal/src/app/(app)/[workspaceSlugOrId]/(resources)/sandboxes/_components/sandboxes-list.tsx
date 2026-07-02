@@ -116,16 +116,16 @@ export function SandboxesList({
 }: SandboxesListProps) {
   const router = useRouter();
 
-  // Filter set: Status dropdown checks + Terminated toggle. Terminated is a
-  // separate axis so the dropdown stays four items; Alex only wants it when
-  // triaging deletes.
-  const visible = useMemo<ReadonlyArray<Sandbox>>(() => {
+  // Pre-Status subset: Search + Region + Terminated toggle applied, Status
+  // checkboxes NOT applied. Status counts derive from this set so the
+  // population breakdown Alex sees in the dropdown stays stable as she
+  // toggles Status checkboxes but shifts when she narrows Region or search.
+  const preStatusSet = useMemo<ReadonlyArray<Sandbox>>(() => {
     const normalized = search.trim().toLowerCase();
-    const statusSet = new Set<StatusFilterLabel>(statusFilters);
-    if (includeTerminated) statusSet.add("Terminated");
     return sandboxes.filter((sbx) => {
       const pillLabel = pillFor(sbx).label;
-      if (!statusSet.has(pillLabel)) return false;
+      // Terminated toggle gates Terminated rows independent of Status checks.
+      if (pillLabel === "Terminated" && !includeTerminated) return false;
       if (regionFilter !== "all" && sbx.spec.region !== regionFilter) {
         return false;
       }
@@ -136,7 +136,28 @@ export function SandboxesList({
       }
       return true;
     });
-  }, [sandboxes, search, statusFilters, regionFilter, includeTerminated]);
+  }, [sandboxes, search, regionFilter, includeTerminated]);
+
+  const statusCounts = useMemo<Readonly<Record<StatusFilterLabel, number>>>(() => {
+    const acc: Record<StatusFilterLabel, number> = {
+      Active: 0,
+      Standby: 0,
+      Errored: 0,
+      Deploying: 0,
+      Terminated: 0,
+    };
+    for (const sbx of preStatusSet) {
+      const pillLabel = pillFor(sbx).label;
+      acc[pillLabel] += 1;
+    }
+    return acc;
+  }, [preStatusSet]);
+
+  const visible = useMemo<ReadonlyArray<Sandbox>>(() => {
+    const statusSet = new Set<StatusFilterLabel>(statusFilters);
+    if (includeTerminated) statusSet.add("Terminated");
+    return preStatusSet.filter((sbx) => statusSet.has(pillFor(sbx).label));
+  }, [preStatusSet, statusFilters, includeTerminated]);
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: "createdAt", desc: true },
@@ -355,6 +376,7 @@ export function SandboxesList({
           onSearchChange={onSearchChange}
           statusFilters={statusFilters}
           onStatusFiltersChange={onStatusFiltersChange}
+          statusCounts={statusCounts}
           regionFilter={regionFilter}
           onRegionFilterChange={onRegionFilterChange}
           includeTerminated={includeTerminated}
@@ -498,6 +520,7 @@ interface ToolbarProps {
   onSearchChange: (value: string) => void;
   statusFilters: ReadonlyArray<StatusFilterLabel>;
   onStatusFiltersChange: (value: ReadonlyArray<StatusFilterLabel>) => void;
+  statusCounts: Readonly<Record<StatusFilterLabel, number>>;
   regionFilter: SandboxRegion | "all";
   onRegionFilterChange: (value: SandboxRegion | "all") => void;
   includeTerminated: boolean;
@@ -509,6 +532,7 @@ function Toolbar({
   onSearchChange,
   statusFilters,
   onStatusFiltersChange,
+  statusCounts,
   regionFilter,
   onRegionFilterChange,
   includeTerminated,
@@ -528,6 +552,7 @@ function Toolbar({
         <StatusFilterMenu
           value={statusFilters}
           onChange={onStatusFiltersChange}
+          counts={statusCounts}
         />
         <Select
           value={regionFilter}

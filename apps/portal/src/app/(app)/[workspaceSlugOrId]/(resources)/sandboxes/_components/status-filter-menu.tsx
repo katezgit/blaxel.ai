@@ -20,9 +20,15 @@ const MAX_STACKED_DOTS = 4;
 interface StatusFilterMenuProps {
   value: ReadonlyArray<StatusFilterLabel>;
   onChange: (next: ReadonlyArray<StatusFilterLabel>) => void;
+  /**
+   * Population of each state in the pre-Status result set (after Search +
+   * Region + Terminated filters). Toggling a Status checkbox does NOT change
+   * these numbers — they show the underlying breakdown Alex is filtering into.
+   */
+  counts: Readonly<Record<StatusFilterLabel, number>>;
 }
 
-export function StatusFilterMenu({ value, onChange }: StatusFilterMenuProps) {
+export function StatusFilterMenu({ value, onChange, counts }: StatusFilterMenuProps) {
   const [open, setOpen] = useState(false);
   const selectedCount = value.length;
   const totalCount = ALL_STATUS_FILTERS.length;
@@ -78,7 +84,7 @@ export function StatusFilterMenu({ value, onChange }: StatusFilterMenuProps) {
       <PopoverContent
         variant="action"
         align="end"
-        className="w-56"
+        className="w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width)"
       >
         <ul role="group" aria-label="Sandbox status filter">
           {ALL_STATUS_FILTERS.map((label) => (
@@ -86,6 +92,7 @@ export function StatusFilterMenu({ value, onChange }: StatusFilterMenuProps) {
               key={label}
               label={label}
               checked={value.includes(label)}
+              count={counts[label]}
               onToggle={() => toggle(label)}
             />
           ))}
@@ -98,10 +105,12 @@ export function StatusFilterMenu({ value, onChange }: StatusFilterMenuProps) {
 function StatusRow({
   label,
   checked,
+  count,
   onToggle,
 }: {
   label: StatusFilterLabel;
   checked: boolean;
+  count: number;
   onToggle: () => void;
 }) {
   const tone = statusToneClasses(label);
@@ -139,6 +148,9 @@ function StatusRow({
           className={cn("size-2 shrink-0 rounded-full", tone.dot)}
         />
         <span className="flex-1 select-none text-left">{label}</span>
+        <span className="typography-meta shrink-0 tabular-nums text-meta-foreground">
+          {count}
+        </span>
       </div>
     </li>
   );
