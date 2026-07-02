@@ -51,6 +51,12 @@ export interface NavItem {
   exact?: boolean;
   /** Optional short badge text rendered right-aligned next to the label (e.g. "Soon", "Beta"). Hidden in rail mode. */
   badge?: string;
+  /**
+   * Marks the item as a private-preview surface. Renders a subtle "preview"
+   * indicator at the top-right corner of the nav row (dot in rail). Distinct
+   * from `badge` — a preview state is a launch stage, not free-form copy.
+   */
+  preview?: boolean;
 }
 
 export interface NavGroup {
@@ -69,7 +75,7 @@ export function workspaceNavGroups(
       items: [
         { href: `${base}/sandboxes`, label: "Sandboxes", icon: Container },
         { href: `${base}/volumes`, label: "Volumes", icon: Database },
-        { href: `${base}/agent-drive`, label: "Agent Drive", icon: FolderOpen, badge: "Private preview" },
+        { href: `${base}/agent-drive`, label: "Agent Drive", icon: FolderOpen, preview: true },
         { href: `${base}/images`, label: "Images", icon: Package },
       ],
     },

@@ -32,7 +32,7 @@ export default function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps
       aria-current={isActive ? "page" : undefined}
       onClick={onNavigate}
       className={cn(
-        "group sidebar-row-hover flex h-8 items-center gap-2 rounded-md px-2 typography-body outline-hidden",
+        "group sidebar-row-hover relative flex h-8 items-center gap-2 rounded-md px-2 typography-body outline-hidden",
         "focus-visible:shadow-focus-ring",
         isRail && "w-8 mx-auto",
         isActive
@@ -43,7 +43,7 @@ export default function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps
       <Icon
         aria-hidden="true"
         data-nav-icon
-        className="size-4 shrink-0"
+        className={cn("shrink-0", isRail ? "size-[18px]" : "size-4")}
       />
       <span data-nav-label className="truncate">
         {item.label}
@@ -54,6 +54,26 @@ export default function SidebarNavItem({ item, onNavigate }: SidebarNavItemProps
             {item.badge}
           </Badge>
         </span>
+      ) : null}
+      {item.preview ? (
+        isRail ? (
+          <span
+            aria-hidden="true"
+            data-nav-preview-dot
+            className="absolute top-0.5 right-0.5 size-1.5 rounded-full bg-meta-foreground"
+          />
+        ) : (
+          <span data-nav-label className="ml-auto">
+            <Badge
+              variant="neutral"
+              size="sm"
+              className="font-sans"
+              aria-label="Private preview"
+            >
+              preview
+            </Badge>
+          </span>
+        )
       ) : null}
     </Link>
   );

@@ -29,26 +29,26 @@ function BrandBall() {
     <Link
       href="/"
       aria-label="Blaxel, go to dashboard"
-      className="flex h-10 shrink-0 items-center justify-center rounded-sm outline-hidden focus-visible:shadow-focus-ring"
+      className="flex h-8 shrink-0 items-center justify-center rounded-sm outline-hidden focus-visible:shadow-focus-ring"
     >
-      <div className="flex h-7 w-7 items-center overflow-hidden">
+      <div className="flex h-5 w-5 items-center overflow-hidden">
         <Image
           src="/blaxel-logo.svg"
           alt=""
           aria-hidden="true"
-          width={98}
-          height={28}
+          width={70}
+          height={20}
           priority
-          className="h-7 w-auto max-w-none dark:hidden"
+          className="h-5 w-auto max-w-none dark:hidden"
         />
         <Image
           src="/blaxel-logo-dark.svg"
           alt=""
           aria-hidden="true"
-          width={98}
-          height={28}
+          width={70}
+          height={20}
           priority
-          className="hidden h-7 w-auto max-w-none dark:block"
+          className="hidden h-5 w-auto max-w-none dark:block"
         />
       </div>
     </Link>
@@ -60,26 +60,26 @@ export function BrandWordmark() {
     <Link
       href="/"
       aria-label="Blaxel, go to dashboard"
-      className="flex h-10 shrink-0 items-center gap-2 rounded-sm px-2 outline-hidden focus-visible:shadow-focus-ring"
+      className="flex h-8 shrink-0 items-center gap-2 rounded-sm px-1 outline-hidden focus-visible:shadow-focus-ring"
     >
-      <div className="flex h-7 w-7 shrink-0 items-center overflow-hidden">
+      <div className="flex h-5 w-5 shrink-0 items-center overflow-hidden">
         <Image
           src="/blaxel-logo.svg"
           alt=""
           aria-hidden="true"
-          width={70}
-          height={28}
+          width={50}
+          height={20}
           priority
-          className="h-7 w-auto max-w-none dark:hidden"
+          className="h-5 w-auto max-w-none dark:hidden"
         />
         <Image
           src="/blaxel-logo-dark.svg"
           alt=""
           aria-hidden="true"
-          width={70}
-          height={28}
+          width={50}
+          height={20}
           priority
-          className="hidden h-7 w-auto max-w-none dark:block"
+          className="hidden h-5 w-auto max-w-none dark:block"
         />
       </div>
       <span className="text-(length:--brand-text-size) leading-none font-semibold tracking-tight text-foreground">
