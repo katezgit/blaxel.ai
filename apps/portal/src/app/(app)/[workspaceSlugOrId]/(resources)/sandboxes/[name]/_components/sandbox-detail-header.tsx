@@ -1,17 +1,33 @@
 "use client";
 
-import { useCallback, type ReactNode } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { useCallback, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { MoreHorizontal, RotateCw, ScrollText, Terminal, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@repo/ui/components/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { CopyButton } from "@repo/ui/components/copy-button";
 import { IconButton } from "@repo/ui/components/icon-button";
 import { cn } from "@repo/ui/lib/cn";
 import { Breadcrumb } from "@/components/shell/breadcrumb";
+import { useCurrentTenancy } from "@/lib/query/tenancy-context";
+import { sandboxQueries } from "@/lib/query/sandboxes";
 import type { Sandbox } from "@/lib/mock/sandboxes";
 import {
   allocatedRamLabel,
@@ -47,12 +63,49 @@ export default function SandboxDetailHeader({
 }: SandboxDetailHeaderProps) {
   const heading = sandbox.metadata.displayName || sandbox.metadata.name;
   const listHref = `/${workspaceSlug}/sandboxes`;
+  const name = sandbox.metadata.name;
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { accountId, workspaceId } = useCurrentTenancy();
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleOpenInCli = useCallback(() => {
-    void navigator.clipboard?.writeText(
-      `bl connect sandbox ${sandbox.metadata.name}`,
+    const cmd = `bl connect sandbox ${name}`;
+    void navigator.clipboard?.writeText(cmd);
+    toast.success(`Copied — ${cmd}`);
+  }, [name]);
+
+  const handleViewLogs = useCallback(() => {
+    router.push(`/${workspaceSlug}/sandboxes/${name}/logs`);
+  }, [router, workspaceSlug, name]);
+
+  const handleRestart = useCallback(() => {
+    // Mock mutation — flip status to DEPLOYING in both detail + list caches
+    // so the pill immediately reflects the requested restart.
+    const detailKey = sandboxQueries.detail(accountId, workspaceId, name).queryKey;
+    const listKey = sandboxQueries.list(accountId, workspaceId).queryKey;
+    queryClient.setQueryData<Sandbox>(detailKey, (prev) =>
+      prev ? { ...prev, status: "DEPLOYING" } : prev,
     );
-  }, [sandbox.metadata.name]);
+    queryClient.setQueryData<ReadonlyArray<Sandbox>>(listKey, (prev) =>
+      prev
+        ? prev.map((s) =>
+            s.metadata.name === name ? { ...s, status: "DEPLOYING" } : s,
+          )
+        : prev,
+    );
+    toast.success(`Restarting ${name}`);
+  }, [queryClient, accountId, workspaceId, name]);
+
+  const handleConfirmDelete = useCallback(() => {
+    const listKey = sandboxQueries.list(accountId, workspaceId).queryKey;
+    queryClient.setQueryData<ReadonlyArray<Sandbox>>(listKey, (prev) =>
+      prev ? prev.filter((s) => s.metadata.name !== name) : prev,
+    );
+    setDeleteOpen(false);
+    router.push(listHref);
+    toast.success(`${name} deleted`);
+  }, [queryClient, accountId, workspaceId, name, router, listHref]);
 
   return (
     <header className="flex flex-col gap-3 pt-2">
@@ -81,16 +134,24 @@ export default function SandboxDetailHeader({
                 </IconButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => undefined}>
-                  Restart
-                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={handleOpenInCli}>
+                  <Terminal aria-hidden="true" />
                   Open in CLI
                 </DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleViewLogs}>
+                  <ScrollText aria-hidden="true" />
+                  View logs
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleRestart}>
+                  <RotateCw aria-hidden="true" />
+                  Restart
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant="destructive"
-                  onSelect={() => undefined}
+                  onSelect={() => setDeleteOpen(true)}
                 >
+                  <Trash2 aria-hidden="true" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -100,6 +161,24 @@ export default function SandboxDetailHeader({
 
         <MetaRow sandbox={sandbox} />
       </div>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete &quot;{name}&quot;?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This cannot be undone. The Sandbox and its runtime state will be
+              removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </header>
   );
 }

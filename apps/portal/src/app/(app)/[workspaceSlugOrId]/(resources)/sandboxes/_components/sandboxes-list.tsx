@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   createColumnHelper,
@@ -18,11 +18,24 @@ import {
   ArrowUp,
   MoreHorizontal,
   RotateCw,
+  ScrollText,
   SearchX,
   Terminal,
+  Trash2,
   TriangleAlert,
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@repo/ui/lib/cn";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@repo/ui/components/alert-dialog";
 import { Button } from "@repo/ui/components/button";
 import { Checkbox } from "@repo/ui/components/checkbox";
 import { Chip } from "@repo/ui/components/chip";
@@ -32,6 +45,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import { SearchInput } from "@repo/ui/components/search-input";
@@ -101,6 +115,10 @@ export interface SandboxesListProps {
 
 const columnHelper = createColumnHelper<Sandbox>();
 
+// Fade-out duration for the row exit animation before it's removed from the
+// data set. Kept short — Alex is scanning; a slow disappear reads sluggish.
+const ROW_FADE_MS = 180;
+
 export function SandboxesList({
   sandboxes,
   workspaceSlug,
@@ -116,13 +134,74 @@ export function SandboxesList({
 }: SandboxesListProps) {
   const router = useRouter();
 
+  // Mock-only client-side mutations. TanStack query cache stays untouched;
+  // these two overlays fold on top of the fetched list so Restart + Delete
+  // feel responsive without a backend. `fadingOut` runs the exit animation
+  // before the row moves into `deleted` and disappears.
+  const [restartedNames, setRestartedNames] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+  const [fadingOutNames, setFadingOutNames] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+  const [deletedNames, setDeletedNames] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+  const [pendingDelete, setPendingDelete] = useState<Sandbox | null>(null);
+
+  const handleRestart = useCallback((sbx: Sandbox) => {
+    setRestartedNames((prev) => {
+      const next = new Set(prev);
+      next.add(sbx.metadata.name);
+      return next;
+    });
+    toast.success(`Restarting ${sbx.metadata.name}`);
+  }, []);
+
+  const handleConfirmDelete = useCallback((sbx: Sandbox) => {
+    const name = sbx.metadata.name;
+    setFadingOutNames((prev) => {
+      const next = new Set(prev);
+      next.add(name);
+      return next;
+    });
+    setPendingDelete(null);
+    window.setTimeout(() => {
+      setDeletedNames((prev) => {
+        const next = new Set(prev);
+        next.add(name);
+        return next;
+      });
+      setFadingOutNames((prev) => {
+        const next = new Set(prev);
+        next.delete(name);
+        return next;
+      });
+    }, ROW_FADE_MS);
+    toast.success(`${name} deleted`);
+  }, []);
+
+  const projected = useMemo<ReadonlyArray<Sandbox>>(() => {
+    if (restartedNames.size === 0 && deletedNames.size === 0) return sandboxes;
+    const out: Sandbox[] = [];
+    for (const sbx of sandboxes) {
+      if (deletedNames.has(sbx.metadata.name)) continue;
+      out.push(
+        restartedNames.has(sbx.metadata.name)
+          ? { ...sbx, status: "DEPLOYING" }
+          : sbx,
+      );
+    }
+    return out;
+  }, [sandboxes, restartedNames, deletedNames]);
+
   // Pre-Status subset: Search + Region + Terminated toggle applied, Status
   // checkboxes NOT applied. Status counts derive from this set so the
   // population breakdown Alex sees in the dropdown stays stable as she
   // toggles Status checkboxes but shifts when she narrows Region or search.
   const preStatusSet = useMemo<ReadonlyArray<Sandbox>>(() => {
     const normalized = search.trim().toLowerCase();
-    return sandboxes.filter((sbx) => {
+    return projected.filter((sbx) => {
       const pillLabel = pillFor(sbx).label;
       // Terminated toggle gates Terminated rows independent of Status checks.
       if (pillLabel === "Terminated" && !includeTerminated) return false;
@@ -136,7 +215,7 @@ export function SandboxesList({
       }
       return true;
     });
-  }, [sandboxes, search, regionFilter, includeTerminated]);
+  }, [projected, search, regionFilter, includeTerminated]);
 
   const statusCounts = useMemo<Readonly<Record<StatusFilterLabel, number>>>(() => {
     const acc: Record<StatusFilterLabel, number> = {
@@ -344,7 +423,14 @@ export function SandboxesList({
       columnHelper.display({
         id: "actions",
         header: "",
-        cell: (info) => <RowActions sandbox={info.row.original} />,
+        cell: (info) => (
+          <RowActions
+            sandbox={info.row.original}
+            workspaceSlug={workspaceSlug}
+            onRestart={handleRestart}
+            onRequestDelete={setPendingDelete}
+          />
+        ),
         enableSorting: false,
         meta: {
           headerClassName: "w-10",
@@ -352,7 +438,7 @@ export function SandboxesList({
         },
       }),
     ];
-  }, []);
+  }, [workspaceSlug, handleRestart]);
 
   const table = useReactTable({
     data: visible as Sandbox[],
@@ -485,6 +571,7 @@ export function SandboxesList({
                 const sbx = row.original;
                 const pill = pillFor(sbx);
                 const isErrored = pill.label === "Errored";
+                const isFadingOut = fadingOutNames.has(sbx.metadata.name);
                 const href = `/${workspaceSlug}/sandboxes/${sbx.metadata.name}`;
                 return (
                   <SandboxRow
@@ -492,6 +579,7 @@ export function SandboxesList({
                     sandbox={sbx}
                     isErrored={isErrored}
                     isSelected={row.getIsSelected()}
+                    isFadingOut={isFadingOut}
                     onClick={() => router.push(href)}
                     onMouseEnter={() => router.prefetch(href)}
                     cells={row.getVisibleCells().map((cell) => ({
@@ -524,6 +612,35 @@ export function SandboxesList({
           onPageSizeChange={(size) => table.setPageSize(size)}
         />
       </div>
+
+      <AlertDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete &quot;{pendingDelete?.metadata.name ?? ""}&quot;?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This cannot be undone. The Sandbox and its runtime state will be
+              removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingDelete) handleConfirmDelete(pendingDelete);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -602,6 +719,7 @@ interface SandboxRowProps {
   sandbox: Sandbox;
   isErrored: boolean;
   isSelected: boolean;
+  isFadingOut: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
   cells: ReadonlyArray<{
@@ -616,12 +734,14 @@ function SandboxRow({
   sandbox,
   isErrored,
   isSelected,
+  isFadingOut,
   onClick,
   onMouseEnter,
   cells,
   columnsCount,
 }: SandboxRowProps) {
   function handleClick(event: React.MouseEvent<HTMLTableRowElement>) {
+    if (isFadingOut) return;
     const target = event.target as HTMLElement;
     if (
       target.closest(
@@ -640,8 +760,9 @@ function SandboxRow({
         aria-selected={isSelected || undefined}
         className={cn(
           tableRowVariants(),
-          "group/sbx-row cursor-pointer",
+          "group/sbx-row cursor-pointer transition-opacity duration-150",
           isErrored && sandbox.failure && "border-b-0",
+          isFadingOut && "pointer-events-none opacity-0",
         )}
       >
         {cells.map((cell) => (
@@ -692,7 +813,21 @@ function SandboxRow({
   );
 }
 
-function RowActions({ sandbox }: { sandbox: Sandbox }) {
+interface RowActionsProps {
+  sandbox: Sandbox;
+  workspaceSlug: string;
+  onRestart: (sandbox: Sandbox) => void;
+  onRequestDelete: (sandbox: Sandbox) => void;
+}
+
+function RowActions({
+  sandbox,
+  workspaceSlug,
+  onRestart,
+  onRequestDelete,
+}: RowActionsProps) {
+  const router = useRouter();
+  const name = sandbox.metadata.name;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -706,17 +841,34 @@ function RowActions({ sandbox }: { sandbox: Sandbox }) {
         </IconButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-        <DropdownMenuItem onSelect={() => undefined}>Restart</DropdownMenuItem>
         <DropdownMenuItem
-          onSelect={() =>
-            navigator.clipboard?.writeText(
-              `bl connect sandbox ${sandbox.metadata.name}`,
-            )
-          }
+          onSelect={() => {
+            const cmd = `bl connect sandbox ${name}`;
+            void navigator.clipboard?.writeText(cmd);
+            toast.success(`Copied — ${cmd}`);
+          }}
         >
+          <Terminal aria-hidden="true" />
           Open in CLI
         </DropdownMenuItem>
-        <DropdownMenuItem variant="destructive" onSelect={() => undefined}>
+        <DropdownMenuItem
+          onSelect={() =>
+            router.push(`/${workspaceSlug}/sandboxes/${name}/logs`)
+          }
+        >
+          <ScrollText aria-hidden="true" />
+          View logs
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onRestart(sandbox)}>
+          <RotateCw aria-hidden="true" />
+          Restart
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          onSelect={() => onRequestDelete(sandbox)}
+        >
+          <Trash2 aria-hidden="true" />
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
