@@ -16,9 +16,13 @@
  * Owned by toast.tsx — keep this file in lockstep with that component.
  * ============================================================================= */
 
-/* ── Toast root — bg, border, layout, shadow ─────────────────────────────── */
+/* ── Toast root — bg, border, layout, shadow.
+ *    background-color (long-form, not shorthand) so per-type variants can
+ *    layer a subtle tint via background-image without wiping the solid bg.
+ *    --color-state-*-subtle is color-mix(…, transparent); without a solid
+ *    backing the page would show through. */
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] {
-  background: var(--color-popover);
+  background-color: var(--color-background);
   border: 1px solid var(--color-border);
   color: var(--color-foreground);
   border-radius: var(--radius-surface);
@@ -38,7 +42,7 @@
  *    Each type carries its dedicated subtle bg so info / success / error /
  *    warning read distinctly at a glance. ─────────────────────────────────── */
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='success'] {
-  background: var(--color-state-scored-subtle);
+  background-image: linear-gradient(var(--color-state-scored-subtle) 0 100%);
   border-color: var(--color-state-scored);
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='success'] [data-icon] {
@@ -46,7 +50,7 @@
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='error'] {
-  background: var(--color-state-errored-subtle);
+  background-image: linear-gradient(var(--color-state-errored-subtle) 0 100%);
   border-color: var(--color-state-errored);
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='error'] [data-icon] {
@@ -54,7 +58,7 @@
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='warning'] {
-  background: var(--color-state-warning-subtle);
+  background-image: linear-gradient(var(--color-state-warning-subtle) 0 100%);
   border-color: var(--color-state-warning);
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='warning'] [data-icon] {
@@ -62,7 +66,7 @@
 }
 
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='info'] {
-  background: var(--color-state-running-subtle);
+  background-image: linear-gradient(var(--color-state-running-subtle) 0 100%);
   border-color: var(--color-state-running);
 }
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='info'] [data-icon] {
